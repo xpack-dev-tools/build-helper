@@ -338,25 +338,51 @@ do_host_build_target() {
   if [ -n "${docker_image}" ]
   then
 
-    run_docker_script \
-      --script "${DOCKER_HOST_WORK}/scripts/${script_name}" \
-      --docker-image "${docker_image}" \
-      --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
-      --host-uname "${HOST_UNAME}" \
-      -- \
-      --build-folder "${DOCKER_HOST_WORK}/build/${target_folder}" \
-      --target-name "${target_name}" \
-      --target-bits "${target_bits}" \
-      --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
-      --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
-      --install-folder "${DOCKER_HOST_WORK}/install/${target_folder}" \
-      --download-folder "${DOCKER_HOST_WORK}/download" \
-      --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
-      --work-folder "${DOCKER_HOST_WORK}" \
-      --group-id "${GROUP_ID}" \
-      --user-id "${USER_ID}" \
-      --host-uname "${HOST_UNAME}" \
-      --extra-path "${DOCKER_HOST_WORK}/${build_binaries_path}"
+    if [ -n "${build_binaries_path}" ]
+    then
+
+      run_docker_script \
+        --script "${DOCKER_HOST_WORK}/scripts/${script_name}" \
+        --docker-image "${docker_image}" \
+        --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
+        --host-uname "${HOST_UNAME}" \
+        -- \
+        --build-folder "${DOCKER_HOST_WORK}/build/${target_folder}" \
+        --target-name "${target_name}" \
+        --target-bits "${target_bits}" \
+        --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
+        --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
+        --install-folder "${DOCKER_HOST_WORK}/install/${target_folder}" \
+        --download-folder "${DOCKER_HOST_WORK}/download" \
+        --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
+        --work-folder "${DOCKER_HOST_WORK}" \
+        --group-id "${GROUP_ID}" \
+        --user-id "${USER_ID}" \
+        --host-uname "${HOST_UNAME}" \
+        --extra-path "${DOCKER_HOST_WORK}/${build_binaries_path}"
+    
+    else
+
+      run_docker_script \
+        --script "${DOCKER_HOST_WORK}/scripts/${script_name}" \
+        --docker-image "${docker_image}" \
+        --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
+        --host-uname "${HOST_UNAME}" \
+        -- \
+        --build-folder "${DOCKER_HOST_WORK}/build/${target_folder}" \
+        --target-name "${target_name}" \
+        --target-bits "${target_bits}" \
+        --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
+        --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
+        --install-folder "${DOCKER_HOST_WORK}/install/${target_folder}" \
+        --download-folder "${DOCKER_HOST_WORK}/download" \
+        --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
+        --work-folder "${DOCKER_HOST_WORK}" \
+        --group-id "${GROUP_ID}" \
+        --user-id "${USER_ID}" \
+        --host-uname "${HOST_UNAME}"
+
+    fi
 
   else
 
