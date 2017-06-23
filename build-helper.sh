@@ -712,7 +712,7 @@ do_check_application() {
   shift
 
   echo
-  echo "Checking $1..."
+  echo "Checking ${executable_name}..."
 
   if [ "${target_name}" == "win" ]
   then
