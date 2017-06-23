@@ -604,7 +604,7 @@ do_container_create_distribution() {
         unix2dos "${install_folder}/${APP_LC_NAME}/COPYING"
 
         nsis_folder="${git_folder_path}/gnu-mcu-eclipse/nsis"
-        nsis_file="${nsis_folder}/gnu-mcu-eclipse.nsi"
+        nsis_file="${nsis_folder}/nsis.nsi"
 
         cd "${build_folder_path}"
         makensis -V4 -NOCD \
