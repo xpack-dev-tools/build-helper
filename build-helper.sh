@@ -102,7 +102,7 @@ do_host_prepare_prerequisites() {
       then
         caffeinate="caffeinate"
 
-        local hb_folder="$HOME/opt/homebrew-gae"
+        local hb_folder="$HOME/opt/homebrew-gme"
         local tl_folder="$HOME/opt/texlive"
 
         # Check local Homebrew.
@@ -122,7 +122,7 @@ do_host_prepare_prerequisites() {
             echo 
             echo "mkdir -p \${HOME}/opt"
             echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
-            echo "bash \${HOME}/opt/install-scripts.git/install-homebrew-gae.sh"
+            echo "bash \${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
             exit 1
           fi
           set -e
@@ -1200,8 +1200,14 @@ do_copy_libs() {
 
     cp -v -f "${src_folder}/libc.a" "${dst_folder}/libc_nano.a"
     cp -v -f "${src_folder}/libg.a" "${dst_folder}/libg_nano.a"
-    cp -v -f "${src_folder}/libstdc++.a" "${dst_folder}/libstdc++_nano.a"
-    cp -v -f "${src_folder}/libsupc++.a" "${dst_folder}/libsupc++_nano.a"
+    if [ -f "${src_folder}/libstdc++.a" ]
+    then
+      cp -v -f "${src_folder}/libstdc++.a" "${dst_folder}/libstdc++_nano.a"
+    fi
+    if [ -f "${src_folder}/libsupc++.a" ]
+    then
+      cp -v -f "${src_folder}/libsupc++.a" "${dst_folder}/libsupc++_nano.a"
+    fi
     # cp -f "${src_folder}/librdimon.a" "${dst_folder}/librdimon_nano.a"
 
     # cp -v -f "${src_folder}/nano.specs" "${dst_folder}/"
@@ -1253,7 +1259,7 @@ do_copy_multi_libs() {
 
     echo ${gcc_target}
     multilibs=( $("${gcc_target}" -print-multi-lib 2>/dev/null) )
-    if [ #multilibs[@] -gt 0 ]
+    if [ ${#multilibs[@]} -gt 0 ]
     then
       for multilib in "${multilibs[@]}"
       do
