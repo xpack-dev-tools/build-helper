@@ -35,18 +35,18 @@ do_host_stop_timer() {
 # v===========================================================================v
 do_host_detect() {
 
-      HOST_DISTRO_NAME=""
-      HOST_UNAME="$(uname)"
-      if [ "${HOST_UNAME}" == "Darwin" ]
-      then
+  HOST_DISTRO_NAME=""
+  HOST_UNAME="$(uname)"
+  if [ "${HOST_UNAME}" == "Darwin" ]
+  then
         HOST_BITS="64"
         HOST_MACHINE="x86_64"
 
         HOST_DISTRO_NAME=Darwin
         HOST_DISTRO_LC_NAME=darwin
 
-      elif [ "${HOST_UNAME}" == "Linux" ]
-      then
+  elif [ "${HOST_UNAME}" == "Linux" ]
+  then
         # ----- Determine distribution name and word size -----
 
         set +e
@@ -74,64 +74,77 @@ do_host_detect() {
 
         HOST_DISTRO_LC_NAME=$(echo ${HOST_DISTRO_NAME} | tr "[:upper:]" "[:lower:]")
 
-      else
+  else
         echo "Unknown uname ${HOST_UNAME}"
         exit 1
-      fi
+  fi
 
-      echo
-      echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bits."
+  echo
+  echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bits."
 
 
-      # When running on Docker, the host Work folder is used, if available.
-      HOST_WORK_FOLDER="${WORK_FOLDER_PATH}/../../Host/Work/${APP_LC_NAME}"
+  # When running on Docker, the host Work folder is used, if available.
+  HOST_WORK_FOLDER="${WORK_FOLDER_PATH}/../../Host/Work/${APP_LC_NAME}"
 
-      DOCKER_HOST_WORK="/Host/Work/${APP_LC_NAME}"
-      DOCKER_GIT_FOLDER="${DOCKER_HOST_WORK}/${APP_LC_NAME}.git"
-      DOCKER_BUILD="/root/build"
+  DOCKER_HOST_WORK="/Host/Work/${APP_LC_NAME}"
+  DOCKER_GIT_FOLDER="${DOCKER_HOST_WORK}/${APP_LC_NAME}.git"
+  DOCKER_BUILD="/root/build"
 
-      GROUP_ID=$(id -g)
-      USER_ID=$(id -u)
+  GROUP_ID=$(id -g)
+  USER_ID=$(id -u)
 }
 
 # v===========================================================================v
 do_host_prepare_prerequisites() {
 
-      caffeinate=""
-      if [ "${HOST_UNAME}" == "Darwin" ]
-      then
+  caffeinate=""
+  if [ "${HOST_UNAME}" == "Darwin" ]
+  then
         caffeinate="caffeinate"
 
-        local hb_folder="$HOME/opt/homebrew-gme"
-        local tl_folder="$HOME/opt/texlive"
-
+        local hb_folder="${HOME}/opt/homebrew-gme"
+        
+        local must_install=""
         # Check local Homebrew.
-        if [ -d "${hb_folder}" ]
+        if [ ! -d "${hb_folder}" ]
         then
-
-          PATH="${hb_folder}/bin":$PATH
+          must_install="y"
+	      else
+          PATH="${hb_folder}/bin":${PATH}
           export PATH
 
           echo
           echo "Checking Homebrew in '${hb_folder}'..."
           set +e
           brew --version | grep 'Homebrew '
-          if [ $? != 0 ]
+          if [ $? -ne 0 ]
           then
-            echo "Please install Homebrew and rerun."
-            echo 
-            echo "mkdir -p \${HOME}/opt"
-            echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
-            echo "bash \${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
-            exit 1
+            must_install="y"
           fi
           set -e
-
         fi
 
-        # Check local TeX Live.
-        if [ -d "${tl_folder}" ]
+        if [ -n "${must_install}" ]
         then
+          echo "Please install Homebrew and rerun."
+          echo 
+          echo "mkdir -p \${HOME}/opt"
+          echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
+          echo "bash \${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
+          exit 1
+        fi
+
+	    if [ -z "${do_no_pdf}" ]
+	    then
+
+	      local tl_folder="$HOME/opt/texlive"
+
+        must_install=""
+        # Check local TeX Live.
+        if [ ! -d "${tl_folder}" ]
+        then
+          must_install="y"
+        else
 
           PATH="${tl_folder}/bin/x86_64-darwin":$PATH
           export PATH
@@ -142,27 +155,33 @@ do_host_prepare_prerequisites() {
           tex --version | grep 'TeX 3'
           if [ $? != 0 ]
           then
+            must_install="y"
+          fi
+          set -e
+
+        fi
+
+        if [ -n "${must_install}" ]
+        then
+
             echo "Please install TeX Live and rerun."
             echo 
             echo "mkdir -p \${HOME}/opt"
             echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
             echo "bash \${HOME}/opt/install-scripts.git/install-texlive.sh"
             exit 1
-          fi
-          set -e
-
         fi
 
+	    fi
+    fi
 
-      fi
+    echo
+    echo "Checking host curl..."
+    curl --version | grep curl
 
-      echo
-      echo "Checking host curl..."
-      curl --version | grep curl
-
-      echo
-      echo "Checking host git..."
-      git --version
+    echo
+    echo "Checking host git..."
+    git --version
 }
 
 # v===========================================================================v
