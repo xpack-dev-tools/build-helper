@@ -538,15 +538,34 @@ do_container_copy_info() {
       echo
       echo "Copying info files..."
 
-      /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO-${generic_target_name}.txt" \
-        "${install_folder}/${APP_LC_NAME}/INFO.txt"
-      do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
+      if [ -f "${git_folder_path}/gnu-mcu-eclipse/info/INFO.md" ]
+      then
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO.md" \
+          "${install_folder}/${APP_LC_NAME}/README.md"
+        do_unix2dos "${install_folder}/${APP_LC_NAME}/README.md"
+      elif [ -f "${git_folder_path}/gnu-mcu-eclipse/info/INFO.txt" ]
+      then
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO.txt" \
+          "${install_folder}/${APP_LC_NAME}/INFO.txt"
+        do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
+      else
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO-${generic_target_name}.txt" \
+          "${install_folder}/${APP_LC_NAME}/INFO.txt"
+        do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
+      fi
 
       mkdir -p "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse"
 
-      /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.txt" \
-        "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
-      do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
+      if [ -f "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.md" ]
+      then
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.md" \
+          "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.md"
+        do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.md"
+      else
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.txt" \
+          "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
+        do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
+      fi
 
       /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/CHANGES.txt" \
         "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/CHANGES.txt"
@@ -554,8 +573,8 @@ do_container_copy_info() {
 
       # Copy the current build script
       /usr/bin/install -cv -m 644 "${work_folder_path}/scripts/build-${APP_LC_NAME}.sh" \
-        "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/build-${APP_LC_NAME}.sh"
-      do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/build-${APP_LC_NAME}.sh"
+        "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/build.sh"
+      do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/build.sh"
 
       # Copy the current build helper script
       /usr/bin/install -cv -m 644 "${work_folder_path}/scripts/build-helper.sh" \
@@ -603,20 +622,11 @@ do_container_create_distribution() {
 
         distribution_file="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}-setup.exe"
 
-        # Not passed as it, used by makensis for the MUI_PAGE_LICENSE; must be DOS.
-        if [ -f "${git_folder_path}/COPYING" ]
+        if [ ! -f "${install_folder}/${APP_LC_NAME}/licenses/LICENSE" ]
         then
-          cp "${git_folder_path}/COPYING" \
-            "${install_folder}/${APP_LC_NAME}/COPYING"
-        elif [ -f "${git_folder_path}/LICENSE" ]
-        then
-          cp "${git_folder_path}/LICENSE" \
-            "${install_folder}/${APP_LC_NAME}/COPYING"
-        else
-          echo "Missing LICENSE or COPYING"
+          echo "Missing LICENSE"
           exit 1
         fi
-        unix2dos "${install_folder}/${APP_LC_NAME}/COPYING"
 
         nsis_folder="${git_folder_path}/gnu-mcu-eclipse/nsis"
         nsis_file="${nsis_folder}/nsis.nsi"
@@ -1080,8 +1090,8 @@ do_container_copy_license() {
     then
       if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
       then
-        /usr/bin/install -d -m 0755 "${install_folder}/${APP_LC_NAME}/license/$2"
-        /usr/bin/install -v -c -m 644 "$f" "${install_folder}/${APP_LC_NAME}/license/$2"
+        /usr/bin/install -d -m 0755 "${install_folder}/${APP_LC_NAME}/licenses/$2"
+        /usr/bin/install -v -c -m 644 "$f" "${install_folder}/${APP_LC_NAME}/licenses/$2"
       fi
     fi
   done
