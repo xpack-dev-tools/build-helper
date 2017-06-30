@@ -474,7 +474,7 @@ run_docker_script() {
   echo "Running \"$(basename "${docker_script}")\" script inside \"${docker_container_name}\" container, image \"${docker_image}\"..."
 
   # Run the second pass script in a fresh Docker container.
-  ${caffeinate} docker run \
+  docker run \
     --name="${docker_container_name}" \
     --tty \
     --hostname "docker" \
@@ -516,7 +516,7 @@ run_local_script() {
   echo "Running \"$(basename "${local_script}")\" script locally..."
 
   # Run the second pass script in a local sub-shell.
-  ${caffeinate} /bin/bash ${DEBUG} "${local_script}" $@
+  /bin/bash ${DEBUG} "${local_script}" $@
 
   # echo "1|$@|"
 }
