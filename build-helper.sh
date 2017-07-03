@@ -869,40 +869,55 @@ do_container_linux_copy_user_so() {
   then
     echo "Found user ${ILIB}"
 
+    ihead=$(echo "${ILIB}" | head -n 1)
     # Add "runpath" in library with value $ORIGIN.
-    patchelf --set-rpath '$ORIGIN' "${ILIB}"
+    patchelf --set-rpath '$ORIGIN' "${ihead}"
 
-    ILIB_BASE="$(basename ${ILIB})"
-    /usr/bin/install -v -c -m 644 "${ILIB}" "${install_folder}/${APP_LC_NAME}/bin"
+    ILIB_BASE="$(basename ${ihead})"
+    /usr/bin/install -v -c -m 644 "${ihead}" "${install_folder}/${APP_LC_NAME}/bin"
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2.\3/')"
-    (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "${ILIB_SHORT}")
+    (
+      cd "${install_folder}/${APP_LC_NAME}/bin"
+      rm "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2/')"
-    (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "${ILIB_SHORT}")
+    (
+      cd "${install_folder}/${APP_LC_NAME}/bin"
+      rm "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
   else
     ILIB=$(find ${install_folder}/lib -type f -name $1'.so.*' -print)
     if [ ! -z "${ILIB}" ]
     then
       echo "Found user 2 ${ILIB}"
 
+      ihead=$(echo "${ILIB}" | head -n 1)
       # Add "runpath" in library with value $ORIGIN.
-      patchelf --set-rpath '$ORIGIN' "${ILIB}"
+      patchelf --set-rpath '$ORIGIN' "${ihead}"
 
-      ILIB_BASE="$(basename ${ILIB})"
-      /usr/bin/install -v -c -m 644 "${ILIB}" "${install_folder}/${APP_LC_NAME}/bin"
+      ILIB_BASE="$(basename ${ihead})"
+      /usr/bin/install -v -c -m 644 "${ihead}" "${install_folder}/${APP_LC_NAME}/bin"
       ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\).*/\1.\2/')"
       echo "${ILIB_SHORT}"
-      (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "${ILIB_SHORT}")
+      (
+        cd "${install_folder}/${APP_LC_NAME}/bin"
+        rm "${ILIB_SHORT}"
+        ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+      )
     else
       ILIB=$(find ${install_folder}/lib -type f -name $1'.so' -print)
       if [ ! -z "${ILIB}" ]
       then
         echo "Found user 3 ${ILIB}"
 
+        ihead=$(echo "${ILIB}" | head -n 1)
         # Add "runpath" in library with value $ORIGIN.
-        patchelf --set-rpath '$ORIGIN' "${ILIB}"
+        patchelf --set-rpath '$ORIGIN' "${ihead}"
 
-        ILIB_BASE="$(basename ${ILIB})"
-        /usr/bin/install -v -c -m 644 "${ILIB}" "${install_folder}/${APP_LC_NAME}/bin"
+        ILIB_BASE="$(basename ${ihead})"
+        /usr/bin/install -v -c -m 644 "${ihead}" "${install_folder}/${APP_LC_NAME}/bin"
       else
         echo $1 not found
         exit 1
@@ -919,29 +934,44 @@ do_container_linux_copy_system_so() {
   if [ ! -z "${ILIB}" ]
   then
     echo "Found system ${ILIB}"
-    ILIB_BASE="$(basename ${ILIB})"
-    /usr/bin/install -v -c -m 644 "${ILIB}" "${install_folder}/${APP_LC_NAME}/bin"
+    ihead=$(echo "${ILIB}" | head -n 1)
+    ILIB_BASE="$(basename ${ihead})"
+    /usr/bin/install -v -c -m 644 "${ihead}" "${install_folder}/${APP_LC_NAME}/bin"
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2.\3/')"
-    (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "${ILIB_SHORT}")
+    (
+      cd "${install_folder}/${APP_LC_NAME}/bin"
+      rm "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2/')"
-    (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "${ILIB_SHORT}")
+    (
+      cd "${install_folder}/${APP_LC_NAME}/bin"
+      rm "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
   else
     ILIB=$(find /lib/${distro_machine}-linux-gnu /usr/lib/${distro_machine}-linux-gnu -type f -name $1'.so.*' -print)
     if [ ! -z "${ILIB}" ]
     then
       echo "Found system 2 ${ILIB}"
-      ILIB_BASE="$(basename ${ILIB})"
-      /usr/bin/install -v -c -m 644 "${ILIB}" "${install_folder}/${APP_LC_NAME}/bin"
+      ihead=$(echo "${ILIB}" | head -n 1)
+      ILIB_BASE="$(basename ${ihead})"
+      /usr/bin/install -v -c -m 644 "${ihead}" "${install_folder}/${APP_LC_NAME}/bin"
       ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\).*/\1.\2/')"
       echo "${ILIB_SHORT}"
-      (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "${ILIB_SHORT}")
+      (
+        cd "${install_folder}/${APP_LC_NAME}/bin"
+        rm "${ILIB_SHORT}"
+        ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+      )
     else
       ILIB=$(find /lib/${distro_machine}-linux-gnu /usr/lib/${distro_machine}-linux-gnu -type f -name $1'.so' -print)
       if [ ! -z "${ILIB}" ]
       then
         echo "Found system 3 ${ILIB}"
-        ILIB_BASE="$(basename ${ILIB})"
-        /usr/bin/install -v -c -m 644 "${ILIB}" "${install_folder}/${APP_LC_NAME}/bin"
+        ihead=$(echo "${ILIB}" | head -n 1)
+        ILIB_BASE="$(basename ${ihead})"
+        /usr/bin/install -v -c -m 644 "${ihead}" "${install_folder}/${APP_LC_NAME}/bin"
       else
         echo $1 not found
         exit 1
@@ -956,11 +986,20 @@ do_container_linux_copy_librt_so() {
   if [ ! -z "${ILIB}" ]
   then
     echo "Found system ${ILIB}"
-    ILIB_BASE="$(basename ${ILIB})"
-    /usr/bin/install -v -c -m 644 "${ILIB}" \
+    ihead=$(echo "${ILIB}" | head -n 1)
+    ILIB_BASE="$(basename ${ihead})"
+    /usr/bin/install -v -c -m 644 "${ihead}" \
     "${install_folder}/${APP_LC_NAME}/bin"
-    (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "librt.so.1")
-    (cd "${install_folder}/${APP_LC_NAME}/bin"; ln -sv "${ILIB_BASE}" "librt.so")
+    (
+      cd "${install_folder}/${APP_LC_NAME}/bin"
+      rm "librt.so.1"
+      ln -sv "${ILIB_BASE}" "librt.so.1"
+    )
+    (
+      cd "${install_folder}/${APP_LC_NAME}/bin"
+      rm "librt.so"
+      ln -sv "${ILIB_BASE}" "librt.so"
+    )
   else
     echo
     echo "WARNING: librt.so not copied locally!"
