@@ -878,13 +878,13 @@ do_container_linux_copy_user_so() {
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2.\3/')"
     (
       cd "${install_folder}/${APP_LC_NAME}/bin"
-      rm "${ILIB_SHORT}"
+      rm --force "${ILIB_SHORT}"
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2/')"
     (
       cd "${install_folder}/${APP_LC_NAME}/bin"
-      rm "${ILIB_SHORT}"
+      rm --force "${ILIB_SHORT}"
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
@@ -903,7 +903,7 @@ do_container_linux_copy_user_so() {
       echo "${ILIB_SHORT}"
       (
         cd "${install_folder}/${APP_LC_NAME}/bin"
-        rm "${ILIB_SHORT}"
+        rm --force "${ILIB_SHORT}"
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
@@ -940,13 +940,13 @@ do_container_linux_copy_system_so() {
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2.\3/')"
     (
       cd "${install_folder}/${APP_LC_NAME}/bin"
-      rm "${ILIB_SHORT}"
+      rm --force "${ILIB_SHORT}"
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
     ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2/')"
     (
       cd "${install_folder}/${APP_LC_NAME}/bin"
-      rm "${ILIB_SHORT}"
+      rm --force "${ILIB_SHORT}"
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
@@ -961,7 +961,7 @@ do_container_linux_copy_system_so() {
       echo "${ILIB_SHORT}"
       (
         cd "${install_folder}/${APP_LC_NAME}/bin"
-        rm "${ILIB_SHORT}"
+        rm --force "${ILIB_SHORT}"
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
@@ -992,12 +992,12 @@ do_container_linux_copy_librt_so() {
     "${install_folder}/${APP_LC_NAME}/bin"
     (
       cd "${install_folder}/${APP_LC_NAME}/bin"
-      rm "librt.so.1"
+      rm --force "librt.so.1"
       ln -sv "${ILIB_BASE}" "librt.so.1"
     )
     (
       cd "${install_folder}/${APP_LC_NAME}/bin"
-      rm "librt.so"
+      rm --force "librt.so"
       ln -sv "${ILIB_BASE}" "librt.so"
     )
   else
@@ -1233,7 +1233,7 @@ do_strip_() {
     "${strip_app}" "${tmp_file}"
     cp "${tmp_file}" "$f"
 
-    rm "${tmp_file}"
+    rm --force "${tmp_file}"
   done
 }
 
