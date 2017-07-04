@@ -479,7 +479,7 @@ run_docker_script() {
     --tty \
     --hostname "docker" \
     --workdir="/root" \
-    --volume="${WORK_FOLDER_PATH}/..:/Host/Work" \
+    --volume="${WORK_FOLDER_PATH}/:${DOCKER_HOST_WORK}" \
     ${docker_image} \
     /bin/bash ${DEBUG} "${docker_script}" \
       --docker-container-name "${docker_container_name}" \
