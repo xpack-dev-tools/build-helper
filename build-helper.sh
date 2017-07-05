@@ -126,12 +126,11 @@ do_host_prepare_prerequisites() {
 
         if [ -n "${must_install}" ]
         then
-          echo "Please install Homebrew and rerun."
-          echo 
-          echo "mkdir -p \${HOME}/opt"
-          echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
-          echo "bash \${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
-          exit 1
+          echo "Installing a custom Homebrew instance..."
+           
+          mkdir -p "${HOME}/opt"
+          git clone https://github.com/ilg-ul/opt-install-scripts "${HOME}/opt/install-scripts.git"
+          bash "${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
         fi
 
 	    if [ -z "${do_no_pdf}" ]
