@@ -525,13 +525,6 @@ run_local_script() {
   # Run the second pass script in a local sub-shell.
   /bin/bash ${DEBUG} "${local_script}" $@
 
-  if [ "${target_name}" == "osx" ]
-  then
-    # Restart the osxfs layer, to reduce the effect of memory leaks.
-    killall com.docker.osxfs
-    sleep 5
-  fi
-
   # echo "1|$@|"
 }
 # ^===========================================================================^
