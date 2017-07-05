@@ -126,6 +126,7 @@ do_host_prepare_prerequisites() {
 
         if [ -n "${must_install}" ]
         then
+          echo
           echo "Installing a custom Homebrew instance..."
            
           mkdir -p "${HOME}/opt"
@@ -163,7 +164,9 @@ do_host_prepare_prerequisites() {
         if [ -n "${must_install}" ]
         then
 
+            echo
             echo "Please install TeX Live and rerun."
+            echo "Alternatively restart the build script using '--without-pdf'."
             echo 
             echo "mkdir -p \${HOME}/opt"
             echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
@@ -514,6 +517,13 @@ run_local_script() {
 
   # Run the second pass script in a local sub-shell.
   /bin/bash ${DEBUG} "${local_script}" $@
+
+  if [ "${target_name}" == "osx" ]
+  then
+    # Restart the osxfs layer, to reduce the effect of memory leaks.
+    killall com.docker.osxfs
+    sleep 5
+  fi
 
   # echo "1|$@|"
 }
