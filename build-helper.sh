@@ -208,15 +208,13 @@ do_host_prepare_prerequisites_riscv() {
           brew --version | grep 'Homebrew '
           if [ $? != 0 ]
           then
-            echo "Please install Homebrew and rerun."
-            echo 
-            echo "mkdir -p \${HOME}/opt"
-            echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
-            echo "bash \${HOME}/opt/install-scripts.git/install-homebrew-rv.sh"
-            exit 1
+            echo "Installing Homebrew..."
+             
+            mkdir -p "${HOME}/opt"
+            git clone https://github.com/ilg-ul/opt-install-scripts "${HOME}/opt/install-scripts.git"
+            bash "${HOME}/opt/install-scripts.git/install-homebrew-rv.sh"
           fi
           set -e
-
         fi
 
         # Check local TeX Live.
