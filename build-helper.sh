@@ -488,6 +488,13 @@ run_docker_script() {
   # Remove the container.
   docker rm --force "${docker_container_name}"
 
+  if [ "${target_name}" == "osx" ]
+  then
+    echo
+    echo "Restarting osxfs..."
+    killall com.docker.osxfs
+    sleep 5
+  fi
   # echo "2|$@|"
 }
 
