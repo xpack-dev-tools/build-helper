@@ -357,6 +357,15 @@ do_host_build_target() {
   if [ -n "${docker_image}" ]
   then
 
+    if [ "${do_develop}" == "y" ]
+    then
+      # Host build folder.
+      docker_build_folder_path="${DOCKER_HOST_WORK}/build"
+    else
+      # Non persistent docker folder.
+      docker_build_folder_path="/tmp/build"
+    fi
+
     if [ -n "${build_binaries_path}" ]
     then
 
@@ -366,7 +375,7 @@ do_host_build_target() {
         --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
         --host-uname "${HOST_UNAME}" \
         -- \
-        --build-folder "${DOCKER_HOST_WORK}/build/${target_folder}" \
+        --build-folder "${docker_build_folder_path}/${target_folder}" \
         --target-name "${target_name}" \
         --target-bits "${target_bits}" \
         --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
@@ -388,7 +397,7 @@ do_host_build_target() {
         --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
         --host-uname "${HOST_UNAME}" \
         -- \
-        --build-folder "${DOCKER_HOST_WORK}/build/${target_folder}" \
+        --build-folder "${docker_build_folder_path}/${target_folder}" \
         --target-name "${target_name}" \
         --target-bits "${target_bits}" \
         --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
