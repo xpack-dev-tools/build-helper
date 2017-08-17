@@ -1296,9 +1296,9 @@ do_copy_libs() {
     
     # Quoted, do not substitute.
     cat <<'__EOF__' >"${dst_folder}/nano.specs"
-%rename link                nano_link
-%rename link_gcc_c_sequence                nano_link_gcc_c_sequence
-%rename cpp_unique_options		nano_cpp_unique_options
+%rename link                 nano_link
+%rename link_gcc_c_sequence  nano_link_gcc_c_sequence
+%rename cpp_unique_options   nano_cpp_unique_options
 
 *cpp_unique_options:
 -isystem =/include/newlib-nano %(nano_cpp_unique_options)
