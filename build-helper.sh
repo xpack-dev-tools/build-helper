@@ -102,7 +102,7 @@ do_host_prepare_prerequisites() {
   then
         caffeinate="caffeinate"
 
-        local hb_folder="${HOME}/opt/homebrew-gme"
+        local hb_folder="${HOME}/opt/homebrew/gme"
         
         local must_install=""
         # Check local Homebrew.
