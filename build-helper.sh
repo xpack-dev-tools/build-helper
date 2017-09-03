@@ -128,10 +128,18 @@ do_host_prepare_prerequisites() {
         then
           echo
           echo "Installing a custom Homebrew instance..."
-           
-          mkdir -p "${HOME}/opt"
-          git clone https://github.com/ilg-ul/opt-install-scripts "${HOME}/opt/install-scripts.git"
+          
+          if [ ! -d "${HOME}/opt/install-scripts.git" ]
+          then
+            mkdir -p "${HOME}/opt"
+            git clone https://github.com/ilg-ul/opt-install-scripts "${HOME}/opt/install-scripts.git"
+          fi
+
           bash "${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
+
+          PATH="${hb_folder}/bin":${PATH}
+          export PATH
+
         fi
 
 	    if [ -z "${do_no_pdf}" ]
