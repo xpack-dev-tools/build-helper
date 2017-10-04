@@ -369,9 +369,11 @@ do_host_build_target() {
     then
       # Host build folder.
       docker_build_folder_path="${DOCKER_HOST_WORK}/build"
+      docker_install_folder_path="${DOCKER_HOST_WORK}/install"
     else
       # Non persistent docker folder.
       docker_build_folder_path="/tmp/build"
+      docker_install_folder_path="/tmp/install"
     fi
 
     if [ -n "${build_binaries_path}" ]
@@ -388,7 +390,7 @@ do_host_build_target() {
         --target-bits "${target_bits}" \
         --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
-        --install-folder "${DOCKER_HOST_WORK}/install/${target_folder}" \
+        --install-folder "${docker_install_folder_path}/${target_folder}" \
         --download-folder "${DOCKER_HOST_WORK}/download" \
         --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
         --work-folder "${DOCKER_HOST_WORK}" \
@@ -410,7 +412,7 @@ do_host_build_target() {
         --target-bits "${target_bits}" \
         --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
-        --install-folder "${DOCKER_HOST_WORK}/install/${target_folder}" \
+        --install-folder "${docker_install_folder_path}/${target_folder}" \
         --download-folder "${DOCKER_HOST_WORK}/download" \
         --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
         --work-folder "${DOCKER_HOST_WORK}" \
