@@ -646,9 +646,11 @@ do_container_create_distribution() {
           echo "Missing LICENSE"
           exit 1
         fi
-
+        
         nsis_folder="${git_folder_path}/gnu-mcu-eclipse/nsis"
         nsis_file="${nsis_folder}/nsis.nsi"
+
+        ls -lR "${nsis_folder}"
 
         cd "${build_folder_path}"
         makensis -V4 -NOCD \
