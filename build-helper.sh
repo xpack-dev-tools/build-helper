@@ -314,6 +314,7 @@ do_host_build_target() {
   echo "================================================================================"
   echo "${message}"
 
+  target_name=""
   target_bits=""
   docker_image=""
   build_binaries_path=""
@@ -342,6 +343,22 @@ do_host_build_target() {
         exit 1
     esac
   done
+
+  if [ -z "${target_name}" -a -n "${HOST_DISTRO_NAME}" ]
+  then
+    if [ "${HOST_DISTRO_NAME}" == "Darwin" ]
+    then
+      target_name="osx"
+      # No need to set the target_bits.
+    elif [ "${HOST_DISTRO_NAME}" == "Linux" ]
+    then
+      target_name="${HOST_DISTRO_LC_NAME}"
+      target_bits="${HOST_BITS}"
+    else
+      echo "Unsupported host ${HOST_DISTRO_NAME}, exit."
+      exit 1
+    fi
+  fi
 
   # Must be located before adjusting target_bits for osx.
   target_folder=${target_name}${target_bits}
