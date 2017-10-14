@@ -747,12 +747,15 @@ do_container_create_distribution() {
         # ownership change is not done. 
         echo
         echo "Changing owner to non-root Linux user..."
-        if [ -d "${work_folder_path}/build" ]
+        if [ -d "${build_folder_path}" ]
         then
-          chown -R ${user_id}:${group_id} ${work_folder_path}/build
+          chown -R ${user_id}:${group_id} "${build_folder_path}"
         fi
-        chown -R ${user_id}:${group_id} ${work_folder_path}/install
-        chown -R ${user_id}:${group_id} ${work_folder_path}/${DEPLOY_FOLDER_NAME}
+        if [ -d "${install_folder}" ]
+        then
+          chown -R ${user_id}:${group_id} "${install_folder}"
+        fi
+        chown -R ${user_id}:${group_id} "${work_folder_path}/${DEPLOY_FOLDER_NAME}"
       fi
 }
 
