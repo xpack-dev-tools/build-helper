@@ -352,7 +352,7 @@ do_host_build_target() {
       # No need to set the target_bits.
     elif [ "${HOST_UNAME}" == "Linux" ]
     then
-      target_name="${HOST_DISTRO_LC_NAME}"
+      target_name="debian"
       target_bits="${HOST_BITS}"
     else
       echo "Unsupported host ${HOST_UNAME}, exit."
