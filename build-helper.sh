@@ -755,7 +755,7 @@ do_container_create_distribution() {
 
       fi
 
-      if [ "${host_uname}" == "Linux" ]
+      if [ "${docker_container_name}" != "" -a "${host_uname}" == "Linux" ]
       then
         # Set the owner of the folder and files created by the docker debian 
         # container to match the user running the build script on the host. 
