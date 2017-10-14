@@ -364,7 +364,7 @@ do_host_build_target() {
   fi
 
   # Must be located before adjusting target_bits for osx.
-  target_folder=${target_distribution}${target_bits}
+  target_folder=${target_distribution}${target_bits:-""}
 
   cross_compile_prefix=""
   if [ "${target_name}" == "win" ]
