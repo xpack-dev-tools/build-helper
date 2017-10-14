@@ -97,11 +97,8 @@ do_host_detect() {
 # v===========================================================================v
 do_host_prepare_prerequisites() {
 
-  caffeinate=""
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
-        caffeinate="caffeinate"
-
         local hb_folder="${HOME}/opt/homebrew/gme"
         
         local must_install=""
@@ -197,10 +194,8 @@ do_host_prepare_prerequisites() {
 # v===========================================================================v
 do_host_prepare_prerequisites_riscv() {
 
-      caffeinate=""
       if [ "${HOST_UNAME}" == "Darwin" ]
       then
-        caffeinate="caffeinate"
 
         local hb_folder="$HOME/opt/homebrew-rv"
         local tl_folder="$HOME/opt/texlive"
