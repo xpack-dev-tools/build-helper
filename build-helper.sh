@@ -309,17 +309,16 @@ do_host_build_target() {
   echo "================================================================================"
   echo "${message}"
 
-  target_name=""
-  target_distribution=""
-  target_bits=""
+  target_os=""
+  target_bits="-"
   docker_image=""
   build_binaries_path=""
 
   while [ $# -gt 0 ]
   do
     case "$1" in
-      --target-name)
-        target_name="$2"
+      --target-os)
+        target_os="$2"
         shift 2
         ;;
       --target-bits)
@@ -340,41 +339,21 @@ do_host_build_target() {
     esac
   done
 
-  if [ -z "${target_name}" -a -n "${HOST_UNAME}" ]
+  if [ -z "${target_os}" -a -n "${HOST_UNAME}" ]
   then
+    # Build native
     if [ "${HOST_UNAME}" == "Darwin" ]
     then
-      target_name="osx"
-      target_distribution="osx"
-      # No need to set the target_bits.
+      target_os="osx"
+      target_bits="-"
     elif [ "${HOST_UNAME}" == "Linux" ]
     then
-      target_name="linux"
-      target_distribution="${HOST_DISTRO_LC_NAME}"
-      target_bits="${HOST_BITS}"
+      target_os="linux"
+      target_bits="-"
     else
       echo "Unsupported host ${HOST_UNAME}, exit."
       exit 1
     fi
-  fi
-
-  # Must be located before adjusting target_bits for osx.
-  target_folder=${target_distribution}${target_bits:-""}
-
-  cross_compile_prefix=""
-  if [ "${target_name}" == "win" ]
-  then
-    # For Windows targets, decide which cross toolchain to use.
-    if [ ${target_bits} == "32" ]
-    then
-      cross_compile_prefix="i686-w64-mingw32"
-    elif [ ${target_bits} == "64" ]
-    then
-      cross_compile_prefix="x86_64-w64-mingw32"
-    fi
-  elif [ "${target_name}" == "osx" ]
-  then
-    target_bits="64"
   fi
 
   if [ -n "${docker_image}" ]
@@ -397,16 +376,15 @@ do_host_build_target() {
       run_docker_script \
         --script "${DOCKER_HOST_WORK}/scripts/${script_name}" \
         --docker-image "${docker_image}" \
-        --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
+        --docker-container-name "${APP_LC_NAME}-${target_os}${target_bits}-build" \
         --host-uname "${HOST_UNAME}" \
         -- \
-        --build-folder "${docker_build_folder_path}/${target_folder}" \
-        --target-name "${target_name}" \
-        --target-distribution "${target_distribution}" \
+        --container-build-folder "${docker_build_folder_path}" \
+        --container-install-folder "${docker_install_folder_path}" \
+        --container-output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
+        --target-os "${target_os}" \
         --target-bits "${target_bits}" \
-        --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
-        --install-folder "${docker_install_folder_path}/${target_folder}" \
         --download-folder "${DOCKER_HOST_WORK}/download" \
         --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
         --work-folder "${DOCKER_HOST_WORK}" \
@@ -420,16 +398,15 @@ do_host_build_target() {
       run_docker_script \
         --script "${DOCKER_HOST_WORK}/scripts/${script_name}" \
         --docker-image "${docker_image}" \
-        --docker-container-name "${APP_LC_NAME}-${target_folder}-build" \
+        --docker-container-name "${APP_LC_NAME}-${target_os}${target_bits}-build" \
         --host-uname "${HOST_UNAME}" \
         -- \
-        --build-folder "${docker_build_folder_path}/${target_folder}" \
-        --target-name "${target_name}" \
-        --target-distribution "${target_distribution}" \
+        --container-build-folder "${docker_build_folder_path}" \
+        --container-install-folder "${docker_install_folder_path}" \
+        --container-output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
+        --target-os "${target_os}" \
         --target-bits "${target_bits}" \
-        --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
-        --install-folder "${docker_install_folder_path}/${target_folder}" \
         --download-folder "${DOCKER_HOST_WORK}/download" \
         --helper-script "${DOCKER_HOST_WORK}/scripts/build-helper.sh" \
         --work-folder "${DOCKER_HOST_WORK}" \
@@ -445,13 +422,12 @@ do_host_build_target() {
       --script "${script_file_path}" \
       --host-uname "${HOST_UNAME}" \
       -- \
-      --build-folder "${WORK_FOLDER_PATH}/build/${target_folder}" \
-      --target-name "${target_name}" \
-      --target-distribution "${target_distribution}" \
+      --container-build-folder "${WORK_FOLDER_PATH}/build" \
+      --container-install-folder "${WORK_FOLDER_PATH}/install" \
+      --container-output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
+      --target-os "${target_os}" \
       --target-bits "${target_bits}" \
-      --output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
       --distribution-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
-      --install-folder "${WORK_FOLDER_PATH}/install/${target_folder}" \
       --download-folder "${WORK_FOLDER_PATH}/download" \
       --helper-script "${WORK_FOLDER_PATH}/scripts/build-helper.sh" \
       --work-folder "${WORK_FOLDER_PATH}" \
@@ -659,20 +635,20 @@ do_container_copy_info() {
           "${install_folder}/${APP_LC_NAME}/INFO.txt"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
       else
-        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO-${target_name}.txt" \
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO-${target_os}.txt" \
           "${install_folder}/${APP_LC_NAME}/INFO.txt"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
       fi
 
       mkdir -p "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse"
 
-      if [ -f "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_name}.md" ]
+      if [ -f "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_os}.md" ]
       then
-        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_name}.md" \
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_os}.md" \
           "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.md"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.md"
       else
-        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_name}.txt" \
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_os}.txt" \
           "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
       fi
@@ -704,7 +680,7 @@ do_container_create_distribution() {
 
   mkdir -p "$(dirname "${output_folder_path}")"
 
-      if [ "${target_name}" == "win" ]
+      if [ "${target_os}" == "win" ]
       then
 
         echo
@@ -758,7 +734,7 @@ do_container_create_distribution() {
         do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
         popd
 
-      elif [ "${target_name}" == "linux" ]
+      elif [ "${target_os}" == "linux" ]
       then
 
         echo
@@ -777,7 +753,7 @@ do_container_create_distribution() {
         do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
         popd
 
-      elif [ "${target_name}" == "osx" ]
+      elif [ "${target_os}" == "osx" ]
       then
 
         echo
@@ -857,7 +833,7 @@ do_check_application() {
   echo
   echo "Checking ${executable_name}..."
 
-  if [ "${target_name}" == "win" ]
+  if [ "${target_os}" == "win" ]
   then
 
     # Display some information about the created application.
@@ -868,7 +844,7 @@ do_check_application() {
     set -e
     result=0
 
-  elif [ "${target_name}" == "linux" ]
+  elif [ "${target_os}" == "linux" ]
   then
 
     # Display some information about the created application.
@@ -906,7 +882,7 @@ do_check_application() {
     "${install_folder}/${APP_LC_NAME}/bin/${executable_name}" $@
     result="$?"
 
-  elif [ "${target_name}" == "osx" ]
+  elif [ "${target_os}" == "osx" ]
   then
 
     otool -L "${install_folder}/${APP_LC_NAME}/bin/${executable_name}"
@@ -928,7 +904,7 @@ do_container_completed() {
         echo "Distribution file ${distribution_file} created."
         ls -l "${distribution_file}"
 
-        if [ "${target_name}" == "osx" ]
+        if [ "${target_os}" == "osx" ]
         then
           echo "Distribution file ${distribution_archive} created."
           ls -l "${distribution_archive}"
@@ -1323,7 +1299,7 @@ do_container_mac_check_libs() {
 # v===========================================================================v
 do_unix2dos() {
 
-  if [ "${target_name}" == "win" ]
+  if [ "${target_os}" == "win" ]
   then
     while (($#))
     do
