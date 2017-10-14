@@ -344,18 +344,18 @@ do_host_build_target() {
     esac
   done
 
-  if [ -z "${target_name}" -a -n "${HOST_DISTRO_NAME}" ]
+  if [ -z "${target_name}" -a -n "${HOST_UNAME}" ]
   then
-    if [ "${HOST_DISTRO_NAME}" == "Darwin" ]
+    if [ "${HOST_UNAME}" == "Darwin" ]
     then
       target_name="osx"
       # No need to set the target_bits.
-    elif [ "${HOST_DISTRO_NAME}" == "Linux" ]
+    elif [ "${HOST_UNAME}" == "Linux" ]
     then
       target_name="${HOST_DISTRO_LC_NAME}"
       target_bits="${HOST_BITS}"
     else
-      echo "Unsupported host ${HOST_DISTRO_NAME}, exit."
+      echo "Unsupported host ${HOST_UNAME}, exit."
       exit 1
     fi
   fi
