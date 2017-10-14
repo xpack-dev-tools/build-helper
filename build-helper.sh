@@ -551,9 +551,6 @@ do_container_detect() {
         CONTAINER_DISTRO_NAME=Darwin
         CONTAINER_DISTRO_LC_NAME=darwin
 
-        target_bits="64" # Only 64-bts macOS binaries
-        target_distribution="${target_os}"
-        target_folder="${target_os}"
   elif [ "${CONTAINER_UNAME}" == "Linux" ]
   then
         # ----- Determine distribution name and word size -----
@@ -583,26 +580,17 @@ do_container_detect() {
 
         CONTAINER_DISTRO_LC_NAME=$(echo ${CONTAINER_DISTRO_NAME} | tr "[:upper:]" "[:lower:]")
 
-        if [ "${target_bits}" == "-" ]
-        then
-          target_bits="${CONTAINER_BITS}"
-        fi
-
-        target_distribution="${CONTAINER_DISTRO_LC_NAME}"
-        target_folder=${target_distribution}${target_bits:-""}
-
   else
         echo "Unknown uname ${CONTAINER_UNAME}"
         exit 1
   fi
 
-  build_folder_path="${container_build_folder_path}/${target_folder}"
-  install_folder="${container_install_folder_path}/${target_folder}"
-  output_folder_path="${container_output_folder_path}/${target_folder}"
-
   cross_compile_prefix=""
+
   if [ "${target_os}" == "win" ]
   then
+    target_folder="${target_os}${target_bits}"
+
     # For Windows targets, decide which cross toolchain to use.
     if [ ${target_bits} == "32" ]
     then
@@ -611,7 +599,32 @@ do_container_detect() {
     then
       cross_compile_prefix="x86_64-w64-mingw32"
     fi
+  elif [ "${target_os}" == "osx" ]
+  then
+    target_bits="64" # Only 64-bts macOS binaries
+    target_folder="${target_os}"
+  elif [ "${target_os}" == "linux" ]
+  then
+    if [ "${target_bits}" == "-" ]
+    then
+      target_bits="${CONTAINER_BITS}"
+    else
+      if [ "${target_bits}" != "${CONTAINER_BITS}" ]
+      then
+        echo "Cannot build ${target_bits} target on the ${CONTAINER_BITS} container."
+        exit 1
+      fi
+    fi
+
+    target_folder=${CONTAINER_DISTRO_LC_NAME}${target_bits:-""}
+  else
+    echo "Unsupported target os ${target_os}"
+    exit 1
   fi
+
+  build_folder_path="${container_build_folder_path}/${target_folder}"
+  install_folder="${container_install_folder_path}/${target_folder}"
+  output_folder_path="${container_output_folder_path}/${target_folder}"
 
   echo
   echo "Container running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
