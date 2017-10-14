@@ -563,6 +563,85 @@ run_local_script() {
 
 # ----- Functions used in the Docker container build script. -----
 
+do_container_detect() {
+
+  CONTAINER_DISTRO_NAME=""
+  CONTAINER_UNAME="$(uname)"
+  if [ "${CONTAINER_UNAME}" == "Darwin" ]
+  then
+        CONTAINER_BITS="64"
+        CONTAINER_MACHINE="x86_64"
+
+        CONTAINER_DISTRO_NAME=Darwin
+        CONTAINER_DISTRO_LC_NAME=darwin
+
+        target_bits="64" # Only 64-bts macOS binaries
+        target_distribution="${target_os}"
+        target_folder="${target_os}"
+  elif [ "${CONTAINER_UNAME}" == "Linux" ]
+  then
+        # ----- Determine distribution name and word size -----
+
+        set +e
+        CONTAINER_DISTRO_NAME=$(lsb_release -si)
+        set -e
+
+        if [ -z "${CONTAINER_DISTRO_NAME}" ]
+        then
+          echo "Please install the lsb core package and rerun."
+          CONTAINER_DISTRO_NAME="Linux"
+        fi
+
+        if [ "$(uname -m)" == "x86_64" ]
+        then
+          CONTAINER_BITS="64"
+          CONTAINER_MACHINE="x86_64"
+        elif [ "$(uname -m)" == "i686" ]
+        then
+          CONTAINER_BITS="32"
+          CONTAINER_MACHINE="i386"
+        else
+          echo "Unknown uname -m $(uname -m)"
+          exit 1
+        fi
+
+        CONTAINER_DISTRO_LC_NAME=$(echo ${CONTAINER_DISTRO_NAME} | tr "[:upper:]" "[:lower:]")
+
+        if [ "${target_bits}" == "-" ]
+        then
+          target_bits="${CONTAINER_BITS}"
+        fi
+
+        target_distribution="${CONTAINER_DISTRO_LC_NAME}"
+        target_folder=${target_distribution}${target_bits:-""}
+
+  else
+        echo "Unknown uname ${CONTAINER_UNAME}"
+        exit 1
+  fi
+
+  build_folder_path="${container_build_folder_path}/${target_folder}"
+  install_folder="${container_install_folder_path}/${target_folder}"
+  output_folder_path="${container_output_folder_path}/${target_folder}"
+
+  cross_compile_prefix=""
+  if [ "${target_os}" == "win" ]
+  then
+    # For Windows targets, decide which cross toolchain to use.
+    if [ ${target_bits} == "32" ]
+    then
+      cross_compile_prefix="i686-w64-mingw32"
+    elif [ ${target_bits} == "64" ]
+    then
+      cross_compile_prefix="x86_64-w64-mingw32"
+    fi
+  fi
+
+  echo
+  echo "Container running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
+
+}
+
 # v===========================================================================v
 do_container_copy_info() {
 
