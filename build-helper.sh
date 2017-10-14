@@ -315,6 +315,7 @@ do_host_build_target() {
   echo "${message}"
 
   target_name=""
+  target_distribution=""
   target_bits=""
   docker_image=""
   build_binaries_path=""
@@ -349,10 +350,12 @@ do_host_build_target() {
     if [ "${HOST_UNAME}" == "Darwin" ]
     then
       target_name="osx"
+      target_distribution="osx"
       # No need to set the target_bits.
     elif [ "${HOST_UNAME}" == "Linux" ]
     then
-      target_name="debian"
+      target_name="linux"
+      target_distribution="${HOST_DISTRO_LC_NAME}"
       target_bits="${HOST_BITS}"
     else
       echo "Unsupported host ${HOST_UNAME}, exit."
@@ -361,7 +364,7 @@ do_host_build_target() {
   fi
 
   # Must be located before adjusting target_bits for osx.
-  target_folder=${target_name}${target_bits}
+  target_folder=${target_distribution}${target_bits}
 
   cross_compile_prefix=""
   if [ "${target_name}" == "win" ]
@@ -404,6 +407,7 @@ do_host_build_target() {
         -- \
         --build-folder "${docker_build_folder_path}/${target_folder}" \
         --target-name "${target_name}" \
+        --target-distribution "${target_distribution}" \
         --target-bits "${target_bits}" \
         --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
@@ -426,6 +430,7 @@ do_host_build_target() {
         -- \
         --build-folder "${docker_build_folder_path}/${target_folder}" \
         --target-name "${target_name}" \
+        --target-distribution "${target_distribution}" \
         --target-bits "${target_bits}" \
         --output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
@@ -447,6 +452,7 @@ do_host_build_target() {
       -- \
       --build-folder "${WORK_FOLDER_PATH}/build/${target_folder}" \
       --target-name "${target_name}" \
+      --target-distribution "${target_distribution}" \
       --target-bits "${target_bits}" \
       --output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
       --distribution-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
@@ -565,13 +571,6 @@ run_local_script() {
 # v===========================================================================v
 do_container_copy_info() {
 
-      if [ "${target_name}" == "debian" ]
-      then
-        generic_target_name="linux"
-      else
-        generic_target_name="${target_name}"
-      fi
-
       echo
       echo "Copying info files..."
 
@@ -586,20 +585,20 @@ do_container_copy_info() {
           "${install_folder}/${APP_LC_NAME}/INFO.txt"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
       else
-        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO-${generic_target_name}.txt" \
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/INFO-${target_name}.txt" \
           "${install_folder}/${APP_LC_NAME}/INFO.txt"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/INFO.txt"
       fi
 
       mkdir -p "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse"
 
-      if [ -f "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.md" ]
+      if [ -f "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_name}.md" ]
       then
-        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.md" \
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_name}.md" \
           "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.md"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.md"
       else
-        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${generic_target_name}.txt" \
+        /usr/bin/install -cv -m 644 "${git_folder_path}/gnu-mcu-eclipse/info/BUILD-${target_name}.txt" \
           "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
         do_unix2dos "${install_folder}/${APP_LC_NAME}/gnu-mcu-eclipse/BUILD.txt"
       fi
@@ -685,7 +684,7 @@ do_container_create_distribution() {
         do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
         popd
 
-      elif [ "${target_name}" == "debian" ]
+      elif [ "${target_name}" == "linux" ]
       then
 
         echo
@@ -795,7 +794,7 @@ do_check_application() {
     set -e
     result=0
 
-  elif [ "${target_name}" == "debian" ]
+  elif [ "${target_name}" == "linux" ]
   then
 
     # Display some information about the created application.
