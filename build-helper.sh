@@ -447,6 +447,7 @@ do_host_build_target() {
       -- \
       --build-folder "${WORK_FOLDER_PATH}/build/${target_folder}" \
       --target-name "${target_name}" \
+      --target-bits "${target_bits}" \
       --output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${target_folder}" \
       --distribution-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
       --install-folder "${WORK_FOLDER_PATH}/install/${target_folder}" \
