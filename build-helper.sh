@@ -35,6 +35,9 @@ do_host_stop_timer() {
 # v===========================================================================v
 do_host_detect() {
 
+  echo
+  uname -a
+
   HOST_DISTRO_NAME=""
   HOST_UNAME="$(uname)"
   if [ "${HOST_UNAME}" == "Darwin" ]
