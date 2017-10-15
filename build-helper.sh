@@ -541,6 +541,9 @@ run_local_script() {
 
 do_container_detect() {
 
+  echo
+  uname -a
+
   CONTAINER_DISTRO_NAME=""
   CONTAINER_UNAME="$(uname)"
   if [ "${CONTAINER_UNAME}" == "Darwin" ]
