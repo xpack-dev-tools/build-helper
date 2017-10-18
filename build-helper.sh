@@ -385,6 +385,7 @@ do_host_build_target() {
         --container-build-folder "${docker_build_folder_path}" \
         --container-install-folder "${docker_install_folder_path}" \
         --container-output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
+        --shared-install-folder "${DOCKER_HOST_WORK}/install" \
         --target-os "${target_os}" \
         --target-bits "${target_bits}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
@@ -407,6 +408,7 @@ do_host_build_target() {
         --container-build-folder "${docker_build_folder_path}" \
         --container-install-folder "${docker_install_folder_path}" \
         --container-output-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
+        --shared-install-folder "${DOCKER_HOST_WORK}/install" \
         --target-os "${target_os}" \
         --target-bits "${target_bits}" \
         --distribution-folder "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}" \
@@ -428,6 +430,7 @@ do_host_build_target() {
       --container-build-folder "${WORK_FOLDER_PATH}/build" \
       --container-install-folder "${WORK_FOLDER_PATH}/install" \
       --container-output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
+      --shared-install-folder "${WORK_FOLDER_PATH}/install" \
       --target-os "${target_os}" \
       --target-bits "${target_bits}" \
       --distribution-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
@@ -843,6 +846,18 @@ do_container_create_distribution() {
         fi
         chown -R ${user_id}:${group_id} "${work_folder_path}/${DEPLOY_FOLDER_NAME}"
       fi
+}
+
+# v===========================================================================v
+do_container_copy_install() {
+  if [ "${container_install_folder_path}" != "${shared_install_folder_path}" ]
+  then
+    echo
+    echo "Copying install to shared folder..."
+    mkdir -p "$(dirname ${shared_install_folder_path})"
+    cp -R "${container_install_folder_path}" \
+      "$(dirname ${shared_install_folder_path})"
+  fi
 }
 
 do_check_application() {
