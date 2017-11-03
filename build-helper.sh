@@ -8,6 +8,7 @@
 do_host_start_timer() {
 
   BEGIN_SEC=$(date +%s)
+  echo
   echo "Script \"$0\" started at $(date)."
 }
 
