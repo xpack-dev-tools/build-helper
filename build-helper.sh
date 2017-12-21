@@ -596,7 +596,6 @@ do_container_detect() {
   fi
 
   cross_compile_prefix=""
-
   if [ "${target_os}" == "win" ]
   then
     target_folder="${target_os}${target_bits}"
@@ -710,7 +709,7 @@ do_container_create_distribution() {
         echo "Creating archive..."
         echo
 
-        distribution_archive="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}.zip"
+        distribution_file="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}.zip"
 
         rm -rfv "${install_folder}/archive/"
         # The archive will use the 'GNU MCU Eclipse/app/version' hierarchy.
@@ -718,18 +717,21 @@ do_container_create_distribution() {
         cp -r "${install_folder}/${APP_LC_NAME}"/* "${install_folder}/archive/GNU MCU Eclipse/${APP_UC_NAME}/${distribution_file_version}"
 
         pushd "${install_folder}/archive"
-        zip -r -q "${distribution_archive}" "GNU MCU Eclipse"
+        zip -r -q "${distribution_file}" "GNU MCU Eclipse"
         popd
 
-        pushd "$(dirname ${distribution_archive})"
-        do_compute_sha shasum -a 256 -p "$(basename ${distribution_archive})"
+        pushd "$(dirname ${distribution_file})"
+        do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
         popd
+
+        if false
+        then
 
         echo
         echo "Creating setup..."
         echo
 
-        distribution_file="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}-setup.exe"
+        distribution_setup="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}-setup.exe"
 
         if [ ! -f "${install_folder}/${APP_LC_NAME}/licenses/LICENSE" ]
         then
@@ -746,16 +748,18 @@ do_container_create_distribution() {
         makensis -V4 -NOCD \
           -DINSTALL_FOLDER="${install_folder}/${APP_LC_NAME}" \
           -DNSIS_FOLDER="${nsis_folder}" \
-          -DOUTFILE="${distribution_file}" \
+          -DOUTFILE="${distribution_setup}" \
           -DW${target_bits} \
           -DBITS=${target_bits} \
           -DVERSION=${distribution_file_version} \
           "${nsis_file}"
         result="$?"
 
-        pushd "$(dirname ${distribution_file})"
-        do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
+        pushd "$(dirname ${distribution_setup})"
+        do_compute_sha shasum -a 256 -p "$(basename ${distribution_setup})"
         popd
+
+        fi
 
       elif [ "${target_os}" == "linux" ]
       then
@@ -783,7 +787,7 @@ do_container_create_distribution() {
         echo "Creating archive..."
         echo
 
-        distribution_archive="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}.tgz"
+        distribution_file="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}.tgz"
 
         rm -rf "${install_folder}/archive/"
         # The archive will use the 'gnu-mcu-eclipse/app/version' hierarchy.
@@ -791,18 +795,21 @@ do_container_create_distribution() {
         cp -r "${install_folder}/${APP_LC_NAME}"/* "${install_folder}/archive/gnu-mcu-eclipse/${APP_LC_NAME}/${distribution_file_version}"
 
         pushd "${install_folder}/archive"
-        tar -c -z -f "${distribution_archive}" gnu-mcu-eclipse
+        tar -c -z -f "${distribution_file}" gnu-mcu-eclipse
         popd
 
-        pushd "$(dirname ${distribution_archive})"
-        do_compute_sha shasum -a 256 -p "$(basename ${distribution_archive})"
+        pushd "$(dirname ${distribution_file})"
+        do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
         popd
 
+        if false
+        then
+        
         echo
         echo "Creating installer package..."
         echo
 
-        distribution_file="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}.pkg"
+        distribution_pkg="${distribution_folder}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${target_folder}.pkg"
 
         distribution_install_folder=${distribution_install_folder:-"/Applications/GNU MCU Eclipse/${APP_NAME}"}
 
@@ -816,12 +823,14 @@ do_container_create_distribution() {
           --root "${install_folder}/${APP_LC_NAME}" \
           --identifier "ilg.gnu-mcu-eclipse.${APP_LC_NAME}.${DISTRIBUTION_FILE_DATE}" \
           --install-location "${distribution_install_folder:1}/${distribution_file_version}" \
-          "${distribution_file}"
+          "${distribution_pkg}"
 
-        pushd "$(dirname ${distribution_file})"
-        do_compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
+        pushd "$(dirname ${distribution_pkg})"
+        do_compute_sha shasum -a 256 -p "$(basename ${distribution_pkg})"
         popd
         
+        fi
+
         echo
         ls -l "${install_folder}/${APP_LC_NAME}/bin"
 
@@ -901,8 +910,9 @@ do_check_application() {
     echo "Needed:"
     sort -u /tmp/mylibs
 
+    readelf -d "${executable_name}" | egrep -i 'runpath'
     rpl=$(readelf -d "${executable_name}" | egrep -i 'runpath' | sed -e 's/.*\[\(.*\)\]/\1/')
-    if [ "$rpl" != '$ORIGIN' ]
+    if [ "$rpl" != '$ORIGIN' -a "$rpl" != '' ]
     then
       echo "Wrong runpath $rpl"
       exit 1
@@ -939,10 +949,19 @@ do_container_completed() {
         echo "Distribution file ${distribution_file} created."
         ls -l "${distribution_file}"
 
+        if false
+        then
+
         if [ "${target_os}" == "osx" ]
         then
-          echo "Distribution file ${distribution_archive} created."
-          ls -l "${distribution_archive}"
+          echo "Distribution file ${distribution_pkg} created."
+          ls -l "${distribution_pkg}"
+        elif [ "${target_os}" == "win" ]
+        then
+          echo "Distribution file ${distribution_setup} created."
+          ls -l "${distribution_setup}"
+        fi
+
         fi
       else
         echo "Build failed."
@@ -1166,7 +1185,11 @@ do_container_win_copy_gcc_dll() {
   # First try Ubuntu specific locations,
   # then do a long full search.
 
-  if [ -f "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION}/$1" ]
+  if [ -f "${XBB_FOLDER}/${cross_compile_prefix}/lib/$1" ]
+  then
+    cp -v "${XBB_FOLDER}/${cross_compile_prefix}/lib/$1" \
+      "${install_folder}/${APP_LC_NAME}/bin"
+  elif [ -f "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION}/$1" ]
   then
     cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION}/$1" \
       "${install_folder}/${APP_LC_NAME}/bin"
