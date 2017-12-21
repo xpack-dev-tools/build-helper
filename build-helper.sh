@@ -608,12 +608,24 @@ do_container_detect() {
     then
       cross_compile_prefix="x86_64-w64-mingw32"
     fi
+
+    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    HOST="${cross_compile_prefix}"
+    TARGET=${HOST}
+
   elif [ "${target_os}" == "osx" ]
   then
+
     target_bits="64" # Only 64-bts macOS binaries
     target_folder="${target_os}"
+
+    BUILD="$(${HOME}/opt/homebrew/gme/share/libtool/build-aux/config.guess)"
+    HOST=${BUILD}
+    TARGET=${HOST}
+
   elif [ "${target_os}" == "linux" ]
   then
+
     if [ "${target_bits}" == "-" ]
     then
       target_bits="${CONTAINER_BITS}"
@@ -626,6 +638,11 @@ do_container_detect() {
     fi
 
     target_folder=${CONTAINER_DISTRO_LC_NAME}${target_bits:-""}
+
+    BUILD="$(${XBB}/share/libtool/build-aux/config.guess)"
+    HOST=${BUILD}
+    TARGET=${HOST}
+
   else
     echo "Unsupported target os ${target_os}"
     exit 1
