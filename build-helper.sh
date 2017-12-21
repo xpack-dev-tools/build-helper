@@ -639,7 +639,7 @@ do_container_detect() {
 
     target_folder=${CONTAINER_DISTRO_LC_NAME}${target_bits:-""}
 
-    BUILD="$(${XBB}/share/libtool/build-aux/config.guess)"
+    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
     HOST=${BUILD}
     TARGET=${HOST}
 
