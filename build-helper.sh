@@ -1029,7 +1029,7 @@ do_download_() {
 do_container_linux_copy_user_so() {
   # $1 = dll name
 
-  ILIB=$(find ${install_folder}/lib -type f -name $1'.so.*.*' -print)
+  ILIB=$(find ${install_folder}/lib* -type f -name $1'.so.*.*' -print)
   if [ ! -z "${ILIB}" ]
   then
     echo "Found user ${ILIB}"
@@ -1053,7 +1053,7 @@ do_container_linux_copy_user_so() {
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find ${install_folder}/lib -type f -name $1'.so.*' -print)
+    ILIB=$(find ${install_folder}/lib* -type f -name $1'.so.*' -print)
     if [ ! -z "${ILIB}" ]
     then
       echo "Found user 2 ${ILIB}"
@@ -1072,7 +1072,7 @@ do_container_linux_copy_user_so() {
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find ${install_folder}/lib -type f -name $1'.so' -print)
+      ILIB=$(find ${install_folder}/lib* -type f -name $1'.so' -print)
       if [ ! -z "${ILIB}" ]
       then
         echo "Found user 3 ${ILIB}"
@@ -1095,7 +1095,7 @@ do_container_linux_copy_user_so() {
 do_container_linux_copy_system_so() {
   # $1 = dll name
 
-  ILIB=$(find /lib/${distro_machine}-linux-gnu /usr/lib/${distro_machine}-linux-gnu -type f -name $1'.so.*.*' -print)
+  ILIB=$(find /lib* -type f -name $1'.so.*.*' -print)
   if [ ! -z "${ILIB}" ]
   then
     echo "Found system ${ILIB}"
@@ -1115,7 +1115,7 @@ do_container_linux_copy_system_so() {
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find /lib/${distro_machine}-linux-gnu /usr/lib/${distro_machine}-linux-gnu -type f -name $1'.so.*' -print)
+    ILIB=$(find /lib* -type f -name $1'.so.*' -print)
     if [ ! -z "${ILIB}" ]
     then
       echo "Found system 2 ${ILIB}"
@@ -1130,7 +1130,7 @@ do_container_linux_copy_system_so() {
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find /lib/${distro_machine}-linux-gnu /usr/lib/${distro_machine}-linux-gnu -type f -name $1'.so' -print)
+      ILIB=$(find /lib* -type f -name $1'.so' -print)
       if [ ! -z "${ILIB}" ]
       then
         echo "Found system 3 ${ILIB}"
@@ -1147,7 +1147,7 @@ do_container_linux_copy_system_so() {
 
 # v===========================================================================v
 do_container_linux_copy_librt_so() {
-  ILIB=$(find /lib/${distro_machine}-linux-gnu /usr/lib/${distro_machine}-linux-gnu -type f -name 'librt-*.so' -print | grep -v i686)
+  ILIB=$(find /lib* -type f -name 'librt-*.so' -print | grep -v i686)
   if [ ! -z "${ILIB}" ]
   then
     echo "Found system ${ILIB}"
