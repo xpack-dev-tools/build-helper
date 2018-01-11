@@ -1249,14 +1249,13 @@ do_container_win_copy_gcc_dlls() {
 # v===========================================================================v
 do_container_win_copy_libwinpthread_dll() {
 
-  if [ -f "/usr/${cross_compile_prefix}/lib/libwinpthread-1.dll" ]
+  if [ -f "${XBB_FOLDER}/${cross_compile_prefix}"/bin/libwinpthread-1.dll ]
   then
-    cp "/usr/${cross_compile_prefix}/lib/libwinpthread-1.dll" \
+    cp "${XBB_FOLDER}/${cross_compile_prefix}"/bin/libwinpthread-1.dll \
       "${install_folder}/${APP_LC_NAME}/bin"
   else
-    echo "Searching /usr for libwinpthread-1.dll..."
-    PTHREAD_PATH=$(find /usr \! -readable -prune -o -name 'libwinpthread-1.dll' -print | grep ${cross_compile_prefix})
-    cp -v "${PTHREAD_PATH}" "${install_folder}/${APP_LC_NAME}/bin"
+    echo "No libwinpthread-1.dll"
+    exit 1
   fi
 }
 
