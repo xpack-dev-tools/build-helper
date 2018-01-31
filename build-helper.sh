@@ -619,7 +619,7 @@ do_container_detect() {
     target_bits="64" # Only 64-bts macOS binaries
     target_folder="${target_os}"
 
-    BUILD="$(${HOME}/opt/homebrew/gme/share/libtool/build-aux/config.guess)"
+    BUILD="$(${HOME}/opt/homebrew/xbb/share/libtool/build-aux/config.guess)"
     HOST=${BUILD}
     TARGET=${HOST}
 
