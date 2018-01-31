@@ -103,7 +103,7 @@ do_host_prepare_prerequisites() {
 
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
-        local hb_folder="${HOME}/opt/homebrew/gme"
+        local hb_folder="${HOME}/opt/homebrew/xbb"
         
         local must_install=""
         # Check local Homebrew.
@@ -136,7 +136,7 @@ do_host_prepare_prerequisites() {
             git clone https://github.com/ilg-ul/opt-install-scripts "${HOME}/opt/install-scripts.git"
           fi
 
-          bash "${HOME}/opt/install-scripts.git/install-homebrew-gme.sh"
+          bash "${HOME}/opt/install-scripts.git/install-homebrew-xbb.sh"
 
           PATH="${hb_folder}/bin":${PATH}
           export PATH
