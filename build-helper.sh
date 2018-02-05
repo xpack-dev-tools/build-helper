@@ -1,8 +1,13 @@
-#!/bin/bash
-#set -euo pipefail
-#IFS=$'\n\t'
+# -----------------------------------------------------------------------------
 
-# Multi-platform helper for OpenOCD & QEMU builds, using Docker.
+# Helper script used in the first edition of the builder scripts.
+# It should be included with 'source'.
+#
+# Deprecated, in the second edition of the build scripts replaced by:
+# - host-functions-source.sh
+# - container-functions-source.sh
+
+# -----------------------------------------------------------------------------
 
 # v===========================================================================v
 do_host_start_timer() {
