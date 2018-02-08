@@ -6,19 +6,19 @@
 
 # -----------------------------------------------------------------------------
 
-function container_start_timer() 
+function start_timer() 
 {
   CONTAINER_BEGIN_SECOND=$(date +%s)
   echo
   echo "Script \"$0\" started at $(date)."
 }
 
-function container_stop_timer() 
+function stop_timer() 
 {
-  local container_end_second=$(date +%s)
+  local end_second=$(date +%s)
   echo
   echo "Script \"$0\" completed at $(date)."
-  local delta_seconds=$((container_end_second-CONTAINER_BEGIN_SECOND))
+  local delta_seconds=$((end_second-CONTAINER_BEGIN_SECOND))
   if [ ${delta_seconds} -lt 100 ]
   then
     echo "Duration: ${delta_seconds} seconds."
@@ -30,7 +30,7 @@ function container_stop_timer()
 
 # -----------------------------------------------------------------------------
 
-function container_detect() 
+function detect() 
 {
   echo
   uname -a
@@ -84,7 +84,7 @@ function container_detect()
   echo "Container running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
 }
 
-function container_prepare_prerequisites() 
+function prepare_prerequisites() 
 {
   if [ -f "/opt/xbb/xbb.sh" ]
   then
@@ -178,6 +178,47 @@ function container_prepare_prerequisites()
 
 # -----------------------------------------------------------------------------
 
+# $1 - absolute path to input folder
+# $2 - name of output folder below INSTALL_FOLDER
+function copy_license() 
+{
+  # Iterate all files in a folder and install some of them in the
+  # destination folder
+  echo "$2"
+  for f in "$1/"*
+  do
+    if [ -f "$f" ]
+    then
+      if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
+      then
+        /usr/bin/install -d -m 0755 \
+          "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}/gnu-mcu-eclipse/licenses/$2"
+        /usr/bin/install -v -c -m 644 "$f" \
+          "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}/gnu-mcu-eclipse/licenses/$2"
+      fi
+    fi
+  done
+
+  (
+    xbb_activate
+
+    if [ "${TARGET_OS}" == "win" ]
+    then
+      find "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}/gnu-mcu-eclipse/licenses" \
+        -type f \
+        -exec unix2dos '{}' ';'
+    fi
+  )
+}
+
+function do_copy_scripts()
+{
+  cp -r "${WORK_FOLDER_PATH}"/scripts \
+    "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"/gnu-mcu-eclipse/
+}
+
+# -----------------------------------------------------------------------------
+
 function extract()
 {
   local archive_name="$1"
@@ -189,6 +230,7 @@ function extract()
     (
       xbb_activate
 
+      echo "Extracting ${archive_name}..."
       if [[ "${archive_name}" == *zip ]]
       then
         unzip "${archive_name}" -d "$(basename ${archive_name} ".zip")"
@@ -196,6 +238,8 @@ function extract()
         tar xf "${archive_name}"
       fi
     )
+  else
+    echo "Folder ${folder_name} already present."
   fi
 }
 
@@ -209,10 +253,13 @@ function download()
     (
       xbb_activate
 
+      echo "Downloading ${archive_name}..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
       curl --fail -L -o "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
       mv "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${DOWNLOAD_FOLDER_PATH}/${archive_name}"
     )
+  else
+    echo "File ${archive_name} already downloaded."
   fi
 }
 
@@ -224,6 +271,83 @@ function download_and_extract()
 
   download "${url}" "${archive_name}" 
   extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}"
+}
+
+# -----------------------------------------------------------------------------
+
+# Copy one folder to another
+function copy_dir() 
+{
+  set +u
+  mkdir -p "$2"
+
+  (cd "$1" && tar cf - .) | (cd "$2" && tar xf -)
+  set -u
+}
+
+# Strip binary files as in "strip binary" form, for both native
+# (linux/mac) and mingw.
+function strip_binary() 
+{
+    set +e
+    if [ $# -ne 2 ] 
+    then
+        warning "strip_binary: Missing arguments"
+        return 0
+    fi
+
+    local strip="$1"
+    local bin="$2"
+
+    file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( Mach-O )"
+    if [ $? -eq 0 ]
+    then
+        echo ${strip} ${bin}
+        ${strip} ${bin} 2>/dev/null || true
+    fi
+
+    set -e
+}
+
+# -----------------------------------------------------------------------------
+
+function compute_sha() 
+{
+  # $1 shasum program
+  # $2.. options
+  # ${!#} file
+
+  file=${!#}
+  sha_file="${file}.sha"
+  "$@" >"${sha_file}"
+  echo "SHA: $(cat ${sha_file})"
+}
+
+# -----------------------------------------------------------------------------
+
+function fix_ownership()
+{
+  if [ -f "/.dockerenv" ]
+  then
+    # Set the owner of the folder and files created by the docker CentOS 
+    # container to match the user running the build script on the host. 
+    # When running on linux host, these folders and their content remain  
+    # owned by root if this is not done. However, when host is 'osx' (macOS),  
+    # the owner produced by docker is the same as the macOS user, so an 
+    # ownership change is not realy necessary. 
+    echo
+    echo "Changing ownership to non-root Linux user..."
+
+    if [ -d "${BUILD_FOLDER_PATH}" ]
+    then
+      chown -R ${USER_ID}:${GROUP_ID} "${BUILD_FOLDER_PATH}"
+    fi
+    if [ -d "${INSTALL_FOLDER_PATH}" ]
+    then
+      chown -R ${USER_ID}:${GROUP_ID} "${INSTALL_FOLDER_PATH}"
+    fi
+    chown -R ${USER_ID}:${GROUP_ID} "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+  fi
 }
 
 # -----------------------------------------------------------------------------
