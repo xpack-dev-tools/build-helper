@@ -318,9 +318,13 @@ function host_build_target()
   rm -rf "${HOST_DEFINES_SCRIPT_PATH}"
   touch "${HOST_DEFINES_SCRIPT_PATH}"
 
+  echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+
   echo "TARGET_OS=\"${target_os}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "TARGET_BITS=\"${target_bits}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "HOST_UNAME=\"${HOST_UNAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "GROUP_ID=\"${GROUP_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "USER_ID=\"${USER_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
   echo "HOST_WORK_FOLDER_PATH=\"${HOST_WORK_FOLDER_PATH}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "CONTAINER_WORK_FOLDER_PATH=\"${CONTAINER_WORK_FOLDER_PATH}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
@@ -359,6 +363,7 @@ function host_build_target()
 }
 
 # -----------------------------------------------------------------------------
+
 function host_run_native_script() 
 {
   local local_script=""
@@ -409,6 +414,7 @@ function host_run_native_script()
 }
 
 # -----------------------------------------------------------------------------
+
 function host_run_docker_script() 
 {
   local docker_script=""
@@ -505,10 +511,12 @@ function host_run_docker_script()
 }
 
 # -----------------------------------------------------------------------------
+
 function host_show_sha() {
 
   if [ -d "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" ]
   then
+    echo
     set +e
     cat "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/"*.sha
     set -e
