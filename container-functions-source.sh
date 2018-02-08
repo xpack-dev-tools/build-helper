@@ -255,6 +255,7 @@ function download()
 
       echo "Downloading ${archive_name}..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
+      mkdir -p "${DOWNLOAD_FOLDER_PATH}"
       curl --fail -L -o "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
       mv "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${DOWNLOAD_FOLDER_PATH}/${archive_name}"
     )
