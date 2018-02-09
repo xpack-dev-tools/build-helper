@@ -337,6 +337,43 @@ function compute_sha()
 
 # -----------------------------------------------------------------------------
 
+function check_binary()
+{
+  local file=$1
+
+  if [ "${TARGET_OS}" == "linux" ]
+  then
+    echo "${file}"
+    readelf -d "${file}" | egrep -i 'library|dynamic'
+
+    set +e
+    local unxp=$(readelf -d "${file}" | egrep -i 'library|dynamic' | grep -e "NEEDED" | egrep -e "(macports|homebrew|opt|install)/")
+    set -e
+    #echo "|${unxp}|"
+    if [ ! -z "$unxp" ]
+    then
+      echo "Unexpected |${unxp}|"
+      exit 1
+    fi
+  elif [ "${TARGET_OS}" == "osx" ]
+  then
+    otool -L "${file}"
+
+    set +e
+    local unxp=$(otool -L "${file}" | sed '1d' | egrep -e "(macports|homebrew|opt|install)/")
+    set -e
+    # echo "|${unxp}|"
+    if [ ! -z "$unxp" ]
+    then
+      echo "Unexpected |${unxp}|"
+      exit 1
+    fi
+  fi
+}
+
+
+# -----------------------------------------------------------------------------
+
 function fix_ownership()
 {
   if [ -f "/.dockerenv" ]
