@@ -400,3 +400,22 @@ function fix_ownership()
 }
 
 # -----------------------------------------------------------------------------
+
+function copy_install() 
+{
+  if [ \( "${IS_DEVELOP}" != "y" \) -a \( -f "/.dockerenv" \) ]
+  then
+    local container_work_install_folder_path="${CONTAINER_WORK_FOLDER_PATH}/install/${TARGET_FOLDER_NAME}"
+
+    echo
+    echo "Copying install to shared folder..."
+
+    rm -rf "$(dirname ${container_work_install_folder_path})"
+    mkdir -p "$(dirname ${container_work_install_folder_path})"
+    
+    cp -R "${INSTALL_FOLDER_PATH}" \
+      "$(dirname ${container_work_install_folder_path})"
+  fi
+}
+
+# -----------------------------------------------------------------------------
