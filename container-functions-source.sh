@@ -237,6 +237,17 @@ function extract()
       else
         tar xf "${archive_name}"
       fi
+
+      if [ $# -gt 2 ]
+      then
+        local version="$3"
+        local patch_path="${WORK_FOLDER_PATH}/patches/${folder_name}-${version}.patch"
+        if [ -f "${patch_path}" ]
+        then
+          echo "Patching..."
+          patch -p0 < "${patch_path}"
+        fi
+      fi
     )
   else
     echo "Folder ${folder_name} already present."
