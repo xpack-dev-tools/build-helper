@@ -374,6 +374,57 @@ function check_binary()
 
 # -----------------------------------------------------------------------------
 
+function create_archive()
+{
+  (
+    xbb_activate
+
+    local distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
+    local distribution_file="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${TARGET_FOLDER_NAME}"
+
+    if [ "${TARGET_OS}" != "win" ]
+    then
+
+      local distribution_file="${distribution_file}.tgz"
+      local prefix_path="gnu-mcu-eclipse/${APP_LC_NAME}/${distribution_file_version}"
+
+      echo
+      echo "Creating \"${distribution_file}\" ..."
+
+      cd "${APP_PREFIX}"
+      # Transform all paths to include the hierarchical folders;
+      # no need to copy the install folder.
+      tar -c -z -f "${distribution_file}" \
+        --transform="s|^|${prefix_path}/|" \
+        --owner=0 \
+        --group=0 \
+        *
+
+    else
+
+      local distribution_file="${distribution_file}.zip"
+      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/GNU MCU Eclipse/${APP_UC_NAME}/${distribution_file_version}"
+
+      echo
+      echo "Creating \"${distribution_file}\" ..."
+
+      rm -rf "${INSTALL_FOLDER_PATH}"/archive
+      mkdir -p "${archive_version_path}"
+      cd "${APP_PREFIX}"
+      cp -r . "${archive_version_path}"
+      (
+        cd "${INSTALL_FOLDER_PATH}"/archive
+        zip -r9 -q "${distribution_file}" .
+      )
+    fi
+
+    cd "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+    compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
+  )
+}
+
+# -----------------------------------------------------------------------------
+
 function fix_ownership()
 {
   if [ -f "/.dockerenv" ]
