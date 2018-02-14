@@ -480,14 +480,20 @@ function copy_install()
   then
     local container_work_install_folder_path="${CONTAINER_WORK_FOLDER_PATH}/install/${TARGET_FOLDER_NAME}"
 
-    echo
-    echo "Copying install to shared folder..."
+    if [ "${TARGET_OS}" == "linux" ]
+    then
 
-    rm -rf "$(dirname ${container_work_install_folder_path})"
-    mkdir -p "$(dirname ${container_work_install_folder_path})"
-    
-    cp -R "${INSTALL_FOLDER_PATH}" \
-      "$(dirname ${container_work_install_folder_path})"
+      echo
+      echo "Copying install to shared folder..."
+
+      rm -rf "$(dirname ${container_work_install_folder_path})"
+      mkdir -p "$(dirname ${container_work_install_folder_path})"
+      
+      cp -R "${INSTALL_FOLDER_PATH}" \
+        "$(dirname ${container_work_install_folder_path})"
+
+    fi
+
   fi
 }
 
