@@ -368,6 +368,28 @@ function check_binary()
       echo "Unexpected |${unxp}|"
       exit 1
     fi
+  elif [ "${TARGET_OS}" == "win" ]
+  then
+
+    (
+      xbb_activate
+
+      echo
+      echo "${file}"
+      set +e
+      ${CROSS_COMPILE_PREFIX}-objdump -x "${file}" | grep -i 'DLL Name'
+      set -e
+      
+      set +e
+      local unxp=$(${CROSS_COMPILE_PREFIX}-objdump -x "${file}" | grep -i 'DLL Name' | egrep -e "(macports|homebrew|opt|install)/")
+      set -e
+      #echo "|${unxp}|"
+      if [ ! -z "$unxp" ]
+      then
+        echo "Unexpected |${unxp}|"
+        exit 1
+      fi
+    )
   fi
 }
 
