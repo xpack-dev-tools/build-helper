@@ -230,7 +230,7 @@ function extract()
     (
       xbb_activate
 
-      echo "Extracting ${archive_name}..."
+      echo "Extracting \"${archive_name}\"..."
       if [[ "${archive_name}" == *zip ]]
       then
         unzip "${archive_name}" -d "$(basename ${archive_name} ".zip")"
@@ -264,7 +264,7 @@ function download()
     (
       xbb_activate
 
-      echo "Downloading ${archive_name}..."
+      echo "Downloading \"${archive_name}\" from \"${url}\"..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
       mkdir -p "${DOWNLOAD_FOLDER_PATH}"
       curl --fail -L -o "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
