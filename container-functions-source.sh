@@ -230,6 +230,7 @@ function extract()
     (
       xbb_activate
 
+      echo
       echo "Extracting \"${archive_name}\"..."
       if [[ "${archive_name}" == *zip ]]
       then
@@ -264,6 +265,7 @@ function download()
     (
       xbb_activate
 
+      echo
       echo "Downloading \"${archive_name}\" from \"${url}\"..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
       mkdir -p "${DOWNLOAD_FOLDER_PATH}"
@@ -343,6 +345,7 @@ function check_binary()
 
   if [ "${TARGET_OS}" == "linux" ]
   then
+    echo
     echo "${file}"
     readelf -d "${file}" | egrep -i 'library|dynamic'
 
@@ -357,6 +360,7 @@ function check_binary()
     fi
   elif [ "${TARGET_OS}" == "osx" ]
   then
+    echo
     otool -L "${file}"
 
     set +e
