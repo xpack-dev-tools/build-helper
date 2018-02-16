@@ -260,7 +260,7 @@ function extract()
       if [ $# -gt 2 ]
       then
         local version="$3"
-        local patch_path="${WORK_FOLDER_PATH}/patches/${folder_name}-${version}.patch"
+        local patch_path="${WORK_FOLDER_PATH}/build.git/patches/${folder_name}-${version}.patch"
         if [ -f "${patch_path}" ]
         then
           echo "Patching..."

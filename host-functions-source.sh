@@ -201,7 +201,7 @@ function host_prepare_prerequisites()
 
   # The host script will pass to the container script
   # various environment variables.
-  HOST_DEFINES_SCRIPT_PATH="${HOST_WORK_FOLDER_PATH}/scripts/host-defs-source.sh"
+  HOST_DEFINES_SCRIPT_PATH="${HOST_WORK_FOLDER_PATH}/build.git/scripts/host-defs-source.sh"
 
   DEPLOY_FOLDER_NAME=${DEPLOY_FOLDER_NAME:-"deploy"}
 }
