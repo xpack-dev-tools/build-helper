@@ -502,3 +502,25 @@ function copy_install()
 }
 
 # -----------------------------------------------------------------------------
+
+# Hack to make pdftex ignore errors.
+# Used for newlib manuals, which issue some errors, but the
+# pdf file is generated anyway.
+function hack_pdfetex()
+{
+  local bin=$(which pdfetex)
+  local hacked_pdfetex="hack/pdfetex"
+
+  mkdir -p "$(dirname "${hacked_pdfetex}")"
+  rm -rf "${hacked_pdfetex}"
+  echo '#!/usr/bin/env bash' >"${hacked_pdfetex}"
+  echo 'set -x' >>"${hacked_pdfetex}"
+  echo 'set +e' >>"${hacked_pdfetex}"
+  echo "${bin}" '$@' >>"${hacked_pdfetex}"
+  echo 'set -e' >>"${hacked_pdfetex}"
+  echo 'true' >>"${hacked_pdfetex}"
+  chmod +x "${hacked_pdfetex}"
+
+  export PATH=$(pwd)/$(dirname "${hacked_pdfetex}"):${PATH}
+}
+
