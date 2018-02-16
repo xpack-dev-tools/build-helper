@@ -30,7 +30,7 @@ function stop_timer()
 
 # -----------------------------------------------------------------------------
 
-function detect() 
+function detect_container() 
 {
   echo
   uname -a
@@ -184,37 +184,55 @@ function copy_license()
 {
   # Iterate all files in a folder and install some of them in the
   # destination folder
+  echo
   echo "$2"
-  for f in "$1/"*
-  do
-    if [ -f "$f" ]
-    then
-      if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
+  (
+    cd "$1"
+    for f in *
+    do
+      if [ -f "$f" ]
       then
-        /usr/bin/install -d -m 0755 \
-          "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}/gnu-mcu-eclipse/licenses/$2"
-        /usr/bin/install -v -c -m 644 "$f" \
-          "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}/gnu-mcu-eclipse/licenses/$2"
+        if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
+        then
+          /usr/bin/install -d -m 0755 \
+            "${APP_PREFIX}/gnu-mcu-eclipse/licenses/$2"
+          /usr/bin/install -v -c -m 644 "$f" \
+            "${APP_PREFIX}/gnu-mcu-eclipse/licenses/$2"
+        fi
       fi
-    fi
-  done
-
+    done
+  )
   (
     xbb_activate
 
     if [ "${TARGET_OS}" == "win" ]
     then
-      find "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}/gnu-mcu-eclipse/licenses" \
+      find "${APP_PREFIX}/gnu-mcu-eclipse/licenses" \
         -type f \
         -exec unix2dos '{}' ';'
     fi
   )
 }
 
-function do_copy_scripts()
+function copy_build_files()
 {
-  cp -r "${WORK_FOLDER_PATH}"/scripts \
-    "${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"/gnu-mcu-eclipse/
+  echo
+  echo "Copying build files..."
+
+  (
+    cd "${WORK_FOLDER_PATH}"/build.git
+
+    find scripts patches -type d \
+      -exec /usr/bin/install -d -m 0755 \
+        "${APP_PREFIX}"/gnu-mcu-eclipse/'{}' ';'
+
+    find scripts patches -type f \
+      -exec /usr/bin/install -v -c -m 644 \
+        '{}' "${APP_PREFIX}"/gnu-mcu-eclipse/'{}' ';'
+
+    /usr/bin/install -v -c -m 644 \
+        CHANGES.txt "${APP_PREFIX}"/gnu-mcu-eclipse
+  )
 }
 
 # -----------------------------------------------------------------------------
