@@ -10,14 +10,14 @@ function start_timer()
 {
   CONTAINER_BEGIN_SECOND=$(date +%s)
   echo
-  echo "Script \"$0\" started at $(date)."
+  echo "Container script \"$0\" started at $(date)."
 }
 
 function stop_timer() 
 {
   local end_second=$(date +%s)
   echo
-  echo "Script \"$0\" completed at $(date)."
+  echo "Container script \"$0\" completed at $(date)."
   local delta_seconds=$((end_second-CONTAINER_BEGIN_SECOND))
   if [ ${delta_seconds} -lt 100 ]
   then
@@ -81,7 +81,7 @@ function detect_container()
   fi
 
   echo
-  echo "Container running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
+  echo "Container script running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
 }
 
 function prepare_prerequisites() 
@@ -426,14 +426,19 @@ function create_archive()
     local distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
     local distribution_file="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${TARGET_FOLDER_NAME}"
 
+    cd "${APP_PREFIX}"
+    find . -name '.DS_Store' -exec rm '{}' ';'
+
+    echo
+    echo "Creating distribution..."
+
     if [ "${TARGET_OS}" != "win" ]
     then
 
       local distribution_file="${distribution_file}.tgz"
       local prefix_path="gnu-mcu-eclipse/${APP_LC_NAME}/${distribution_file_version}"
 
-      echo
-      echo "Creating \"${distribution_file}\" ..."
+      echo "Compressed tarball: \"${distribution_file}\"."
 
       cd "${APP_PREFIX}"
       # Transform all paths to include the hierarchical folders;
@@ -450,7 +455,7 @@ function create_archive()
       local archive_version_path="${INSTALL_FOLDER_PATH}/archive/GNU MCU Eclipse/${APP_UC_NAME}/${distribution_file_version}"
 
       echo
-      echo "Creating \"${distribution_file}\" ..."
+      echo "ZIP file: \"${distribution_file}\"."
 
       rm -rf "${INSTALL_FOLDER_PATH}"/archive
       mkdir -p "${archive_version_path}"
