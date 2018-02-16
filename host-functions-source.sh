@@ -315,8 +315,13 @@ function host_build_target()
     fi
   fi
 
+  mkdir -p "$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"
+  echo "${RELEASE_VERSION}" >"$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"/VERSION
+
   rm -rf "${HOST_DEFINES_SCRIPT_PATH}"
   touch "${HOST_DEFINES_SCRIPT_PATH}"
+
+  echo "RELEASE_VERSION=\"${RELEASE_VERSION}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
   echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
