@@ -735,11 +735,11 @@ do_container_create_distribution() {
 
         rm -rfv "${install_folder}/archive/"
         # The archive will use the 'GNU MCU Eclipse/app/version' hierarchy.
-        mkdir -p "${install_folder}/archive/GNU MCU Eclipse/${APP_UC_NAME}/${distribution_file_version}"
-        cp -r "${install_folder}/${APP_LC_NAME}"/* "${install_folder}/archive/GNU MCU Eclipse/${APP_UC_NAME}/${distribution_file_version}"
+        mkdir -p "${install_folder}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
+        cp -r "${install_folder}/${APP_LC_NAME}"/* "${install_folder}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
 
         pushd "${install_folder}/archive"
-        zip -r -q "${distribution_file}" "GNU MCU Eclipse"
+        zip -r -q "${distribution_file}" "${DISTRO_UC_NAME}"
         popd
 
         pushd "$(dirname ${distribution_file})"

@@ -195,9 +195,9 @@ function copy_license()
         if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
         then
           /usr/bin/install -d -m 0755 \
-            "${APP_PREFIX}/gnu-mcu-eclipse/licenses/$2"
+            "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses/$2"
           /usr/bin/install -v -c -m 644 "$f" \
-            "${APP_PREFIX}/gnu-mcu-eclipse/licenses/$2"
+            "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses/$2"
         fi
       fi
     done
@@ -207,7 +207,7 @@ function copy_license()
 
     if [ "${TARGET_OS}" == "win" ]
     then
-      find "${APP_PREFIX}/gnu-mcu-eclipse/licenses" \
+      find "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses" \
         -type f \
         -exec unix2dos '{}' ';'
     fi
@@ -224,14 +224,14 @@ function copy_build_files()
 
     find scripts patches -type d \
       -exec /usr/bin/install -d -m 0755 \
-        "${APP_PREFIX}"/gnu-mcu-eclipse/'{}' ';'
+        "${APP_PREFIX}"/${DISTRO_LC_NAME}/'{}' ';'
 
     find scripts patches -type f \
       -exec /usr/bin/install -v -c -m 644 \
-        '{}' "${APP_PREFIX}"/gnu-mcu-eclipse/'{}' ';'
+        '{}' "${APP_PREFIX}"/${DISTRO_LC_NAME}/'{}' ';'
 
     /usr/bin/install -v -c -m 644 \
-        CHANGES.txt "${APP_PREFIX}"/gnu-mcu-eclipse
+        CHANGES.txt "${APP_PREFIX}"/${DISTRO_LC_NAME}
   )
 }
 
@@ -424,7 +424,7 @@ function create_archive()
     xbb_activate
 
     local distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
-    local distribution_file="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/gnu-mcu-eclipse-${APP_LC_NAME}-${distribution_file_version}-${TARGET_FOLDER_NAME}"
+    local distribution_file="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${DISTRO_LC_NAME}-${APP_LC_NAME}-${distribution_file_version}-${TARGET_FOLDER_NAME}"
 
     cd "${APP_PREFIX}"
     find . -name '.DS_Store' -exec rm '{}' ';'
@@ -440,8 +440,8 @@ function create_archive()
     if [ "${TARGET_OS}" == "win" ]
     then
 
-      local distribution_file="${distribution_file}.tgz"
-      local prefix_path="gnu-mcu-eclipse/${APP_LC_NAME}/${distribution_file_version}"
+      local distribution_file="${distribution_file}.zip"
+      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
 
       echo
       echo "ZIP file: \"${distribution_file}\"."
@@ -458,8 +458,8 @@ function create_archive()
 
     else
 
-      local distribution_file="${distribution_file}.zip"
-      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/GNU MCU Eclipse/${APP_UC_NAME}/${distribution_file_version}"
+      local distribution_file="${distribution_file}.tar.xz"
+      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_LC_NAME}/${APP_LC_NAME}/${distribution_file_version}"
 
       echo "Compressed tarball: \"${distribution_file}\"."
 
