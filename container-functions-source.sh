@@ -269,7 +269,7 @@ function extract()
       fi
     )
   else
-    echo "Folder ${folder_name} already present."
+    echo "Folder \"$(pwd)/${folder_name}\" already present."
   fi
 }
 
@@ -291,7 +291,7 @@ function download()
       mv "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${DOWNLOAD_FOLDER_PATH}/${archive_name}"
     )
   else
-    echo "File ${archive_name} already downloaded."
+    echo "File \"${DOWNLOAD_FOLDER_PATH}/${archive_name}\" already downloaded."
   fi
 }
 
@@ -470,6 +470,7 @@ function create_archive()
       # Without --hard-dereference the hard links may be turned into
       # broken soft links on macOS.
       cd "${INSTALL_FOLDER_PATH}"/archive
+      # -J uses xz for compression; best compression ratio.
       tar -c -J -f "${distribution_file}" \
         --owner=0 \
         --group=0 \
