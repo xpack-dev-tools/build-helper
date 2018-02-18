@@ -467,8 +467,15 @@ function create_archive()
       mkdir -p "${archive_version_path}"
       mv -v "${APP_PREFIX}"/* "${archive_version_path}"
 
+      # Without --hard-dereference the hard links may be turned into
+      # broken soft links on macOS.
       cd "${INSTALL_FOLDER_PATH}"/archive
-      tar -c -J -f "${distribution_file}" --owner=0 --group=0 *
+      tar -c -J -f "${distribution_file}" \
+        --owner=0 \
+        --group=0 \
+        --format=posix \
+        --hard-dereference \
+        *
 
       # Put folders back.
       mv -v "${archive_version_path}"/* "${APP_PREFIX}"
