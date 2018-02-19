@@ -163,12 +163,11 @@ function prepare_prerequisites()
   if [ \( "${IS_DEVELOP}" != "y" \) -a \( -f "/.dockerenv" \) ]
   then
     BUILD_FOLDER_PATH="/tmp/build/${TARGET_FOLDER_NAME}"
-    INSTALL_FOLDER_PATH="/tmp/install/${TARGET_FOLDER_NAME}"
   else
     BUILD_FOLDER_PATH="${WORK_FOLDER_PATH}/build/${TARGET_FOLDER_NAME}"
-    INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/install/${TARGET_FOLDER_NAME}"
   fi
 
+  INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/install/${TARGET_FOLDER_NAME}"
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${TARGET_FOLDER_NAME}"
 
   mkdir -p "${BUILD_FOLDER_PATH}"
