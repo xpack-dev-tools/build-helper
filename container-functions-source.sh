@@ -516,6 +516,7 @@ function fix_ownership()
 
 # -----------------------------------------------------------------------------
 
+# Deprecated.
 function copy_install() 
 {
   if [ \( "${IS_DEVELOP}" != "y" \) -a \( -f "/.dockerenv" \) ]
