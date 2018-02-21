@@ -229,8 +229,16 @@ function copy_build_files()
       -exec /usr/bin/install -v -c -m 644 \
         '{}' "${APP_PREFIX}"/${DISTRO_LC_NAME}/'{}' ';'
 
-    /usr/bin/install -v -c -m 644 \
-        CHANGES.txt "${APP_PREFIX}"/${DISTRO_LC_NAME}
+    if [ -f CHANGELOG.txt ]
+    then
+      /usr/bin/install -v -c -m 644 \
+          CHANGELOG.txt "${APP_PREFIX}"/${DISTRO_LC_NAME}
+    fi
+    if [ -f CHANGELOG.md ]
+    then
+      /usr/bin/install -v -c -m 644 \
+          CHANGELOG.md "${APP_PREFIX}"/${DISTRO_LC_NAME}
+    fi
   )
 }
 
