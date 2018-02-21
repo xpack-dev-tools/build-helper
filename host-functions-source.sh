@@ -303,7 +303,7 @@ function host_build_target()
     # Build native
     if [ "${HOST_UNAME}" == "Darwin" ]
     then
-      target_os="osx"
+      target_os="macos"
       target_bits="-"
     elif [ "${HOST_UNAME}" == "Linux" ]
     then
