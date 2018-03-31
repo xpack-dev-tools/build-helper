@@ -435,11 +435,11 @@ do_host_build_target() {
       -- \
       --container-build-folder "${WORK_FOLDER_PATH}/build" \
       --container-install-folder "${WORK_FOLDER_PATH}/install" \
-      --container-output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
+      --container-output-folder "${DEPLOY_FOLDER_PATH}" \
       --shared-install-folder "${WORK_FOLDER_PATH}/install" \
       --target-os "${target_os}" \
       --target-bits "${target_bits}" \
-      --distribution-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
+      --distribution-folder "${DEPLOY_FOLDER_PATH}" \
       --download-folder "${WORK_FOLDER_PATH}/download" \
       --helper-script "${WORK_FOLDER_PATH}/scripts/build-helper.sh" \
       --work-folder "${WORK_FOLDER_PATH}" \
@@ -454,11 +454,11 @@ do_host_build_target() {
 do_host_show_sha() {
 
   # ---- Prevent script break because of not found SHA file without arguments ----
-  mkdir -p ${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}
-  echo "" > ${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/empty.sha
+  mkdir -p ${DEPLOY_FOLDER_PATH}
+  echo "" > ${DEPLOY_FOLDER_PATH}/empty.sha
   # ----
 
-  cat "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/"*.sha
+  cat "${DEPLOY_FOLDER_PATH}/"*.sha
 
 }
 
@@ -876,7 +876,7 @@ do_container_create_distribution() {
         then
           chown -R ${user_id}:${group_id} "${install_folder}"
         fi
-        chown -R ${user_id}:${group_id} "${work_folder_path}/${DEPLOY_FOLDER_NAME}"
+        chown -R ${user_id}:${group_id} "${DEPLOY_FOLDER_PATH}"
       fi
 }
 

@@ -168,7 +168,7 @@ function prepare_prerequisites()
   fi
 
   INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/install/${TARGET_FOLDER_NAME}"
-  DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${TARGET_FOLDER_NAME}"
+  DEPLOY_FOLDER_PATH="${DEPLOY_FOLDER_PATH}"
 
   mkdir -p "${BUILD_FOLDER_PATH}"
   mkdir -p "${INSTALL_FOLDER_PATH}"
@@ -431,7 +431,7 @@ function create_archive()
     xbb_activate
 
     local distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
-    local distribution_file="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/${DISTRO_LC_NAME}-${APP_LC_NAME}-${distribution_file_version}-${TARGET_FOLDER_NAME}"
+    local distribution_file="${DEPLOY_FOLDER_PATH}/${DISTRO_LC_NAME}-${APP_LC_NAME}-${distribution_file_version}-${TARGET_FOLDER_NAME}"
 
     cd "${APP_PREFIX}"
     find . -name '.DS_Store' -exec rm '{}' ';'
@@ -490,7 +490,7 @@ function create_archive()
 
     fi
 
-    cd "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+    cd "${DEPLOY_FOLDER_PATH}"
     compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
   )
 }
@@ -518,7 +518,7 @@ function fix_ownership()
     then
       chown -R ${USER_ID}:${GROUP_ID} "${INSTALL_FOLDER_PATH}"
     fi
-    chown -R ${USER_ID}:${GROUP_ID} "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+    chown -R ${USER_ID}:${GROUP_ID} "${DEPLOY_FOLDER_PATH}"
   fi
 }
 
