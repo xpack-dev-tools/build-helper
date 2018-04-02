@@ -465,7 +465,10 @@ function create_archive()
 
     else
 
-      local distribution_file="${distribution_file}.tar.xz"
+      # Unfortunately on node.js, xz & bz2 require native modules, which
+      # proved unsafe, some xz versions failed to compile on node.js v9.x,
+      # so use the good old .tgz.
+      local distribution_file="${distribution_file}.tgz"
       local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_LC_NAME}/${APP_LC_NAME}/${distribution_file_version}"
 
       echo "Compressed tarball: \"${distribution_file}\"."
@@ -478,7 +481,9 @@ function create_archive()
       # broken soft links on macOS.
       cd "${INSTALL_FOLDER_PATH}"/archive
       # -J uses xz for compression; best compression ratio.
-      tar -c -J -f "${distribution_file}" \
+      # -j uses bz2 for compression; good compression ratio.
+      # -z uses gzip for compression; fair compression ratio.
+      tar -c -z -f "${distribution_file}" \
         --owner=0 \
         --group=0 \
         --format=posix \
