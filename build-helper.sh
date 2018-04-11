@@ -443,12 +443,11 @@ do_host_build_target() {
 do_host_show_sha() {
 
   # ---- Prevent script break because of not found SHA file without arguments ----
-  mkdir -p ${DEPLOY_FOLDER_PATH}
-  echo "" > ${DEPLOY_FOLDER_PATH}/empty.sha
+  mkdir -p "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+  echo "" > ${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/empty.sha
   # ----
 
-  cat "${DEPLOY_FOLDER_PATH}/"*.sha
-
+  cat "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/"*.sha
 }
 
 # v===========================================================================v
