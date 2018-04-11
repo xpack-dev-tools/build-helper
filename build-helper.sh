@@ -132,20 +132,9 @@ do_host_prepare_prerequisites() {
 
         if [ -n "${must_install}" ]
         then
-          echo
-          echo "Installing a custom Homebrew instance..."
-          
-          if [ ! -d "${HOME}/opt/install-scripts.git" ]
-          then
-            mkdir -p "${HOME}/opt"
-            git clone https://github.com/ilg-ul/opt-install-scripts "${HOME}/opt/install-scripts.git"
-          fi
-
-          bash "${HOME}/opt/install-scripts.git/install-homebrew-xbb.sh"
-
-          PATH="${hb_folder}/bin":${PATH}
-          export PATH
-
+            echo
+            echo "Please install the XBB custom Homebrew and rerun."
+            exit 1
         fi
 
 	    if [ -z "${do_no_pdf}" ]
