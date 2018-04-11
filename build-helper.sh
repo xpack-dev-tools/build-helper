@@ -424,11 +424,11 @@ do_host_build_target() {
       -- \
       --container-build-folder "${WORK_FOLDER_PATH}/build" \
       --container-install-folder "${WORK_FOLDER_PATH}/install" \
-      --container-output-folder "${DEPLOY_FOLDER_PATH}" \
+      --container-output-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
       --shared-install-folder "${WORK_FOLDER_PATH}/install" \
       --target-os "${target_os}" \
       --target-bits "${target_bits}" \
-      --distribution-folder "${DEPLOY_FOLDER_PATH}" \
+      --distribution-folder "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" \
       --download-folder "${WORK_FOLDER_PATH}/download" \
       --helper-script "${WORK_FOLDER_PATH}/scripts/build-helper.sh" \
       --work-folder "${WORK_FOLDER_PATH}" \
@@ -864,7 +864,7 @@ do_container_create_distribution() {
         then
           chown -R ${user_id}:${group_id} "${install_folder}"
         fi
-        chown -R ${user_id}:${group_id} "${DEPLOY_FOLDER_PATH}"
+        chown -R ${user_id}:${group_id} "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}"
       fi
 }
 
