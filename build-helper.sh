@@ -864,7 +864,7 @@ do_container_create_distribution() {
         then
           chown -R ${user_id}:${group_id} "${install_folder}"
         fi
-        chown -R ${user_id}:${group_id} "${DOCKER_HOST_WORK}/${DEPLOY_FOLDER_NAME}"
+        chown -R ${user_id}:${group_id} "${container_output_folder_path}"
       fi
 }
 
