@@ -221,6 +221,8 @@ function copy_build_files()
   (
     cd "${WORK_FOLDER_PATH}"/build.git
 
+    mkdir -p patches
+
     find scripts patches -type d \
       -exec /usr/bin/install -d -m 0755 \
         "${APP_PREFIX}"/${DISTRO_LC_NAME}/'{}' ';'
@@ -406,6 +408,13 @@ function change_dylib()
 function check_binary()
 {
   local file=$1
+
+  if [ ! -x "${file}" ]
+  then
+    return 0
+  fi
+
+  local file_name="$(basename ${file})"
 
   if [ "${TARGET_OS}" == "linux" ]
   then
