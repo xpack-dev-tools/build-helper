@@ -382,6 +382,27 @@ function compute_sha()
 
 # -----------------------------------------------------------------------------
 
+function change_dylib()
+{
+  local dylib_name=$1
+  local file_path=$2
+
+  local dylib_path=$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's/[[:space:]]*\(.*dylib\).*/\1/')
+
+  if [ -z "${dylib_path}" ]
+  then
+    echo "Dylib ${dylib_name} not used in binary ${file_path}, ignored..."
+    exit 0
+  fi
+
+  install_name_tool \
+    -change "${dylib_path}" \
+    "@executable_path/${dylib_name}" \
+    "${file_path}"
+
+  cp "${dylib_path}" "$(dirname ${file_path})"
+}
+
 function check_binary()
 {
   local file=$1
