@@ -116,7 +116,7 @@ function prepare_prerequisites()
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET=${HOST}
 
-  elif [ "${TARGET_OS}" == "osx" ]
+  elif [ "${TARGET_OS}" == "macos" ]
   then
 
     TARGET_BITS="64" # Only 64-bits macOS binaries
