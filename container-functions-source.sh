@@ -312,6 +312,24 @@ function download_and_extract()
   extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}"
 }
 
+function git_clone()
+{
+  local url="$1"
+  local branch="$2"
+  local commit="$3"
+  local folder_name="$4"
+
+  (
+    echo
+    echo "Cloning \"${folder_name}\" from \"${url}\"..."
+    git clone --branch="${branch}" "${url}" "${folder_name}"
+    if [ -n "${commit}" ]
+    then
+      cd "${folder_name}"
+      git checkout -qf "${commit}"
+    fi
+  )
+}
 # -----------------------------------------------------------------------------
 
 # Copy one folder to another
