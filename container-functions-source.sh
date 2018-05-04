@@ -428,7 +428,7 @@ function check_binary()
     otool -L "${file}"
 
     set +e
-    local unxp=$(otool -L "${file}" | sed '1d' | egrep -e "(macports|homebrew|opt|install)/")
+    local unxp=$(otool -L "${file}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
     set -e
     # echo "|${unxp}|"
     if [ ! -z "$unxp" ]
