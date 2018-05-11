@@ -414,6 +414,13 @@ function check_binary()
     return 0
   fi
 
+  check_library $1
+}
+
+function check_library()
+{
+  local file=$1
+
   local file_name="$(basename ${file})"
 
   if [ "${TARGET_OS}" == "linux" ]
