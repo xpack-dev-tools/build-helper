@@ -261,7 +261,7 @@ function extract()
       echo "Extracting \"${archive_name}\"..."
       if [[ "${archive_name}" == *zip ]]
       then
-        unzip "${archive_name}" -d "$(basename ${archive_name} ".zip")"
+        unzip "${archive_name}" 
       else
         tar xf "${archive_name}"
       fi
