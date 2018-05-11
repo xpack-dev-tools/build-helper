@@ -477,6 +477,59 @@ function check_library()
   fi
 }
 
+copy_linux_system_so() {
+  # $1 = dll name
+
+  ILIB=$(find /lib* -type f -name $1'.so.*.*' -print)
+  if [ ! -z "${ILIB}" ]
+  then
+    echo "Found system ${ILIB}"
+    ihead=$(echo "${ILIB}" | head -n 1)
+    ILIB_BASE="$(basename ${ihead})"
+    /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2.\3/')"
+    (
+      cd "${APP_PREFIX}/bin"
+      rm --force "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
+    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2/')"
+    (
+      cd "${APP_PREFIX}/bin"
+      rm --force "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
+  else
+    ILIB=$(find /lib* -type f -name $1'.so.*' -print)
+    if [ ! -z "${ILIB}" ]
+    then
+      echo "Found system 2 ${ILIB}"
+      ihead=$(echo "${ILIB}" | head -n 1)
+      ILIB_BASE="$(basename ${ihead})"
+      /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+      ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\).*/\1.\2/')"
+      echo "${ILIB_SHORT}"
+      (
+        cd "${APP_PREFIX}/bin"
+        rm --force "${ILIB_SHORT}"
+        ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+      )
+    else
+      ILIB=$(find /lib* -type f -name $1'.so' -print)
+      if [ ! -z "${ILIB}" ]
+      then
+        echo "Found system 3 ${ILIB}"
+        ihead=$(echo "${ILIB}" | head -n 1)
+        ILIB_BASE="$(basename ${ihead})"
+        /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+      else
+        echo $1 not found
+        exit 1
+      fi
+    fi
+  fi
+}
+
 
 # -----------------------------------------------------------------------------
 
