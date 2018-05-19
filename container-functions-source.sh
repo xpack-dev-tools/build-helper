@@ -337,10 +337,13 @@ function git_clone()
 # Copy one folder to another
 function copy_dir() 
 {
-  set +u
-  mkdir -p "$2"
+  local from_path="$1"
+  local to_path="$2"
 
-  (cd "$1" && tar cf - .) | (cd "$2" && tar xf -)
+  set +u
+  mkdir -p "${to_path}"
+
+  (cd "${from_path}" && tar cf - .) | (cd "${to_path}" && tar xf -)
   set -u
 }
 
@@ -393,23 +396,28 @@ function change_dylib()
 
   if [ -z "${dylib_path}" ]
   then
-    echo "Dylib ${dylib_name} not used in binary ${file_path}, ignored..."
-    exit 0
+    echo "Dylib ${dylib_name} not used in binary ${file_path}..."
+    exit 1
   fi
 
+  chmod +w "${file_path}"
   install_name_tool \
     -change "${dylib_path}" \
     "@executable_path/${dylib_name}" \
     "${file_path}"
 
-  cp "${dylib_path}" "$(dirname ${file_path})"
+  if [ ! -f "$(dirname ${file_path})/$(basename ${dylib_path})" ]
+  then
+    cp "${dylib_path}" "$(dirname ${file_path})"
+    chmod +w "$(dirname ${file_path})/$(basename ${dylib_path})"
+  fi
 }
 
 function check_binary()
 {
-  local file=$1
+  local file_path=$1
 
-  if [ ! -x "${file}" ]
+  if [ ! -x "${file_path}" ]
   then
     return 0
   fi
@@ -419,117 +427,379 @@ function check_binary()
 
 function check_library()
 {
-  local file=$1
+  local file_path=$1
+  local file_name="$(basename ${file_path})"
 
-  local file_name="$(basename ${file})"
+  (
+    xbb_activate
 
-  if [ "${TARGET_OS}" == "linux" ]
-  then
-    echo
-    echo "${file}"
-    readelf -d "${file}" | egrep -i 'library|dynamic'
-
-    set +e
-    local unxp=$(readelf -d "${file}" | egrep -i 'library|dynamic' | grep -e "NEEDED" | egrep -e "(macports|homebrew|opt|install)/")
-    set -e
-    #echo "|${unxp}|"
-    if [ ! -z "$unxp" ]
+    if [ "${TARGET_OS}" == "win" ]
     then
-      echo "Unexpected |${unxp}|"
-      exit 1
-    fi
-  elif [ "${TARGET_OS}" == "macos" ]
-  then
-    echo
-    otool -L "${file}"
-
-    set +e
-    local unxp=$(otool -L "${file}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
-    set -e
-    # echo "|${unxp}|"
-    if [ ! -z "$unxp" ]
-    then
-      echo "Unexpected |${unxp}|"
-      exit 1
-    fi
-  elif [ "${TARGET_OS}" == "win" ]
-  then
-
-    (
-      xbb_activate
-
       echo
-      echo "${file}"
+      echo "${file_path}"
       set +e
-      ${CROSS_COMPILE_PREFIX}-objdump -x "${file}" | grep -i 'DLL Name'
+      ${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" | grep -i 'DLL Name'
       set -e
       
       set +e
-      local unxp=$(${CROSS_COMPILE_PREFIX}-objdump -x "${file}" | grep -i 'DLL Name' | egrep -e "(macports|homebrew|opt|install)/")
+      local dll_names=$(${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" \
+        | grep -i 'DLL Name' \
+        | sed -e 's/.*DLL Name: \(.*\)/\1/' \
+      )
+
+      for n in ${dll_names}
+      do
+        if [ ! -f "${APP_PREFIX}/bin/${n}" ] 
+        then
+          if is_win_sys_dll "${n}"
+          then
+            :
+          else
+            echo "Unexpected |${n}|"
+            exit 1
+          fi
+        fi
+      done
       set -e
-      #echo "|${unxp}|"
+    elif [ "${TARGET_OS}" == "macos" ]
+    then
+      echo
+      otool -L "${file_path}"
+
+      set +e
+      local unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+      set -e
+      # echo "|${unxp}|"
       if [ ! -z "$unxp" ]
       then
         echo "Unexpected |${unxp}|"
         exit 1
       fi
-    )
-  fi
+    elif [ "${TARGET_OS}" == "linux" ]
+    then
+      echo
+      echo "${file_path}"
+      readelf -d "${file_path}" | egrep -i 'library|dynamic'
+
+      set +e
+      local so_names=$(readelf -d "${file_path}" \
+        | grep -i 'Shared library' \
+        | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
+      )
+
+      for n in ${so_names}
+      do
+        if [ ! -f "${APP_PREFIX}/bin/${n}" ] 
+        then
+          if is_linux_sys_so "${n}"
+          then
+            :
+          else
+            echo "Unexpected |${n}|"
+            exit 1
+          fi
+        fi
+      done
+      set -e
+    fi
+  )
 }
 
-copy_linux_system_so() {
-  # $1 = dll name
+function is_win_sys_dll() 
+{
+  local dll_name="$1"
 
-  ILIB=$(find /lib* -type f -name $1'.so.*.*' -print)
+  # DLLs that are expected to be present on any Windows.
+  local sys_dlls=(ADVAPI32.dll \
+    KERNEL32.dll \
+    msvcrt.dll \
+    SHELL32.dll \
+    USER32.dll \
+    WINMM.dll \
+    WINMM.DLL \
+    WS2_32.dll \
+    ole32.dll \
+    DNSAPI.dll \
+    IPHLPAPI.dll \
+    GDI32.dll \
+    IMM32.dll \
+    IMM32.DLL \
+    OLEAUT32.dll \
+    IPHLPAPI.DLL \
+    VERSION.dll \
+  )
+
+  for dll in "${sys_dlls[@]}"
+  do
+    if [ "${dll}" == "${dll_name}" ]
+    then
+        return 0 # True
+    fi
+  done
+  return 1 # False
+}
+
+function is_linux_sys_so() 
+{
+  local lib_name="$1"
+
+  # Shared libraries that are expected to be present on any Linux.
+  local sys_libs=(\
+    librt.so.1 \
+    libm.so.6 \
+    libc.so.6 \
+    libutil.so.1 \
+    libpthread.so.0 \
+    libdl.so.2 \
+    ld-linux-x86-64.so.2 \
+    ld-linux.so.2 \
+  )
+
+  for lib in "${sys_libs[@]}"
+  do
+    if [ "${lib}" == "${lib_name}" ]
+    then
+        return 0 # True
+    fi
+  done
+  return 1 # False
+}
+
+# Workaround to Docker error on 32-bits image:
+# stat: Value too large for defined data type
+function patch_linux_elf_origin()
+{
+  local file_path="$1"
+
+  local tmp_path=$(mktemp)
+  rm -rf "${tmp_path}"
+  cp "${file_path}" "${tmp_path}"
+  patchelf --set-rpath '$ORIGIN' "${tmp_path}"
+  cp "${tmp_path}" "${file_path}"
+  rm -rf "${tmp_path}"
+}
+
+function copy_linux_user_so() 
+{
+  local dll_name="$1"
+
+  ILIB=$(find ${INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
   if [ ! -z "${ILIB}" ]
   then
-    echo "Found system ${ILIB}"
+    echo "Found user ${ILIB}, 3 digits"
+
     ihead=$(echo "${ILIB}" | head -n 1)
-    ILIB_BASE="$(basename ${ihead})"
+    # Add "runpath" in library with value $ORIGIN.
+    patch_linux_elf_origin "${ihead}"
+
     /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
-    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2.\3/')"
+
+    ILIB_BASE="$(basename ${ihead})"
+    # Skip last two digits, keep one.
+    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*[.][[:digit:]]*/\1/')"
     (
       cd "${APP_PREFIX}/bin"
       rm --force "${ILIB_SHORT}"
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
-    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\)[.].*/\1.\2/')"
+    # Skip all three digits, keep none.
+    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*[.][[:digit:]]*[.][[:digit:]]*/\1/')"
     (
       cd "${APP_PREFIX}/bin"
       rm --force "${ILIB_SHORT}"
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find /lib* -type f -name $1'.so.*' -print)
+    ILIB=$(find ${INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
     if [ ! -z "${ILIB}" ]
     then
-      echo "Found system 2 ${ILIB}"
+      echo "Found user ${ILIB}, 2 digits"
+
       ihead=$(echo "${ILIB}" | head -n 1)
-      ILIB_BASE="$(basename ${ihead})"
+      # Add "runpath" in library with value $ORIGIN.
+      patch_linux_elf_origin "${ihead}"
+
       /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
-      ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\([[:alnum:]]*\)[.]\([[:alnum:]]*\)[.]\([[:digit:]]*\).*/\1.\2/')"
-      echo "${ILIB_SHORT}"
+
+      ILIB_BASE="$(basename ${ihead})"
+      # Skip last 1 digit, keep one.
+      ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*/\1/')"
+      (
+        cd "${APP_PREFIX}/bin"
+        rm --force "${ILIB_SHORT}"
+        ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+      )
+      # Skip all two digits, keep none.
+      ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*[.][[:digit:]]*/\1/')"
       (
         cd "${APP_PREFIX}/bin"
         rm --force "${ILIB_SHORT}"
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find /lib* -type f -name $1'.so' -print)
+      ILIB=$(find ${INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
       if [ ! -z "${ILIB}" ]
       then
-        echo "Found system 3 ${ILIB}"
+        echo "Found user ${ILIB}, 1 digit"
         ihead=$(echo "${ILIB}" | head -n 1)
-        ILIB_BASE="$(basename ${ihead})"
         /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+
+        ILIB_BASE="$(basename ${ihead})"
+        # Skip final digit, keep none.
+        ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*/\1/')"
+        echo "${ILIB_SHORT}"
+        (
+          cd "${APP_PREFIX}/bin"
+          rm --force "${ILIB_SHORT}"
+          ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+        )
       else
-        echo $1 not found
-        exit 1
+        ILIB=$(find ${INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so' -print)
+        if [ ! -z "${ILIB}" ]
+        then
+          echo "Found user ${ILIB}, no digits"
+          ihead=$(echo "${ILIB}" | head -n 1)
+          patch_linux_elf_origin "${ihead}"
+          /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+        else
+          echo ${dll_name} not found
+          exit 1
+        fi
       fi
     fi
   fi
 }
 
+function copy_linux_system_so()
+{
+  local dll_name="$1"
+
+  set +e
+  local ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
+  if [ ! -z "${ILIB}" ]
+  then
+    echo "Found system ${ILIB}, 3 digits"
+    ihead=$(echo "${ILIB}" | head -n 1)
+    /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+
+    ILIB_BASE="$(basename ${ihead})"
+    # Skip last two digits, keep one.
+    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*[.][[:digit:]]*/\1/')"
+    (
+      cd "${APP_PREFIX}/bin"
+      rm --force "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
+    # Skip all three digits, keep none.
+    ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*[.][[:digit:]]*[.][[:digit:]]*/\1/')"
+    (
+      cd "${APP_PREFIX}/bin"
+      rm --force "${ILIB_SHORT}"
+      ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+    )
+  else
+    ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
+    if [ ! -z "${ILIB}" ]
+    then
+      echo "Found system ${ILIB}, 2 digits"
+      ihead=$(echo "${ILIB}" | head -n 1)
+      /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+
+      ILIB_BASE="$(basename ${ihead})"
+      # Skip last 1 digit, keep one.
+      ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*/\1/')"
+      (
+        cd "${APP_PREFIX}/bin"
+        rm --force "${ILIB_SHORT}"
+        ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+      )
+      # Skip all two digits, keep none.
+      ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*[.][[:digit:]]*/\1/')"
+      (
+        cd "${APP_PREFIX}/bin"
+        rm --force "${ILIB_SHORT}"
+        ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+      )
+    else
+      ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
+      if [ ! -z "${ILIB}" ]
+      then
+        echo "Found system ${ILIB}, 1 digit"
+        ihead=$(echo "${ILIB}" | head -n 1)
+        /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+
+        ILIB_BASE="$(basename ${ihead})"
+        # Skip final digit, keep none.
+        ILIB_SHORT="$(echo $ILIB_BASE | sed -e 's/\(.*\)[.][[:digit:]]*/\1/')"
+        echo "${ILIB_SHORT}"
+        (
+          cd "${APP_PREFIX}/bin"
+          rm --force "${ILIB_SHORT}"
+          ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
+        )
+      else
+        ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so' -print)
+        if [ ! -z "${ILIB}" ]
+        then
+          echo "Found system ${ILIB}, no digits"
+          ihead=$(echo "${ILIB}" | head -n 1)
+          /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
+        else
+          echo ${dll_name} not found
+          exit 1
+        fi
+      fi
+    fi
+  fi
+  set -e
+}
+
+function copy_win_gcc_dll() 
+{
+  local dll_name="$1"
+
+  # Identify the current cross gcc version, to locate the specific dll folder.
+  local cross_gcc_version=$(${CROSS_COMPILE_PREFIX}-gcc --version | grep 'gcc' | sed -e 's/.*\s\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1.\2.\3/')
+  local cross_gcc_version_short=$(echo ${cross_gcc_version} | sed -e 's/\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1.\2/')
+  local SUBLOCATION="-win32"
+
+  # First try Ubuntu specific locations,
+  # then do a long full search.
+
+  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" ]
+  then
+    cp -v "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" ]
+  then
+    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" ]
+  then
+    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" ]
+  then
+    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  else
+    echo "Searching /usr for ${dll_name}..."
+    SJLJ_PATH=$(find "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
+    cp -v ${SJLJ_PATH} "${APP_PREFIX}"/bin
+  fi
+}
+
+function copy_win_libwinpthread_dll() 
+{
+  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}"/bin/libwinpthread-1.dll ]
+  then
+    cp "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}"/bin/libwinpthread-1.dll \
+      "${APP_PREFIX}/bin"
+  else
+    echo "No libwinpthread-1.dll"
+    exit 1
+  fi
+}
 
 # -----------------------------------------------------------------------------
 
