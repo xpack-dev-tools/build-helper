@@ -553,6 +553,7 @@ function is_linux_sys_so()
     libdl.so.2 \
     ld-linux-x86-64.so.2 \
     ld-linux.so.2 \
+    libX11.so.6 \
   )
 
   for lib in "${sys_libs[@]}"
