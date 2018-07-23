@@ -454,6 +454,9 @@ function check_library()
           if is_win_sys_dll "${n}"
           then
             :
+          elif [[ ${n} == python*.dll ]] && [[ ${file_name} == *-gdb-py.exe ]]
+          then
+            :
           else
             echo "Unexpected |${n}|"
             exit 1
