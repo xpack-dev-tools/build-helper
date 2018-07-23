@@ -494,6 +494,9 @@ function check_library()
           if is_linux_sys_so "${n}"
           then
             :
+          elif [[ ${n} == libpython* ]] && [[ ${file_name} == *-gdb-py ]]
+          then
+            :
           else
             echo "Unexpected |${n}|"
             exit 1
