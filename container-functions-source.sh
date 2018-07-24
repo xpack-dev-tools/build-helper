@@ -81,7 +81,7 @@ function detect_container()
   fi
 
   echo
-  echo "Container script running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
+  echo "Container script running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bit."
 }
 
 function prepare_prerequisites() 
@@ -119,7 +119,7 @@ function prepare_prerequisites()
   elif [ "${TARGET_OS}" == "macos" ]
   then
 
-    TARGET_BITS="64" # Only 64-bits macOS binaries
+    TARGET_BITS="64" # Only 64-bit macOS binaries
     TARGET_FOLDER_NAME="${TARGET_OS}"
 
     BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
@@ -572,7 +572,7 @@ function is_linux_sys_so()
   return 1 # False
 }
 
-# Workaround to Docker error on 32-bits image:
+# Workaround to Docker error on 32-bit image:
 # stat: Value too large for defined data type
 function patch_linux_elf_origin()
 {

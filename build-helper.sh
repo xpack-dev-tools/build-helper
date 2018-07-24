@@ -89,7 +89,7 @@ do_host_detect() {
   fi
 
   echo
-  echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bits."
+  echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bit."
 
 
   # When running on Docker, the host Work folder is used, if available.
@@ -646,7 +646,7 @@ do_container_detect() {
   output_folder_path="${container_output_folder_path}/${target_folder}"
 
   echo
-  echo "Container running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bits."
+  echo "Container running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bit."
 
 }
 

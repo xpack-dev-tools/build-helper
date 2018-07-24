@@ -101,7 +101,7 @@ function host_detect()
   fi
 
   echo
-  echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bits."
+  echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bit."
 
   GROUP_ID=$(id -g)
   USER_ID=$(id -u)
