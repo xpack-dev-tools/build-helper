@@ -894,8 +894,8 @@ function fix_ownership()
     # Set the owner of the folder and files created by the docker CentOS 
     # container to match the user running the build script on the host. 
     # When running on linux host, these folders and their content remain  
-    # owned by root if this is not done. However, when host is 'osx' (macOS),  
-    # the owner produced by docker is the same as the macOS user, so an 
+    # owned by root if this is not done. However, on macOS  
+    # the owner used by Docker is the same as the macOS user, so an 
     # ownership change is not realy necessary. 
     echo
     echo "Changing ownership to non-root Linux user..."
