@@ -439,9 +439,7 @@ function check_library()
       echo "${file_path}"
       set +e
       ${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" | grep -i 'DLL Name'
-      set -e
-      
-      set +e
+
       local dll_names=$(${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" \
         | grep -i 'DLL Name' \
         | sed -e 's/.*DLL Name: \(.*\)/\1/' \
@@ -467,9 +465,9 @@ function check_library()
     elif [ "${TARGET_OS}" == "macos" ]
     then
       echo
+      set +e
       otool -L "${file_path}"
 
-      set +e
       local unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
       set -e
       # echo "|${unxp}|"
@@ -482,9 +480,9 @@ function check_library()
     then
       echo
       echo "${file_path}"
+      set +e
       readelf -d "${file_path}" | egrep -i 'library|dynamic'
 
-      set +e
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
