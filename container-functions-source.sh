@@ -531,6 +531,7 @@ function is_win_sys_dll()
     OLEAUT32.dll \
     IPHLPAPI.DLL \
     VERSION.dll \
+    SETUPAPI.dll \
   )
 
   for dll in "${sys_dlls[@]}"
