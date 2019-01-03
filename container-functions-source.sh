@@ -422,6 +422,11 @@ function check_binary()
     return 0
   fi
 
+  if file --mime "${file_path}" | grep -q text
+  then
+    return 0
+  fi
+
   check_library $1
 }
 
