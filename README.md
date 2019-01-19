@@ -18,18 +18,21 @@ third param to `extract()`.
 
 ## Memo
 
-To create a patch:
+The patch is applied from the top build folder, so it must be created
+with the full path.
+
+For example, to create a binutils patch, use:
 
 ```console
 $ cd top
-$ cp folder/file folder/file.patched
-$ vi folder/file.patched
-$ diff -u folder/file folder/file.patched >my.patch
+$ cp binutils/bfd/ihex.c binutils/bfd/ihex.c.patched
+$ vi binutils/bfd/ihex.c.patched
+$ diff -u binutils/bfd/ihex.c binutils/bfd/ihex.c.patched >binutils-2.31.patch
 ```
 
-To apply the patch:
+The code to apply the patch (extract()) does the following
 
 ```console
 $ cd top
-$ patch -p0 <my.patch
+$ patch -p0 < "binutils-2.31.patch"
 ```
