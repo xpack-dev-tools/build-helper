@@ -27,7 +27,7 @@ For example, to create a binutils patch, use:
 $ cd top
 $ cp binutils/bfd/ihex.c binutils/bfd/ihex.c.patched
 $ vi binutils/bfd/ihex.c.patched
-$ diff -u binutils/bfd/ihex.c binutils/bfd/ihex.c.patched >binutils-2.31.patch
+$ diff -u binutils/bfd/ihex.c binutils/bfd/ihex.c.patched > patches/binutils-2.31.patch
 ```
 
 The code to apply the patch (extract()) does the following
