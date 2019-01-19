@@ -269,14 +269,17 @@ function extract()
         tar xf "${archive_name}"
       fi
 
-      if [ \( $# -gt 2 \) -a \( ! -z "$3" \) ]
+      if [ $# -gt 2 ]
       then
-        local patch_file_name="$3"
-        local patch_path="${WORK_FOLDER_PATH}/build.git/patches/${patch_file_name}"
-        if [ -f "${patch_path}" ]
+        if [ ! -z "$3" ]
         then
-          echo "Patching..."
-          patch -p0 < "${patch_path}"
+          local patch_file_name="$3"
+          local patch_path="${WORK_FOLDER_PATH}/build.git/patches/${patch_file_name}"
+          if [ -f "${patch_path}" ]
+          then
+            echo "Patching..."
+            patch -p0 < "${patch_path}"
+          fi
         fi
       fi
     )
