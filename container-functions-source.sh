@@ -252,7 +252,7 @@ function extract()
 {
   local archive_name="$1"
   local folder_name="$2"
-  // local patch_file_name="$3"
+  # local patch_file_name="$3"
   local pwd="$(pwd)"
 
   if [ ! -d "${folder_name}" ]
