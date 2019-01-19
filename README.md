@@ -30,7 +30,7 @@ $ vi binutils/bfd/ihex.c.patched
 $ diff -u binutils/bfd/ihex.c binutils/bfd/ihex.c.patched > patches/binutils-2.31.patch
 ```
 
-The code to apply the patch (extract()) does the following
+The code to apply the patch (`extract()`) does the following:
 
 ```console
 $ cd top
