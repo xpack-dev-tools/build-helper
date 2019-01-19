@@ -246,10 +246,13 @@ function copy_build_files()
 
 # -----------------------------------------------------------------------------
 
+# Warning: API change, 3rd param is now the full name, not only the version.
+
 function extract()
 {
   local archive_name="$1"
   local folder_name="$2"
+  // local patch_file_name="$3"
   local pwd="$(pwd)"
 
   if [ ! -d "${folder_name}" ]
@@ -266,10 +269,10 @@ function extract()
         tar xf "${archive_name}"
       fi
 
-      if [ $# -gt 2 ]
+      if [ \( $# -gt 2 \) -a \( ! -z "$3" \) ]
       then
-        local version="$3"
-        local patch_path="${WORK_FOLDER_PATH}/build.git/patches/${folder_name}-${version}.patch"
+        local patch_file_name="$3"
+        local patch_path="${WORK_FOLDER_PATH}/build.git/patches/${patch_file_name}"
         if [ -f "${patch_path}" ]
         then
           echo "Patching..."
