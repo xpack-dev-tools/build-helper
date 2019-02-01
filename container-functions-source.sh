@@ -463,6 +463,9 @@ function check_library()
           if is_win_sys_dll "${n}"
           then
             :
+          elif [ "${n}${HAS_WINPTHREAD}" == "libwinpthread-1.dlly" ]
+          then
+            :
           elif [[ ${n} == python*.dll ]] && [[ ${file_name} == *-gdb-py.exe ]]
           then
             :
