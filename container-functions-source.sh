@@ -395,8 +395,8 @@ function compute_sha()
 
 function change_dylib()
 {
-  local dylib_name=$1
-  local file_path=$2
+  local dylib_name="$1"
+  local file_path="$2"
 
   local dylib_path=$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's/[[:space:]]*\(.*dylib\).*/\1/')
 
@@ -421,7 +421,7 @@ function change_dylib()
 
 function check_binary()
 {
-  local file_path=$1
+  local file_path="$1"
 
   if [ ! -x "${file_path}" ]
   then
@@ -433,12 +433,12 @@ function check_binary()
     return 0
   fi
 
-  check_library $1
+  check_library "$1"
 }
 
 function check_library()
 {
-  local file_path=$1
+  local file_path="$1"
   local file_name="$(basename ${file_path})"
 
   (
