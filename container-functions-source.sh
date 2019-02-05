@@ -440,6 +440,7 @@ function check_library()
 {
   local file_path="$1"
   local file_name="$(basename ${file_path})"
+  local folder_name="$(dirname ${file_path})"
 
   (
     xbb_activate
@@ -458,7 +459,7 @@ function check_library()
 
       for n in ${dll_names}
       do
-        if [ ! -f "${APP_PREFIX}/bin/${n}" ] 
+        if [ ! -f "${folder_name}/${n}" ] 
         then
           if is_win_sys_dll "${n}"
           then
@@ -504,7 +505,7 @@ function check_library()
 
       for n in ${so_names}
       do
-        if [ ! -f "${APP_PREFIX}/bin/${n}" ] 
+        if [ ! -f "${folder_name}/${n}" ] 
         then
           if is_linux_sys_so "${n}"
           then
