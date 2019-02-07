@@ -358,23 +358,37 @@ function copy_dir()
 function strip_binary() 
 {
     set +e
-    if [ $# -ne 2 ] 
+    if [ $# -lt 2 ]
     then
         warning "strip_binary: Missing arguments"
-        return 0
+        exit 1
     fi
 
     local strip="$1"
     local bin="$2"
 
-    file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( Mach-O )"
-    if [ $? -eq 0 ]
+    if is_elf ${bin}
     then
-        echo ${strip} ${bin}
-        ${strip} ${bin} 2>/dev/null || true
+      echo ${strip} ${bin}
+      ${strip} ${bin} 2>/dev/null || true
+    else
+      echo $(file ${bin})
     fi
 
     set -e
+}
+
+function is_elf()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_elf: Missing arguments"
+    exit 1
+  fi
+  local bin="$1"
+
+  # Return 0 (true) if found.
+  file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
 }
 
 # -----------------------------------------------------------------------------
