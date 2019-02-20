@@ -12,6 +12,7 @@ function host_get_current_date()
   DISTRIBUTION_FILE_DATE=${DISTRIBUTION_FILE_DATE:-$(date -u +%Y%m%d-%H%M)}
 
   # Leave a track of the start date, in case of resume needed.
+  mkdir -p "${HOST_WORK_FOLDER_PATH}"
   touch "${HOST_WORK_FOLDER_PATH}/${DISTRIBUTION_FILE_DATE}"
   echo
   echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\""
