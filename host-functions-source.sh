@@ -38,7 +38,10 @@ function host_stop_timer()
     local delta_minutes=$(((delta_seconds+30)/60))
     echo "Duration: ${delta_minutes} minutes."
   fi
+}
 
+function host_notify_completed()
+{
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
     say "Wake up, the build completed successfully"
