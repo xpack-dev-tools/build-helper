@@ -218,3 +218,40 @@ function copy_build_git()
   rm -rf "${HOST_WORK_FOLDER_PATH}"/build.git/scripts/helper/build-helper.sh
 }
 
+# -----------------------------------------------------------------------------
+
+# Default empty definition, if XBB is available, it should
+# redefine it.
+function xbb_activate()
+{
+  :
+}
+
+function xbb_activate_pkgconfig()
+{
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    if [ ! -z "${PKG_CONFIG_PATH}" ]
+    then
+      if [ -d "/usr/lib/pkgconfig" ]
+      then
+        PKG_CONFIG_PATH="/usr/lib/pkgconfig"
+      fi
+    fi
+    export PKG_CONFIG_PATH
+  fi
+}
+
+function xbb_activate_includes()
+{
+  :
+}
+
+# Default, to fix the missing definition on ARCH.
+function xbb_activate_dev()
+{
+  xbb_activate_pkgconfig
+  xbb_activate_includes
+}
+
+# -----------------------------------------------------------------------------
