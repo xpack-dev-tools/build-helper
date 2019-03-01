@@ -113,6 +113,19 @@ function host_detect()
 
 # -----------------------------------------------------------------------------
 
+function host_prepare_cache()
+{
+  # The folder that caches all downloads is in HOME
+  if [ "$(uname)" == "Darwin" ] 
+  then
+    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Library/Caches/XBB"}
+  else
+    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.caches/XBB"}
+  fi
+  CONTAINER_CACHE_FOLDER_PATH="/Host/Caches/XBB"
+}
+
+
 function host_prepare_prerequisites() 
 {
   if [ "${HOST_UNAME}" == "Darwin" ]
