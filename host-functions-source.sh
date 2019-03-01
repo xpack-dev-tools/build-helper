@@ -50,14 +50,20 @@ function host_notify_completed()
 
 # -----------------------------------------------------------------------------
 
+# Detect the machine the build runs on.
 function host_detect() 
 {
   echo
   uname -a
 
-  HOST_DISTRO_NAME=""
   HOST_UNAME="$(uname)"
   HOST_MACHINE="$(uname -m)"
+
+  HOST_DISTRO_NAME="?" # Linux distribution name (Ubuntu|CentOS|...)
+  HOST_DISTRO_LC_NAME="?" # Same, in lower case.
+
+  HOST_NODE_ARCH="?" # Node.js process.arch (x32|x64|arm|arm64)
+  HOST_NODE_PLATFORM="?" # Node.js process.platform (darwin|linux|win32)
 
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
@@ -69,38 +75,42 @@ function host_detect()
     HOST_DISTRO_NAME=Darwin
     HOST_DISTRO_LC_NAME=darwin
 
+    HOST_NODE_ARCH="x64" # For now.
+    HOST_NODE_PLATFORM="darwin"
+
   elif [ "${HOST_UNAME}" == "Linux" ]
   then
     # ----- Determine distribution name and word size -----
 
-    # uname -p -> x86_64/i686
-    # uname -m -> x86_64/i686
-
-    set +e
-    HOST_DISTRO_NAME=$(lsb_release -si)
-    set -e
-
-    if [ -z "${HOST_DISTRO_NAME}" ]
-    then
-      echo "Please install the lsb core package and rerun."
-      HOST_DISTRO_NAME="Linux"
-    fi
+    # uname -p -> x86_64|i686
+    # uname -m -> x86_64|i686
 
     if [ "${HOST_MACHINE}" == "x86_64" ]
     then
       HOST_BITS="64"
+      HOST_NODE_ARCH="x64"
     elif [ "${HOST_MACHINE}" == "i686" ]
     then
       HOST_BITS="32"
+      HOST_NODE_ARCH="x32"
     else
       echo "Unknown uname -m ${HOST_MACHINE}"
       exit 1
     fi
 
+    HOST_NODE_PLATFORM="linux"
+
+    if [ -z "$(which lsb_release)" ]
+    then
+      echo "Please install the lsb core package and rerun."
+      exit 1
+    fi
+
+    HOST_DISTRO_NAME=$(lsb_release -si)
     HOST_DISTRO_LC_NAME=$(echo ${HOST_DISTRO_NAME} | tr "[:upper:]" "[:lower:]")
 
   else
-    echo "Unknown uname ${HOST_UNAME}"
+    echo "Unsupported uname ${HOST_UNAME}"
     exit 1
   fi
 
@@ -207,14 +217,7 @@ function host_prepare_prerequisites()
     fi # -z "${no_pdf}"
   fi # "${HOST_UNAME}" == "Darwin"
 
-  # The folder that caches all downloads is in HOME
-  if [ "$(uname)" == "Darwin" ] 
-  then
-    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Library/Caches/XBB"}
-  else
-    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.caches/XBB"}
-  fi
-  CONTAINER_CACHE_FOLDER_PATH="/Host/Caches/XBB"
+  host_prepare_cache
 
   # The host script will pass to the container script
   # various environment variables.
