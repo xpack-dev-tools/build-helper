@@ -120,9 +120,9 @@ fi
   APP_PREFIX_DOC="${APP_PREFIX}"/doc
 
   DEPLOY_FOLDER_NAME=${DEPLOY_FOLDER_NAME:-"deploy"}
-
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
-  mkdir -p "${DEPLOY_FOLDER_PATH}"
+  # Do it only if needed.
+  # mkdir -p "${DEPLOY_FOLDER_PATH}"
 }
 
 # -----------------------------------------------------------------------------
