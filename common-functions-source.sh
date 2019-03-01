@@ -7,6 +7,116 @@
 
 # -----------------------------------------------------------------------------
 
+function prepare_prerequisites() 
+{
+  if [ -f "${HOME}"/opt/homebrew/xbb/xbb-source.sh ]
+  then
+    echo
+    echo "Sourcing ${HOME}/opt/homebrew/xbb/xbb-source.sh..."
+    source "${HOME}"/opt/homebrew/xbb/xbb-source.sh
+  elif [ -f "/opt/xbb/xbb-source.sh" ]
+  then
+    echo
+    echo "Sourcing /opt/xbb/xbb-source.sh..."
+    source "/opt/xbb/xbb-source.sh"
+  fi
+
+  TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
+
+  # Compute the BUILD/HOST/TARGET for configure.
+  CROSS_COMPILE_PREFIX=""
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+
+    # For Windows targets, decide which cross toolchain to use.
+    if [ ${TARGET_BITS} == "32" ]
+    then
+      CROSS_COMPILE_PREFIX="i686-w64-mingw32"
+    elif [ ${TARGET_BITS} == "64" ]
+    then
+      CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
+    fi
+
+    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    HOST="${CROSS_COMPILE_PREFIX}"
+    TARGET=${HOST}
+
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+
+    TARGET_BITS="64" # For now, only 64-bit macOS binaries
+
+    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    HOST=${BUILD}
+    TARGET=${HOST}
+
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+
+if false
+then
+
+    if [ "${TARGET_BITS}" == "-" ]
+    then
+      TARGET_BITS="${CONTAINER_BITS}"
+    else
+      if [ "${TARGET_BITS}" != "${CONTAINER_BITS}" ]
+      then
+        echo "Cannot build ${TARGET_BITS} target on the ${CONTAINER_BITS} container."
+        exit 1
+      fi
+    fi
+fi
+
+    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    HOST=${BUILD}
+    TARGET=${HOST}
+
+  else
+    echo "Unsupported target platform ${TARGET_PLATFORM}"
+    exit 1
+  fi
+
+  if [ -f "/.dockerenv" ]
+  then
+    WORK_FOLDER_PATH="${CONTAINER_WORK_FOLDER_PATH}"
+    DOWNLOAD_FOLDER_PATH="${CONTAINER_CACHE_FOLDER_PATH}"
+  else
+    WORK_FOLDER_PATH="${HOST_WORK_FOLDER_PATH}"
+    DOWNLOAD_FOLDER_PATH="${HOST_CACHE_FOLDER_PATH}"
+  fi
+
+  if [ \( "${IS_DEVELOP}" != "y" \) -a \( -f "/.dockerenv" \) ]
+  then
+    BUILD_FOLDER_PATH="/tmp/${TARGET_FOLDER_NAME}/build"
+  else
+    BUILD_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build"
+  fi
+
+  LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/libs"
+  APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
+
+  mkdir -p "${LIBS_BUILD_FOLDER_PATH}"
+  mkdir -p "${APP_BUILD_FOLDER_PATH}"
+
+  INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"
+  LIBS_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/libs"
+  APP_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
+
+  mkdir -p "${LIBS_INSTALL_FOLDER_PATH}"
+  mkdir -p "${APP_INSTALL_FOLDER_PATH}"
+
+  APP_PREFIX="${APP_INSTALL_FOLDER_PATH}"
+  APP_PREFIX_DOC="${APP_PREFIX}"/doc
+
+  DEPLOY_FOLDER_NAME=${DEPLOY_FOLDER_NAME:-"deploy"}
+
+  DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+  mkdir -p "${DEPLOY_FOLDER_PATH}"
+}
+
+# -----------------------------------------------------------------------------
+
 function extract()
 {
   local archive_name="$1"
