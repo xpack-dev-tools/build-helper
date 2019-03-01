@@ -68,7 +68,17 @@ then
     fi
 fi
 
-    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    if [ -f "${XBB_FOLDER}/share/libtool/build-aux/config.guess" ]
+    then
+      BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    elif [ -f "/usr/share/libtool/build-aux/config.guess" ]
+    then
+      BUILD="$(/usr/share/libtool/build-aux/config.guess)"
+    elif [ -f "/usr/share/misc/config.guess" ]
+    then
+      BUILD="$(/usr/share/misc/config.guess)"
+    fi
+
     HOST=${BUILD}
     TARGET=${HOST}
 
