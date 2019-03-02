@@ -29,10 +29,10 @@ function prepare_prerequisites()
   then
 
     # For Windows targets, decide which cross toolchain to use.
-    if [ ${TARGET_BITS} == "32" ]
+    if [ ${TARGET_ARCH} == "x32" ]
     then
       CROSS_COMPILE_PREFIX="i686-w64-mingw32"
-    elif [ ${TARGET_BITS} == "64" ]
+    elif [ ${TARGET_ARCH} == "x64" ]
     then
       CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
     fi
@@ -121,7 +121,7 @@ fi
 
   DEPLOY_FOLDER_NAME=${DEPLOY_FOLDER_NAME:-"deploy"}
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
-  # Do it only if needed.
+  # Do it later, only if needed.
   # mkdir -p "${DEPLOY_FOLDER_PATH}"
 }
 
