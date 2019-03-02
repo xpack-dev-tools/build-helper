@@ -7,6 +7,23 @@
 
 # -----------------------------------------------------------------------------
 
+function do_config_guess() 
+{
+  if [ -f "${XBB_FOLDER}/share/libtool/build-aux/config.guess" ]
+  then
+    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+  elif [ -f "/usr/share/libtool/build-aux/config.guess" ]
+  then
+    BUILD="$(/usr/share/libtool/build-aux/config.guess)"
+  elif [ -f "/usr/share/misc/config.guess" ]
+  then
+    BUILD="$(/usr/share/misc/config.guess)"
+  else
+    echo "Could not find config.guess."
+    exit 1
+  fi
+}
+
 function prepare_prerequisites() 
 {
   if [ -f "${HOME}"/opt/homebrew/xbb/xbb-source.sh ]
@@ -37,7 +54,8 @@ function prepare_prerequisites()
       CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
     fi
 
-    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    do_config_guess
+
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET=${HOST}
 
@@ -46,7 +64,8 @@ function prepare_prerequisites()
 
     TARGET_BITS="64" # For now, only 64-bit macOS binaries
 
-    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    do_config_guess
+
     HOST=${BUILD}
     TARGET=${HOST}
 
@@ -68,16 +87,7 @@ then
     fi
 fi
 
-    if [ -f "${XBB_FOLDER}/share/libtool/build-aux/config.guess" ]
-    then
-      BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
-    elif [ -f "/usr/share/libtool/build-aux/config.guess" ]
-    then
-      BUILD="$(/usr/share/libtool/build-aux/config.guess)"
-    elif [ -f "/usr/share/misc/config.guess" ]
-    then
-      BUILD="$(/usr/share/misc/config.guess)"
-    fi
+    do_config_guess
 
     HOST=${BUILD}
     TARGET=${HOST}
