@@ -240,6 +240,224 @@ function copy_build_git()
 
 # -----------------------------------------------------------------------------
 
+function check_binary()
+{
+  local file_path="$1"
+
+  if [ ! -x "${file_path}" ]
+  then
+    return 0
+  fi
+
+  if file --mime "${file_path}" | grep -q text
+  then
+    return 0
+  fi
+
+  check_library "$1"
+}
+
+function check_library()
+{
+  local file_path="$1"
+  local file_name="$(basename ${file_path})"
+  local folder_name="$(dirname ${file_path})"
+
+  (
+    xbb_activate
+
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo "${file_path}"
+      set +e
+      ${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" | grep -i 'DLL Name'
+
+      local dll_names=$(${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" \
+        | grep -i 'DLL Name' \
+        | sed -e 's/.*DLL Name: \(.*\)/\1/' \
+      )
+
+      for n in ${dll_names}
+      do
+        if [ ! -f "${folder_name}/${n}" ] 
+        then
+          if is_win_sys_dll "${n}"
+          then
+            :
+          elif [ "${n}${HAS_WINPTHREAD}" == "libwinpthread-1.dlly" ]
+          then
+            :
+          elif [[ ${n} == python*.dll ]] && [[ ${file_name} == *-gdb-py.exe ]]
+          then
+            :
+          else
+            echo "Unexpected |${n}|"
+            exit 1
+          fi
+        fi
+      done
+      set -e
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      echo
+      set +e
+      otool -L "${file_path}"
+
+      local unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+      set -e
+      # echo "|${unxp}|"
+      if [ ! -z "$unxp" ]
+      then
+        echo "Unexpected |${unxp}|"
+        exit 1
+      fi
+    elif [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      echo
+      echo "${file_path}"
+      set +e
+      readelf -d "${file_path}" | egrep -i 'library|dynamic'
+
+      local so_names=$(readelf -d "${file_path}" \
+        | grep -i 'Shared library' \
+        | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
+      )
+
+      for n in ${so_names}
+      do
+        if [ ! -f "${folder_name}/${n}" ] 
+        then
+          if is_linux_sys_so "${n}"
+          then
+            :
+          elif [[ ${n} == libpython* ]] && [[ ${file_name} == *-gdb-py ]]
+          then
+            :
+          else
+            echo "Unexpected |${n}|"
+            exit 1
+          fi
+        fi
+      done
+      set -e
+    fi
+  )
+}
+
+function is_win_sys_dll() 
+{
+  local dll_name="$1"
+
+  # DLLs that are expected to be present on any Windows.
+  local sys_dlls=(ADVAPI32.dll \
+    KERNEL32.dll \
+    msvcrt.dll \
+    SHELL32.dll \
+    USER32.dll \
+    WINMM.dll \
+    WINMM.DLL \
+    WS2_32.dll \
+    ole32.dll \
+    DNSAPI.dll \
+    IPHLPAPI.dll \
+    GDI32.dll \
+    IMM32.dll \
+    IMM32.DLL \
+    OLEAUT32.dll \
+    IPHLPAPI.DLL \
+    VERSION.dll \
+    SETUPAPI.dll \
+  )
+
+  for dll in "${sys_dlls[@]}"
+  do
+    if [ "${dll}" == "${dll_name}" ]
+    then
+        return 0 # True
+    fi
+  done
+  return 1 # False
+}
+
+function is_linux_sys_so() 
+{
+  local lib_name="$1"
+
+  # Shared libraries that are expected to be present on any Linux.
+  local sys_libs=(\
+    librt.so.1 \
+    libm.so.6 \
+    libc.so.6 \
+    libutil.so.1 \
+    libpthread.so.0 \
+    libdl.so.2 \
+    ld-linux-x86-64.so.2 \
+    ld-linux.so.2 \
+    libX11.so.6 \
+  )
+
+  for lib in "${sys_libs[@]}"
+  do
+    if [ "${lib}" == "${lib_name}" ]
+    then
+        return 0 # True
+    fi
+  done
+  return 1 # False
+}
+
+# -----------------------------------------------------------------------------
+
+function copy_win_gcc_dll() 
+{
+  local dll_name="$1"
+
+  # Identify the current cross gcc version, to locate the specific dll folder.
+  local cross_gcc_version=$(${CROSS_COMPILE_PREFIX}-gcc --version | grep 'gcc' | sed -e 's/.*\s\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1.\2.\3/')
+  local cross_gcc_version_short=$(echo ${cross_gcc_version} | sed -e 's/\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1.\2/')
+  local SUBLOCATION="-win32"
+
+  # First try Ubuntu specific locations,
+  # then do a long full search.
+
+  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" ]
+  then
+    cp -v "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" ]
+  then
+    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" ]
+  then
+    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" ]
+  then
+    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" \
+      "${APP_PREFIX}"/bin
+  else
+    echo "Searching /usr for ${dll_name}..."
+    SJLJ_PATH=$(find "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
+    cp -v ${SJLJ_PATH} "${APP_PREFIX}"/bin
+  fi
+}
+
+function copy_win_libwinpthread_dll() 
+{
+  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}"/bin/libwinpthread-1.dll ]
+  then
+    cp "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}"/bin/libwinpthread-1.dll \
+      "${APP_PREFIX}/bin"
+  else
+    echo "No libwinpthread-1.dll"
+    exit 1
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 # Default empty definition, if XBB is available, it should
 # redefine it.
 function xbb_activate()
