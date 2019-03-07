@@ -26,11 +26,11 @@ function do_config_guess()
 
 function prepare_xbb_env() 
 {
-  if [ -f "${HOME}"/opt/homebrew/xbb/xbb-source.sh ]
+  if [ -f "${HOME}/opt/homebrew/xbb/xbb-source.sh" ]
   then
     echo
     echo "Sourcing ${HOME}/opt/homebrew/xbb/xbb-source.sh..."
-    source "${HOME}"/opt/homebrew/xbb/xbb-source.sh
+    source "${HOME}/opt/homebrew/xbb/xbb-source.sh"
   elif [ -f "/opt/xbb/xbb-source.sh" ]
   then
     echo
@@ -57,7 +57,7 @@ function prepare_xbb_env()
     do_config_guess
 
     HOST="${CROSS_COMPILE_PREFIX}"
-    TARGET=${HOST}
+    TARGET="${HOST}"
 
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
@@ -66,8 +66,8 @@ function prepare_xbb_env()
 
     do_config_guess
 
-    HOST=${BUILD}
-    TARGET=${HOST}
+    HOST="${BUILD}"
+    TARGET="${HOST}"
 
   elif [ "${TARGET_PLATFORM}" == "linux" ]
   then
@@ -90,8 +90,8 @@ fi
 
     do_config_guess
 
-    HOST=${BUILD}
-    TARGET=${HOST}
+    HOST="${BUILD}"
+    TARGET="${HOST}"
 
   else
     echo "Unsupported target platform ${TARGET_PLATFORM}"
@@ -131,7 +131,7 @@ fi
   mkdir -p "${LIBS_INSTALL_FOLDER_PATH}"
   mkdir -p "${APP_INSTALL_FOLDER_PATH}"
 
-  DEPLOY_FOLDER_NAME=${DEPLOY_FOLDER_NAME:-"deploy"}
+  DEPLOY_FOLDER_NAME="${DEPLOY_FOLDER_NAME:-"deploy"}"
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
   # Do it later, only if needed.
   # mkdir -p "${DEPLOY_FOLDER_PATH}"
@@ -235,11 +235,11 @@ function git_clone()
 # Copy the build files to the Work area, to make them easily available. 
 function copy_build_git()
 {
-  rm -rf "${HOST_WORK_FOLDER_PATH}"/build.git
-  mkdir -p "${HOST_WORK_FOLDER_PATH}"/build.git
-  cp -r "$(dirname ${script_folder_path})"/* "${HOST_WORK_FOLDER_PATH}"/build.git
-  rm -rf "${HOST_WORK_FOLDER_PATH}"/build.git/scripts/helper/.git
-  rm -rf "${HOST_WORK_FOLDER_PATH}"/build.git/scripts/helper/build-helper.sh
+  rm -rf "${HOST_WORK_FOLDER_PATH}/build.git"
+  mkdir -p "${HOST_WORK_FOLDER_PATH}/build.git"
+  cp -r "$(dirname ${script_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
+  rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/.git"
+  rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/build-helper.sh"
 }
 
 # -----------------------------------------------------------------------------
@@ -484,15 +484,15 @@ function copy_win_gcc_dll()
   else
     echo "Searching /usr for ${dll_name}..."
     SJLJ_PATH=$(find "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
-    cp -v ${SJLJ_PATH} "${APP_PREFIX}"/bin
+    cp -v ${SJLJ_PATH} "${APP_PREFIX}/bin"
   fi
 }
 
 function copy_win_libwinpthread_dll() 
 {
-  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}"/bin/libwinpthread-1.dll ]
+  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" ]
   then
-    cp "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}"/bin/libwinpthread-1.dll \
+    cp "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" \
       "${APP_PREFIX}/bin"
   else
     echo "No libwinpthread-1.dll"
@@ -768,21 +768,21 @@ function copy_build_files()
 
     find scripts patches -type d \
       -exec /usr/bin/install -d -m 0755 \
-        "${APP_PREFIX}"/${DISTRO_LC_NAME}/'{}' ';'
+        "${APP_PREFIX}/${DISTRO_LC_NAME}/"'{}' ';'
 
     find scripts patches -type f \
       -exec /usr/bin/install -v -c -m 644 \
-        '{}' "${APP_PREFIX}"/${DISTRO_LC_NAME}/'{}' ';'
+        '{}' "${APP_PREFIX}/${DISTRO_LC_NAME}/"'{}' ';'
 
     if [ -f CHANGELOG.txt ]
     then
       /usr/bin/install -v -c -m 644 \
-          CHANGELOG.txt "${APP_PREFIX}"/${DISTRO_LC_NAME}
+          CHANGELOG.txt "${APP_PREFIX}/${DISTRO_LC_NAME}"
     fi
     if [ -f CHANGELOG.md ]
     then
       /usr/bin/install -v -c -m 644 \
-          CHANGELOG.md "${APP_PREFIX}"/${DISTRO_LC_NAME}
+          CHANGELOG.md "${APP_PREFIX}/${DISTRO_LC_NAME}"
     fi
   )
 }
