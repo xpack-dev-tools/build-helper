@@ -119,6 +119,8 @@ function host_detect()
 
   GROUP_ID=$(id -g)
   USER_ID=$(id -u)
+
+  HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
 }
 
 # -----------------------------------------------------------------------------
@@ -261,8 +263,9 @@ function host_build_target()
   echo "=== ${message}"
 
   local container_script_path=""
-  local target_os=""
-  local target_bits="-"
+  local target_platform="${HOST_NODE_PLATFORM}"
+  local target_arch="${HOST_NODE_ARCH}"
+  local target_bits="${HOST_BITS}"
   # If the docker image is not set, it is a native build.
   local docker_image=""
   local build_binaries_path=""
@@ -277,8 +280,13 @@ function host_build_target()
         shift 2
         ;;
 
-      --target-os)
-        target_os="$2"
+      --target-platform)
+        target_platform="$2"
+        shift 2
+        ;;
+
+      --target-arch)
+        target_arch="$2"
         shift 2
         ;;
 
@@ -318,23 +326,6 @@ function host_build_target()
 
   # ---------------------------------------------------------------------------
 
-  if [ \( -z "${target_os}" \) -a \( -n "${HOST_UNAME}" \) ]
-  then
-    # Build native
-    if [ "${HOST_UNAME}" == "Darwin" ]
-    then
-      target_os="macos"
-      target_bits="-"
-    elif [ "${HOST_UNAME}" == "Linux" ]
-    then
-      target_os="linux"
-      target_bits="-"
-    else
-      echo "Unsupported host ${HOST_UNAME}, exit."
-      exit 1
-    fi
-  fi
-
   mkdir -p "$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"
   echo "${RELEASE_VERSION}" >"$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"/VERSION
 
@@ -345,8 +336,10 @@ function host_build_target()
 
   echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
-  echo "TARGET_OS=\"${target_os}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "TARGET_PLATFORM=\"${target_platform}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "TARGET_ARCH=\"${target_arch}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "TARGET_BITS=\"${target_bits}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+
   echo "HOST_UNAME=\"${HOST_UNAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "GROUP_ID=\"${GROUP_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "USER_ID=\"${USER_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
@@ -373,7 +366,7 @@ function host_build_target()
     host_run_docker_script \
       --script "${container_script_path}" \
       --docker-image "${docker_image}" \
-      --docker-container-name "${APP_LC_NAME}-${target_os}${target_bits}-build" \
+      --docker-container-name "${APP_LC_NAME}-${target_platform}-${target_arch}-build" \
       --env-file "${env_file}" \
       --host-uname "${HOST_UNAME}" \
       -- \
@@ -542,6 +535,7 @@ function host_show_sha() {
   if [ -d "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" ]
   then
     echo
+    echo "SHA signatures..."
     set +e
     cat "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/"*.sha
     set -e

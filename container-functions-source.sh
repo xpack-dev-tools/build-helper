@@ -37,12 +37,17 @@ function detect_container()
 
   CONTAINER_DISTRO_NAME=""
   CONTAINER_UNAME="$(uname)"
+  CONTAINER_NODE_PLATFORM=""
+  CONTAINER_NODE_ARCH=""
 
   if [ "${CONTAINER_UNAME}" == "Darwin" ]
   then
 
     CONTAINER_BITS="64"
     CONTAINER_MACHINE="x86_64"
+
+    CONTAINER_NODE_PLATFORM="darwin"
+    CONTAINER_NODE_ARCH="x64"
 
     CONTAINER_DISTRO_NAME=Darwin
     CONTAINER_DISTRO_LC_NAME=darwin
@@ -55,6 +60,9 @@ function detect_container()
     CONTAINER_DISTRO_NAME=$(lsb_release -si)
     set -e
 
+    CONTAINER_NODE_PLATFORM="linux"
+    CONTAINER_NODE_ARCH="x64"
+
     if [ -z "${CONTAINER_DISTRO_NAME}" ]
     then
       echo "Please install the lsb core package and rerun."
@@ -65,9 +73,11 @@ function detect_container()
     if [ "${CONTAINER_MACHINE}" == "x86_64" ]
     then
       CONTAINER_BITS="64"
+      CONTAINER_NODE_ARCH="x64"
     elif [ "${CONTAINER_MACHINE}" == "i686" ]
     then
       CONTAINER_BITS="32"
+      CONTAINER_NODE_ARCH="x32"
     else
       echo "Unknown uname -m ${CONTAINER_MACHINE}"
       exit 1
