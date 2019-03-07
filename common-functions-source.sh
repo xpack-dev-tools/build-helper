@@ -24,7 +24,7 @@ function do_config_guess()
   fi
 }
 
-function prepare_prerequisites() 
+function prepare_xbb_env() 
 {
   if [ -f "${HOME}"/opt/homebrew/xbb/xbb-source.sh ]
   then
