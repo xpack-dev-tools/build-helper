@@ -72,22 +72,6 @@ function prepare_xbb_env()
   elif [ "${TARGET_PLATFORM}" == "linux" ]
   then
 
-# ??????
-if false
-then
-
-    if [ "${TARGET_BITS}" == "-" ]
-    then
-      TARGET_BITS="${CONTAINER_BITS}"
-    else
-      if [ "${TARGET_BITS}" != "${CONTAINER_BITS}" ]
-      then
-        echo "Cannot build ${TARGET_BITS} target on the ${CONTAINER_BITS} container."
-        exit 1
-      fi
-    fi
-fi
-
     do_config_guess
 
     HOST="${BUILD}"
@@ -135,6 +119,8 @@ fi
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
   # Do it later, only if needed.
   # mkdir -p "${DEPLOY_FOLDER_PATH}"
+
+  BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
 
   IS_DEVELOP=${IS_DEVELOP:-""}
 }
@@ -265,7 +251,7 @@ function check_library()
 {
   local file_path="$1"
   local file_name="$(basename ${file_path})"
-  local folder_name="$(dirname ${file_path})"
+  local folder_path="$(dirname ${file_path})"
 
   (
     xbb_activate
@@ -273,7 +259,7 @@ function check_library()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       echo
-      echo "${file_path}"
+      echo "${file_name}"
       set +e
       ${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" | grep -i 'DLL Name'
 
@@ -284,7 +270,7 @@ function check_library()
 
       for n in ${dll_names}
       do
-        if [ ! -f "${folder_name}/${n}" ] 
+        if [ ! -f "${folder_path}/${n}" ] 
         then
           if is_win_sys_dll "${n}"
           then
@@ -305,9 +291,14 @@ function check_library()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
       echo
-      set +e
-      otool -L "${file_path}"
+      (
+        set +e
+        cd ${folder_path}
+        otool -L "${file_name}"
+        set -e
+      )
 
+      set +e
       local unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
       set -e
       # echo "|${unxp}|"
@@ -319,7 +310,7 @@ function check_library()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
       echo
-      echo "${file_path}"
+      echo "${file_name}"
       set +e
       readelf -d "${file_path}" | egrep -i 'library|dynamic'
 
@@ -330,7 +321,7 @@ function check_library()
 
       for n in ${so_names}
       do
-        if [ ! -f "${folder_name}/${n}" ] 
+        if [ ! -f "${folder_path}/${n}" ] 
         then
           if is_linux_sys_so "${n}"
           then
