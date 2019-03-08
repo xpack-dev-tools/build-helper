@@ -809,7 +809,7 @@ function create_archive()
       # Temporarily use the old file name convention.
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
-        target_folder_name="${CONTAINER_DISTRO_LC_NAME}${TARGET_BITS}"
+        target_folder_name="win${TARGET_BITS}"
       elif [ "${TARGET_PLATFORM}" == "darwin" ]
       then
         target_folder_name="macos"
