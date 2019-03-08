@@ -100,7 +100,8 @@ function host_detect()
 
     HOST_NODE_PLATFORM="linux"
 
-    if [ -z "$(which lsb_release)" ]
+    local lsb_path=$(which lsb_release)
+    if [ -z "${lsb_path}" ]
     then
       echo "Please install the lsb core package and rerun."
       exit 1
