@@ -567,6 +567,7 @@ function is_win_sys_dll()
     IPHLPAPI.DLL \
     VERSION.dll \
     SETUPAPI.dll \
+    CFGMGR32.dll \
   )
 
   for dll in "${sys_dlls[@]}"
