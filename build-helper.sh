@@ -447,7 +447,7 @@ do_host_show_sha() {
   echo "" > ${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/empty.sha
   # ----
 
-  cat "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/"*.sha
+  cat "${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"/*.sha
 }
 
 # v===========================================================================v
@@ -1223,15 +1223,15 @@ do_container_win_copy_gcc_dlls() {
 
   if [ -d "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION}/" ]
   then
-    cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION}/"*.dll \
+    cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION}"/*.dll \
       "${install_folder}/${APP_LC_NAME}/bin"
   elif [ -d "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION_SHORT}/" ]
   then
-    cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION_SHORT}/"*.dll \
+    cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION_SHORT}"/*.dll \
       "${install_folder}/${APP_LC_NAME}/bin"
   elif [ -d "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION_SHORT}${SUBLOCATION}/" ]
   then
-    cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION_SHORT}${SUBLOCATION}/"*.dll \
+    cp -v "/usr/lib/gcc/${cross_compile_prefix}/${CROSS_GCC_VERSION_SHORT}${SUBLOCATION}"/*.dll \
       "${install_folder}/${APP_LC_NAME}/bin"
   else
     echo "No DLLs"
@@ -1284,7 +1284,7 @@ do_container_copy_license() {
   # Iterate all files in a folder and install some of them in the
   # destination folder
   echo "$2"
-  for f in "$1/"*
+  for f in "$1"/*
   do
     if [ -f "$f" ]
     then
@@ -1471,7 +1471,7 @@ __EOF__
 
     # cp -f "${src_folder}/rdimon.specs" "${dst_folder}/"
     cp -v -f "${src_folder}/nosys.specs" "${dst_folder}/"
-    cp -v -f "${src_folder}/"*crt0.o "${dst_folder}/"
+    cp -v -f "${src_folder}"/*crt0.o "${dst_folder}/"
 }
 
 # Copy target libraries from each multilib directories.

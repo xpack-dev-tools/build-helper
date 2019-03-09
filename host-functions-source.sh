@@ -538,7 +538,7 @@ function host_show_sha() {
     echo
     echo "SHA signatures..."
     set +e
-    cat "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}/"*.sha
+    cat "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"/*.sha
     set -e
   fi
 }

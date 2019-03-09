@@ -459,19 +459,19 @@ function copy_win_gcc_dll()
   if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" ]
   then
     cp -v "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" \
-      "${APP_PREFIX}"/bin
+      "${APP_PREFIX}/bin"
   elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" ]
   then
     cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" \
-      "${APP_PREFIX}"/bin
+      "${APP_PREFIX}/bin"
   elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" ]
   then
     cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" \
-      "${APP_PREFIX}"/bin
+      "${APP_PREFIX}/bin"
   elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" ]
   then
     cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" \
-      "${APP_PREFIX}"/bin
+      "${APP_PREFIX}/bin"
   else
     echo "Searching /usr for ${dll_name}..."
     SJLJ_PATH=$(find "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
@@ -759,11 +759,11 @@ function copy_build_files()
 
     find scripts patches -type d \
       -exec /usr/bin/install -d -m 0755 \
-        "${APP_PREFIX}/${DISTRO_LC_NAME}/"'{}' ';'
+        "${APP_PREFIX}/${DISTRO_LC_NAME}"/'{}' ';'
 
     find scripts patches -type f \
       -exec /usr/bin/install -v -c -m 644 \
-        '{}' "${APP_PREFIX}/${DISTRO_LC_NAME}/"'{}' ';'
+        '{}' "${APP_PREFIX}/${DISTRO_LC_NAME}"/'{}' ';'
 
     if [ -f CHANGELOG.txt ]
     then
@@ -843,11 +843,11 @@ function create_archive()
       echo
       echo "ZIP file: \"${distribution_file}\"."
 
-      rm -rf "${INSTALL_FOLDER_PATH}"/archive
+      rm -rf "${INSTALL_FOLDER_PATH}/archive"
       mkdir -p "${archive_version_path}"
       mv "${APP_PREFIX}"/* "${archive_version_path}"
 
-      cd "${INSTALL_FOLDER_PATH}"/archive
+      cd "${INSTALL_FOLDER_PATH}/archive"
       zip -r9 -q "${distribution_file}" *
 
       # Put folders back.
@@ -863,7 +863,7 @@ function create_archive()
 
       echo "Compressed tarball: \"${distribution_file}\"."
 
-      rm -rf "${INSTALL_FOLDER_PATH}"/archive
+      rm -rf "${INSTALL_FOLDER_PATH}/archive"
       mkdir -p "${archive_version_path}"
       mv -v "${APP_PREFIX}"/* "${archive_version_path}"
 
