@@ -122,6 +122,7 @@ function host_detect()
   USER_ID=$(id -u)
 
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
+  IS_NATIVE=""
 }
 
 # -----------------------------------------------------------------------------
