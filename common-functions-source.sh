@@ -1097,6 +1097,63 @@ function create_archive()
 
 # -----------------------------------------------------------------------------
 
+# $1 = application name
+function check_application()
+{
+  local app_name=$1
+
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+
+    echo
+    echo "Checking binaries for unwanted shared libraries..."
+
+    check_binary "${APP_PREFIX}/bin/${app_name}"
+
+    local libs=$(find "${APP_PREFIX}/bin" -name \*.so.\* -type f)
+    for lib in ${libs} 
+    do
+      check_library ${lib}
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+
+    echo
+    echo "Checking binaries for unwanted dynamic libraries..."
+
+    check_binary "${APP_PREFIX}/bin/${app_name}"
+
+    local libs=$(find "${APP_PREFIX}/bin" -name \*.dylib -type f)
+    for lib in ${libs} 
+    do
+      check_library ${lib}
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+
+    echo
+    echo "Checking binaries for unwanted DLLs..."
+
+    check_binary "${APP_PREFIX}/bin/${app_name}.exe"
+
+    local libs=$(find "${APP_PREFIX}/bin" -name \*.dll -type f)
+    for lib in ${libs} 
+    do
+      check_library ${lib}
+    done
+
+  else
+
+    echo "Unsupported TARGET_PLATFORM ${TARGET_PLATFORM}"
+    exit 1
+
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 function compute_sha() 
 {
   # $1 shasum program
@@ -1108,7 +1165,6 @@ function compute_sha()
   "$@" >"${sha_file}"
   echo "SHA: $(cat ${sha_file})"
 }
-
 
 # -----------------------------------------------------------------------------
 
