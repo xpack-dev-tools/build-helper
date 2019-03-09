@@ -127,6 +127,210 @@ function prepare_xbb_env()
 
 # -----------------------------------------------------------------------------
 
+function do_actions()
+{
+  if [ "${ACTION}" == "clean" ]
+  then
+    echo
+
+    if [ "${IS_NATIVE}" == "y" ]
+    then
+      echo "Removing the ${TARGET_FOLDER_NAME} build and install qemu folders..."
+
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build/${APP_LC_NAME}"
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install/${APP_LC_NAME}"
+    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
+    then
+      if [ "${DO_BUILD_WIN32}" == "y" ]
+      then
+        echo "Removing the win32-x32 build and install qemu folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/${APP_LC_NAME}"
+      fi
+      if [ "${DO_BUILD_WIN64}" == "y" ]
+      then
+        echo "Removing the win32-x64 build and install qemu folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/install/${APP_LC_NAME}"
+      fi
+      if [ "${DO_BUILD_LINUX32}" == "y" ]
+      then
+        echo "Removing the linux-x32 build and install qemu folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/${APP_LC_NAME}"
+      fi
+      if [ "${DO_BUILD_LINUX64}" == "y" ]
+      then
+        echo "Removing the linux-x64 build and install qemu folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/${APP_LC_NAME}"
+      fi
+      if [ "${DO_BUILD_OSX}" == "y" ]
+      then
+        echo "Removing the darwin-x64 build and install qemu folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/install/${APP_LC_NAME}"
+      fi
+    else
+      echo "Removing the ${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH} build and install qemu folders..."
+
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/build/${APP_LC_NAME}"
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/install/${APP_LC_NAME}"
+    fi
+  fi
+
+  if [ "${ACTION}" == "cleanlibs" ]
+  then
+    echo
+
+    if [ "${IS_NATIVE}" == "y" ]
+    then
+      echo "Removing the ${TARGET_FOLDER_NAME} build and install libs folders..."
+
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build/libs"
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install/libs"
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"/stamp-*-installed
+    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
+    then
+      if [ "${DO_BUILD_WIN32}" == "y" ]
+      then
+        echo "Removing the win32-x32 build and install libs folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install"/stamp-*-installed
+      fi
+      if [ "${DO_BUILD_WIN64}" == "y" ]
+      then
+        echo "Removing the win32-x64 build and install libs folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/install"/stamp-*-installed
+      fi
+      if [ "${DO_BUILD_LINUX32}" == "y" ]
+      then
+        echo "Removing the linux-x32 build and install libs folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install"/stamp-*-installed
+      fi
+      if [ "${DO_BUILD_LINUX64}" == "y" ]
+      then
+        echo "Removing the linux-x64 build and install libs folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install"/stamp-*-installed
+      fi
+      if [ "${DO_BUILD_OSX}" == "y" ]
+      then
+        echo "Removing the darwin-x64 build and install libs folders..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/install"/stamp-*-installed
+      fi
+    else
+      echo "Removing the ${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH} build and install libs folders..."
+
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/build/libs"
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/install/libs"
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/install"/stamp-*-installed
+    fi
+  fi
+
+  if [ "${ACTION}" == "cleanall" ]
+  then
+    echo
+    if [ "${IS_NATIVE}" == "y" ]
+    then
+      echo "Removing the ${TARGET_FOLDER_NAME} folder..."
+  
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
+    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
+    then
+      if [ "${DO_BUILD_WIN32}" == "y" ]
+      then
+        echo "Removing the win32-x32 folder..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32"
+      fi
+      if [ "${DO_BUILD_WIN64}" == "y" ]
+      then
+        echo "Removing the win32-x64 folder..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64"
+      fi
+      if [ "${DO_BUILD_LINUX32}" == "y" ]
+      then
+        echo "Removing the linux-x32 folder..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32"
+      fi
+      if [ "${DO_BUILD_LINUX64}" == "y" ]
+      then
+        echo "Removing the linux-x64 folder..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64"
+      fi
+      if [ "${DO_BUILD_OSX}" == "y" ]
+      then
+        echo "Removing the darwin-x64 folder..."
+
+        rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64"
+      fi
+    else
+      echo "Removing the ${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH} folder..."
+
+      rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}"
+    fi
+  fi
+
+  if [ "${ACTION}" == "clean" -o "${ACTION}" == "cleanlibs" -o "${ACTION}" == "cleanall" ]
+  then
+    echo
+    echo "Clean completed. Proceed with a regular build."
+
+    exit 0
+  fi
+
+  # Not used for native buils. Otherwise the names of the docker images
+  # must be set.
+  if [ "${ACTION}" == "preload-images" ]
+  then
+    host_start_timer
+
+    host_prepare_docker
+
+    echo
+    echo "Check/Preload Docker images..."
+
+    echo
+    docker run --interactive --tty "${docker_linux64_image}" \
+      lsb_release --description --short
+
+    echo
+    docker run --interactive --tty "${docker_linux32_image}" \
+      lsb_release --description --short
+
+    echo
+    docker images
+
+    host_stop_timer
+
+    exit 0
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 function extract()
 {
   local archive_name="$1"
