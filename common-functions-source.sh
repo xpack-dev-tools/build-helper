@@ -357,17 +357,18 @@ function extract()
         if [ ! -z "$3" ]
         then
           local patch_file_name="$3"
-          local patch_path="${WORK_FOLDER_PATH}/build.git/patches/${patch_file_name}"
+          local patch_path="${BUILD_GIT_PATH}/patches/${patch_file_name}"
           if [ -f "${patch_path}" ]
           then
             echo "Patching..."
+            cd "${folder_name}"
             patch -p0 < "${patch_path}"
           fi
         fi
       fi
     )
   else
-    echo "Folder \"$(pwd)/${folder_name}\" already present."
+    echo "Folder \"${pwd}p/${folder_name}\" already present."
   fi
 }
 
@@ -399,8 +400,13 @@ function download_and_extract()
   local archive_name="$2"
   local folder_name="$3"
 
-  download "${url}" "${archive_name}" 
-  extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}"
+  download "${url}" "${archive_name}"
+  if [ $# -gt 3 ]
+  then
+    extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}" "$4"
+  else
+    extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}"
+  fi
 }
 
 function git_clone()
