@@ -257,6 +257,83 @@ function host_options()
   fi
 }
 
+function host_native_options()
+{
+  local help_message="$1"
+  shift
+
+  ACTION=""
+
+  DO_BUILD_WIN=""
+  IS_DEBUG=""
+  IS_DEVELOP=""
+  WITH_STRIP=""
+  IS_NATIVE="y"
+
+  # Attempts to use 8 occasionally failed, reduce if necessary.
+  if [ "${HOST_UNAME}" == "Darwin" ]
+  then
+    JOBS="--jobs=$(sysctl -n hw.ncpu)"
+  else
+    JOBS="--jobs=$(grep ^processor /proc/cpuinfo|wc -l)"
+  fi
+
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+
+      clean|cleanlibs|cleanall)
+        ACTION="$1"
+        ;;
+
+      --win|--windows)
+        DO_BUILD_WIN="y"
+        ;;
+
+      --debug)
+        IS_DEBUG="y"
+        ;;
+
+      --develop)
+        IS_DEVELOP="y"
+        ;;
+
+      --jobs)
+        shift
+        JOBS="--jobs=$1"
+        ;;
+
+    --help)
+        echo "Build a local/native GNU MCU Eclipse ARM QEMU."
+        echo "Usage:"
+        # Some of the options are processed by the container script.
+        echo "${help_message}"
+        echo
+        exit 0
+        ;;
+
+      *)
+        echo "Unknown action/option $1"
+        exit 1
+        ;;
+
+    esac
+    shift
+
+  done
+
+  if [ "${DO_BUILD_WIN}" == "y" ]
+  then
+    if [ "${HOST_NODE_PLATFORM}" == "linux" ]
+    then
+      TARGET_PLATFORM="win32"
+    else
+      echo "Windows cross builds are available only on Linux."
+      exit 1
+    fi
+  fi
+}
+
 function host_common()
 {
   if [ -f "${script_folder_path}/VERSION" ]
@@ -287,7 +364,12 @@ function host_common()
   # -----------------------------------------------------------------------------
 
   # The Work folder is in HOME.
-  HOST_WORK_FOLDER_PATH=${HOST_WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-${RELEASE_VERSION}"}
+  if [ "${IS_NATIVE}" != "y" ]
+  then
+    HOST_WORK_FOLDER_PATH=${HOST_WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-${RELEASE_VERSION}"}
+  else
+    HOST_WORK_FOLDER_PATH=${HOST_WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-dev"}
+  fi
   CONTAINER_WORK_FOLDER_PATH="/Host${HOST_WORK_FOLDER_PATH}"
 
   SOURCES_FOLDER_PATH="${SOURCES_FOLDER_PATH:-"${HOST_WORK_FOLDER_PATH}/sources"}"
