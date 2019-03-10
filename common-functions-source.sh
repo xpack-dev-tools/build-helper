@@ -135,7 +135,7 @@ function do_actions()
 
     if [ "${IS_NATIVE}" == "y" ]
     then
-      echo "Removing the ${TARGET_FOLDER_NAME} build and install qemu folders..."
+      echo "Removing the ${TARGET_FOLDER_NAME} build and install ${APP_LC_NAME} folders..."
 
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build/${APP_LC_NAME}"
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install/${APP_LC_NAME}"
@@ -143,41 +143,41 @@ function do_actions()
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
-        echo "Removing the win32-x32 build and install qemu folders..."
+        echo "Removing the win32-x32 build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
-        echo "Removing the win32-x64 build and install qemu folders..."
+        echo "Removing the win32-x64 build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_LINUX32}" == "y" ]
       then
-        echo "Removing the linux-x32 build and install qemu folders..."
+        echo "Removing the linux-x32 build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
-        echo "Removing the linux-x64 build and install qemu folders..."
+        echo "Removing the linux-x64 build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_OSX}" == "y" ]
       then
-        echo "Removing the darwin-x64 build and install qemu folders..."
+        echo "Removing the darwin-x64 build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/install/${APP_LC_NAME}"
       fi
     else
-      echo "Removing the ${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH} build and install qemu folders..."
+      echo "Removing the ${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH} build and install ${APP_LC_NAME} folders..."
 
       rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/build/${APP_LC_NAME}"
       rm -rf "${HOST_WORK_FOLDER_PATH}/${HOST_NODE_PLATFORM}-${HOST_NODE_ARCH}/install/${APP_LC_NAME}"
