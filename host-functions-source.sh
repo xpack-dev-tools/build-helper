@@ -257,6 +257,73 @@ function host_options()
   fi
 }
 
+function host_common()
+{
+  if [ -f "${script_folder_path}/VERSION" ]
+  then
+    # When running from the distribution folder.
+    RELEASE_VERSION=${RELEASE_VERSION:-"$(cat "${script_folder_path}"/VERSION)"}
+  fi
+
+  echo
+  echo "Preparing release ${RELEASE_VERSION}..."
+
+  echo
+  defines_script_path="${script_folder_path}/defs-source.sh"
+  echo "Definitions source script: \"${defines_script_path}\"."
+  source "${defines_script_path}"
+
+  # -----------------------------------------------------------------------------
+
+  common_helper_functions_script_path="${script_folder_path}/helper/common-functions-source.sh"
+  echo "Common helper functions source script: \"${common_helper_functions_script_path}\"."
+  source "${common_helper_functions_script_path}"
+
+  # May override some of the helper/common definitions.
+  common_functions_script_path="${script_folder_path}/common-functions-source.sh"
+  echo "Common functions source script: \"${common_functions_script_path}\"."
+  source "${common_functions_script_path}"
+
+  # -----------------------------------------------------------------------------
+
+  # The Work folder is in HOME.
+  HOST_WORK_FOLDER_PATH=${HOST_WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-${RELEASE_VERSION}"}
+  CONTAINER_WORK_FOLDER_PATH="/Host${HOST_WORK_FOLDER_PATH}"
+
+  SOURCES_FOLDER_PATH="${SOURCES_FOLDER_PATH:-"${HOST_WORK_FOLDER_PATH}/sources"}"
+
+  # The names of the two Docker images used for the build.
+  # docker run --interactive --tty ilegeul/centos:6-xbb-v1
+  docker_linux64_image=${docker_linux64_image:-"ilegeul/centos:6-xbb-v1"}
+  docker_linux32_image=${docker_linux32_image:-"ilegeul/centos32:6-xbb-v1"}
+
+  do_actions
+
+  host_prepare_cache
+
+  CONTAINER_BUILD_SCRIPT_REL_PATH="build.git/scripts/${CONTAINER_SCRIPT_NAME}"
+  echo "Container build script: \"${HOST_WORK_FOLDER_PATH}/${CONTAINER_BUILD_SCRIPT_REL_PATH}\"."
+
+  # ---------------------------------------------------------------------------
+
+  mkdir -p "${HOST_WORK_FOLDER_PATH}"
+  mkdir -p "${SOURCES_FOLDER_PATH}"
+
+  # ---------------------------------------------------------------------------
+
+  # Set the DISTRIBUTION_FILE_DATE.
+  host_get_current_date
+
+  # ---------------------------------------------------------------------------
+
+  host_start_timer
+
+  host_prepare_prerequisites
+
+  # ---------------------------------------------------------------------------
+
+  copy_build_git
+}
 
 function host_prepare_prerequisites() 
 {
