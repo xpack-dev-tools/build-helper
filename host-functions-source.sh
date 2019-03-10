@@ -121,6 +121,9 @@ function host_detect()
   GROUP_ID=$(id -g)
   USER_ID=$(id -u)
 
+  TARGET_ARCH="${HOST_NODE_ARCH}"
+  TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
+
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
   IS_NATIVE=""
 }
