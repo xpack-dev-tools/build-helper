@@ -437,17 +437,15 @@ function host_prepare_docker()
 
 function host_build_target() 
 {
-  if [ -n "${DEBUG}" ]
-  then
-    echo "host_build_target $@ started."
-  fi
-
   message="$1"
   shift
 
   echo
   echo "================================================================================"
   echo "=== ${message}"
+
+  echo
+  echo $@
 
   local container_script_path=""
   local target_platform="${HOST_NODE_PLATFORM}"
