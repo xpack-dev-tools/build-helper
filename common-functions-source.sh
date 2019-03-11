@@ -478,6 +478,7 @@ function check_library()
         | sed -e 's/.*DLL Name: \(.*\)/\1/' \
       )
 
+      local n
       for n in ${dll_names}
       do
         if [ ! -f "${folder_path}/${n}" ] 
@@ -529,6 +530,7 @@ function check_library()
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
       )
 
+      local n
       for n in ${so_names}
       do
         if [ ! -f "${folder_path}/${n}" ] 
@@ -576,6 +578,7 @@ function is_win_sys_dll()
     CFGMGR32.dll \
   )
 
+  local dll
   for dll in "${sys_dlls[@]}"
   do
     if [ "${dll}" == "${dll_name}" ]
@@ -603,11 +606,12 @@ function is_linux_sys_so()
     libX11.so.6 \
   )
 
+  local lib
   for lib in "${sys_libs[@]}"
   do
     if [ "${lib}" == "${lib_name}" ]
     then
-        return 0 # True
+      return 0 # True
     fi
   done
   return 1 # False
@@ -649,8 +653,13 @@ function is_elf()
   fi
   local bin="$1"
 
-  # Return 0 (true) if found.
-  file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
+  if [ -x "${bin}" ]
+  then
+    # Return 0 (true) if found.
+    file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
+  else
+    return 1
+  fi
 }
 
 # -----------------------------------------------------------------------------
@@ -744,11 +753,12 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
 }
 
+# Deprecated, use copy_dependencies_recursive().
 function copy_linux_user_so() 
 {
-  local dll_name="$1"
+  local so_name="$1"
 
-  ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
+  ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
   if [ ! -z "${ILIB}" ]
   then
     echo "Found user ${ILIB}, 3 digits"
@@ -775,7 +785,7 @@ function copy_linux_user_so()
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
+    ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
     if [ ! -z "${ILIB}" ]
     then
       echo "Found user ${ILIB}, 2 digits"
@@ -802,7 +812,7 @@ function copy_linux_user_so()
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
+      ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
       if [ ! -z "${ILIB}" ]
       then
         echo "Found user ${ILIB}, 1 digit"
@@ -819,7 +829,7 @@ function copy_linux_user_so()
           ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
         )
       else
-        ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so' -print)
+        ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so' -print)
         if [ ! -z "${ILIB}" ]
         then
           echo "Found user ${ILIB}, no digits"
@@ -827,7 +837,7 @@ function copy_linux_user_so()
           patch_linux_elf_origin "${ihead}"
           /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
         else
-          echo ${dll_name} not found
+          echo ${so_name} not found
           exit 1
         fi
       fi
@@ -835,12 +845,145 @@ function copy_linux_user_so()
   fi
 }
 
+function copy_dependencies_recursive()
+{
+  local file_path="$1"
+  local file_name="$(basename "$1")"
+  if is_elf "${file_path}"
+  then
+    if [ "$(dirname "${file_path}")" != "${APP_PREFIX}/bin" ]
+    then
+      /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+    fi
+    if [ "${TARGET_PLATFORM}" != "win32" ]
+    then
+      patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+    fi
+  else
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      # On Windows don't bother with links, simply copy the file.
+      local link_path="$(readlink -f "${file_path}")"
+      /usr/bin/install -v -c -m 644 "${link_path}" "${APP_PREFIX}/bin"
+    else
+      # On POSIX preserve symbolic links, since shared libraries can be
+      # referred with different names.
+      if [ -L "${file_path}" ]
+      then
+        (
+          local link_path="$(readlink "${file_path}")"
+          cd "$(dirname "${file_path}")"
+          local real_path="$(realpath "${link_path}")"
+          copy_dependencies_recursive "${real_path}"
+
+          cd "${APP_PREFIX}/bin"
+          if [ "$(basename "${link_path}")" != "${file_name}" ]
+          then
+            rm -rf "${file_name}"
+            ln -sv "$(basename "${link_path}")" "${file_name}" 
+          fi
+        )
+        return
+      else
+        /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+        patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+      fi
+    fi
+  fi
+
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    local libs=$(readelf -d "${APP_PREFIX}/bin/${file_name}" \
+          | grep -i 'Shared library' \
+          | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
+        )
+    local lib
+    for lib in ${libs}
+    do
+      if is_linux_sys_so "${lib}"
+      then
+        : # System library, no need to copy it.
+      else
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
+        then
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}"
+        else
+          local full_path=$(${CC} -print-file-name=${lib})
+          # -print-file-name outputs back the requested name if not found.
+          if [ "${full_path}" != "${lib}" ]
+          then
+            copy_dependencies_recursive "${full_path}"
+          else
+            echo "${lib} not found"
+            exit 1
+          fi
+        fi
+      fi
+    done
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${APP_PREFIX}/bin/${file_name}" \
+          | grep -i 'DLL Name' \
+          | sed -e 's/.*DLL Name: \(.*\)/\1/' \
+        )
+    local lib
+    for lib in ${libs}
+    do
+      if is_win_sys_dll "${lib}"
+      then
+        : # System DLL, no need to copy it.
+      else
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" ]
+        then
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}"
+        else
+          local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib})
+          # -print-file-name outputs back the requested name if not found.
+          if [ "${full_path}" != "${lib}" ]
+          then
+            copy_dependencies_recursive "${full_path}"
+          else
+            echo "${lib} not found"
+            exit 1
+          fi
+        fi
+      fi
+    done
+
+  fi
+
+}
+
+# Deprecated
 function copy_linux_system_so()
 {
-  local dll_name="$1"
+  local so_name="$1.so"
 
+  local full_path=$(${CC} -print-file-name=${so_name})
+  # -print-file-name outputs back the requested name if not found.
+  if [ "${full_path}" != "${so_name}" ]
+  then
+    if [ -L "${full_path}" ]
+    then
+      local final_path=$(readlink -f "${full_path}")
+      /usr/bin/install -v -c -m 644 "${final_path}" "${APP_PREFIX}/bin"
+      local link_name=$(echo ${final_path} | sed -e 's|.*/\(.*\.so\)\.\([[:digit:]]*\)[.]\([[:digit:]]*\)[.]\([[:digit:]]*\).*|\1.\2|')
+      rm -rf "${APP_PREFIX}/bin/${link_name}"
+      ln -sv "${full_path}" "${link_name}"
+    else
+      /usr/bin/install -v -c -m 644 "${full_path}" "${APP_PREFIX}/bin"
+    fi
+  else
+    echo "${so_name} not found"
+    exit 1
+  fi
+
+if false
+then
+  # local gcc_version_major=$(${CC} --version | grep 'gcc' | sed -e 's/.*\s\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1/')
+  local gcc_folder="$(dirname $(${CC} -print-libgcc-file-name))"
   set +e
-  local ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
+  local ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
   if [ ! -z "${ILIB}" ]
   then
     echo "Found system ${ILIB}, 3 digits"
@@ -863,7 +1006,7 @@ function copy_linux_system_so()
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
+    ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
     if [ ! -z "${ILIB}" ]
     then
       echo "Found system ${ILIB}, 2 digits"
@@ -886,7 +1029,7 @@ function copy_linux_system_so()
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
+      ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
       if [ ! -z "${ILIB}" ]
       then
         echo "Found system ${ILIB}, 1 digit"
@@ -903,20 +1046,21 @@ function copy_linux_system_so()
           ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
         )
       else
-        ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so' -print)
+        ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} \( -type f -o -type l \) -name ${so_name}'.so' -print)
         if [ ! -z "${ILIB}" ]
         then
           echo "Found system ${ILIB}, no digits"
           ihead=$(echo "${ILIB}" | head -n 1)
           /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
         else
-          echo ${dll_name} not found
+          echo ${so_name} not found
           exit 1
         fi
       fi
     fi
   fi
   set -e
+fi
 }
 
 
@@ -932,6 +1076,7 @@ function copy_license()
   echo "$2"
   (
     cd "$1"
+    local f
     for f in *
     do
       if [ -f "$f" ]
@@ -1117,6 +1262,7 @@ function check_application()
     check_binary "${APP_PREFIX}/bin/${app_name}"
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.so.\* -type f)
+    local lib
     for lib in ${libs} 
     do
       check_library ${lib}
@@ -1131,6 +1277,7 @@ function check_application()
     check_binary "${APP_PREFIX}/bin/${app_name}"
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.dylib -type f)
+    local lib
     for lib in ${libs} 
     do
       check_library ${lib}
@@ -1145,6 +1292,7 @@ function check_application()
     check_binary "${APP_PREFIX}/bin/${app_name}.exe"
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.dll -type f)
+    local lib
     for lib in ${libs} 
     do
       check_library ${lib}
