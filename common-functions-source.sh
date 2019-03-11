@@ -478,6 +478,7 @@ function check_library()
         | sed -e 's/.*DLL Name: \(.*\)/\1/' \
       )
 
+      local n
       for n in ${dll_names}
       do
         if [ ! -f "${folder_path}/${n}" ] 
@@ -529,6 +530,7 @@ function check_library()
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
       )
 
+      local n
       for n in ${so_names}
       do
         if [ ! -f "${folder_path}/${n}" ] 
@@ -576,6 +578,7 @@ function is_win_sys_dll()
     CFGMGR32.dll \
   )
 
+  local dll
   for dll in "${sys_dlls[@]}"
   do
     if [ "${dll}" == "${dll_name}" ]
@@ -603,11 +606,12 @@ function is_linux_sys_so()
     libX11.so.6 \
   )
 
+  local lib
   for lib in "${sys_libs[@]}"
   do
     if [ "${lib}" == "${lib_name}" ]
     then
-        return 0 # True
+      return 0 # True
     fi
   done
   return 1 # False
@@ -932,6 +936,7 @@ function copy_license()
   echo "$2"
   (
     cd "$1"
+    local f
     for f in *
     do
       if [ -f "$f" ]
@@ -1117,6 +1122,7 @@ function check_application()
     check_binary "${APP_PREFIX}/bin/${app_name}"
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.so.\* -type f)
+    local lib
     for lib in ${libs} 
     do
       check_library ${lib}
@@ -1131,6 +1137,7 @@ function check_application()
     check_binary "${APP_PREFIX}/bin/${app_name}"
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.dylib -type f)
+    local lib
     for lib in ${libs} 
     do
       check_library ${lib}
@@ -1145,6 +1152,7 @@ function check_application()
     check_binary "${APP_PREFIX}/bin/${app_name}.exe"
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.dll -type f)
+    local lib
     for lib in ${libs} 
     do
       check_library ${lib}
