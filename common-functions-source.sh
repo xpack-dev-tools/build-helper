@@ -753,11 +753,12 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
 }
 
+# Deprecated, use copy_dependencies_recursive().
 function copy_linux_user_so() 
 {
-  local dll_name="$1"
+  local so_name="$1"
 
-  ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
+  ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
   if [ ! -z "${ILIB}" ]
   then
     echo "Found user ${ILIB}, 3 digits"
@@ -784,7 +785,7 @@ function copy_linux_user_so()
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
+    ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
     if [ ! -z "${ILIB}" ]
     then
       echo "Found user ${ILIB}, 2 digits"
@@ -811,7 +812,7 @@ function copy_linux_user_so()
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
+      ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
       if [ ! -z "${ILIB}" ]
       then
         echo "Found user ${ILIB}, 1 digit"
@@ -828,7 +829,7 @@ function copy_linux_user_so()
           ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
         )
       else
-        ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${dll_name}'.so' -print)
+        ILIB=$(find ${LIBS_INSTALL_FOLDER_PATH}/lib* -type f -name ${so_name}'.so' -print)
         if [ ! -z "${ILIB}" ]
         then
           echo "Found user ${ILIB}, no digits"
@@ -836,7 +837,7 @@ function copy_linux_user_so()
           patch_linux_elf_origin "${ihead}"
           /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
         else
-          echo ${dll_name} not found
+          echo ${so_name} not found
           exit 1
         fi
       fi
@@ -953,12 +954,36 @@ function copy_dependencies_recursive()
 
 }
 
+# Deprecated
 function copy_linux_system_so()
 {
-  local dll_name="$1"
+  local so_name="$1.so"
 
+  local full_path=$(${CC} -print-file-name=${so_name})
+  # -print-file-name outputs back the requested name if not found.
+  if [ "${full_path}" != "${so_name}" ]
+  then
+    if [ -L "${full_path}" ]
+    then
+      local final_path=$(readlink -f "${full_path}")
+      /usr/bin/install -v -c -m 644 "${final_path}" "${APP_PREFIX}/bin"
+      local link_name=$(echo ${final_path} | sed -e 's|.*/\(.*\.so\)\.\([[:digit:]]*\)[.]\([[:digit:]]*\)[.]\([[:digit:]]*\).*|\1.\2|')
+      rm -rf "${APP_PREFIX}/bin/${link_name}"
+      ln -sv "${full_path}" "${link_name}"
+    else
+      /usr/bin/install -v -c -m 644 "${full_path}" "${APP_PREFIX}/bin"
+    fi
+  else
+    echo "${so_name} not found"
+    exit 1
+  fi
+
+if false
+then
+  # local gcc_version_major=$(${CC} --version | grep 'gcc' | sed -e 's/.*\s\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1/')
+  local gcc_folder="$(dirname $(${CC} -print-libgcc-file-name))"
   set +e
-  local ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
+  local ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+.[[:digit:]]+$')
   if [ ! -z "${ILIB}" ]
   then
     echo "Found system ${ILIB}, 3 digits"
@@ -981,7 +1006,7 @@ function copy_linux_system_so()
       ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
     )
   else
-    ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
+    ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+.[[:digit:]]+$')
     if [ ! -z "${ILIB}" ]
     then
       echo "Found system ${ILIB}, 2 digits"
@@ -1004,7 +1029,7 @@ function copy_linux_system_so()
         ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
       )
     else
-      ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
+      ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} -type f -name ${so_name}'.so.*' -print | egrep '.so.[[:digit:]]+$')
       if [ ! -z "${ILIB}" ]
       then
         echo "Found system ${ILIB}, 1 digit"
@@ -1021,20 +1046,21 @@ function copy_linux_system_so()
           ln -sv "${ILIB_BASE}" "${ILIB_SHORT}"
         )
       else
-        ILIB=$(find ${XBB_FOLDER}/lib* /lib* -type f -name ${dll_name}'.so' -print)
+        ILIB=$(find ${XBB_FOLDER}/lib* /lib* ${gcc_folder} \( -type f -o -type l \) -name ${so_name}'.so' -print)
         if [ ! -z "${ILIB}" ]
         then
           echo "Found system ${ILIB}, no digits"
           ihead=$(echo "${ILIB}" | head -n 1)
           /usr/bin/install -v -c -m 644 "${ihead}" "${APP_PREFIX}/bin"
         else
-          echo ${dll_name} not found
+          echo ${so_name} not found
           exit 1
         fi
       fi
     fi
   fi
   set -e
+fi
 }
 
 
