@@ -653,8 +653,13 @@ function is_elf()
   fi
   local bin="$1"
 
-  # Return 0 (true) if found.
-  file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
+  if [ -x "${bin}" ]
+  then
+    # Return 0 (true) if found.
+    file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
+  else
+    return 1
+  fi
 }
 
 # -----------------------------------------------------------------------------
