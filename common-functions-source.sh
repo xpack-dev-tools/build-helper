@@ -844,6 +844,115 @@ function copy_linux_user_so()
   fi
 }
 
+function copy_dependencies_recursive()
+{
+  local file_path="$1"
+  local file_name="$(basename "$1")"
+  if is_elf "${file_path}"
+  then
+    if [ "$(dirname "${file_path}")" != "${APP_PREFIX}/bin" ]
+    then
+      /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+    fi
+    if [ "${TARGET_PLATFORM}" != "win32" ]
+    then
+      patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+    fi
+  else
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      # On Windows don't bother with links, simply copy the file.
+      local link_path="$(readlink -f "${file_path}")"
+      /usr/bin/install -v -c -m 644 "${link_path}" "${APP_PREFIX}/bin"
+    else
+      # On POSIX preserve symbolic links, since shared libraries can be
+      # referred with different names.
+      if [ -L "${file_path}" ]
+      then
+        (
+          local link_path="$(readlink "${file_path}")"
+          cd "$(dirname "${file_path}")"
+          local real_path="$(realpath "${link_path}")"
+          copy_dependencies_recursive "${real_path}"
+
+          cd "${APP_PREFIX}/bin"
+          if [ "$(basename "${link_path}")" != "${file_name}" ]
+          then
+            rm -rf "${file_name}"
+            ln -sv "$(basename "${link_path}")" "${file_name}" 
+          fi
+        )
+        return
+      else
+        /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+        patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+      fi
+    fi
+  fi
+
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    local libs=$(readelf -d "${APP_PREFIX}/bin/${file_name}" \
+          | grep -i 'Shared library' \
+          | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
+        )
+    local lib
+    for lib in ${libs}
+    do
+      if is_linux_sys_so "${lib}"
+      then
+        : # System library, no need to copy it.
+      else
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
+        then
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}"
+        else
+          local full_path=$(${CC} -print-file-name=${lib})
+          # -print-file-name outputs back the requested name if not found.
+          if [ "${full_path}" != "${lib}" ]
+          then
+            copy_dependencies_recursive "${full_path}"
+          else
+            echo "${lib} not found"
+            exit 1
+          fi
+        fi
+      fi
+    done
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${APP_PREFIX}/bin/${file_name}" \
+          | grep -i 'DLL Name' \
+          | sed -e 's/.*DLL Name: \(.*\)/\1/' \
+        )
+    local lib
+    for lib in ${libs}
+    do
+      if is_win_sys_dll "${lib}"
+      then
+        : # System DLL, no need to copy it.
+      else
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" ]
+        then
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}"
+        else
+          local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib})
+          # -print-file-name outputs back the requested name if not found.
+          if [ "${full_path}" != "${lib}" ]
+          then
+            copy_dependencies_recursive "${full_path}"
+          else
+            echo "${lib} not found"
+            exit 1
+          fi
+        fi
+      fi
+    done
+
+  fi
+
+}
+
 function copy_linux_system_so()
 {
   local dll_name="$1"
