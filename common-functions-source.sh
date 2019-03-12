@@ -985,7 +985,7 @@ function copy_dependencies_recursive()
         /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
       fi
     fi
-    if [ "${TARGET_PLATFORM}" != "win32" ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
     fi
@@ -1018,10 +1018,13 @@ function copy_dependencies_recursive()
         )
         return
       else
-        patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
         if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
         then
           /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+        fi
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
         fi
       fi
     fi
