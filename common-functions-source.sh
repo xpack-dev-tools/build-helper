@@ -1059,6 +1059,36 @@ function copy_dependencies_recursive()
         fi
       fi
     done
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    local libs=$(otool -L "${APP_PREFIX}/bin/${file_name}" \
+          | sed '1d' \
+          | sed '1d' \
+          | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+        )
+    local lib
+    for lib in ${libs}
+    do
+      if is_darwin_sys_dylib "${lib}"
+      then
+        : # System library, no need to copy it.
+      else
+        # The libs can be relative to @executable_path or absolute.
+        local exec_prefix="@executable_path/"
+        if [ "${lib:0:${#exec_prefix}}" == "${exec_prefix}" ]
+        then
+          : 
+        elif [ -f "${lib}" ]
+        then
+          copy_dependencies_recursive "${lib}"
+        else
+          echo "${lib} not found"
+          exit 1
+        fi
+        # Change library path to '@executable_path' inside the lib or app.
+        change_dylib "$(basename "${lib}")" "${APP_PREFIX}/bin/${file_name}"
+      fi
+    done
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${APP_PREFIX}/bin/${file_name}" \
