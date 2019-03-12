@@ -726,6 +726,22 @@ function is_linux_sys_so()
   return 1 # False
 }
 
+function is_darwin_sys_dylib() 
+{
+  local lib_name="$1"
+
+  if [[ ${lib_name} == /usr/lib* ]]
+  then
+    return 0
+  fi
+  if [[ ${lib_name} == /System/Library* ]]
+  then
+    return 0
+  fi
+
+  return 1
+}
+
 # -----------------------------------------------------------------------------
 
 # Strip binary files as in "strip binary" form, for both native
