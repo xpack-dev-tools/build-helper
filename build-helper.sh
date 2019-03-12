@@ -855,7 +855,7 @@ do_container_create_distribution() {
         # owner produced by boot2docker is the same as the osx user, so an 
         # ownership change is not done. 
         echo
-        echo "Changing owner to non-root Linux user..."
+        echo "Changing owner to non-root GNU/Linux user..."
         if [ -d "${build_folder_path}" ]
         then
           chown -R ${user_id}:${group_id} "${build_folder_path}"

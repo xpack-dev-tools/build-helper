@@ -328,7 +328,7 @@ function host_native_options()
     then
       TARGET_PLATFORM="win32"
     else
-      echo "Windows cross builds are available only on Linux."
+      echo "Windows cross builds are available only on GNU/Linux."
       exit 1
     fi
   fi
