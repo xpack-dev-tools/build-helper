@@ -789,6 +789,7 @@ function is_elf()
 
 # -----------------------------------------------------------------------------
 
+# Deprecated, use copy_dependencies_recursive().
 function copy_win_gcc_dll() 
 {
   local dll_name="$1"
@@ -824,6 +825,7 @@ function copy_win_gcc_dll()
   fi
 }
 
+# Deprecated, use copy_dependencies_recursive().
 function copy_win_libwinpthread_dll() 
 {
   if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" ]
