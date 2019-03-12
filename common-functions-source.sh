@@ -980,7 +980,10 @@ function copy_dependencies_recursive()
   then
     if [ "$(dirname "${file_path}")" != "${APP_PREFIX}/bin" ]
     then
-      /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+      if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
+      then
+        /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+      fi
     fi
     if [ "${TARGET_PLATFORM}" != "win32" ]
     then
@@ -991,7 +994,10 @@ function copy_dependencies_recursive()
     then
       # On Windows don't bother with links, simply copy the file.
       local link_path="$(readlink -f "${file_path}")"
-      /usr/bin/install -v -c -m 644 "${link_path}" "${APP_PREFIX}/bin"
+      if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
+      then
+        /usr/bin/install -v -c -m 644 "${link_path}" "${APP_PREFIX}/bin"
+      fi
     else
       # On POSIX preserve symbolic links, since shared libraries can be
       # referred with different names.
@@ -1012,8 +1018,11 @@ function copy_dependencies_recursive()
         )
         return
       else
-        /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
         patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+        if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
+        then
+          /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+        fi
       fi
     fi
   fi
