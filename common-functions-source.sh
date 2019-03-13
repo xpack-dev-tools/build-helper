@@ -1004,16 +1004,35 @@ function copy_dependencies_recursive()
       if [ -L "${file_path}" ]
       then
         (
-          local link_path="$(readlink "${file_path}")"
-          cd "$(dirname "${file_path}")"
-          local real_path="$(realpath "${link_path}")"
-          copy_dependencies_recursive "${real_path}"
-
-          cd "${APP_PREFIX}/bin"
-          if [ "$(basename "${link_path}")" != "${file_name}" ]
+          local which_realpath="$(which "realpath")"
+          if [ ! -z "${which_realpath}" ]
           then
-            rm -rf "${file_name}"
-            ln -sv "$(basename "${link_path}")" "${file_name}" 
+            # Resolve only one link level. If there are more, they
+            # are resolved recursively.
+            local link_path="$(readlink "${file_path}")"
+            cd "$(dirname "${file_path}")"
+            # Compute the absolute path of the link.
+            local real_path="$(realpath "${link_path}")"
+            copy_dependencies_recursive "${real_path}"
+
+            cd "${APP_PREFIX}/bin"
+            if [ "$(basename "${link_path}")" != "${file_name}" ]
+            then
+              rm -rf "${file_name}"
+              ln -sv "$(basename "${link_path}")" "${file_name}" 
+            fi
+          else
+            # Compute the final absolute path of the link, regardless
+            # how many links there are on the way.
+            local link_path="$(readlink -f "${file_path}")"
+            copy_dependencies_recursive "${link_path}"
+
+            cd "${APP_PREFIX}/bin"
+            if [ "$(basename "${link_path}")" != "${file_name}" ]
+            then
+              rm -rf "${file_name}"
+              ln -sv "$(basename "${link_path}")" "${file_name}" 
+            fi
           fi
         )
         return
