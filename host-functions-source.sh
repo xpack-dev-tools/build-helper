@@ -127,6 +127,8 @@ function host_detect()
 
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
   IS_NATIVE=""
+  # Redefine it to "y" to run as root inside the container.
+  CONTAINER_RUN_AS_ROOT=""
 }
 
 # -----------------------------------------------------------------------------
@@ -612,6 +614,7 @@ function host_build_target()
   echo "GROUP_ID=\"${GROUP_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "USER_ID=\"${USER_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "USER_NAME=\"${USER_NAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "CONTAINER_RUN_AS_ROOT=\"${CONTAINER_RUN_AS_ROOT}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
   echo "HOST_WORK_FOLDER_PATH=\"${HOST_WORK_FOLDER_PATH}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "CONTAINER_WORK_FOLDER_PATH=\"${CONTAINER_WORK_FOLDER_PATH}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
