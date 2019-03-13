@@ -82,7 +82,7 @@ function host_detect()
   then
     # ----- Determine distribution name and word size -----
 
-    # uname -p -> x86_64|i686
+    # uname -p -> x86_64|i686 (unknown in recent versions, use -m)
     # uname -m -> x86_64|i686
 
     if [ "${HOST_MACHINE}" == "x86_64" ]
