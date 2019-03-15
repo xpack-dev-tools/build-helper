@@ -115,6 +115,11 @@ function prepare_xbb_env()
   mkdir -p "${LIBS_INSTALL_FOLDER_PATH}"
   mkdir -p "${APP_INSTALL_FOLDER_PATH}"
 
+  LOGS_FOLDER_NAME="${LOGS_FOLDER_NAME:-"logs"}"
+  LOGS_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/${LOGS_FOLDER_NAME}"
+
+  mkdir -p "${LOGS_FOLDER_PATH}"
+
   DEPLOY_FOLDER_NAME="${DEPLOY_FOLDER_NAME:-"deploy"}"
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
   # Do it later, only if needed.
