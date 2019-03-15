@@ -1124,6 +1124,9 @@ function copy_dependencies_recursive()
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" ]
         then
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}"
+        elif [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}" ]
+        then
+          copy_dependencies_recursive "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}"
         else
           local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib})
           # -print-file-name outputs back the requested name if not found.
@@ -1131,7 +1134,7 @@ function copy_dependencies_recursive()
           then
             copy_dependencies_recursive "${full_path}"
           else
-            echo "${lib} not found"
+            echo "${lib} required by ${file_name}, not found"
             exit 1
           fi
         fi
