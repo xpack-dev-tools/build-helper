@@ -101,7 +101,7 @@ function detect_container()
 
 function fix_ownership()
 {
-  if [ -f "/.dockerenv" ]
+  if [ -f "/.dockerenv" -a "${CONTAINER_RUN_AS_ROOT}" == "y" ]
   then
     # Set the owner of the folder and files created by the docker CentOS 
     # container to match the user running the build script on the host. 

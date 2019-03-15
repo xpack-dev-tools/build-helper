@@ -765,20 +765,16 @@ function host_run_docker_script()
   echo
   echo "Running script \"$(basename "${docker_script}")\" inside docker image \"${docker_image}\"..."
 
-  local cmd_string
-  local cmd_option
-  if [ "${CONTAINER_RUN_AS_ROOT}" == "y" ]
-  then
-    cmd_string="${docker_script}"
-    cmd_option=""
-  else
-    cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"bash ${DEBUG} ${docker_script}\" ${USER_NAME}"
-    cmd_option="-c"
-  fi
 
+  local env_file_option=""
   # Run the inner script in a fresh Docker container.
   if [ -n "${env_file}" -a -f "${env_file}" ]
   then
+    env_file_option="--env-file=\"${env_file}\""
+  fi
+
+  if [ "${CONTAINER_RUN_AS_ROOT}" == "y" ]
+  then
 
     docker run \
       --name="${docker_container_name}" \
@@ -787,14 +783,17 @@ function host_run_docker_script()
       --workdir="/root" \
       --volume="${HOST_WORK_FOLDER_PATH}/:${CONTAINER_WORK_FOLDER_PATH}" \
       --volume="${HOST_CACHE_FOLDER_PATH}/:${CONTAINER_CACHE_FOLDER_PATH}" \
-      --env-file="${env_file}" \
-      ${docker_image} \
-      /bin/bash ${DEBUG} \
-        ${cmd_option} "${cmd_string}" \
-        $@
+      ${env_file_option} \
+      "${docker_image}" \
+      /bin/bash ${DEBUG} "${docker_script}" $@
 
   else
 
+    # This is a bit tricky, since it needs to do multiple actions in
+    # one go: add a new user and run the script with that user credentials,
+    # including passing the extra args (in the middle of the string).
+    local cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"bash ${DEBUG} ${docker_script} $@\" ${USER_NAME}"
+ 
     docker run \
       --name="${docker_container_name}" \
       --tty \
@@ -802,10 +801,9 @@ function host_run_docker_script()
       --workdir="/root" \
       --volume="${HOST_WORK_FOLDER_PATH}/:${CONTAINER_WORK_FOLDER_PATH}" \
       --volume="${HOST_CACHE_FOLDER_PATH}/:${CONTAINER_CACHE_FOLDER_PATH}" \
-      ${docker_image} \
-      /bin/bash ${DEBUG} \
-        ${cmd_option} "${cmd_string}" \
-        $@
+      ${env_file_option} \
+      "${docker_image}" \
+      /bin/bash ${DEBUG} -c "${cmd_string}"
 
   fi
 
