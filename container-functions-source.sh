@@ -92,6 +92,7 @@ function detect_container()
 
   echo
   echo "Container script running on ${CONTAINER_DISTRO_NAME} ${CONTAINER_BITS}-bit."
+  echo "User $(whoami), in '${HOME}'"
 
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
 }
