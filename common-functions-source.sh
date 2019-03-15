@@ -1082,7 +1082,10 @@ function copy_dependencies_recursive()
       then
         : # System library, no need to copy it.
       else
-        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}" ]
+        then
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}"
+        elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
         then
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}"
         else
@@ -1120,6 +1123,9 @@ function copy_dependencies_recursive()
         elif [ -f "${lib}" ]
         then
           copy_dependencies_recursive "${lib}"
+        elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
+        then
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}"
         else
           echo "${lib} not found"
           exit 1
