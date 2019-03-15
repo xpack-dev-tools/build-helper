@@ -125,10 +125,10 @@ function host_detect()
   TARGET_ARCH="${HOST_NODE_ARCH}"
   TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
 
-  HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
   IS_NATIVE=""
   # Redefine it to "y" to run as root inside the container.
-  CONTAINER_RUN_AS_ROOT=""
+  CONTAINER_RUN_AS_ROOT=${CONTAINER_RUN_AS_ROOT:-""}
+  HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
 }
 
 # -----------------------------------------------------------------------------
