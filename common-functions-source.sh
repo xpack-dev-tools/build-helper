@@ -201,6 +201,18 @@ function prepare_extras()
   echo "PKG_CONFIG=${PKG_CONFIG}"
   set -u
 
+  (
+    xbb_activate
+
+    echo
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      ${CROSS_COMPILE_PREFIX}-gcc --version
+    else
+      ${CC} --version
+    fi
+  )
+
   set +u
   if [ "${TARGET_PLATFORM}" == "win32" -a ! -z "${CC}" -a ! -z  "${CXX}" ]
   then
