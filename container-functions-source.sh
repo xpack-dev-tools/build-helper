@@ -95,6 +95,12 @@ function detect_container()
   echo "User $(whoami), in '${HOME}'"
 
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
+  CONTAINER_ROOT_UMASK=${CONTAINER_ROOT_UMASK:-"000"}
+
+  if [ -f "/.dockerenv" -a "$(whoami)" == "root" ]
+  then
+    umask ${CONTAINER_ROOT_UMASK}
+  fi
 }
 
 
