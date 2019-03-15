@@ -497,7 +497,7 @@ function extract()
       fi
     )
   else
-    echo "Folder \"${pwd}p/${folder_name}\" already present."
+    echo "Folder \"${pwd}/${folder_name}\" already present."
   fi
 }
 
