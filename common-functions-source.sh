@@ -128,6 +128,9 @@ function prepare_xbb_env()
   BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
 
   IS_DEVELOP=${IS_DEVELOP:-""}
+  IS_DEBUG=${IS_DEBUG:-""}
+  WITH_PDF=${WITH_PDF:-""}
+  WITH_HTML=${WITH_HTML:-""}
 }
 
 function prepare_extras()
