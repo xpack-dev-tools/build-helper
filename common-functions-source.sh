@@ -103,21 +103,22 @@ function prepare_xbb_env()
   fi
 
   LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/libs"
-  APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
-
   mkdir -p "${LIBS_BUILD_FOLDER_PATH}"
-  mkdir -p "${APP_BUILD_FOLDER_PATH}"
+
+  APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
+  # Do it later, only if needed.
+  # mkdir -p "${APP_BUILD_FOLDER_PATH}"
 
   INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"
-  LIBS_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/libs"
-  APP_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
 
+  LIBS_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/libs"
   mkdir -p "${LIBS_INSTALL_FOLDER_PATH}"
+
+  APP_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
   mkdir -p "${APP_INSTALL_FOLDER_PATH}"
 
   LOGS_FOLDER_NAME="${LOGS_FOLDER_NAME:-"logs"}"
   LOGS_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/${LOGS_FOLDER_NAME}"
-
   mkdir -p "${LOGS_FOLDER_PATH}"
 
   DEPLOY_FOLDER_NAME="${DEPLOY_FOLDER_NAME:-"deploy"}"
@@ -127,35 +128,40 @@ function prepare_xbb_env()
 
   BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
 
+  # Empty defaults.
   IS_DEVELOP=${IS_DEVELOP:-""}
   IS_DEBUG=${IS_DEBUG:-""}
   WITH_PDF=${WITH_PDF:-""}
   WITH_HTML=${WITH_HTML:-""}
 }
 
-function prepare_extras()
+function prepare_xbb_extras()
 {
   # ---------------------------------------------------------------------------
 
-  EXTRA_CPPFLAGS=""
+  XBB_CPPFLAGS=""
 
-  EXTRA_CFLAGS="-ffunction-sections -fdata-sections -pipe"
-  EXTRA_CXXFLAGS="-ffunction-sections -fdata-sections -pipe"
+  XBB_CFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
+  XBB_CXXFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
 
-  EXTRA_LDFLAGS_LIB=""
-  EXTRA_LDFLAGS="${EXTRA_LDFLAGS_LIB}"
-  EXTRA_LDFLAGS_APP=""
+  XBB_LDFLAGS_LIB=""
+  local XBB_LDFLAGS="${XBB_LDFLAGS_LIB}"
+  XBB_LDFLAGS_APP=""
 
   if [ "${IS_DEBUG}" == "y" ]
   then
-    EXTRA_CFLAGS+=" -g -O0"
-    EXTRA_CXXFLAGS+=" -g -O0"
-    EXTRA_LDFLAGS+=" -g -O0"
+    XBB_CFLAGS+=" -g -O0"
+    XBB_CXXFLAGS+=" -g -O0"
+    XBB_LDFLAGS+=" -g -O0"
   else
-    EXTRA_CFLAGS+=" -O2"
-    EXTRA_CXXFLAGS+=" -O2"
-    EXTRA_LDFLAGS+=" -O2"
+    XBB_CFLAGS+=" -O2"
+    XBB_CXXFLAGS+=" -O2"
+    XBB_LDFLAGS+=" -O2"
   fi
+
+  export XBB_CPPFLAGS
+  export XBB_CFLAGS
+  export XBB_CXXFLAGS
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
@@ -170,21 +176,28 @@ function prepare_extras()
     fi
     # Do not add -static here, it fails.
     # Do not try to link pthread statically, it must match the system glibc.
-    EXTRA_LDFLAGS_APP="${EXTRA_LDFLAGS} -Wl,--gc-sections"
+    XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
+    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
     export CC="gcc-7"
     export CXX="g++-7"
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
-    EXTRA_LDFLAGS_APP="${EXTRA_LDFLAGS} -Wl,-dead_strip"
+    XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
+    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     # CRT_glob is from ARM script
     # -static avoids libwinpthread-1.dll 
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
-    EXTRA_LDFLAGS_APP="${EXTRA_LDFLAGS} -Wl,--gc-sections"
+    XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
+    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
   fi
+
+  export XBB_LDFLAGS_LIB
+  export XBB_LDFLAGS_APP
+  export XBB_LDFLAGS_APP_STATIC
 
   set +u
   if [ ! -z "${XBB_FOLDER}" -a -x "${XBB_FOLDER}"/bin/pkg-config-verbose ]
@@ -194,17 +207,19 @@ function prepare_extras()
   set -u
 
   PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-""}
+  export PKG_CONFIG_PATH
 
   set +u
   echo
   echo "CC=${CC}"
   echo "CXX=${CXX}"
-  echo "EXTRA_CPPFLAGS=${EXTRA_CPPFLAGS}"
-  echo "EXTRA_CFLAGS=${EXTRA_CFLAGS}"
-  echo "EXTRA_CXXFLAGS=${EXTRA_CXXFLAGS}"
-  echo "EXTRA_LDFLAGS=${EXTRA_LDFLAGS}"
+  echo "XBB_CPPFLAGS=${XBB_CPPFLAGS}"
+  echo "XBB_CFLAGS=${XBB_CFLAGS}"
+  echo "XBB_CXXFLAGS=${XBB_CXXFLAGS}"
 
-  echo "EXTRA_LDFLAGS_APP=${EXTRA_LDFLAGS_APP}"
+  echo "XBB_LDFLAGS_LIB=${XBB_LDFLAGS_LIB}"
+  echo "XBB_LDFLAGS_APP=${XBB_LDFLAGS_APP}"
+  echo "XBB_LDFLAGS_APP_STATIC=${XBB_LDFLAGS_APP_STATIC}"
 
   echo "PKG_CONFIG=${PKG_CONFIG}"
   set -u
@@ -460,6 +475,45 @@ function do_actions()
 
 # -----------------------------------------------------------------------------
 
+function run_app()
+{
+  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+
+  echo
+  echo "${app_path} $@"
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    "${app_path}" $@
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    "${app_path}" $@
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    local wsl_path=$(which wsl.exe)
+    if [ ! -z "${wsl_path}" ]
+    then
+      "${app_path}.exe" $@
+    else 
+      (
+        xbb_activate
+        
+        local wine_path=$(which wine)
+        if [ ! -z "${wine_path}" ]
+        then
+          wine "${app_path}.exe" $@
+        else
+          echo "Install wine if you want to run the .exe binaries on Linux."
+        fi
+      )
+    fi
+  fi
+
+}
+
+# -----------------------------------------------------------------------------
+
 function extract()
 {
   local archive_name="$1"
@@ -583,10 +637,10 @@ function check_binary()
     return 0
   fi
 
-  check_library "$1"
+  check_binary_for_libraries "$1"
 }
 
-function check_library()
+function check_binary_for_libraries()
 {
   local file_path="$1"
   local file_name="$(basename ${file_path})"
@@ -722,6 +776,8 @@ function is_linux_sys_so()
 {
   local lib_name="$1"
 
+  # libX11.so.6 
+
   # Shared libraries that are expected to be present on any Linux.
   local sys_libs=(\
     librt.so.1 \
@@ -732,7 +788,6 @@ function is_linux_sys_so()
     libdl.so.2 \
     ld-linux-x86-64.so.2 \
     ld-linux.so.2 \
-    libX11.so.6 \
   )
 
   local lib
@@ -865,12 +920,20 @@ function change_dylib()
   local dylib_name="$1"
   local file_path="$2"
 
-  local dylib_path=$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's/[[:space:]]*\(.*dylib\).*/\1/')
+  local dylib_path="$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's|[[:space:]]*\(.*\)[[:space:]][(].*[)]|\1|')"
 
   if [ -z "${dylib_path}" ]
   then
     echo "Dylib ${dylib_name} not used in binary ${file_path}..."
     exit 1
+  fi
+
+  # Hack to bring Python library name in line with the other libraries.
+  if [ "${dylib_name}" == "Python" ]
+  then
+    local version="$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's|.*current version \([0-9][0-9]*\.[0-9][0-9]*\).*|\1|')"
+    dylib_name="libpython${version}.dylib"
+    rm -rf "$(dirname ${file_path})/Python"
   fi
 
   chmod +w "${file_path}"
@@ -879,10 +942,9 @@ function change_dylib()
     "@executable_path/${dylib_name}" \
     "${file_path}"
 
-  if [ ! -f "$(dirname ${file_path})/$(basename ${dylib_path})" ]
+  if [ ! -f "$(dirname ${file_path})/${dylib_name}" ]
   then
-    cp "${dylib_path}" "$(dirname ${file_path})"
-    chmod +w "$(dirname ${file_path})/$(basename ${dylib_path})"
+    /usr/bin/install -v -c -m 644 "${dylib_path}" "$(dirname ${file_path})/${dylib_name}"
   fi
 }
 
@@ -992,31 +1054,133 @@ function copy_linux_user_so()
   fi
 }
 
+function prepare_app_libraries()
+{
+  local app_path="$1"
+  shift
+
+  local app_folder_path="$(dirname "${app_path}")"
+
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    echo
+    echo "Shared libraries:"
+    echo "${app_path}"
+    readelf -d "${app_path}" | grep 'Shared library:'
+
+    echo
+    echo "Preparing libraries..."
+    patch_linux_elf_origin "${app_path}"
+
+    echo
+    copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    echo
+    echo "Initial dynamic libraries:"
+    otool -L "${app_path}"
+
+    echo
+    echo "Preparing libraries..."
+    copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+
+    echo
+    echo "Updated dynamic libraries:"
+    otool -L "${app_path}"
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    echo
+    echo "Dynamic libraries:"
+    echo "${app_path}.exe"
+    ${CROSS_COMPILE_PREFIX}-objdump -x "${app_path}.exe" | grep -i 'DLL Name'
+
+    echo
+    echo "Preparing libraries..."
+    copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
+  fi
+}
+
+function prepare_app_folder_libraries()
+{
+  local folder_path="$1"
+
+  echo
+  echo "Preparing ${folder_path} libraries..."
+
+  local binaries
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+
+    binaries=$(find "${folder_path}" -name \*.exe)
+    for bin in ${binaries} 
+    do
+      echo "Preparing ${bin} libraries..."
+      copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+
+    binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+    for bin in ${binaries} 
+    do
+      if is_elf "${bin}"
+      then
+        echo "Preparing ${bin} libraries..."
+        copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+      fi
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+
+    binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+    for bin in ${binaries} 
+    do
+      if is_elf "${bin}"
+      then
+        echo "Preparing ${bin} libraries..."
+        copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+      fi
+    done
+
+  fi
+}
+
 function copy_dependencies_recursive()
 {
   local file_path="$1"
-  local file_name="$(basename "$1")"
+  local dest_path="$2"
+  if [ $# -ne 2 ]
+  then 
+    echo "copy_dependencies_recursive requires 2 args." 
+    exit 1
+  fi
+
+  local file_name="$(basename "${file_path}")"
+  local folder_path="$(dirname "${file_path}")"
+
   if is_elf "${file_path}"
   then
-    if [ "$(dirname "${file_path}")" != "${APP_PREFIX}/bin" ]
+    if [ "${folder_path}" != "${dest_path}" ]
     then
-      if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
+      if [ ! -f "${dest_path}/${file_name}" ]
       then
-        /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+        /usr/bin/install -v -c -m 644 "${file_path}" "${dest_path}"
       fi
     fi
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+      patch_linux_elf_origin "${dest_path}/${file_name}"
     fi
   else
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       # On Windows don't bother with links, simply copy the file.
       local link_path="$(readlink -f "${file_path}")"
-      if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
+      if [ ! -f "${dest_path}/${file_name}" ]
       then
-        /usr/bin/install -v -c -m 644 "${link_path}" "${APP_PREFIX}/bin"
+        /usr/bin/install -v -c -m 644 "${link_path}" "${dest_path}"
       fi
     else
       # On POSIX preserve symbolic links, since shared libraries can be
@@ -1030,13 +1194,13 @@ function copy_dependencies_recursive()
             # Resolve only one link level. If there are more, they
             # are resolved recursively.
             local link_path="$(readlink "${file_path}")"
-            cd "$(dirname "${file_path}")"
+            cd "${folder_path}"
             # Compute the absolute path of the link.
             local real_path="$(realpath "${link_path}")"
-            copy_dependencies_recursive "${real_path}"
+            copy_dependencies_recursive "${real_path}" "${dest_path}"
 
-            cd "${APP_PREFIX}/bin"
-            if [ "$(basename "${link_path}")" != "${file_name}" ]
+            cd "${dest_path}"
+            if [ \( "$(basename "${link_path}")" != "${file_name}" \) -a \( ! -L "${file_name}" \) ]
             then
               rm -rf "${file_name}"
               ln -sv "$(basename "${link_path}")" "${file_name}" 
@@ -1045,10 +1209,10 @@ function copy_dependencies_recursive()
             # Compute the final absolute path of the link, regardless
             # how many links there are on the way.
             local link_path="$(readlink -f "${file_path}")"
-            copy_dependencies_recursive "${link_path}"
+            copy_dependencies_recursive "${link_path}" "${dest_path}"
 
-            cd "${APP_PREFIX}/bin"
-            if [ "$(basename "${link_path}")" != "${file_name}" ]
+            cd "${dest_path}"
+            if [ \( "$(basename "${link_path}")" != "${file_name}" \) -a \( ! -L "${file_name}" \) ]
             then
               rm -rf "${file_name}"
               ln -sv "$(basename "${link_path}")" "${file_name}" 
@@ -1057,13 +1221,13 @@ function copy_dependencies_recursive()
         )
         return
       else
-        if [ ! -f "${APP_PREFIX}/bin/${file_name}" ]
+        if [ ! -f "${dest_path}/${file_name}" ]
         then
-          /usr/bin/install -v -c -m 644 "${file_path}" "${APP_PREFIX}/bin"
+          /usr/bin/install -v -c -m 644 "${file_path}" "${dest_path}"
         fi
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
-          patch_linux_elf_origin "${APP_PREFIX}/bin/${file_name}"
+          patch_linux_elf_origin "${dest_path}/${file_name}"
         fi
       fi
     fi
@@ -1071,7 +1235,7 @@ function copy_dependencies_recursive()
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    local libs=$(readelf -d "${APP_PREFIX}/bin/${file_name}" \
+    local libs=$(readelf -d "${dest_path}/${file_name}" \
           | grep -i 'Shared library' \
           | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
         )
@@ -1084,59 +1248,77 @@ function copy_dependencies_recursive()
       else
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}" ]
         then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}"
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}" "${dest_path}"
         elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
         then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}"
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" "${dest_path}"
         else
           local full_path=$(${CC} -print-file-name=${lib})
           # -print-file-name outputs back the requested name if not found.
           if [ "${full_path}" != "${lib}" ]
           then
-            copy_dependencies_recursive "${full_path}"
+            copy_dependencies_recursive "${full_path}" "${dest_path}"
           else
-            echo "${lib} not found"
-            exit 1
+            if [ -f "${XBB_FOLDER}/lib64/${lib}" ]
+            then
+              copy_dependencies_recursive "${XBB_FOLDER}/lib64/${lib}" "${dest_path}"
+            elif [ -f "${XBB_FOLDER}/lib/${lib}" ]
+            then
+              copy_dependencies_recursive "${XBB_FOLDER}/lib/${lib}" "${dest_path}"
+            else
+              echo "${lib} not found"
+              exit 1
+            fi
           fi
         fi
       fi
     done
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    local libs=$(otool -L "${APP_PREFIX}/bin/${file_name}" \
-          | sed '1d' \
+    otool -L "${dest_path}/${file_name}"
+    local libs=$(otool -L "${dest_path}/${file_name}" \
           | sed '1d' \
           | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
         )
+    local exec_prefix="@executable_path/"
     local lib
     for lib in ${libs}
     do
-      if is_darwin_sys_dylib "${lib}"
+      if [ "${lib}" == "${exec_prefix}${file_name}" ]
       then
-        : # System library, no need to copy it.
+        :
+      elif [ "$(basename ${lib})" == "${file_name}" ]
+      then
+        : # Libraries return a line with their own name.
       else
-        # The libs can be relative to @executable_path or absolute.
-        local exec_prefix="@executable_path/"
-        if [ "${lib:0:${#exec_prefix}}" == "${exec_prefix}" ]
+        if is_darwin_sys_dylib "${lib}"
         then
-          : 
-        elif [ -f "${lib}" ]
-        then
-          copy_dependencies_recursive "${lib}"
-        elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
-        then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}"
+          : # System library, no need to copy it.
         else
-          echo "${lib} not found"
-          exit 1
+          # The libs can be relative to @executable_path or absolute.
+          if [ "${lib:0:${#exec_prefix}}" == "${exec_prefix}" ]
+          then
+            : 
+          else
+            if [ -f "${lib}" ]
+            then
+              copy_dependencies_recursive "${lib}" "${dest_path}"
+            elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
+            then
+              copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" "${dest_path}"
+            else
+              echo "${lib} not found"
+              exit 1
+            fi
+            # Change library path to '@executable_path' inside the lib or app.
+            change_dylib "$(basename "${lib}")" "${dest_path}/${file_name}"
+          fi
         fi
-        # Change library path to '@executable_path' inside the lib or app.
-        change_dylib "$(basename "${lib}")" "${APP_PREFIX}/bin/${file_name}"
       fi
     done
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
-    local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${APP_PREFIX}/bin/${file_name}" \
+    local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${dest_path}/${file_name}" \
           | grep -i 'DLL Name' \
           | sed -e 's/.*DLL Name: \(.*\)/\1/' \
         )
@@ -1149,16 +1331,16 @@ function copy_dependencies_recursive()
       else
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" ]
         then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}"
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" "${dest_path}"
         elif [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}" ]
         then
-          copy_dependencies_recursive "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}"
+          copy_dependencies_recursive "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}" "${dest_path}"
         else
           local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib})
           # -print-file-name outputs back the requested name if not found.
           if [ "${full_path}" != "${lib}" ]
           then
-            copy_dependencies_recursive "${full_path}"
+            copy_dependencies_recursive "${full_path}" "${dest_path}"
           else
             echo "${lib} required by ${file_name}, not found"
             exit 1
@@ -1166,9 +1348,56 @@ function copy_dependencies_recursive()
         fi
       fi
     done
+  fi
+}
 
+check_binaries()
+{
+  local folder_path
+  if [ $# -ge 1 ]
+  then
+    folder_path="$1"
+  else
+    folder_path="${APP_PREFIX}"
   fi
 
+  local binaries
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    echo
+    echo "Checking binaries for unwanted DLLs..."
+
+    binaries=$(find "${folder_path}" -name \*.exe)
+    for bin in ${binaries} 
+    do
+      check_binary "${bin}"
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+
+    binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+    for bin in ${binaries} 
+    do
+      if is_elf "${bin}"
+      then
+        check_binary "${bin}"
+      fi
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+
+    binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+    for bin in ${binaries} 
+    do
+      if is_elf "${bin}"
+      then
+        check_binary "${bin}"
+      fi
+    done
+
+  fi
 }
 
 # Deprecated
@@ -1482,7 +1711,7 @@ function check_application()
     local lib
     for lib in ${libs} 
     do
-      check_library ${lib}
+      check_binary_for_libraries "${lib}"
     done
 
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
@@ -1497,7 +1726,7 @@ function check_application()
     local lib
     for lib in ${libs} 
     do
-      check_library ${lib}
+      check_binary_for_libraries "${lib}"
     done
 
   elif [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1512,7 +1741,7 @@ function check_application()
     local lib
     for lib in ${libs} 
     do
-      check_library ${lib}
+      check_binary_for_libraries "${lib}"
     done
 
   else
@@ -1571,16 +1800,19 @@ function xbb_activate_includes()
 # The pkg-config path will no longer include the system paths.
 function xbb_activate_this()
 {
-  export EXTRA_CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include"
-  export EXTRA_LDFLAGS+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
-  export EXTRA_LDFLAGS_APP+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
+  export XBB_CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include"
+
+  export XBB_LDFLAGS_LIB+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
+  export XBB_LDFLAGS_APP+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
+  export XBB_LDFLAGS_APP_STATIC+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
 
   if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "x64" ]
   then
-    export PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
+    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
   else
-    export PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
+    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
   fi
+  export PKG_CONFIG_PATH
 }
 
 # -----------------------------------------------------------------------------
