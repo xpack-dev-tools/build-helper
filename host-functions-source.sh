@@ -792,7 +792,23 @@ function host_run_docker_script()
     # This is a bit tricky, since it needs to do multiple actions in
     # one go: add a new user and run the script with that user credentials,
     # including passing the extra args (in the middle of the string).
-    local cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"bash ${DEBUG} ${docker_script} $@\" ${USER_NAME}"
+    #
+    # From the [bash manual](https://www.gnu.org/software/bash/manual/bash.html):
+    # ($*) Expands to the positional parameters, starting from one. 
+    # When the expansion is not within double quotes, each positional 
+    # parameter expands to a separate word. In contexts where it is 
+    # performed, those words are subject to further word splitting and 
+    # pathname expansion. When the expansion occurs within double quotes, 
+    # it expands to a single word with the value of each parameter separated 
+    # by the first character of the IFS special variable. That is, "$*" 
+    # is equivalent to "$1c$2c…", where c is the first character of the 
+    # value of the IFS variable. If IFS is unset, the parameters are 
+    # separated by spaces. If IFS is null, the parameters are joined 
+    # without intervening separators.
+    local ifs="${IFS}"
+    IFS=" "
+    local cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"bash ${DEBUG} ${docker_script} $*\" ${USER_NAME}"
+    IFS="${ifs}"
  
     docker run \
       --name="${docker_container_name}" \
