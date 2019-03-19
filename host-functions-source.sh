@@ -361,8 +361,11 @@ function host_common()
 
   # May override some of the helper/common definitions.
   common_functions_script_path="${script_folder_path}/common-functions-source.sh"
-  echo "Common functions source script: \"${common_functions_script_path}\"."
-  source "${common_functions_script_path}"
+  if [ -f "${common_functions_script_path}" ]
+  then
+    echo "Common functions source script: \"${common_functions_script_path}\"."
+    source "${common_functions_script_path}"
+  fi
 
   # -----------------------------------------------------------------------------
 
