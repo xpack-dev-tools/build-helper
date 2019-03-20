@@ -151,6 +151,6 @@ function hack_pdfetex()
   echo 'true' >>"${hacked_pdfetex}"
   chmod +x "${hacked_pdfetex}"
 
-  export PATH=$(pwd)/$(dirname "${hacked_pdfetex}"):${PATH}
+  export PATH="$(pwd)/$(dirname "${hacked_pdfetex}"):${PATH}"
 }
 

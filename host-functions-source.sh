@@ -426,7 +426,7 @@ function host_prepare_prerequisites()
       must_install="y"
     else
 
-      PATH="${hb_folder}/bin":${PATH}
+      PATH="${hb_folder}/bin:${PATH}"
       export PATH
 
       echo
@@ -462,7 +462,7 @@ function host_prepare_prerequisites()
         must_install="y"
       else
 
-        PATH="${tl_folder}/bin/x86_64-darwin":$PATH
+        PATH="${tl_folder}/bin/x86_64-darwin:${PATH}"
         export PATH
 
         echo

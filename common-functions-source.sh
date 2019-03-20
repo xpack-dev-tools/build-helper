@@ -204,9 +204,9 @@ function prepare_xbb_extras()
   export XBB_LDFLAGS_APP_STATIC
 
   set +u
-  if [ ! -z "${XBB_FOLDER}" -a -x "${XBB_FOLDER}"/bin/pkg-config-verbose ]
+  if [ ! -z "${XBB_FOLDER}" -a -x "${XBB_FOLDER}/bin/pkg-config-verbose" ]
   then
-    export PKG_CONFIG="${XBB_FOLDER}"/bin/pkg-config-verbose
+    export PKG_CONFIG="${XBB_FOLDER}/bin/pkg-config-verbose"
   fi
   set -u
 
