@@ -133,6 +133,9 @@ function prepare_xbb_env()
   IS_DEBUG=${IS_DEBUG:-""}
   WITH_PDF=${WITH_PDF:-""}
   WITH_HTML=${WITH_HTML:-""}
+
+  # Redefine this to "y" to create files that include the architecture.
+  HAS_NAME_ARCH=${HAS_NAME_ARCH:-""}
 }
 
 function prepare_xbb_extras()
@@ -262,8 +265,6 @@ function prepare_xbb_extras()
   mkdir -p "${SOURCES_FOLDER_PATH}"
 
   # ---------------------------------------------------------------------------
-
-  HAS_NAME_ARCH=${HAS_NAME_ARCH:-""}
 
   # libtool fails with the Ubuntu /bin/sh.
   export SHELL="/bin/bash"
