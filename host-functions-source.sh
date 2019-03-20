@@ -810,7 +810,7 @@ function host_run_docker_script()
     # without intervening separators.
     local ifs="${IFS}"
     IFS=" "
-    local cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"bash ${DEBUG} ${docker_script} $*\" ${USER_NAME}"
+    local cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"DEBUG=${DEBUG} bash ${docker_script} $*\" ${USER_NAME}"
     IFS="${ifs}"
  
     docker run \
