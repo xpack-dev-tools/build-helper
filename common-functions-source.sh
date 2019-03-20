@@ -144,9 +144,7 @@ function prepare_xbb_extras()
   XBB_CFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
   XBB_CXXFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
 
-  XBB_LDFLAGS_LIB=""
-  local XBB_LDFLAGS="${XBB_LDFLAGS_LIB}"
-  XBB_LDFLAGS_APP=""
+  local XBB_LDFLAGS=""
 
   if [ "${IS_DEBUG}" == "y" ]
   then
@@ -163,6 +161,9 @@ function prepare_xbb_extras()
   export XBB_CFLAGS
   export XBB_CXXFLAGS
 
+  XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
+  XBB_LDFLAGS_APP="${XBB_LDFLAGS}"
+
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
     local which_gcc_7="$(xbb_activate; which "g++-7")"
@@ -176,7 +177,7 @@ function prepare_xbb_extras()
     fi
     # Do not add -static here, it fails.
     # Do not try to link pthread statically, it must match the system glibc.
-    XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
+    XBB_LDFLAGS_APP+=" -Wl,--gc-sections"
     XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
@@ -184,14 +185,14 @@ function prepare_xbb_extras()
     export CXX="g++-7"
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
-    XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
+    XBB_LDFLAGS_APP+=" -Wl,-dead_strip"
     XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     # CRT_glob is from ARM script
     # -static avoids libwinpthread-1.dll 
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
-    XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
+    XBB_LDFLAGS_APP+=" -Wl,--gc-sections"
     XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
   fi
 
