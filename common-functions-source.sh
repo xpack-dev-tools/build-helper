@@ -1591,9 +1591,14 @@ function copy_dir()
   local to_path="$2"
 
   set +u
+  # rm -rf "${to_path}"
   mkdir -p "${to_path}"
 
-  (cd "${from_path}" && tar cf - .) | (cd "${to_path}" && tar xf -)
+  (
+    cd "${from_path}"
+    find . -xdev -print0 | cpio -oa0V | (cd "${to_path}" && cpio -imV)
+  )
+
   set -u
 }
 
