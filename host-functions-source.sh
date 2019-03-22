@@ -139,10 +139,13 @@ function host_prepare_cache()
   if [ "$(uname)" == "Darwin" ] 
   then
     HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Library/Caches/XBB"}
+    CONTAINER_CACHE_FOLDER_PATH="/Host${HOME}/Library/Caches/XBB"
   else
-    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.caches/XBB"}
+    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.cache/XBB"}
+    CONTAINER_CACHE_FOLDER_PATH="/Host${HOST_CACHE_FOLDER_PATH}"
   fi
-  CONTAINER_CACHE_FOLDER_PATH="/Host/Caches/XBB"
+
+  mkdir -p "${HOST_CACHE_FOLDER_PATH}"
 }
 
 function host_options()
