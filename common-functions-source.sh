@@ -1635,6 +1635,8 @@ function xbb_activate_this()
     PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
   fi
   export PKG_CONFIG_PATH
+
+  export PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
 }
 
 # -----------------------------------------------------------------------------
