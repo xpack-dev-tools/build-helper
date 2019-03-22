@@ -1203,13 +1203,17 @@ function copy_dependencies_recursive()
           | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
         )
     local exec_prefix="@executable_path/"
+    local loader_path="@loader_path/"
     local lib
     for lib in ${libs}
     do
       if [ "${lib}" == "${exec_prefix}${file_name}" ]
       then
         :
-      elif [ "$(basename ${lib})" == "${file_name}" ]
+      elif [ "${lib}" == "${loader_path}${file_name}" ]
+      then
+        :
+      elif [ "$(basename $(readlink -f ${lib}))" == "${file_name}" ]
       then
         : # Libraries return a line with their own name.
       else
