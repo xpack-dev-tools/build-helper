@@ -1273,7 +1273,7 @@ function copy_dependencies_recursive()
   fi
 }
 
-check_binaries()
+function check_binaries()
 {
   local folder_path
   if [ $# -ge 1 ]
@@ -1367,7 +1367,7 @@ function copy_build_files()
   echo "Copying build files..."
 
   (
-    cd "${WORK_FOLDER_PATH}"/build.git
+    cd "${BUILD_GIT_PATH}"
 
     mkdir -p patches
 
