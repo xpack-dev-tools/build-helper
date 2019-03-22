@@ -210,8 +210,13 @@ function prepare_xbb_extras()
   fi
   set -u
 
-  PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-""}
+  PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-":"}
   export PKG_CONFIG_PATH
+
+  # Prevent pkg-config to search the system folders (configured in the
+  # pkg-config at build time).
+  PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-":"}
+  export PKG_CONFIG_LIBDIR
 
   set +u
   echo
@@ -226,6 +231,8 @@ function prepare_xbb_extras()
   echo "XBB_LDFLAGS_APP_STATIC=${XBB_LDFLAGS_APP_STATIC}"
 
   echo "PKG_CONFIG=${PKG_CONFIG}"
+  echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}"
+  echo "PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR}"
   set -u
 
   (
@@ -1394,7 +1401,12 @@ function copy_dir()
 
   (
     cd "${from_path}"
-    find . -xdev -print0 | cpio -oa0V | (cd "${to_path}" && cpio -imV)
+    if [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      find . -xdev -print0 | cpio -oa0 | (cd "${to_path}" && cpio -im)
+    else
+      find . -xdev -print0 | cpio -oa0V | (cd "${to_path}" && cpio -imV)
+    fi
   )
 
   set -u
