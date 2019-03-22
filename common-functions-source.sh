@@ -241,10 +241,15 @@ function prepare_xbb_extras()
     echo
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
+      which ${CROSS_COMPILE_PREFIX}-gcc
       ${CROSS_COMPILE_PREFIX}-gcc --version
     else
+      which ${CC}
       ${CC} --version
     fi
+
+    which make
+    make --version
   )
 
   set +u
