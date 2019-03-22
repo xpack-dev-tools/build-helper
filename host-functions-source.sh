@@ -118,9 +118,10 @@ function host_detect()
   echo
   echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bit."
 
-  GROUP_ID=$(id -g)
   USER_ID=$(id -u)
-  USER_NAME="$(whoami)"
+  USER_NAME="$(id -u -n)"
+  GROUP_ID=$(id -g)
+  GROUP_NAME="$(id -g -n)"
 
   TARGET_ARCH="${HOST_NODE_ARCH}"
   TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
@@ -139,10 +140,13 @@ function host_prepare_cache()
   if [ "$(uname)" == "Darwin" ] 
   then
     HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Library/Caches/XBB"}
+    CONTAINER_CACHE_FOLDER_PATH="/Host${HOME}/Library/Caches/XBB"
   else
-    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.caches/XBB"}
+    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.cache/XBB"}
+    CONTAINER_CACHE_FOLDER_PATH="/Host${HOST_CACHE_FOLDER_PATH}"
   fi
-  CONTAINER_CACHE_FOLDER_PATH="/Host/Caches/XBB"
+
+  mkdir -p "${HOST_CACHE_FOLDER_PATH}"
 }
 
 function host_options()
@@ -614,9 +618,12 @@ function host_build_target()
   echo "TARGET_BITS=\"${target_bits}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
   echo "HOST_UNAME=\"${HOST_UNAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
-  echo "GROUP_ID=\"${GROUP_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+
   echo "USER_ID=\"${USER_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "USER_NAME=\"${USER_NAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "GROUP_ID=\"${GROUP_ID}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "GROUP_NAME=\"${GROUP_NAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+
   echo "CONTAINER_RUN_AS_ROOT=\"${CONTAINER_RUN_AS_ROOT}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
   echo "HOST_WORK_FOLDER_PATH=\"${HOST_WORK_FOLDER_PATH}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
@@ -810,7 +817,7 @@ function host_run_docker_script()
     # without intervening separators.
     local ifs="${IFS}"
     IFS=" "
-    local cmd_string="useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"DEBUG=${DEBUG} bash ${docker_script} $*\" ${USER_NAME}"
+    local cmd_string="groupadd -g ${GROUP_ID} ${GROUP_NAME} && useradd -u ${USER_ID} ${USER_NAME} && su -c \"DEBUG=${DEBUG} bash ${docker_script} $*\" ${USER_NAME}"
     IFS="${ifs}"
  
     docker run \
