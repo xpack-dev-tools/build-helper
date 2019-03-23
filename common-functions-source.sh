@@ -757,6 +757,7 @@ function is_win_sys_dll()
   local sys_dlls=(ADVAPI32.dll \
     KERNEL32.dll \
     msvcrt.dll \
+    MSVCR90.dll \
     SHELL32.dll \
     USER32.dll \
     WINMM.dll \
