@@ -1416,7 +1416,7 @@ function copy_dir()
     then
       find . -xdev -print0 | cpio -oa0 | (cd "${to_path}" && cpio -im)
     else
-      find . -xdev -print0 | cpio -oa0V | (cd "${to_path}" && cpio -imV)
+      find . -xdev -print0 | cpio -oa0V | (cd "${to_path}" && cpio -imuV)
     fi
   )
 
