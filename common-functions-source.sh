@@ -851,7 +851,8 @@ function strip_binary()
     if is_elf ${bin}
     then
       echo ${strip} ${bin}
-      ${strip} ${bin} 2>/dev/null || true
+      # ${strip} ${bin} 2>/dev/null || true
+      ${strip} -S ${bin} || true
     else
       echo $(file ${bin})
     fi
