@@ -273,7 +273,7 @@ function prepare_xbb_extras()
 
   # ---------------------------------------------------------------------------
 
-  SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/sources"}
+  export SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/sources"}
   mkdir -p "${SOURCES_FOLDER_PATH}"
 
   # ---------------------------------------------------------------------------
