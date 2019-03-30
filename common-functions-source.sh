@@ -26,8 +26,14 @@ function do_config_guess()
 
 function prepare_xbb_env() 
 {
-  if [ -f "${HOME}/opt/homebrew/xbb/xbb-source.sh" ]
+  if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
+    echo
+    echo "Sourcing ${HOME}/opt/xbb/xbb-source.sh..."
+    source "${HOME}/opt/xbb/xbb-source.sh"
+  elif [ -f "${HOME}/opt/homebrew/xbb/xbb-source.sh" ]
+  then
+    # Deprecated, on macOS it was moved to HOME/opt/xbb
     echo
     echo "Sourcing ${HOME}/opt/homebrew/xbb/xbb-source.sh..."
     source "${HOME}/opt/homebrew/xbb/xbb-source.sh"
