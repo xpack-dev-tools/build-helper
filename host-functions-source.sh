@@ -421,27 +421,31 @@ function host_prepare_prerequisites()
 {
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
-    local hb_folder="${HOME}/opt/homebrew/xbb"
+    local xbb_folder
+
     
     local must_install=""
-    # Check local Homebrew.
-    if [ ! -d "${hb_folder}" ]
-    then
-      must_install="y"
-    else
 
-      PATH="${hb_folder}/bin:${PATH}"
-      export PATH
+    if [ -d "${HOME}/opt/xbb" ]
+    then
+      xbb_folder="${HOME}/opt/xbb"
+    elif [ -d "${HOME}/opt/homebrew/xbb" ]
+    then
+      xbb_folder="${HOME}/opt/homebrew/xbb"
+    else
+      must_install="y"
+    fi
+
+
+    if [ ! -z "${xbb_folder}" ]
+    then
 
       echo
-      echo "Checking Homebrew in '${hb_folder}'..."
-      set +e
-      brew --version | grep 'Homebrew '
-      if [ $? -ne 0 ]
+      echo "Checking XBB in '${xbb_folder}'..."
+      if [ ! -f "${xbb_folder}/xbb-source.sh" ]
       then
         must_install="y"
       fi
-      set -e
       
     fi
 
@@ -449,7 +453,9 @@ function host_prepare_prerequisites()
     then
 
       echo
-      echo "Please install the Homebrew XBB and rerun."
+      echo "Please install the macOS XBB and rerun."
+      echo "https://github.com/xpack/xpack-build-box/tree/master/macos"
+      
       exit 1
 
     fi
@@ -487,10 +493,8 @@ function host_prepare_prerequisites()
         echo
         echo "Please install TeX Live and rerun."
         echo "Alternatively restart the build script using '--without-pdf'."
-        # echo 
-        # echo "mkdir -p \${HOME}/opt"
-        # echo "git clone https://github.com/ilg-ul/opt-install-scripts \${HOME}/opt/install-scripts.git"
-        # echo "bash \${HOME}/opt/install-scripts.git/install-texlive.sh"
+        echo "https://github.com/xpack/xpack-build-box/blob/master/macos/README.md#install-tex"
+
         exit 1
 
       fi
