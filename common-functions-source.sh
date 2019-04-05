@@ -784,6 +784,8 @@ function is_win_sys_dll()
     VERSION.dll \
     SETUPAPI.dll \
     CFGMGR32.dll \
+    PSAPI.DLL \
+    USERENV.dll \
   )
 
   local dll
