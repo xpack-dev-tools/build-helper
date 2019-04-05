@@ -225,6 +225,9 @@ function prepare_xbb_extras()
   PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-":"}
   export PKG_CONFIG_LIBDIR
 
+  LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-":"}
+  export LD_LIBRARY_PATH
+
   set +u
   echo
   echo "CC=${CC}"
