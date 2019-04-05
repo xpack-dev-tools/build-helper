@@ -1528,7 +1528,7 @@ function create_archive()
     fi
 
     cd "${DEPLOY_FOLDER_PATH}"
-    compute_sha shasum -a 256 -p "$(basename ${distribution_file})"
+    compute_sha shasum -a 256 "$(basename ${distribution_file})"
   )
 }
 
