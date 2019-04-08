@@ -1171,13 +1171,13 @@ function prepare_app_folder_libraries()
 
 function copy_dependencies_recursive()
 {
-  local file_path="$1"
-  local dest_path="$2"
   if [ $# -ne 2 ]
   then 
     echo "copy_dependencies_recursive requires 2 args." 
     exit 1
   fi
+  local file_path="$1"
+  local dest_path="$2"
 
   local file_name="$(basename "${file_path}")"
   local folder_path="$(dirname "${file_path}")"
