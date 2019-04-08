@@ -264,6 +264,106 @@ function host_options()
   fi
 }
 
+function host_options_windows()
+{
+  local help_message="$1"
+  shift
+
+  ACTION=""
+
+  DO_BUILD_WIN32=""
+  DO_BUILD_WIN64=""
+
+  # Kept, since they are used in various common functions.
+  DO_BUILD_LINUX32=""
+  DO_BUILD_LINUX64=""
+  DO_BUILD_OSX=""
+
+  ENV_FILE=""
+
+  argc=$#
+  declare -a argv
+  argv=( $@ )
+  if [ ! -z "${DEBUG}" ]
+  then
+    echo ${argv[@]-}
+  fi
+  i=0
+
+  # Must be declared by the caller.
+  # declare -a rest
+
+
+  # Identify some of the options. The rest are collected and passed
+  # to the container script.
+  while [ $i -lt $argc ]
+  do
+
+    arg="${argv[$i]}"
+    case "${arg}" in
+
+      clean|cleanall|preload-images)
+        ACTION="${arg}"
+        ;;
+
+      --win32|--windows32)
+        DO_BUILD_WIN32="y"
+        ;;
+
+      --win64|--windows64)
+        DO_BUILD_WIN64="y"
+        ;;
+
+      --all)
+        DO_BUILD_WIN32="y"
+        DO_BUILD_WIN64="y"
+        ;;
+
+      --env-file)
+        ((++i))
+        ENV_FILE="${argv[$i]}"
+        if [ ! -f "${ENV_FILE}" ];
+        then
+          echo "The specified environment file \"${ENV_FILE}\" does not exist, exiting..."
+          exit 1
+        fi
+        ;;
+
+      --date)
+        ((++i))
+        DISTRIBUTION_FILE_DATE="${argv[$i]}"
+        ;;
+
+      --help)
+        echo "Usage:"
+        # Some of the options are processed by the container script.
+        echo "${help_message}"
+        echo
+        exit 1
+        ;;
+
+      *)
+        # Collect all other in an array. Append to the end.
+        # Will be later processed by the container script.
+        set +u
+        rest[${#rest[*]}]="$arg"
+        set -u
+        ;;
+
+    esac
+    ((++i))
+
+  done
+
+  DO_BUILD_ANY="${DO_BUILD_WIN64}${DO_BUILD_WIN32}"
+
+  # The ${rest[@]} options will be passed to the inner script.
+  if [ ! -z "${DEBUG}" ]
+  then
+    echo ${rest[@]-}
+  fi
+}
+
 function host_native_options()
 {
   local help_message="$1"
