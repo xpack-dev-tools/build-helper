@@ -277,13 +277,7 @@ function host_native_options()
   WITH_STRIP=""
   IS_NATIVE="y"
 
-  # Attempts to use 8 occasionally failed, reduce if necessary.
-  if [ "${HOST_UNAME}" == "Darwin" ]
-  then
-    JOBS="--jobs=$(sysctl -n hw.ncpu)"
-  else
-    JOBS="--jobs=$(grep ^processor /proc/cpuinfo|wc -l)"
-  fi
+  JOBS=""
 
   while [ $# -gt 0 ]
   do
@@ -307,7 +301,7 @@ function host_native_options()
 
       --jobs)
         shift
-        JOBS="--jobs=$1"
+        JOBS=$1
         ;;
 
     --help)

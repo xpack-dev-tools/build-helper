@@ -59,7 +59,7 @@ function do_xxx()
 
       (
         # Build.
-        make ${JOBS}
+        make -j ${JOBS}
         if [ "${WITH_STRIP}" == "y" ]
         then
           make install-strip
