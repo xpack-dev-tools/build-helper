@@ -805,6 +805,7 @@ function check_binary_for_libraries()
       set +e
       local unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
       set -e
+
       # echo "|${unxp}|"
       if [ ! -z "$unxp" ]
       then
@@ -1058,7 +1059,7 @@ function change_dylib()
 
   if [ ! -f "$(dirname ${file_path})/${dylib_name}" ]
   then
-    /usr/bin/install -v -c -m 644 "${dylib_path}" "$(dirname ${file_path})/${dylib_name}"
+    install -v -c -m 644 "${dylib_path}" "$(dirname ${file_path})/${dylib_name}"
   fi
 }
 
@@ -1188,7 +1189,7 @@ function copy_dependencies_recursive()
     then
       if [ ! -f "${dest_path}/${file_name}" ]
       then
-        /usr/bin/install -v -c -m 644 "${file_path}" "${dest_path}"
+        install -v -c -m 644 "${file_path}" "${dest_path}"
       fi
     fi
     if [ "${TARGET_PLATFORM}" == "linux" ]
@@ -1202,7 +1203,7 @@ function copy_dependencies_recursive()
       local link_path="$(readlink -f "${file_path}")"
       if [ ! -f "${dest_path}/${file_name}" ]
       then
-        /usr/bin/install -v -c -m 644 "${link_path}" "${dest_path}"
+        install -v -c -m 644 "${link_path}" "${dest_path}"
       fi
     else
       # On POSIX preserve symbolic links, since shared libraries can be
@@ -1245,7 +1246,7 @@ function copy_dependencies_recursive()
       else
         if [ ! -f "${dest_path}/${file_name}" ]
         then
-          /usr/bin/install -v -c -m 644 "${file_path}" "${dest_path}"
+          install -v -c -m 644 "${file_path}" "${dest_path}"
         fi
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
@@ -1445,9 +1446,9 @@ function copy_license()
       then
         if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
         then
-          /usr/bin/install -d -m 0755 \
+          install -d -m 0755 \
             "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses/$2"
-          /usr/bin/install -v -c -m 644 "$f" \
+          install -v -c -m 644 "$f" \
             "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses/$2"
         fi
       fi
@@ -1476,21 +1477,21 @@ function copy_build_files()
     mkdir -p patches
 
     find scripts patches -type d \
-      -exec /usr/bin/install -d -m 0755 \
+      -exec install -d -m 0755 \
         "${APP_PREFIX}/${DISTRO_LC_NAME}"/'{}' ';'
 
     find scripts patches -type f \
-      -exec /usr/bin/install -v -c -m 644 \
+      -exec install -v -c -m 644 \
         '{}' "${APP_PREFIX}/${DISTRO_LC_NAME}"/'{}' ';'
 
     if [ -f CHANGELOG.txt ]
     then
-      /usr/bin/install -v -c -m 644 \
+      install -v -c -m 644 \
           CHANGELOG.txt "${APP_PREFIX}/${DISTRO_LC_NAME}"
     fi
     if [ -f CHANGELOG.md ]
     then
-      /usr/bin/install -v -c -m 644 \
+      install -v -c -m 644 \
           CHANGELOG.md "${APP_PREFIX}/${DISTRO_LC_NAME}"
     fi
   )
