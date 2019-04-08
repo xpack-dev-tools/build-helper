@@ -7,6 +7,75 @@
 
 # -----------------------------------------------------------------------------
 
+# Default empty definition, if XBB is available, it should
+# redefine it.
+function xbb_activate()
+{
+  :
+}
+
+# Add the freshly built binaries.
+function xbb_activate_installed_bin()
+{
+  # Add the XBB bin to the PATH.
+  PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
+
+  # Add the XBB lib to the LD_LIBRARY_PATH.
+  LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+
+  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+  then
+    # On 64-bit systems, add lib64 to the LD_LIBRARY_PATH.
+    LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+  fi
+
+  export PATH
+  export LD_LIBRARY_PATH
+}
+
+# Add the freshly built headrs and libraries.
+function xbb_activate_installed_dev()
+{
+  # Add XBB include in front of XBB_CPPFLAGS.
+  XBB_CPPFLAGS="-I${LIBS_INSTALL_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
+
+  # Add XBB lib in front of XBB_LDFLAGS.
+  XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
+  XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
+  XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
+  XBB_LDFLAGS_APP_STATIC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC}"
+
+  # Add XBB lib in front of PKG_CONFIG_PATH.
+  PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+
+  LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+
+  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+  then
+    # For 64-bit systems, add XBB lib64 in front of paths.
+    XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC}"
+
+    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
+
+    LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+  fi
+
+  export XBB_CPPFLAGS
+
+  export XBB_LDFLAGS
+  export XBB_LDFLAGS_LIB
+  export XBB_LDFLAGS_APP
+  export XBB_LDFLAGS_APP_STATIC
+
+  export PKG_CONFIG_PATH
+  export LD_LIBRARY_PATH
+}
+
+# -----------------------------------------------------------------------------
+
 function do_config_guess() 
 {
   if [ -f "${XBB_FOLDER}/share/libtool/build-aux/config.guess" ]
@@ -1604,57 +1673,6 @@ function compute_sha()
   sha_file="${file}.sha"
   "$@" >"${sha_file}"
   echo "SHA: $(cat ${sha_file})"
-}
-
-# -----------------------------------------------------------------------------
-
-# Default empty definition, if XBB is available, it should
-# redefine it.
-function xbb_activate()
-{
-  :
-}
-
-# Example, to fix the missing definitions on ARCH.
-function xbb_activate_pkgconfig()
-{
-  if [ "${TARGET_PLATFORM}" == "linux" ]
-  then
-    if [ ! -z "${PKG_CONFIG_PATH}" ]
-    then
-      if [ -d "/usr/lib/pkgconfig" ]
-      then
-        PKG_CONFIG_PATH="/usr/lib/pkgconfig"
-      fi
-    fi
-    export PKG_CONFIG_PATH
-  fi
-}
-
-function xbb_activate_includes()
-{
-  :
-}
-
-# Make the build use the currently compiled libraries.
-# The pkg-config path will no longer include the system paths.
-function xbb_activate_this()
-{
-  export XBB_CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include"
-
-  export XBB_LDFLAGS_LIB+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
-  export XBB_LDFLAGS_APP+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
-  export XBB_LDFLAGS_APP_STATIC+=" -L${LIBS_INSTALL_FOLDER_PATH}/lib"
-
-  if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "x64" ]
-  then
-    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
-  else
-    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
-  fi
-  export PKG_CONFIG_PATH
-
-  export PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
 }
 
 # -----------------------------------------------------------------------------
