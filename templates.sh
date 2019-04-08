@@ -26,9 +26,9 @@ function do_xxx()
 
       xbb_activate
 
-      export CFLAGS="${EXTRA_CFLAGS}"
-      export CPPFLAGS="${EXTRA_CPPFLAGS}"
-      export LDFLAGS="${EXTRA_LDFLAGS}"
+      export CFLAGS="${XBB_CFLAGS}"
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS}"
       
       if [ ! -f "config.status" ]
       then 
