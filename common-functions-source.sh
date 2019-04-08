@@ -95,6 +95,10 @@ function do_config_guess()
 
 function prepare_xbb_env() 
 {
+  # Defaults, to ensure the variables are defined.
+  PATH=${PATH:-""}
+  LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+
   if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
     echo
@@ -203,6 +207,22 @@ function prepare_xbb_env()
 
   BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
 
+  # ---------------------------------------------------------------------------
+
+  APP_PREFIX="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    APP_PREFIX_DOC="${APP_PREFIX}/doc"
+  else
+    # For POSIX platforms, keep the tradition.
+    APP_PREFIX_DOC="${APP_PREFIX}/share/doc"
+  fi
+
+  # ---------------------------------------------------------------------------
+
+  SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/sources"}
+  mkdir -p "${SOURCES_FOLDER_PATH}"
+
   # Empty defaults.
   IS_DEVELOP=${IS_DEVELOP:-""}
   IS_DEBUG=${IS_DEBUG:-""}
@@ -211,6 +231,17 @@ function prepare_xbb_env()
 
   # Redefine this to "y" to create files that include the architecture.
   HAS_NAME_ARCH=${HAS_NAME_ARCH:-""}
+
+  # ---------------------------------------------------------------------------
+
+  export PATH
+  export LD_LIBRARY_PATH
+
+  export SOURCES_FOLDER_PATH
+
+  # libtool fails with the Ubuntu /bin/sh.
+  export SHELL="/bin/bash"
+  export CONFIG_SHELL="/bin/bash"
 }
 
 function prepare_xbb_extras()
@@ -222,7 +253,7 @@ function prepare_xbb_extras()
   XBB_CFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
   XBB_CXXFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
 
-  local XBB_LDFLAGS=""
+  XBB_LDFLAGS=""
 
   if [ "${IS_DEBUG}" == "y" ]
   then
@@ -235,20 +266,16 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -O2"
   fi
 
-  export XBB_CPPFLAGS
-  export XBB_CFLAGS
-  export XBB_CXXFLAGS
-
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
     local which_gcc_7="$(xbb_activate; which "g++-7")"
     if [ ! -z "${which_gcc_7}" ]
     then
-      export CC="gcc-7"
-      export CXX="g++-7"
+      CC="gcc-7"
+      CXX="g++-7"
     else
-      export CC="gcc"
-      export CXX="g++"
+      CC="gcc"
+      CXX="g++"
     fi
     # Do not add -static here, it fails.
     # Do not try to link pthread statically, it must match the system glibc.
@@ -257,8 +284,8 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    export CC="gcc-7"
-    export CXX="g++-7"
+    CC="gcc-7"
+    CXX="g++-7"
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
@@ -275,27 +302,18 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
   fi
 
-  export XBB_LDFLAGS_LIB
-  export XBB_LDFLAGS_APP
-  export XBB_LDFLAGS_APP_STATIC
-
   set +u
   if [ ! -z "${XBB_FOLDER}" -a -x "${XBB_FOLDER}/bin/pkg-config-verbose" ]
   then
-    export PKG_CONFIG="${XBB_FOLDER}/bin/pkg-config-verbose"
+    PKG_CONFIG="${XBB_FOLDER}/bin/pkg-config-verbose"
   fi
   set -u
 
   PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-":"}
-  export PKG_CONFIG_PATH
 
   # Prevent pkg-config to search the system folders (configured in the
   # pkg-config at build time).
   PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-":"}
-  export PKG_CONFIG_LIBDIR
-
-  LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-":"}
-  export LD_LIBRARY_PATH
 
   set +u
   echo
@@ -341,25 +359,24 @@ function prepare_xbb_extras()
 
   # ---------------------------------------------------------------------------
 
-  APP_PREFIX="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
-  if [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    APP_PREFIX_DOC="${APP_PREFIX}/doc"
-  else
-    # For POSIX platforms, keep the tradition.
-    APP_PREFIX_DOC="${APP_PREFIX}/share/doc"
-  fi
+  export XBB_CPPFLAGS
 
-  # ---------------------------------------------------------------------------
+  export XBB_CFLAGS
+  export XBB_CXXFLAGS
 
-  export SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/sources"}
-  mkdir -p "${SOURCES_FOLDER_PATH}"
+  export XBB_LDFLAGS
+  export XBB_LDFLAGS_LIB
+  export XBB_LDFLAGS_APP
+  export XBB_LDFLAGS_APP_STATIC
 
-  # ---------------------------------------------------------------------------
+  export CC
+  export CXX
 
-  # libtool fails with the Ubuntu /bin/sh.
-  export SHELL="/bin/bash"
-  export CONFIG_SHELL="/bin/bash"
+
+  export PKG_CONFIG
+  export PKG_CONFIG_PATH
+  export PKG_CONFIG_LIBDIR
+
 }
 
 # -----------------------------------------------------------------------------
