@@ -803,7 +803,13 @@ function check_binary_for_libraries()
       )
 
       set +e
-      local unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+      local unxp
+      if [[ "${file_name}" == *\.dylib ]]
+      then
+        unxp=$(otool -L "${file_path}" | sed '1d' | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+      else
+        unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+      fi
       set -e
 
       # echo "|${unxp}|"
