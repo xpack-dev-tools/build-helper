@@ -1310,6 +1310,7 @@ function copy_dependencies_recursive()
     done
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
+    echo
     otool -L "${dest_path}/${file_name}"
     local libs=$(otool -L "${dest_path}/${file_name}" \
           | sed '1d' \
@@ -1689,6 +1690,8 @@ function check_application()
     exit 1
 
   fi
+
+  echo
 }
 
 # -----------------------------------------------------------------------------
