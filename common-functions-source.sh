@@ -968,7 +968,13 @@ function is_elf()
   fi
   local bin="$1"
 
-  if [ -x "${bin}" ]
+  # Symlinks do not match.
+  if [ -L "${bin}" ]
+  then
+    return 1
+  fi
+
+  if [ -f "${bin}" -a -x "${bin}" ]
   then
     # Return 0 (true) if found.
     file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
