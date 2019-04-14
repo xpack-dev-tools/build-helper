@@ -624,6 +624,20 @@ function run_app()
 
 # -----------------------------------------------------------------------------
 
+function do_patch()
+{
+  if [ ! -z "$1" ]
+  then
+    local patch_file_name="$1"
+    local patch_path="${BUILD_GIT_PATH}/patches/${patch_file_name}"
+    if [ -f "${patch_path}" ]
+    then
+      echo "Patching..."
+      patch -p0 < "${patch_path}"
+    fi
+  fi
+}
+
 function extract()
 {
   local archive_name="$1"
@@ -647,23 +661,15 @@ function extract()
 
       if [ $# -gt 2 ]
       then
-        if [ ! -z "$3" ]
-        then
-          local patch_file_name="$3"
-          local patch_path="${BUILD_GIT_PATH}/patches/${patch_file_name}"
-          if [ -f "${patch_path}" ]
-          then
-            echo "Patching..."
-            cd "${folder_name}"
-            patch -p0 < "${patch_path}"
-          fi
-        fi
+        cd "${folder_name}"
+        do_patch "$3"
       fi
     )
   else
     echo "Folder \"${pwd}/${folder_name}\" already present."
   fi
 }
+
 
 function download()
 {
