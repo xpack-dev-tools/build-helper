@@ -1407,43 +1407,47 @@ function check_binaries()
     folder_path="${APP_PREFIX}"
   fi
 
-  local binaries
-  if [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    echo
-    echo "Checking binaries for unwanted DLLs..."
+  (
+    xbb_activate
+    
+    local binaries
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo "Checking binaries for unwanted DLLs..."
 
-    binaries=$(find "${folder_path}" -name \*.exe)
-    for bin in ${binaries} 
-    do
-      check_binary "${bin}"
-    done
-
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-
-    binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
-    for bin in ${binaries} 
-    do
-      if is_elf "${bin}"
-      then
+      binaries=$(find "${folder_path}" -name \*.exe)
+      for bin in ${binaries} 
+      do
         check_binary "${bin}"
-      fi
-    done
+      done
 
-  elif [ "${TARGET_PLATFORM}" == "linux" ]
-  then
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
 
-    binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
-    for bin in ${binaries} 
-    do
-      if is_elf "${bin}"
-      then
-        check_binary "${bin}"
-      fi
-    done
+      binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+      for bin in ${binaries} 
+      do
+        if is_elf "${bin}"
+        then
+          check_binary "${bin}"
+        fi
+      done
 
-  fi
+    elif [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+
+      binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+      for bin in ${binaries} 
+      do
+        if is_elf "${bin}"
+        then
+          check_binary "${bin}"
+        fi
+      done
+
+    fi
+  )
 }
 
 # -----------------------------------------------------------------------------
