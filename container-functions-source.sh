@@ -110,24 +110,28 @@ function fix_ownership()
 {
   if [ -f "/.dockerenv" -a "${CONTAINER_RUN_AS_ROOT}" == "y" ]
   then
-    # Set the owner of the folder and files created by the docker CentOS 
-    # container to match the user running the build script on the host. 
-    # When running on linux host, these folders and their content remain  
-    # owned by root if this is not done. However, on macOS  
-    # the owner used by Docker is the same as the macOS user, so an 
-    # ownership change is not realy necessary. 
-    echo
-    echo "Changing ownership to non-root GNU/Linux user..."
+    (
+      xbb_activate
+      
+      # Set the owner of the folder and files created by the docker CentOS 
+      # container to match the user running the build script on the host. 
+      # When running on linux host, these folders and their content remain  
+      # owned by root if this is not done. However, on macOS  
+      # the owner used by Docker is the same as the macOS user, so an 
+      # ownership change is not realy necessary. 
+      echo
+      echo "Changing ownership to non-root GNU/Linux user..."
 
-    if [ -d "${BUILD_FOLDER_PATH}" ]
-    then
-      chown -R ${USER_ID}:${GROUP_ID} "${BUILD_FOLDER_PATH}"
-    fi
-    if [ -d "${INSTALL_FOLDER_PATH}" ]
-    then
-      chown -R ${USER_ID}:${GROUP_ID} "${INSTALL_FOLDER_PATH}"
-    fi
-    chown -R ${USER_ID}:${GROUP_ID} "${DEPLOY_FOLDER_PATH}"
+      if [ -d "${BUILD_FOLDER_PATH}" ]
+      then
+        chown -R ${USER_ID}:${GROUP_ID} "${BUILD_FOLDER_PATH}"
+      fi
+      if [ -d "${INSTALL_FOLDER_PATH}" ]
+      then
+        chown -R ${USER_ID}:${GROUP_ID} "${INSTALL_FOLDER_PATH}"
+      fi
+      chown -R ${USER_ID}:${GROUP_ID} "${DEPLOY_FOLDER_PATH}"
+    )
   fi
 }
 
