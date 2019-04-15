@@ -947,7 +947,7 @@ function is_darwin_sys_dylib()
 
 # Strip binary files as in "strip binary" form, for both native
 # (linux/mac) and mingw.
-function strip_binary() 
+function strip_binary2() 
 {
     set +e
     if [ $# -lt 2 ]
@@ -969,6 +969,26 @@ function strip_binary()
     fi
 
     set -e
+}
+
+function strip_binary() 
+{
+    if [ $# -lt 1 ]
+    then
+      warning "strip_binary: Missing file argument"
+      exit 1
+    fi
+
+    local bin="$1"
+
+    local strip="strip"
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      strip="${CROSS_COMPILE_PREFIX}-strip"
+    fi
+
+    echo "${strip} ${bin}"
+    "${strip}" -S "${bin}" || true
 }
 
 function is_elf()
@@ -1082,7 +1102,7 @@ function change_dylib()
 }
 
 # Workaround to Docker error on 32-bit image:
-# stat: Value too large for defined data type
+# stat: Value too large for defined data type (requires -D_FILE_OFFSET_BITS=64)
 function patch_linux_elf_origin()
 {
   local file_path="$1"
@@ -1101,6 +1121,11 @@ function prepare_app_libraries()
   shift
 
   local app_folder_path="$(dirname "${app_path}")"
+
+  if [ "${WITH_STRIP}" == "y" ]
+  then
+    strip_binary "${app_path}"
+  fi
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
@@ -1208,6 +1233,10 @@ function copy_dependencies_recursive()
       if [ ! -f "${dest_path}/${file_name}" ]
       then
         install -v -c -m 644 "${file_path}" "${dest_path}"
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          strip_binary "${dest_path}/${file_name}"
+        fi
       fi
     fi
     if [ "${TARGET_PLATFORM}" == "linux" ]
@@ -1222,6 +1251,10 @@ function copy_dependencies_recursive()
       if [ ! -f "${dest_path}/${file_name}" ]
       then
         install -v -c -m 644 "${link_path}" "${dest_path}"
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          strip_binary "${dest_path}/${file_name}"
+        fi
       fi
     else
       # On POSIX preserve symbolic links, since shared libraries can be
@@ -1265,6 +1298,10 @@ function copy_dependencies_recursive()
         if [ ! -f "${dest_path}/${file_name}" ]
         then
           install -v -c -m 644 "${file_path}" "${dest_path}"
+          if [ "${WITH_STRIP}" == "y" ]
+          then
+            strip_binary "${dest_path}/${file_name}"
+          fi
         fi
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
