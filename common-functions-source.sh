@@ -205,6 +205,8 @@ function prepare_xbb_env()
   # Do it later, only if needed.
   # mkdir -p "${DEPLOY_FOLDER_PATH}"
 
+  DISTRO_INFO_NAME=${DISTRO_INFO_NAME:-"distro-info"}
+  
   BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
 
   # ---------------------------------------------------------------------------
@@ -1507,9 +1509,9 @@ function copy_license()
         if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
         then
           install -d -m 0755 \
-            "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses/$2"
+            "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
           install -v -c -m 644 "$f" \
-            "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses/$2"
+            "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
         fi
       fi
     done
@@ -1519,7 +1521,7 @@ function copy_license()
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      find "${APP_PREFIX}/${DISTRO_LC_NAME}/licenses" \
+      find "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses" \
         -type f \
         -exec unix2dos '{}' ';'
     fi
@@ -1538,21 +1540,21 @@ function copy_build_files()
 
     find scripts patches -type d \
       -exec install -d -m 0755 \
-        "${APP_PREFIX}/${DISTRO_LC_NAME}"/'{}' ';'
+        "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
     find scripts patches -type f \
       -exec install -v -c -m 644 \
-        '{}' "${APP_PREFIX}/${DISTRO_LC_NAME}"/'{}' ';'
+        '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
     if [ -f CHANGELOG.txt ]
     then
       install -v -c -m 644 \
-          CHANGELOG.txt "${APP_PREFIX}/${DISTRO_LC_NAME}"
+          CHANGELOG.txt "${APP_PREFIX}/${DISTRO_INFO_NAME}"
     fi
     if [ -f CHANGELOG.md ]
     then
       install -v -c -m 644 \
-          CHANGELOG.md "${APP_PREFIX}/${DISTRO_LC_NAME}"
+          CHANGELOG.md "${APP_PREFIX}/${DISTRO_INFO_NAME}"
     fi
   )
 }
