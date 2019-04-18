@@ -1591,6 +1591,7 @@ function create_archive()
   (
     xbb_activate
 
+    # TODO: remove DATE when switching to xPacks
     local distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
 
     local target_folder_name=${TARGET_FOLDER_NAME}
