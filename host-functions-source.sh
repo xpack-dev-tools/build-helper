@@ -213,7 +213,7 @@ function host_options()
         DO_BUILD_WIN64="y"
         DO_BUILD_LINUX32="y"
         DO_BUILD_LINUX64="y"
-        if [ "${HOST_UNAME}" == "Darwin" ] 
+        if [ "$(uname)" == "Darwin" ] 
         then
           DO_BUILD_OSX="y"
         fi
