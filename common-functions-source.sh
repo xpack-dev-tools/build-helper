@@ -996,6 +996,10 @@ function strip_binary()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       strip="${CROSS_COMPILE_PREFIX}-strip"
+      if [[ "${bin}" != *.exe ]]
+      then
+        bin="${bin}.exe"
+      fi
     fi
 
     echo "${strip} ${bin}"
