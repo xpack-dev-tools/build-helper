@@ -100,13 +100,7 @@ function prepare_xbb_env()
   LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-""}"
 
   # Without this, on 32-bit the bootstrap perl fails to find libcrypt.
-  LD_LIBRARY_PATH="/lib:${LD_LIBRARY_PATH}"
-
-  # Preventive.
-  if [ -d "/lib64" ]
-  then
-    LD_LIBRARY_PATH="/lib64:${LD_LIBRARY_PATH}"
-  fi
+  # LD_LIBRARY_PATH="/lib:${LD_LIBRARY_PATH}"
 
   if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
