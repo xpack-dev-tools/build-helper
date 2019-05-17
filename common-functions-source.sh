@@ -292,7 +292,7 @@ function prepare_xbb_extras()
     # Do not try to link pthread statically, it must match the system glibc.
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libstdc++"
+    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
     CC="gcc-7"
