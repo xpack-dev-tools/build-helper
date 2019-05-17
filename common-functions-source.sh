@@ -667,7 +667,12 @@ function extract()
       then
         unzip "${archive_name}" 
       else
-        tar xf "${archive_name}"
+        if [ ! -z "${DEBUG}" ]
+        then
+          tar -x -v -f "${archive_name}"
+        else
+          tar -x -f "${archive_name}"
+        fi
       fi
 
       if [ $# -gt 2 ]
