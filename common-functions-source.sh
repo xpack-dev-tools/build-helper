@@ -304,7 +304,7 @@ function prepare_xbb_extras()
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
-    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   fi
 
   set +u
