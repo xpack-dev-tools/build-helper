@@ -913,9 +913,13 @@ function is_linux_sys_so()
 {
   local lib_name="$1"
 
-  # libX11.so.6 
+  # Do not add these two, they are present if the toolchain is installed, 
+  # but this is not guaranteed, so better copy them from the xbb toolchain.
+  # libstdc++.so.6 
+  # libgcc_s.so.1 
 
   # Shared libraries that are expected to be present on any Linux.
+  # Note the X11 libraries.
   local sys_libs=(\
     librt.so.1 \
     libm.so.6 \
@@ -925,6 +929,9 @@ function is_linux_sys_so()
     libdl.so.2 \
     ld-linux-x86-64.so.2 \
     ld-linux.so.2 \
+    libX11.so.6 \
+    libXau.so.6 \
+    libxcb.so.1 \
   )
 
   local lib
