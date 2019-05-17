@@ -43,7 +43,7 @@ function xbb_activate_installed_dev()
   XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
   XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
   XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
-  XBB_LDFLAGS_APP_STATIC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC}"
+  XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
   # Add XBB lib in front of PKG_CONFIG_PATH.
   PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
@@ -56,7 +56,7 @@ function xbb_activate_installed_dev()
     XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
     XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
     XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP}"
-    XBB_LDFLAGS_APP_STATIC="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
     PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
 
@@ -68,7 +68,7 @@ function xbb_activate_installed_dev()
   export XBB_LDFLAGS
   export XBB_LDFLAGS_LIB
   export XBB_LDFLAGS_APP
-  export XBB_LDFLAGS_APP_STATIC
+  export XBB_LDFLAGS_APP_STATIC_GCC
 
   export PKG_CONFIG_PATH
   export LD_LIBRARY_PATH
@@ -286,7 +286,7 @@ function prepare_xbb_extras()
     # Do not try to link pthread statically, it must match the system glibc.
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
     CC="gcc-7"
@@ -296,7 +296,7 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     # CRT_glob is from ARM script
@@ -304,7 +304,7 @@ function prepare_xbb_extras()
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
   fi
 
   set +u
@@ -330,7 +330,7 @@ function prepare_xbb_extras()
 
   echo "XBB_LDFLAGS_LIB=${XBB_LDFLAGS_LIB}"
   echo "XBB_LDFLAGS_APP=${XBB_LDFLAGS_APP}"
-  echo "XBB_LDFLAGS_APP_STATIC=${XBB_LDFLAGS_APP_STATIC}"
+  echo "XBB_LDFLAGS_APP_STATIC_GCC=${XBB_LDFLAGS_APP_STATIC_GCC}"
 
   echo "PKG_CONFIG=${PKG_CONFIG}"
   echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}"
@@ -372,7 +372,7 @@ function prepare_xbb_extras()
   export XBB_LDFLAGS
   export XBB_LDFLAGS_LIB
   export XBB_LDFLAGS_APP
-  export XBB_LDFLAGS_APP_STATIC
+  export XBB_LDFLAGS_APP_STATIC_GCC
 
   export CC
   export CXX
