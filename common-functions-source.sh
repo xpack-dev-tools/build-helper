@@ -1136,102 +1136,110 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
 }
 
+# $1 - absolute path to executable
 function prepare_app_libraries()
 {
   local app_path="$1"
   shift
 
-  local app_folder_path="$(dirname "${app_path}")"
+  (
+    xbb_activate
 
-  if [ "${WITH_STRIP}" == "y" ]
-  then
-    strip_binary "${app_path}"
-  fi
+    local app_folder_path="$(dirname "${app_path}")"
 
-  if [ "${TARGET_PLATFORM}" == "linux" ]
-  then
-    echo
-    echo "Shared libraries:"
-    echo "${app_path}"
-    readelf -d "${app_path}" | grep 'Shared library:'
+    if [ "${WITH_STRIP}" == "y" ]
+    then
+      strip_binary "${app_path}"
+    fi
 
-    echo
-    echo "Preparing libraries..."
-    patch_linux_elf_origin "${app_path}"
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      echo
+      echo "Shared libraries:"
+      echo "${app_path}"
+      readelf -d "${app_path}" | grep 'Shared library:'
 
-    echo
-    copy_dependencies_recursive "${app_path}" "${app_folder_path}"
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-    echo
-    echo "Initial dynamic libraries:"
-    otool -L "${app_path}"
+      echo
+      echo "Preparing libraries..."
+      patch_linux_elf_origin "${app_path}"
 
-    echo
-    echo "Preparing libraries..."
-    copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+      echo
+      copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      echo
+      echo "Initial dynamic libraries:"
+      otool -L "${app_path}"
 
-    echo
-    echo "Updated dynamic libraries:"
-    otool -L "${app_path}"
-  elif [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    echo
-    echo "Dynamic libraries:"
-    echo "${app_path}.exe"
-    ${CROSS_COMPILE_PREFIX}-objdump -x "${app_path}.exe" | grep -i 'DLL Name'
+      echo
+      echo "Preparing libraries..."
+      copy_dependencies_recursive "${app_path}" "${app_folder_path}"
 
-    echo
-    echo "Preparing libraries..."
-    copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
-  fi
+      echo
+      echo "Updated dynamic libraries:"
+      otool -L "${app_path}"
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo "Dynamic libraries:"
+      echo "${app_path}.exe"
+      ${CROSS_COMPILE_PREFIX}-objdump -x "${app_path}.exe" | grep -i 'DLL Name'
+
+      echo
+      echo "Preparing libraries..."
+      copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
+    fi
+  )
 }
 
 function prepare_app_folder_libraries()
 {
   local folder_path="$1"
+  (
+    xbb_activate
 
-  echo
-  echo "Preparing ${folder_path} libraries..."
+    echo
+    echo "Preparing ${folder_path} libraries..."
 
-  local binaries
-  if [ "${TARGET_PLATFORM}" == "win32" ]
-  then
+    local binaries
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
 
-    binaries=$(find "${folder_path}" -name \*.exe)
-    for bin in ${binaries} 
-    do
-      echo "Preparing ${bin} libraries..."
-      copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
-    done
-
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-
-    binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
-    for bin in ${binaries} 
-    do
-      if is_elf "${bin}"
-      then
+      binaries=$(find "${folder_path}" -name \*.exe)
+      for bin in ${binaries} 
+      do
         echo "Preparing ${bin} libraries..."
         copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
-      fi
-    done
+      done
 
-  elif [ "${TARGET_PLATFORM}" == "linux" ]
-  then
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
 
-    binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
-    for bin in ${binaries} 
-    do
-      if is_elf "${bin}"
-      then
-        echo "Preparing ${bin} libraries..."
-        copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
-      fi
-    done
+      binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+      for bin in ${binaries} 
+      do
+        if is_elf "${bin}"
+        then
+          echo "Preparing ${bin} libraries..."
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+        fi
+      done
 
-  fi
+    elif [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+
+      binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+      for bin in ${binaries} 
+      do
+        if is_elf "${bin}"
+        then
+          echo "Preparing ${bin} libraries..."
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+        fi
+      done
+
+    fi
+  )
 }
 
 function copy_dependencies_recursive()
