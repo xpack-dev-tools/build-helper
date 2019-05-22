@@ -43,7 +43,7 @@ function xbb_activate_installed_dev()
   XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
   XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
   XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
-  XBB_LDFLAGS_APP_STATIC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC}"
+  XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
   # Add XBB lib in front of PKG_CONFIG_PATH.
   PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
@@ -56,7 +56,7 @@ function xbb_activate_installed_dev()
     XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
     XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
     XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP}"
-    XBB_LDFLAGS_APP_STATIC="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
     PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
 
@@ -68,7 +68,7 @@ function xbb_activate_installed_dev()
   export XBB_LDFLAGS
   export XBB_LDFLAGS_LIB
   export XBB_LDFLAGS_APP
-  export XBB_LDFLAGS_APP_STATIC
+  export XBB_LDFLAGS_APP_STATIC_GCC
 
   export PKG_CONFIG_PATH
   export LD_LIBRARY_PATH
@@ -100,13 +100,7 @@ function prepare_xbb_env()
   LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-""}"
 
   # Without this, on 32-bit the bootstrap perl fails to find libcrypt.
-  LD_LIBRARY_PATH="/lib:${LD_LIBRARY_PATH}"
-
-  # Preventive.
-  if [ -d "/lib64" ]
-  then
-    LD_LIBRARY_PATH="/lib64:${LD_LIBRARY_PATH}"
-  fi
+  # LD_LIBRARY_PATH="/lib:${LD_LIBRARY_PATH}"
 
   if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
@@ -292,7 +286,7 @@ function prepare_xbb_extras()
     # Do not try to link pthread statically, it must match the system glibc.
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static-libstdc++"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
     CC="gcc-7"
@@ -302,7 +296,7 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     # CRT_glob is from ARM script
@@ -310,7 +304,7 @@ function prepare_xbb_extras()
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
-    XBB_LDFLAGS_APP_STATIC="${XBB_LDFLAGS_APP} -static -static-libgcc -static-libstdc++"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   fi
 
   set +u
@@ -336,7 +330,7 @@ function prepare_xbb_extras()
 
   echo "XBB_LDFLAGS_LIB=${XBB_LDFLAGS_LIB}"
   echo "XBB_LDFLAGS_APP=${XBB_LDFLAGS_APP}"
-  echo "XBB_LDFLAGS_APP_STATIC=${XBB_LDFLAGS_APP_STATIC}"
+  echo "XBB_LDFLAGS_APP_STATIC_GCC=${XBB_LDFLAGS_APP_STATIC_GCC}"
 
   echo "PKG_CONFIG=${PKG_CONFIG}"
   echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}"
@@ -378,7 +372,7 @@ function prepare_xbb_extras()
   export XBB_LDFLAGS
   export XBB_LDFLAGS_LIB
   export XBB_LDFLAGS_APP
-  export XBB_LDFLAGS_APP_STATIC
+  export XBB_LDFLAGS_APP_STATIC_GCC
 
   export CC
   export CXX
@@ -667,7 +661,12 @@ function extract()
       then
         unzip "${archive_name}" 
       else
-        tar xf "${archive_name}"
+        if [ ! -z "${DEBUG}" ]
+        then
+          tar -x -v -f "${archive_name}"
+        else
+          tar -x -f "${archive_name}"
+        fi
       fi
 
       if [ $# -gt 2 ]
@@ -913,9 +912,13 @@ function is_linux_sys_so()
 {
   local lib_name="$1"
 
-  # libX11.so.6 
+  # Do not add these two, they are present if the toolchain is installed, 
+  # but this is not guaranteed, so better copy them from the xbb toolchain.
+  # libstdc++.so.6 
+  # libgcc_s.so.1 
 
   # Shared libraries that are expected to be present on any Linux.
+  # Note the X11 libraries.
   local sys_libs=(\
     librt.so.1 \
     libm.so.6 \
@@ -925,6 +928,9 @@ function is_linux_sys_so()
     libdl.so.2 \
     ld-linux-x86-64.so.2 \
     ld-linux.so.2 \
+    libX11.so.6 \
+    libXau.so.6 \
+    libxcb.so.1 \
   )
 
   local lib
@@ -1163,55 +1169,60 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
 }
 
+# $1 - absolute path to executable
 function prepare_app_libraries()
 {
   local app_path="$1"
   shift
 
-  local app_folder_path="$(dirname "${app_path}")"
+  (
+    xbb_activate
 
-  if [ "${WITH_STRIP}" == "y" ]
-  then
-    strip_binary "${app_path}"
-  fi
+    local app_folder_path="$(dirname "${app_path}")"
 
-  if [ "${TARGET_PLATFORM}" == "linux" ]
-  then
-    echo
-    echo "Shared libraries:"
-    echo "${app_path}"
-    readelf -d "${app_path}" | grep 'Shared library:'
+    if [ "${WITH_STRIP}" == "y" ]
+    then
+      strip_binary "${app_path}"
+    fi
 
-    echo
-    echo "Preparing libraries..."
-    patch_linux_elf_origin "${app_path}"
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      echo
+      echo "Shared libraries:"
+      echo "${app_path}"
+      readelf -d "${app_path}" | grep 'Shared library:'
 
-    echo
-    copy_dependencies_recursive "${app_path}" "${app_folder_path}"
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-    echo
-    echo "Initial dynamic libraries:"
-    otool -L "${app_path}"
+      echo
+      echo "Preparing libraries..."
+      patch_linux_elf_origin "${app_path}"
 
-    echo
-    echo "Preparing libraries..."
-    copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+      echo
+      copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      echo
+      echo "Initial dynamic libraries:"
+      otool -L "${app_path}"
 
-    echo
-    echo "Updated dynamic libraries:"
-    otool -L "${app_path}"
-  elif [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    echo
-    echo "Dynamic libraries:"
-    echo "${app_path}.exe"
-    ${CROSS_COMPILE_PREFIX}-objdump -x "${app_path}.exe" | grep -i 'DLL Name'
+      echo
+      echo "Preparing libraries..."
+      copy_dependencies_recursive "${app_path}" "${app_folder_path}"
 
-    echo
-    echo "Preparing libraries..."
-    copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
-  fi
+      echo
+      echo "Updated dynamic libraries:"
+      otool -L "${app_path}"
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo "Dynamic libraries:"
+      echo "${app_path}.exe"
+      ${CROSS_COMPILE_PREFIX}-objdump -x "${app_path}.exe" | grep -i 'DLL Name'
+
+      echo
+      echo "Preparing libraries..."
+      copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
+    fi
+  )
 }
 
 function prepare_app_folder_libraries()
@@ -1222,47 +1233,51 @@ function prepare_app_folder_libraries()
     folder_path="$1"
   fi
 
-  echo
-  echo "Preparing ${folder_path} libraries..."
+  (
+    xbb_activate
 
-  local binaries
-  if [ "${TARGET_PLATFORM}" == "win32" ]
-  then
+    echo
+    echo "Preparing ${folder_path} libraries..."
 
-    binaries=$(find "${folder_path}" -name \*.exe)
-    for bin in ${binaries} 
-    do
-      echo "Preparing ${bin} libraries..."
-      copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
-    done
+    local binaries
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
 
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-
-    binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
-    for bin in ${binaries} 
-    do
-      if is_elf "${bin}"
-      then
+      binaries=$(find "${folder_path}" -name \*.exe)
+      for bin in ${binaries} 
+      do
         echo "Preparing ${bin} libraries..."
         copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
-      fi
-    done
+      done
 
-  elif [ "${TARGET_PLATFORM}" == "linux" ]
-  then
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
 
-    binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
-    for bin in ${binaries} 
-    do
-      if is_elf "${bin}"
-      then
-        echo "Preparing ${bin} libraries..."
-        copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
-      fi
-    done
+      binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+      for bin in ${binaries} 
+      do
+        if is_elf "${bin}"
+        then
+          echo "Preparing ${bin} libraries..."
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+        fi
+      done
 
-  fi
+    elif [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+
+      binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+      for bin in ${binaries} 
+      do
+        if is_elf "${bin}"
+        then
+          echo "Preparing ${bin} libraries..."
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+        fi
+      done
+
+    fi
+  )
 }
 
 function copy_dependencies_recursive()
