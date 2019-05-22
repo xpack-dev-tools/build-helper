@@ -1216,7 +1216,11 @@ function prepare_app_libraries()
 
 function prepare_app_folder_libraries()
 {
-  local folder_path="$1"
+  local folder_path="${APP_PREFIX}"
+  if [ $# -ge 1 ]
+  then
+    folder_path="$1"
+  fi
 
   echo
   echo "Preparing ${folder_path} libraries..."
@@ -1484,22 +1488,21 @@ function copy_dependencies_recursive()
 
 function check_binaries()
 {
-  local folder_path
+  local folder_path="${APP_PREFIX}"
   if [ $# -ge 1 ]
   then
     folder_path="$1"
-  else
-    folder_path="${APP_PREFIX}"
   fi
 
   (
     xbb_activate
     
+    echo
+    echo "Checking binaries for unwanted libraries..."
+
     local binaries
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      echo
-      echo "Checking binaries for unwanted DLLs..."
 
       binaries=$(find "${folder_path}" -name \*.exe)
       for bin in ${binaries} 
