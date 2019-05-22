@@ -956,6 +956,26 @@ function is_darwin_sys_dylib()
 
 # -----------------------------------------------------------------------------
 
+function has_origin()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "has_origin: Missing file argument"
+    exit 1
+  fi
+
+  local bin="$1"
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    local origin=$(readelf -d ${bin} | grep 'Library runpath: \[$ORIGIN\]')
+    if [ ! -z "${origin}" ]
+    then
+      return 0 # true
+    fi
+  fi
+  return 1 # false
+}
+
 # Strip binary files as in "strip binary" form, for both native
 # (linux/mac) and mingw.
 function strip_binary2() 
@@ -970,13 +990,18 @@ function strip_binary2()
     local strip="$1"
     local bin="$2"
 
-    if is_elf ${bin}
+    if is_elf "${bin}"
     then
-      echo ${strip} ${bin}
-      # ${strip} ${bin} 2>/dev/null || true
-      ${strip} -S ${bin} || true
+      if has_origin "${bin}"
+      then
+        echo "${strip} ${bin} skipped (patched)"
+      else
+        echo "${strip} ${bin}"
+        # ${strip} ${bin} 2>/dev/null || true
+        "${strip}" -S "${bin}" || true
+      fi
     else
-      echo $(file ${bin})
+      echo $(file "${bin}")
     fi
 
     set -e
@@ -984,26 +1009,34 @@ function strip_binary2()
 
 function strip_binary() 
 {
-    if [ $# -lt 1 ]
+  if [ $# -lt 1 ]
+  then
+    warning "strip_binary: Missing file argument"
+    exit 1
+  fi
+
+  local bin="$1"
+
+  local strip="strip"
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    strip="${CROSS_COMPILE_PREFIX}-strip"
+    if [[ "${bin}" != *.exe ]]
     then
-      warning "strip_binary: Missing file argument"
-      exit 1
+      bin="${bin}.exe"
     fi
+  fi
 
-    local bin="$1"
+  if has_origin "${bin}"
+  then
+    # If the file was patched, skip strip, otherwise
+    # we may damage the binary due to a bug in strip.
+    echo "${strip} ${bin} skipped (patched)"
+    return
+  fi
 
-    local strip="strip"
-    if [ "${TARGET_PLATFORM}" == "win32" ]
-    then
-      strip="${CROSS_COMPILE_PREFIX}-strip"
-      if [[ "${bin}" != *.exe ]]
-      then
-        bin="${bin}.exe"
-      fi
-    fi
-
-    echo "${strip} ${bin}"
-    "${strip}" -S "${bin}" || true
+  echo "${strip} ${bin}"
+  "${strip}" -S "${bin}" || true
 }
 
 function is_elf()
