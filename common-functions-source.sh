@@ -1655,14 +1655,15 @@ function create_archive()
   (
     xbb_activate
 
-    # TODO: remove DATE when switching to xPacks
-    local distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
+    local distribution_file_version="${RELEASE_VERSION}"
 
     local target_folder_name=${TARGET_FOLDER_NAME}
 
     if [ "${HAS_NAME_ARCH}" != "y" ]
     then
-      # Temporarily use the old file name convention.
+      # Pre xPack distributions use the old file name convention.
+      distribution_file_version="${RELEASE_VERSION}-${DISTRIBUTION_FILE_DATE}"
+
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
         target_folder_name="win${TARGET_BITS}"
