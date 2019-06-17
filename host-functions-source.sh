@@ -229,6 +229,7 @@ function host_options()
         fi
         ;;
 
+      # Deprecated.
       --date)
         ((++i))
         DISTRIBUTION_FILE_DATE="${argv[$i]}"
@@ -329,6 +330,7 @@ function host_options_windows()
         fi
         ;;
 
+      # Deprecated.
       --date)
         ((++i))
         DISTRIBUTION_FILE_DATE="${argv[$i]}"
