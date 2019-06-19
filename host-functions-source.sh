@@ -482,8 +482,8 @@ function host_common()
 
   # The names of the two Docker images used for the build.
   # docker run --interactive --tty ilegeul/centos:6-xbb-v2.1
-  docker_linux64_image=${docker_linux64_image:-"ilegeul/centos:6-xbb-v2.1"}
-  docker_linux32_image=${docker_linux32_image:-"ilegeul/centos32:6-xbb-v2.1"}
+  docker_linux64_image=${docker_linux64_image:-"ilegeul/centos:6-xbb-v2.2"}
+  docker_linux32_image=${docker_linux32_image:-"ilegeul/centos32:6-xbb-v2.2"}
 
   do_actions
 
