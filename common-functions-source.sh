@@ -1687,7 +1687,7 @@ function create_archive()
     mkdir -p "${DEPLOY_FOLDER_PATH}"
 
     # The folder is temprarily moved into a a more elaborate hierarchy like
-    # gnu-mcu-eclipse/app-name/version.
+    # xPacks/<app-name>/<version>.
     # After the archive is created, the folders are moved back.
     # The atempt to transform the tar path failes, since symlinks were
     # also transformed, which is bad.
@@ -1716,7 +1716,7 @@ function create_archive()
       # proved unsafe, some xz versions failed to compile on node.js v9.x,
       # so use the good old .tgz.
       local distribution_file="${distribution_file}.tgz"
-      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_LC_NAME}/${APP_LC_NAME}/${distribution_file_version}"
+      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER}/${APP_LC_NAME}/${distribution_file_version}"
 
       echo "Compressed tarball: \"${distribution_file}\"."
 
