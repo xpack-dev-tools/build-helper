@@ -184,7 +184,7 @@ function host_options()
     arg="${argv[$i]}"
     case "${arg}" in
 
-      clean|cleanall|preload-images)
+      clean|cleanlibs|cleanall|preload-images)
         ACTION="${arg}"
         ;;
 
@@ -303,7 +303,7 @@ function host_options_windows()
     arg="${argv[$i]}"
     case "${arg}" in
 
-      clean|cleanall|preload-images)
+      clean|cleanlibs|cleanall|preload-images)
         ACTION="${arg}"
         ;;
 
