@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the GNU MCU Eclipse build 
+# Helper script used in the second edition of the xPack build 
 # scripts. As the name implies, it should contain only functions and 
 # should be included with 'source' by the host build scripts.
 
