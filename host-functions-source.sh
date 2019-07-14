@@ -136,15 +136,9 @@ function host_detect()
 
 function host_prepare_cache()
 {
-  # The folder that caches all downloads is in HOME
-  if [ "$(uname)" == "Darwin" ] 
-  then
-    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Library/Caches/XBB"}
-    CONTAINER_CACHE_FOLDER_PATH="/Host${HOME}/Library/Caches/XBB"
-  else
-    HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/.cache/XBB"}
-    CONTAINER_CACHE_FOLDER_PATH="/Host${HOST_CACHE_FOLDER_PATH}"
-  fi
+  # The folder that caches all downloads is in Work, for easy access.
+  HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Work/cache"}
+  CONTAINER_CACHE_FOLDER_PATH="/Host${HOST_CACHE_FOLDER_PATH}"
 
   mkdir -p "${HOST_CACHE_FOLDER_PATH}"
 }
@@ -467,7 +461,7 @@ function host_common()
     source "${common_functions_script_path}"
   fi
 
-  # -----------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
 
   # The Work folder is in HOME.
   if [ "${IS_NATIVE}" != "y" ]
