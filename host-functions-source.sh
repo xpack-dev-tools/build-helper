@@ -150,6 +150,8 @@ function host_options()
 
   ACTION=""
 
+  DO_BUILD_SOURCES=""
+
   DO_BUILD_WIN32=""
   DO_BUILD_WIN64=""
   DO_BUILD_LINUX32=""
@@ -202,11 +204,16 @@ function host_options()
         DO_BUILD_OSX="y"
         ;;
 
+      --sources)
+        DO_BUILD_SOURCES="y"
+        ;;
+
       --all)
         DO_BUILD_WIN32="y"
         DO_BUILD_WIN64="y"
         DO_BUILD_LINUX32="y"
         DO_BUILD_LINUX64="y"
+        DO_BUILD_SOURCES="y"
         if [ "$(uname)" == "Darwin" ] 
         then
           DO_BUILD_OSX="y"
@@ -250,7 +257,7 @@ function host_options()
 
   done
 
-  DO_BUILD_ANY="${DO_BUILD_OSX}${DO_BUILD_LINUX64}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_WIN32}"
+  DO_BUILD_ANY="${DO_BUILD_OSX}${DO_BUILD_LINUX64}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_WIN32}${DO_BUILD_SOURCES}"
 
   # The ${rest[@]} options will be passed to the inner script.
   if [ ! -z "${DEBUG}" ]
@@ -688,6 +695,12 @@ function host_build_target()
     esac
 
   done
+
+  if [ "${target_platform}" == "sources" ]
+  then
+    target_arch="none"
+    target_bits=""
+  fi
 
   # The remaining $@ options will be passed to the inner script.
   if [ -n "${DEBUG}" ]
