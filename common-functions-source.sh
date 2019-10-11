@@ -299,7 +299,7 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
-    # CRT_glob is from ARM script
+    # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
