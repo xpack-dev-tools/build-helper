@@ -215,13 +215,8 @@ function prepare_xbb_env()
   # ---------------------------------------------------------------------------
 
   APP_PREFIX="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
-  if [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    APP_PREFIX_DOC="${APP_PREFIX}/doc"
-  else
-    # For POSIX platforms, keep the tradition.
-    APP_PREFIX_DOC="${APP_PREFIX}/share/doc"
-  fi
+  # The documentation location is now the same on all platforms.
+  APP_PREFIX_DOC="${APP_PREFIX}/share/doc"
 
   # ---------------------------------------------------------------------------
 
