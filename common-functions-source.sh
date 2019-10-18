@@ -868,7 +868,8 @@ function is_win_sys_dll()
   local dll_name="$1"
 
   # DLLs that are expected to be present on any Windows.
-  local sys_dlls=(ADVAPI32.dll \
+  local sys_dlls=( \
+    ADVAPI32.dll \
     KERNEL32.dll \
     msvcrt.dll \
     MSVCR90.dll \
@@ -890,7 +891,9 @@ function is_win_sys_dll()
     CFGMGR32.dll \
     PSAPI.DLL \
     USERENV.dll \
+    python27.dll \
   )
+  # The Python DLL prevents it from being copied.
 
   local dll
   for dll in "${sys_dlls[@]}"
