@@ -890,7 +890,7 @@ function host_run_docker_script()
     env_file_option="--env-file=\"${env_file}\""
   fi
 
-  if [ "${CONTAINER_RUN_AS_ROOT}" == "y" ]
+  if [ "${HOST_UNAME}" == "Darwin" -o "${CONTAINER_RUN_AS_ROOT}" == "y" ]
   then
 
     docker run \
