@@ -380,7 +380,7 @@ function host_native_options()
   WITH_STRIP=""
   IS_NATIVE="y"
 
-  JOBS=""
+  JOBS="1"
 
   while [ $# -gt 0 ]
   do
