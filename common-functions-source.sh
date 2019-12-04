@@ -1699,7 +1699,7 @@ function create_archive()
 
       local distribution_file="${distribution_file}.zip"
 
-      if [ "${HAS_SINGLE_FOLDER}" != "y" ]
+      if [ "${USE_SINGLE_FOLDER}" != "y" ]
       then
         # DEPRECATED!
         archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
@@ -1722,10 +1722,17 @@ function create_archive()
 
       # Unfortunately on node.js, xz & bz2 require native modules, which
       # proved unsafe, some xz versions failed to compile on node.js v9.x,
-      # so use the good old .tgz.
-      local distribution_file="${distribution_file}.tgz"
+      # so use the good old .tar.gz.
+      local distribution_file
+      if [ "${USE_TAR_GZ}" == "y" ]
+        # Some platforms (like Arduino) accept only this explicit path.
+        distribution_file="${distribution_file}.tar.gz"
+      else
+        distribution_file="${distribution_file}.tgz"
+      fi
+
       local archive_version_path
-      if [ "${HAS_SINGLE_FOLDER}" != "y" ]
+      if [ "${USE_SINGLE_FOLDER}" != "y" ]
       then
         # DEPRECATED!
         archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER}/${APP_LC_NAME}/${distribution_file_version}"
