@@ -1676,6 +1676,9 @@ function create_archive()
 
     local distribution_file="${DEPLOY_FOLDER_PATH}/${DISTRO_LC_NAME}-${APP_LC_NAME}-${distribution_file_version}-${target_folder_name}"
 
+    local archive_version_path
+    archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_LC_NAME}-${APP_LC_NAME}-${distribution_file_version}"
+
     cd "${APP_PREFIX}"
     find . -name '.DS_Store' -exec rm '{}' ';'
 
@@ -1684,16 +1687,23 @@ function create_archive()
 
     mkdir -p "${DEPLOY_FOLDER_PATH}"
 
-    # The folder is temprarily moved into a a more elaborate hierarchy like
+    # The folder is temprarily moved into a versioned folder like
+    # xpack-<app-name>-<version>, or, in previous versions, 
+    # in a more elaborate hierarchy like
     # xPacks/<app-name>/<version>.
     # After the archive is created, the folders are moved back.
-    # The atempt to transform the tar path failes, since symlinks were
+    # The atempt to transform the tar path fails, since symlinks were
     # also transformed, which is bad.
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
       local distribution_file="${distribution_file}.zip"
-      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
+
+      if [ "${HAS_SINGLE_FOLDER}" != "y" ]
+      then
+        # DEPRECATED!
+        archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
+      fi
 
       echo
       echo "ZIP file: \"${distribution_file}\"."
@@ -1714,7 +1724,12 @@ function create_archive()
       # proved unsafe, some xz versions failed to compile on node.js v9.x,
       # so use the good old .tgz.
       local distribution_file="${distribution_file}.tgz"
-      local archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER}/${APP_LC_NAME}/${distribution_file_version}"
+      local archive_version_path
+      if [ "${HAS_SINGLE_FOLDER}" != "y" ]
+      then
+        # DEPRECATED!
+        archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER}/${APP_LC_NAME}/${distribution_file_version}"
+      fi
 
       echo "Compressed tarball: \"${distribution_file}\"."
 
