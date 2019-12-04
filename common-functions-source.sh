@@ -1725,6 +1725,7 @@ function create_archive()
       # so use the good old .tar.gz.
       local distribution_file
       if [ "${USE_TAR_GZ}" == "y" ]
+      then
         # Some platforms (like Arduino) accept only this explicit path.
         distribution_file="${distribution_file}.tar.gz"
       else
