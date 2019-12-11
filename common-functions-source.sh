@@ -259,8 +259,14 @@ function prepare_xbb_extras()
 
   XBB_CPPFLAGS=""
 
-  XBB_CFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
-  XBB_CXXFLAGS="-ffunction-sections -fdata-sections -m${TARGET_BITS} -pipe"
+  XBB_CFLAGS="-ffunction-sections -fdata-sections -pipe"
+  XBB_CXXFLAGS="-ffunction-sections -fdata-sections -pipe"
+
+  if [ "${TARGET_ARCH}" == "x64" -o "${TARGET_ARCH}" == "x32" ]
+  then
+    XBB_CFLAGS+=" -m${TARGET_BITS}"
+    XBB_CXXFLAGS+=" -m${TARGET_BITS}"
+  fi
 
   XBB_LDFLAGS=""
 
