@@ -123,6 +123,8 @@ function prepare_xbb_env()
     echo
     echo "Sourcing /opt/xbb/xbb-source.sh..."
     source "/opt/xbb/xbb-source.sh"
+  else
+    XBB_FOLDER=""
   fi
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
