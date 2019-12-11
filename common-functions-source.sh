@@ -74,6 +74,11 @@ function xbb_activate_installed_dev()
   export LD_LIBRARY_PATH
 }
 
+function xbb_activate_tex()
+{
+  :
+}
+
 # -----------------------------------------------------------------------------
 
 function do_config_guess() 
