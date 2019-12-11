@@ -166,6 +166,8 @@ function prepare_xbb_env()
     HOST="${BUILD}"
     TARGET="${HOST}"
 
+    TARGET_BITS="${HOST_BITS}"
+
   else
     echo "Unsupported target platform ${TARGET_PLATFORM}"
     exit 1
