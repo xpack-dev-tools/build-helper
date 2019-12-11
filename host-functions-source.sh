@@ -83,7 +83,7 @@ function host_detect()
     # ----- Determine distribution name and word size -----
 
     # uname -p -> x86_64|i686 (unknown in recent versions, use -m)
-    # uname -m -> x86_64|i686
+    # uname -m -> x86_64|i686|arm64|armv7l
 
     if [ "${HOST_MACHINE}" == "x86_64" ]
     then
@@ -93,6 +93,14 @@ function host_detect()
     then
       HOST_BITS="32"
       HOST_NODE_ARCH="x32"
+    elif [ "${HOST_MACHINE}" == "arm64" ]
+    then
+      HOST_BITS="64"
+      HOST_NODE_ARCH="arm64"
+    elif [ "${HOST_MACHINE}" == "armv7l" ]
+    then
+      HOST_BITS="32"
+      HOST_NODE_ARCH="arm"
     else
       echo "Unknown uname -m ${HOST_MACHINE}"
       exit 1
