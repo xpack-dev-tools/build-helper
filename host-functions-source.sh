@@ -449,11 +449,6 @@ function host_common()
   echo
   echo "Preparing release ${RELEASE_VERSION}..."
 
-  echo
-  defines_script_path="${script_folder_path}/defs-source.sh"
-  echo "Definitions source script: \"${defines_script_path}\"."
-  source "${defines_script_path}"
-
   # -----------------------------------------------------------------------------
 
   common_helper_functions_script_path="${script_folder_path}/helper/common-functions-source.sh"
