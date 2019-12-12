@@ -474,11 +474,11 @@ function host_common()
   # ---------------------------------------------------------------------------
 
   # The Work folder is in HOME.
-  if [ "${IS_NATIVE}" != "y" ]
+  if [ "${IS_NATIVE}" == "y" -a "${IS_DEVELOP}" == "y" ]
   then
-    HOST_WORK_FOLDER_PATH=${WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-${RELEASE_VERSION}"}
-  else
     HOST_WORK_FOLDER_PATH=${WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-dev"}
+  else
+    HOST_WORK_FOLDER_PATH=${WORK_FOLDER_PATH:-"${HOME}/Work/${APP_LC_NAME}-${RELEASE_VERSION}"}
   fi
   CONTAINER_WORK_FOLDER_PATH="/Host${HOST_WORK_FOLDER_PATH}"
 
