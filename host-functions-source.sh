@@ -385,7 +385,7 @@ function host_native_options()
   DO_BUILD_WIN=""
   IS_DEBUG=""
   IS_DEVELOP=""
-  WITH_STRIP=""
+  WITH_STRIP="y"
   IS_NATIVE="y"
 
   JOBS="1"
@@ -415,7 +415,12 @@ function host_native_options()
         JOBS=$1
         ;;
 
-    --help)
+      --disable-strip)
+        WITH_STRIP="n"
+        shift
+        ;;
+
+      --help)
         echo "Build a local/native ${DISTRO_UC_NAME} ${APP_UC_NAME}."
         echo "Usage:"
         # Some of the options are processed by the container script.
