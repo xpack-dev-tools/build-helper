@@ -939,8 +939,10 @@ function is_linux_sys_so()
     libutil.so.1 \
     libpthread.so.0 \
     libdl.so.2 \
-    ld-linux-x86-64.so.2 \
     ld-linux.so.2 \
+    ld-linux-x86-64.so.2 \
+    ld-linux-armhf.so.3 \
+    ld-linux-arm64.so.1 \
     libX11.so.6 \
     libXau.so.6 \
     libxcb.so.1 \
