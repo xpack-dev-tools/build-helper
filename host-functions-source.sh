@@ -135,6 +135,7 @@ function host_detect()
   TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
 
   IS_NATIVE=""
+  IS_DEVELOP=""
   # Redefine it to "y" to run as root inside the container.
   CONTAINER_RUN_AS_ROOT=${CONTAINER_RUN_AS_ROOT:-""}
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
