@@ -97,7 +97,7 @@ function host_detect()
     then
       HOST_BITS="64"
       HOST_NODE_ARCH="arm64"
-    elif [ "${HOST_MACHINE}" == "armv7l" ]
+    elif [ "${HOST_MACHINE}" == "armv7l" -o "${HOST_MACHINE}" == "armv8l" ]
     then
       HOST_BITS="32"
       HOST_NODE_ARCH="arm"
