@@ -61,7 +61,6 @@ function detect_container()
     set -e
 
     CONTAINER_NODE_PLATFORM="linux"
-    CONTAINER_NODE_ARCH="x64"
 
     if [ -z "${CONTAINER_DISTRO_NAME}" ]
     then
@@ -78,6 +77,15 @@ function detect_container()
     then
       CONTAINER_BITS="32"
       CONTAINER_NODE_ARCH="x32"
+    elif [ "${CONTAINER_MACHINE}" == "aarch64" ]
+    then
+      CONTAINER_BITS="64"
+      CONTAINER_NODE_ARCH="arm64"
+    elif [ "${CONTAINER_MACHINE}" == "armv7l" \
+      -o "${CONTAINER_MACHINE}" == "armv8l" ]
+    then
+      CONTAINER_BITS="32"
+      CONTAINER_NODE_ARCH="arm"
     else
       echo "Unknown uname -m ${CONTAINER_MACHINE}"
       exit 1
