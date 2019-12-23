@@ -232,6 +232,7 @@ function host_options()
           DO_BUILD_LINUX_ARM32="y"
           DO_BUILD_LINUX_ARM64="y"
         elif [ "${HOST_NODE_ARCH}" == "x64" ]
+        then
           DO_BUILD_WIN32="y"
           DO_BUILD_WIN64="y"
           DO_BUILD_LINUX32="y"
