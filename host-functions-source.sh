@@ -124,7 +124,7 @@ function host_detect()
   fi
 
   echo
-  echo "Running on ${HOST_DISTRO_NAME} ${HOST_BITS}-bit."
+  echo "Running on ${HOST_DISTRO_NAME} ${HOST_NODE_ARCH} (${HOST_BITS}-bit)."
 
   USER_ID=$(id -u)
   USER_NAME="$(id -u -n)"
