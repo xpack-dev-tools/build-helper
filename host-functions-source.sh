@@ -164,6 +164,8 @@ function host_options()
   DO_BUILD_WIN64=""
   DO_BUILD_LINUX32=""
   DO_BUILD_LINUX64=""
+  DO_BUILD_LINUX_ARM32=""
+  DO_BUILD_LINUX_ARM64=""
   DO_BUILD_OSX=""
   ENV_FILE=""
 
@@ -208,6 +210,14 @@ function host_options()
         DO_BUILD_LINUX64="y"
         ;;
 
+      --arm32)
+        DO_BUILD_LINUX_ARM32="y"
+        ;;
+
+      --arm64)
+        DO_BUILD_LINUX_ARM64="y"
+        ;;
+
       --osx)
         DO_BUILD_OSX="y"
         ;;
@@ -217,14 +227,22 @@ function host_options()
         ;;
 
       --all)
-        DO_BUILD_WIN32="y"
-        DO_BUILD_WIN64="y"
-        DO_BUILD_LINUX32="y"
-        DO_BUILD_LINUX64="y"
-        DO_BUILD_SOURCES="y"
-        if [ "$(uname)" == "Darwin" ] 
+        if [ "${HOST_NODE_ARCH}" == "arm64" ]
         then
-          DO_BUILD_OSX="y"
+          DO_BUILD_LINUX_ARM32="y"
+          DO_BUILD_LINUX_ARM64="y"
+        elif [ "${HOST_NODE_ARCH}" == "x64" ]
+          DO_BUILD_WIN32="y"
+          DO_BUILD_WIN64="y"
+          DO_BUILD_LINUX32="y"
+          DO_BUILD_LINUX64="y"
+          DO_BUILD_SOURCES="y"
+          if [ "$(uname)" == "Darwin" ] 
+          then
+            DO_BUILD_OSX="y"
+          fi
+        else
+          echo "--all supported only on 64-bit hosts"
         fi
         ;;
 
@@ -265,7 +283,7 @@ function host_options()
 
   done
 
-  DO_BUILD_ANY="${DO_BUILD_OSX}${DO_BUILD_LINUX64}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_WIN32}${DO_BUILD_SOURCES}"
+  DO_BUILD_ANY="${DO_BUILD_OSX}${DO_BUILD_LINUX64}${DO_BUILD_LINUX_ARM64}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX_ARM32}${DO_BUILD_WIN32}${DO_BUILD_SOURCES}"
 
   # The ${rest[@]} options will be passed to the inner script.
   if [ ! -z "${DEBUG}" ]
@@ -287,6 +305,8 @@ function host_options_windows()
   # Kept, since they are used in various common functions.
   DO_BUILD_LINUX32=""
   DO_BUILD_LINUX64=""
+  DO_BUILD_LINUX_ARM32=""
+  DO_BUILD_LINUX_ARM64=""
   DO_BUILD_OSX=""
 
   ENV_FILE=""
@@ -488,6 +508,8 @@ function host_common()
   # docker run --interactive --tty ilegeul/centos:6-xbb-v2.1
   docker_linux64_image=${docker_linux64_image:-"ilegeul/centos:6-xbb-v2.2"}
   docker_linux32_image=${docker_linux32_image:-"ilegeul/centos32:6-xbb-v2.2"}
+  docker_linux_arm64_image=${docker_linux_arm64_image:-"ilegeul/ubuntu:arm64-16.04-xbb-v1.1"}
+  docker_linux_arm32_image=${docker_linux_arm32_image:-"ilegeul/ubuntu:armhf-16.04-xbb-v1.1"}
 
   do_actions
 
