@@ -319,6 +319,8 @@ function prepare_xbb_extras()
   if [ ! -z "${XBB_FOLDER}" -a -x "${XBB_FOLDER}/bin/pkg-config-verbose" ]
   then
     PKG_CONFIG="${XBB_FOLDER}/bin/pkg-config-verbose"
+  else
+    PKG_CONFIG="$(which pkg-config)"
   fi
   set -u
 
