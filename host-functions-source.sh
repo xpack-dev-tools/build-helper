@@ -89,7 +89,7 @@ function host_detect()
     then
       HOST_BITS="64"
       HOST_NODE_ARCH="x64"
-    elif [ "${HOST_MACHINE}" == "i686" ]
+    elif [ "${HOST_MACHINE}" == "i386" -o "${HOST_MACHINE}" == "i686" ]
     then
       HOST_BITS="32"
       HOST_NODE_ARCH="x32"
@@ -133,6 +133,7 @@ function host_detect()
 
   TARGET_ARCH="${HOST_NODE_ARCH}"
   TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
+  TARGET_MACHINE="${HOST_MACHINE}"
 
   IS_NATIVE=""
   IS_DEVELOP=""
@@ -669,6 +670,7 @@ function host_build_target()
   local container_script_path=""
   local target_platform="${HOST_NODE_PLATFORM}"
   local target_arch="${HOST_NODE_ARCH}"
+  local target_machine="${HOST_MACHINE}"
   local target_bits="${HOST_BITS}"
   # If the docker image is not set, it is a native build.
   local docker_image=""
@@ -691,6 +693,11 @@ function host_build_target()
 
       --target-arch)
         target_arch="$2"
+        shift 2
+        ;;
+
+      --target-machine)
+        target_machine="$2"
         shift 2
         ;;
 
@@ -748,6 +755,7 @@ function host_build_target()
 
   echo "TARGET_PLATFORM=\"${target_platform}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "TARGET_ARCH=\"${target_arch}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "TARGET_MACHINE=\"${target_machine}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
   echo "TARGET_BITS=\"${target_bits}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
   echo "HOST_UNAME=\"${HOST_UNAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
