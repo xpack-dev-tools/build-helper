@@ -281,8 +281,11 @@ function prepare_xbb_extras()
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    local which_gcc_7="$(xbb_activate; which "g++-7")"
-    if [ ! -z "${which_gcc_7}" ]
+    if [ ! -z "$(xbb_activate; which "g++-8")" ]
+    then
+      CC="gcc-8"
+      CXX="g++-8"
+    elif [ ! -z "$(xbb_activate; which "g++-7")" ]
     then
       CC="gcc-7"
       CXX="g++-7"
@@ -297,8 +300,18 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    CC="gcc-7"
-    CXX="g++-7"
+    if [ ! -z "$(xbb_activate; which "g++-8")" ]
+    then
+      CC="gcc-8"
+      CXX="g++-8"
+    elif [ ! -z "$(xbb_activate; which "g++-7")" ]
+    then
+      CC="gcc-7"
+      CXX="g++-7"
+    else
+      CC="gcc"
+      CXX="g++"
+    fi
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
