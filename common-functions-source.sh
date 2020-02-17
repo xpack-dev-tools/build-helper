@@ -17,30 +17,30 @@ function xbb_activate()
 function xbb_activate_dev()
 {
   # Add XBB include in front of XBB_CPPFLAGS.
-  XBB_CPPFLAGS="-I${XBB_FOLDER}/include ${XBB_CPPFLAGS}"
+  XBB_CPPFLAGS="-I${XBB_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
 
   # Add XBB lib in front of XBB_LDFLAGS.
-  XBB_LDFLAGS="-L${XBB_FOLDER}/lib ${XBB_LDFLAGS}"
-  XBB_LDFLAGS_LIB="-L${XBB_FOLDER}/lib ${XBB_LDFLAGS_LIB}"
-  XBB_LDFLAGS_APP="-L${XBB_FOLDER}/lib ${XBB_LDFLAGS_APP}"
-  XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
+  XBB_LDFLAGS="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
+  XBB_LDFLAGS_LIB="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
+  XBB_LDFLAGS_APP="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
+  XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
   # Add XBB lib in front of PKG_CONFIG_PATH.
-  PKG_CONFIG_PATH="${XBB_FOLDER}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+  PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
-  LD_LIBRARY_PATH="${XBB_FOLDER}/lib:${LD_LIBRARY_PATH}"
+  LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
 
-  if [ -d "${XBB_FOLDER}/lib64" ]
+  if [ -d "${XBB_FOLDER_PATH}/lib64" ]
   then
     # For 64-bit systems, add XBB lib64 in front of paths.
-    XBB_LDFLAGS="-L${XBB_FOLDER}/lib64 ${XBB_LDFLAGS_LIB}"
-    XBB_LDFLAGS_LIB="-L${XBB_FOLDER}/lib64 ${XBB_LDFLAGS_LIB}"
-    XBB_LDFLAGS_APP="-L${XBB_FOLDER}/lib64 ${XBB_LDFLAGS_APP}"
-    XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
+    XBB_LDFLAGS="-L${XBB_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_LIB="-L${XBB_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_APP="-L${XBB_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
-    PKG_CONFIG_PATH="${XBB_FOLDER}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
+    PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
 
-    LD_LIBRARY_PATH="${XBB_FOLDER}/lib64:${LD_LIBRARY_PATH}"
+    LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
   fi
 
   export XBB_CPPFLAGS
@@ -123,9 +123,9 @@ function xbb_activate_tex()
 
 function do_config_guess() 
 {
-  if [ -f "${XBB_FOLDER}/share/libtool/build-aux/config.guess" ]
+  if [ -f "${XBB_FOLDER_PATH}/share/libtool/build-aux/config.guess" ]
   then
-    BUILD="$(${XBB_FOLDER}/share/libtool/build-aux/config.guess)"
+    BUILD="$(${XBB_FOLDER_PATH}/share/libtool/build-aux/config.guess)"
   elif [ -f "/usr/share/libtool/build-aux/config.guess" ]
   then
     BUILD="$(/usr/share/libtool/build-aux/config.guess)"
@@ -369,9 +369,9 @@ function prepare_xbb_extras()
   fi
 
   set +u
-  if [ ! -z "${XBB_FOLDER}" -a -x "${XBB_FOLDER}/bin/pkg-config-verbose" ]
+  if [ ! -z "${XBB_FOLDER_PATH}" -a -x "${XBB_FOLDER_PATH}/bin/pkg-config-verbose" ]
   then
-    PKG_CONFIG="${XBB_FOLDER}/bin/pkg-config-verbose"
+    PKG_CONFIG="${XBB_FOLDER_PATH}/bin/pkg-config-verbose"
   else
     PKG_CONFIG="$(which pkg-config)"
   fi
@@ -1153,9 +1153,9 @@ function copy_win_gcc_dll()
   # First try Ubuntu specific locations,
   # then do a long full search.
 
-  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" ]
+  if [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" ]
   then
-    cp -v "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" \
+    cp -v "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" \
       "${APP_PREFIX}/bin"
   elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" ]
   then
@@ -1171,7 +1171,7 @@ function copy_win_gcc_dll()
       "${APP_PREFIX}/bin"
   else
     echo "Searching /usr for ${dll_name}..."
-    SJLJ_PATH=$(find "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
+    SJLJ_PATH=$(find "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
     cp -v ${SJLJ_PATH} "${APP_PREFIX}/bin"
   fi
 }
@@ -1179,9 +1179,9 @@ function copy_win_gcc_dll()
 # Deprecated, use copy_dependencies_recursive().
 function copy_win_libwinpthread_dll() 
 {
-  if [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" ]
+  if [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" ]
   then
-    cp "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" \
+    cp "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" \
       "${APP_PREFIX}/bin"
   else
     echo "No libwinpthread-1.dll"
@@ -1473,12 +1473,12 @@ function copy_dependencies_recursive()
           then
             copy_dependencies_recursive "${full_path}" "${dest_path}"
           else
-            if [ -f "${XBB_FOLDER}/lib64/${lib}" ]
+            if [ -f "${XBB_FOLDER_PATH}/lib64/${lib}" ]
             then
-              copy_dependencies_recursive "${XBB_FOLDER}/lib64/${lib}" "${dest_path}"
-            elif [ -f "${XBB_FOLDER}/lib/${lib}" ]
+              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib64/${lib}" "${dest_path}"
+            elif [ -f "${XBB_FOLDER_PATH}/lib/${lib}" ]
             then
-              copy_dependencies_recursive "${XBB_FOLDER}/lib/${lib}" "${dest_path}"
+              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib}" "${dest_path}"
             else
               echo "${lib} not found"
               exit 1
@@ -1551,9 +1551,9 @@ function copy_dependencies_recursive()
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" ]
         then
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib}" "${dest_path}"
-        elif [ -f "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}" ]
+        elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib}" ]
         then
-          copy_dependencies_recursive "${XBB_FOLDER}/${CROSS_COMPILE_PREFIX}/bin/${lib}" "${dest_path}"
+          copy_dependencies_recursive "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib}" "${dest_path}"
         else
           local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib})
           # -print-file-name outputs back the requested name if not found.
@@ -1770,7 +1770,7 @@ function create_archive()
 
       local distribution_file="${distribution_file}.zip"
 
-      if [ "${USE_SINGLE_FOLDER}" != "y" ]
+      if [ "${USE_SINGLE_FOLDER_PATH}" != "y" ]
       then
         # DEPRECATED!
         archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
@@ -1804,10 +1804,10 @@ function create_archive()
       fi
 
       local archive_version_path
-      if [ "${USE_SINGLE_FOLDER}" != "y" ]
+      if [ "${USE_SINGLE_FOLDER_PATH}" != "y" ]
       then
         # DEPRECATED!
-        archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER}/${APP_LC_NAME}/${distribution_file_version}"
+        archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER_PATH}/${APP_LC_NAME}/${distribution_file_version}"
       fi
 
       echo "Compressed tarball: \"${distribution_file}\"."
