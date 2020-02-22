@@ -321,7 +321,11 @@ function prepare_xbb_extras()
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    if [ ! -z "$(xbb_activate; which "g++-8")" ]
+    if [ ! -z "$(xbb_activate; which "g++-9")" ]
+    then
+      CC="gcc-9"
+      CXX="g++-9"
+    elif [ ! -z "$(xbb_activate; which "g++-8")" ]
     then
       CC="gcc-8"
       CXX="g++-8"
