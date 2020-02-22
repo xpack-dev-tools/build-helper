@@ -545,28 +545,28 @@ function host_prepare_prerequisites()
 {
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
-    local xbb_folder
+    local xbb_folder_path
 
     
     local must_install=""
 
     if [ -d "${HOME}/opt/xbb" ]
     then
-      xbb_folder="${HOME}/opt/xbb"
+      xbb_folder_path="${HOME}/opt/xbb"
     elif [ -d "${HOME}/opt/homebrew/xbb" ]
     then
-      xbb_folder="${HOME}/opt/homebrew/xbb"
+      xbb_folder_path="${HOME}/opt/homebrew/xbb"
     else
       must_install="y"
     fi
 
 
-    if [ ! -z "${xbb_folder}" ]
+    if [ ! -z "${xbb_folder_path}" ]
     then
 
       echo
-      echo "Checking XBB in '${xbb_folder}'..."
-      if [ ! -f "${xbb_folder}/xbb-source.sh" ]
+      echo "Checking XBB in '${xbb_folder_path}'..."
+      if [ ! -f "${xbb_folder_path}/xbb-source.sh" ]
       then
         must_install="y"
       fi
