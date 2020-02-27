@@ -90,8 +90,11 @@ function xbb_activate_installed_dev()
   # Add XBB lib in front of PKG_CONFIG_PATH.
   PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
+  # Needed by internal binaries, like the bootstrap compiler, which do not
+  # have a rpath.
   LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
 
+  # For just in case, apparently not used.
   if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
   then
     # For 64-bit systems, add XBB lib64 in front of paths.
@@ -466,11 +469,9 @@ function prepare_xbb_extras()
   export CC
   export CXX
 
-
   export PKG_CONFIG
   export PKG_CONFIG_PATH
   export PKG_CONFIG_LIBDIR
-
 }
 
 # -----------------------------------------------------------------------------
