@@ -114,6 +114,9 @@ function xbb_activate_installed_dev()
 
   export PKG_CONFIG_PATH
   export LD_LIBRARY_PATH
+
+  echo
+  env | sort
 }
 
 function xbb_activate_tex()
@@ -301,6 +304,9 @@ function prepare_xbb_env()
   # libtool fails with the Ubuntu /bin/sh.
   export SHELL="/bin/bash"
   export CONFIG_SHELL="/bin/bash"
+
+  echo
+  env | sort
 }
 
 function prepare_xbb_extras()
