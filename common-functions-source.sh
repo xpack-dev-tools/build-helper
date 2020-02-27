@@ -348,7 +348,11 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    if [ ! -z "$(xbb_activate; which "g++-8")" ]
+    if [ ! -z "$(xbb_activate; which "g++-9")" ]
+    then
+      CC="gcc-9"
+      CXX="g++-9"
+    elif [ ! -z "$(xbb_activate; which "g++-8")" ]
     then
       CC="gcc-8"
       CXX="g++-8"
