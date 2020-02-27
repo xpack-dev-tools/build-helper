@@ -28,7 +28,7 @@ function xbb_activate_dev()
   # Add XBB lib in front of PKG_CONFIG_PATH.
   PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
-  LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+  # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
 
   if [ -d "${XBB_FOLDER_PATH}/lib64" ]
   then
@@ -40,7 +40,7 @@ function xbb_activate_dev()
 
     PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
 
-    LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+    # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
   fi
 
   export XBB_CPPFLAGS
@@ -51,7 +51,7 @@ function xbb_activate_dev()
   export XBB_LDFLAGS_APP_STATIC_GCC
 
   export PKG_CONFIG_PATH
-  export LD_LIBRARY_PATH
+  # export LD_LIBRARY_PATH
 }
 
 # Add the freshly built binaries.
@@ -60,17 +60,19 @@ function xbb_activate_installed_bin()
   # Add the XBB bin to the PATH.
   PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
 
-  # Add the XBB lib to the LD_LIBRARY_PATH.
-  LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+  # Disabled, shared libs must be located via rpath.
 
-  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
-  then
+  # Add the XBB lib to the LD_LIBRARY_PATH.
+  # LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+
+  # if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+  # then
     # On 64-bit systems, add lib64 to the LD_LIBRARY_PATH.
-    LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
-  fi
+    # LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+  # fi
 
   export PATH
-  export LD_LIBRARY_PATH
+  # export LD_LIBRARY_PATH
 }
 
 # Add the freshly built headrs and libraries.
