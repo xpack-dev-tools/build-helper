@@ -165,8 +165,16 @@ function prepare_xbb_env()
     echo
     echo "Sourcing /opt/xbb/xbb-source.sh..."
     source "/opt/xbb/xbb-source.sh"
+    
+    # The CentOS image sets XBB_FOLDER, move it to XBB_FOLDER_PATH.
+    set +u
+    if [ -n "${XBB_FOLDER}" ]
+    then
+      XBB_FOLDER_PATH=${XBB_FOLDER}
+    fi
+    set -u
   else
-    XBB_FOLDER=""
+    XBB_FOLDER_PATH=""
   fi
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
