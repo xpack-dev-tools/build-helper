@@ -958,7 +958,8 @@ function host_run_docker_script()
     # without intervening separators.
     local ifs="${IFS}"
     IFS=" "
-    local cmd_string="groupadd -g ${GROUP_ID} ${GROUP_NAME} && useradd -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"DEBUG=${DEBUG} bash ${docker_script} $*\" ${USER_NAME}"
+    # Without -m, wine fails to create .wine.
+    local cmd_string="groupadd -g ${GROUP_ID} ${GROUP_NAME} && useradd -m -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"DEBUG=${DEBUG} bash ${docker_script} $*\" ${USER_NAME}"
     IFS="${ifs}"
  
     docker run \
