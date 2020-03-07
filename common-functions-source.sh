@@ -1056,14 +1056,40 @@ function is_darwin_sys_dylib()
 
   if [[ ${lib_name} == /usr/lib* ]]
   then
-    return 0
+    return 0 # True
   fi
   if [[ ${lib_name} == /System/Library* ]]
   then
-    return 0
+    return 0 # True
   fi
 
-  return 1
+  return 1 # False
+}
+
+function is_darwin_allowed_sys_dylib() 
+{
+  local lib_name="$1"
+
+  # Accept libiconv for now, it created some problems in XBB.
+  local sys_libs=(\
+    /usr/lib/libSystem.B.dylib \
+    /usr/lib/libiconv.2.dylib \
+    /usr/lib/libc++.dylib \
+    /usr/lib/libc++.1.dylib \
+    /usr/lib/libc++abi.dylib \
+    /usr/lib/libgcc_s.1.dylib \
+    /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation \
+  )
+
+  local lib
+  for lib in "${sys_libs[@]}"
+  do
+    if [ "${lib}" == "${lib_name}" ]
+    then
+      return 0 # True
+    fi
+  done
+  return 1 # False
 }
 
 # -----------------------------------------------------------------------------
@@ -1352,6 +1378,7 @@ function prepare_app_folder_libraries()
       binaries=$(find "${folder_path}" -name \*.exe)
       for bin in ${binaries} 
       do
+        echo
         echo "Preparing ${bin} libraries..."
         copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
       done
@@ -1364,6 +1391,7 @@ function prepare_app_folder_libraries()
       do
         if is_elf "${bin}"
         then
+          echo
           echo "Preparing ${bin} libraries..."
           copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
         fi
@@ -1377,6 +1405,7 @@ function prepare_app_folder_libraries()
       do
         if is_elf "${bin}"
         then
+          echo
           echo "Preparing ${bin} libraries..."
           copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
         fi
@@ -1537,19 +1566,29 @@ function copy_dependencies_recursive()
     local lib
     for lib in ${libs}
     do
+      local lib_link_base=""
+      if [ "${lib:0:1}" != "@" ]
+      then
+        lib_link_base="$(basename $(readlink -f ${lib}))"
+      fi
+
       if [ "${lib}" == "${exec_prefix}${file_name}" ]
       then
         :
       elif [ "${lib}" == "${loader_path}${file_name}" ]
       then
         :
-      elif [ "$(basename $(readlink -f ${lib}))" == "${file_name}" ]
+      elif [ "${lib_link_base}" == "${file_name}" ]
       then
         : # Libraries return a line with their own name.
       else
         if is_darwin_sys_dylib "${lib}"
         then
           : # System library, no need to copy it.
+          if ! is_darwin_allowed_sys_dylib "${lib}"
+          then
+            echo "Ooops! \"${lib}\" should not be there!"
+          fi
         else
           # The libs can be relative to @executable_path or absolute.
           if [ "${lib:0:${#exec_prefix}}" == "${exec_prefix}" ]
