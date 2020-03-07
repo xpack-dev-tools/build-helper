@@ -756,7 +756,7 @@ function extract()
       xbb_activate
 
       echo
-      echo "Extracting \"${archive_name}\"..."
+      echo "Extracting \"${archive_name}\" -> \"${pwd}/${folder_name}\"..."
       if [[ "${archive_name}" == *zip ]]
       then
         unzip "${archive_name}" 
