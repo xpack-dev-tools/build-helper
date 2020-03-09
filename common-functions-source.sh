@@ -1707,9 +1707,14 @@ function copy_license()
 {
   # Iterate all files in a folder and install some of them in the
   # destination folder
-  echo
-  echo "$2"
   (
+    if [ -z "$2" ]
+    then
+      return
+    fi
+
+    echo
+    echo "$2"
     cd "$1"
     local f
     for f in *
