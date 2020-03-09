@@ -351,24 +351,25 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -O2"
   fi
 
+  if [ ! -z "$(xbb_activate; which "g++-9")" ]
+  then
+    CC="gcc-9"
+    CXX="g++-9"
+  elif [ ! -z "$(xbb_activate; which "g++-8")" ]
+  then
+    CC="gcc-8"
+    CXX="g++-8"
+  elif [ ! -z "$(xbb_activate; which "g++-7")" ]
+  then
+    CC="gcc-7"
+    CXX="g++-7"
+  else
+    CC="gcc"
+    CXX="g++"
+  fi
+
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    if [ ! -z "$(xbb_activate; which "g++-9")" ]
-    then
-      CC="gcc-9"
-      CXX="g++-9"
-    elif [ ! -z "$(xbb_activate; which "g++-8")" ]
-    then
-      CC="gcc-8"
-      CXX="g++-8"
-    elif [ ! -z "$(xbb_activate; which "g++-7")" ]
-    then
-      CC="gcc-7"
-      CXX="g++-7"
-    else
-      CC="gcc"
-      CXX="g++"
-    fi
     # Do not add -static here, it fails.
     # Do not try to link pthread statically, it must match the system glibc.
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
@@ -376,22 +377,6 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    if [ ! -z "$(xbb_activate; which "g++-9")" ]
-    then
-      CC="gcc-9"
-      CXX="g++-9"
-    elif [ ! -z "$(xbb_activate; which "g++-8")" ]
-    then
-      CC="gcc-8"
-      CXX="g++-8"
-    elif [ ! -z "$(xbb_activate; which "g++-7")" ]
-    then
-      CC="gcc-7"
-      CXX="g++-7"
-    else
-      CC="gcc"
-      CXX="g++"
-    fi
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
@@ -400,6 +385,9 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
+    unset CC
+    unset CXX
+
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
