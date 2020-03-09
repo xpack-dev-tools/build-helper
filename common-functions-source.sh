@@ -725,7 +725,30 @@ function run_app()
       )
     fi
   fi
+}
 
+function show_libs()
+{
+  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    echo
+    echo "readelf -d ${app_path} | grep 'ibrary'"
+    readelf -d "${app_path}" | grep 'ibrary'
+    echo "ldd -v ${app_path}"
+    ldd -v "${app_path}"
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    echo
+    echo "otool -L ${app_path}"
+    otool -L "${app_path}"
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    : # TODO
+  fi
 }
 
 # -----------------------------------------------------------------------------
