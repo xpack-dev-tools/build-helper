@@ -919,6 +919,23 @@ function check_binary_for_libraries()
         set -e
       )
 
+      local libs=$(otool -L "${file_path}" \
+            | sed '1d' \
+            | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+          )
+      for lib in ${libs}
+      do
+        if [ "${lib:0:1}" != "@" ]
+        then
+          if ! is_darwin_allowed_sys_dylib "${lib}"
+          then
+            echo ">>> \"${lib}\" is not expected here"
+            exit 1
+          fi
+        fi
+      done
+
+      # More or less deprecated by the above.
       set +e
       local unxp
       if [[ "${file_name}" == *\.dylib ]]
@@ -1057,9 +1074,22 @@ function is_darwin_sys_dylib()
 
   if [[ ${lib_name} == /usr/lib* ]]
   then
+    if [[ ${lib_name} == /usr/lib/libc++* ]]
+    then
+      # Workaround to the lack of -static-libc++
+      return 1 # False
+    elif [[ ${lib_name} == /usr/lib/libgc_s* ]]
+    then
+      # Workaround to the lack of -static-libgcc
+      return 1 # False
+    fi
     return 0 # True
   fi
-  if [[ ${lib_name} == /System/Library* ]]
+  if [[ ${lib_name} == /System/Library/Frameworks/* ]]
+  then
+    return 0 # True
+  fi
+  if [[ ${lib_name} == /Library/Frameworks/* ]]
   then
     return 0 # True
   fi
@@ -1071,14 +1101,17 @@ function is_darwin_allowed_sys_dylib()
 {
   local lib_name="$1"
 
-  # Accept libiconv for now, it created some problems in XBB.
+  # Debatable: since there is no -static-libc++, do not define these here
+  # and will be copied to application.
+  # /usr/lib/libc++.dylib \
+  # /usr/lib/libc++.1.dylib \
+  # /usr/lib/libc++abi.dylib \
+
+  # Same for -static-libgcc
+  # /usr/lib/libgcc_s.1.dylib \
+
   local sys_libs=(\
-    /usr/lib/libSystem.B.dylib \
-    /usr/lib/libiconv.2.dylib \
-    /usr/lib/libc++.dylib \
-    /usr/lib/libc++.1.dylib \
-    /usr/lib/libc++abi.dylib \
-    /usr/lib/libgcc_s.1.dylib \
+    /usr/lib/libSystem.B.dylib \  
     /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation \
   )
 
@@ -1260,11 +1293,16 @@ function change_dylib()
   local dylib_name="$1"
   local file_path="$2"
 
-  local dylib_path="$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's|[[:space:]]*\(.*\)[[:space:]][(].*[)]|\1|')"
+  local dylib_path="$(otool -L "${file_path}" | grep "/${dylib_name} (" | sed -e 's|[[:space:]]*\(.*\)[[:space:]][(].*[)]|\1|')"
 
   if [ -z "${dylib_path}" ]
   then
     echo "Dylib ${dylib_name} not used in binary ${file_path}..."
+    exit 1
+  fi
+  if [ $(otool -L "${file_path}" | grep "/${dylib_name} (" | wc -l) -ne 1 ]
+  then
+    echo "${file_path} has multiple ${dylib_name} libraries..."
     exit 1
   fi
 
