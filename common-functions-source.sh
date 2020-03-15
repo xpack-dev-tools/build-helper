@@ -1025,7 +1025,6 @@ function is_win_sys_dll()
     CFGMGR32.dll \
     PSAPI.DLL \
     USERENV.dll \
-    python27.dll \
   )
   # The Python DLL prevents it from being copied.
 
