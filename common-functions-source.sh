@@ -1039,6 +1039,8 @@ function is_win_sys_dll()
     api-ms-win-crt-heap-l1-1-0.dll \
     api-ms-win-crt-conio-l1-1-0.dll \
     api-ms-win-crt-filesystem-l1-1-0.dll \
+    python27.dll \
+    python37.dll \
   )
   # The Python DLL prevents it from being copied.
 
