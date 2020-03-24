@@ -1778,7 +1778,8 @@ function copy_license()
     fi
 
     echo
-    echo "$2"
+    echo "Copying license files for $2..."
+
     cd "$1"
     local f
     for f in *
