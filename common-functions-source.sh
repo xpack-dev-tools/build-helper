@@ -1333,14 +1333,14 @@ function change_dylib()
   local dylib_name="$1"
   local file_path="$2"
 
-  local dylib_path="$(otool -L "${file_path}" | grep "/${dylib_name} (" | sed -e 's|[[:space:]]*\(.*\)[[:space:]][(].*[)]|\1|')"
+  local dylib_path="$(otool -L "${file_path}" | sed '1d' | sed -e 's|[[:space:]]*\(.*\)[[:space:]][(].*[)]|\1|' | grep "${dylib_name}")"
 
   if [ -z "${dylib_path}" ]
   then
-    echo "Dylib ${dylib_name} not used in binary ${file_path}..."
-    exit 1
-  fi
-  if [ $(otool -L "${file_path}" | grep "/${dylib_name} (" | wc -l) -ne 1 ]
+    echo "Dylib ${dylib_name} may not used in binary ${file_path}..."
+    # for example libftdi1.2.4.0.dylib has the name libftdi1.2.dylib.
+    # exit 1
+  elif [ $(printf "${dylib_path}" | wc -l) -gt 1 ]
   then
     echo "${file_path} has multiple ${dylib_name} libraries..."
     exit 1
