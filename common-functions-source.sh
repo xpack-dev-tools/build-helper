@@ -660,13 +660,24 @@ function do_actions()
     echo
     echo "Check/Preload Docker images..."
 
-    echo
-    docker run --interactive --tty "${docker_linux64_image}" \
-      lsb_release --description --short
+    if if [ "${HOST_MACHINE}" == "aarch64" -o "${HOST_MACHINE}" == "armv7l" -o "${HOST_MACHINE}" == "armv8l" ]
+    then
+      echo
+      docker run --interactive --tty "${docker_linux_arm64_image}" \
+        lsb_release --description --short
 
-    echo
-    docker run --interactive --tty "${docker_linux32_image}" \
-      lsb_release --description --short
+      echo
+      docker run --interactive --tty "${docker_linux_arm32_image}" \
+        lsb_release --description --short
+    else
+      echo
+      docker run --interactive --tty "${docker_linux64_image}" \
+        lsb_release --description --short
+
+      echo
+      docker run --interactive --tty "${docker_linux32_image}" \
+        lsb_release --description --short
+    fi
 
     echo
     docker images
