@@ -1489,8 +1489,13 @@ function copy_dependencies_recursive()
     echo "copy_dependencies_recursive requires 2 args." 
     exit 1
   fi
+
+  (
   local file_path="$1"
   local dest_path="$2"
+
+  # To help cases like readlink without a path.
+  cd "${dest_path}"
 
   local file_name="$(basename "${file_path}")"
   local folder_path="$(dirname "${file_path}")"
@@ -1711,6 +1716,7 @@ function copy_dependencies_recursive()
       fi
     done
   fi
+  )
 }
 
 function check_binaries()
