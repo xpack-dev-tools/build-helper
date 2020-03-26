@@ -930,10 +930,22 @@ function check_binary_for_libraries()
         set -e
       )
 
-      local libs=$(otool -L "${file_path}" \
-            | sed '1d' \
-            | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
-          )
+      # Skip the first line which is the binary itself.
+      local libs
+      if [[ "${file_name}" == *\.dylib ]]
+      then
+        # Skip the second line too, which is the library again.
+        libs=$(otool -L "${file_path}" \
+              | sed '1d' \
+              | sed '1d' \
+              | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+            )
+      else
+        libs=$(otool -L "${file_path}" \
+              | sed '1d' \
+              | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+            )
+      fi
       for lib in ${libs}
       do
         if [ "${lib:0:1}" != "@" ]
@@ -1629,10 +1641,20 @@ function copy_dependencies_recursive()
   then
     echo
     otool -L "${dest_path}/${file_name}"
-    local libs=$(otool -L "${dest_path}/${file_name}" \
-          | sed '1d' \
-          | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
-        )
+    local libs
+    if [[ "${file_name}" == *\.dylib ]]
+    then
+      libs=$(otool -L "${dest_path}/${file_name}" \
+            | sed '1d' \
+            | sed '1d' \
+            | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+          )
+    else
+      libs=$(otool -L "${dest_path}/${file_name}" \
+            | sed '1d' \
+            | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+          )
+    fi
     local exec_prefix="@executable_path/"
     local loader_path="@loader_path/"
     local lib
