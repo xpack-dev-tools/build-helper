@@ -660,7 +660,7 @@ function do_actions()
     echo
     echo "Check/Preload Docker images..."
 
-    if if [ "${HOST_MACHINE}" == "aarch64" -o "${HOST_MACHINE}" == "armv7l" -o "${HOST_MACHINE}" == "armv8l" ]
+    if [ "${HOST_MACHINE}" == "aarch64" -o "${HOST_MACHINE}" == "armv7l" -o "${HOST_MACHINE}" == "armv8l" ]
     then
       echo
       docker run --interactive --tty "${docker_linux_arm64_image}" \
