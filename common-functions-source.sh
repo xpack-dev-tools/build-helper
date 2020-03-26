@@ -1137,8 +1137,10 @@ function is_darwin_allowed_sys_dylib()
   # /usr/lib/libgcc_s.1.dylib \
 
   local sys_libs=(\
-    /usr/lib/libSystem.B.dylib \  
+    /usr/lib/libSystem.B.dylib \
+    /usr/lib/libobjc.A.dylib \
     /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation \
+    /System/Library/Frameworks/IOKit.framework/Versions/A/IOKit \
   )
 
   local lib
