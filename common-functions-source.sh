@@ -1162,9 +1162,13 @@ function is_darwin_allowed_sys_dylib()
   local sys_libs=(\
     /usr/lib/libSystem.B.dylib \
     /usr/lib/libobjc.A.dylib \
-    /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation \
-    /System/Library/Frameworks/IOKit.framework/Versions/A/IOKit \
   )
+
+  if [[ ${lib_name} == /System/Library/Frameworks/* ]]
+  then
+    # Allow all system frameworks.
+    return 0 # True
+  fi
 
   local lib
   for lib in "${sys_libs[@]}"
