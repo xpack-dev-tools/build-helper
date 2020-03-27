@@ -411,7 +411,15 @@ function host_native_options()
   WITH_STRIP="y"
   IS_NATIVE="y"
 
-  JOBS="1"
+  if [ "$(uname)" == "Linux" ]
+  then
+    JOBS="$(nproc)"
+  elif [ "$(uname)" == "Darwin" ]
+  then
+    JOBS="$(sysctl hw.ncpu | sed 's/hw.ncpu: //')"
+  else
+    JOBS="1"
+  fi
 
   while [ $# -gt 0 ]
   do
