@@ -207,8 +207,6 @@ function prepare_xbb_env()
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
 
-    TARGET_BITS="64" # For now, only 64-bit macOS binaries
-
     do_config_guess
 
     HOST="${BUILD}"
