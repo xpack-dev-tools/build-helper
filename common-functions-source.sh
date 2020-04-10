@@ -1422,6 +1422,11 @@ function prepare_app_libraries()
 
       echo
       copy_dependencies_recursive "${app_path}" "${app_folder_path}"
+
+      echo
+      echo "Updated shared libraries:"
+      echo ldd -v "${app_path}"
+      ldd -v "${app_path}"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
       echo
