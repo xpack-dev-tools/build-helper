@@ -734,9 +734,12 @@ function show_libs()
   then
     echo
     echo "readelf -d ${app_path} | grep 'ibrary'"
+    # Ignore errors in case it is not using shared libraries.
+    set +e 
     readelf -d "${app_path}" | grep 'ibrary'
     echo "ldd -v ${app_path}"
     ldd -v "${app_path}"
+    set -e
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
     echo
@@ -1414,7 +1417,9 @@ function prepare_app_libraries()
       echo
       echo "Shared libraries:"
       echo "${app_path}"
+      set +e
       readelf -d "${app_path}" | grep 'Shared library:'
+      set -e
 
       echo
       echo "Preparing libraries..."
