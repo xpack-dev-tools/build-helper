@@ -26,11 +26,14 @@ function xbb_activate_dev()
   # Add XBB include in front of XBB_CPPFLAGS.
   XBB_CPPFLAGS="-I${XBB_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
 
-  # Add XBB lib in front of XBB_LDFLAGS.
-  XBB_LDFLAGS="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
-  XBB_LDFLAGS_LIB="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
-  XBB_LDFLAGS_APP="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
-  XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
+  if [ -d "${XBB_FOLDER_PATH}/lib" ]
+  then
+    # Add XBB lib in front of XBB_LDFLAGS.
+    XBB_LDFLAGS="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
+    XBB_LDFLAGS_LIB="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_APP="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
+  fi
 
   # Add XBB lib in front of PKG_CONFIG_PATH.
   PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
@@ -64,8 +67,12 @@ function xbb_activate_dev()
 function xbb_activate_libs()
 {
   LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
-  
-  LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+
+  if [ -d "${XBB_FOLDER_PATH}/lib" ]
+  then
+    LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+  fi
+
   if [ -d "${XBB_FOLDER_PATH}/lib64" ]
   then
     LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
