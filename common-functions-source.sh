@@ -1061,34 +1061,38 @@ function check_binary_for_libraries()
 
 function is_win_sys_dll() 
 {
-  local dll_name="$1"
+  local dll_name="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
   # DLLs that are expected to be present on any Windows.
+  # Be sure all names are lower case!
   local sys_dlls=( \
-    ADVAPI32.dll \
-    KERNEL32.dll \
+    advapi32.dll \
+    cfgmgr32.dll \
+    crypt32.dll \
+    dnsapi.dll \
+    gdi32.dll \
+    imm32.dll \
+    imm32.dll \
+    iphlpapi.dll \
+    iphlpapi.dll \
+    kernel32.dll \
+    msvcr90.dll \
+    oleaut32.dll \
+    psapi.dll \
+    rpcrt4.dll \
+    setupapi.dll \
+    shell32.dll \
+    shlwapi.dll \
+    user32.dll \
+    userenv.dll \
+    vcruntime140.dll \
+    version.dll \
+    winmm.dll \
+    winmm.dll \
+    ws2_32.dll \
+    \
     msvcrt.dll \
-    MSVCR90.dll \
-    SHELL32.dll \
-    USER32.dll \
-    WINMM.dll \
-    WINMM.DLL \
-    WS2_32.dll \
     ole32.dll \
-    DNSAPI.dll \
-    IPHLPAPI.dll \
-    GDI32.dll \
-    IMM32.dll \
-    IMM32.DLL \
-    OLEAUT32.dll \
-    IPHLPAPI.DLL \
-    VERSION.dll \
-    SETUPAPI.dll \
-    CFGMGR32.dll \
-    PSAPI.DLL \
-    USERENV.dll \
-    SHLWAPI.dll \
-    VCRUNTIME140.dll \
     api-ms-win-crt-runtime-l1-1-0.dll \
     api-ms-win-crt-math-l1-1-0.dll \
     api-ms-win-crt-locale-l1-1-0.dll \
