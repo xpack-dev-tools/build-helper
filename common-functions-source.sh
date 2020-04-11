@@ -266,7 +266,10 @@ function prepare_xbb_env()
   fi
 
   LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/libs"
-  mkdir -p "${LIBS_BUILD_FOLDER_PATH}"
+  # Use explicit include & especially lib, to prevent compiler complaining
+  # for missing folders.
+  mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/include"
+  mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/lib"
 
   APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
   # Do it later, only if needed.
@@ -275,7 +278,10 @@ function prepare_xbb_env()
   INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"
 
   LIBS_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/libs"
-  mkdir -p "${LIBS_INSTALL_FOLDER_PATH}"
+  # Use explicit include & especially lib, to prevent compiler complaining
+  # for missing folders.
+  mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/include"
+  mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib"
 
   APP_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
   mkdir -pv "${APP_INSTALL_FOLDER_PATH}"
