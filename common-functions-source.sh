@@ -1190,7 +1190,8 @@ function is_darwin_allowed_sys_dylib()
   local lib_name="$1"
 
   # Debatable: since there is no -static-libc++, do not define these here
-  # and will be copied to application.
+  # and will be copied to the application. This guarantees them to be
+  # available, but they are slightly older, from 10.10.
   # /usr/lib/libc++.dylib \
   # /usr/lib/libc++.1.dylib \
   # /usr/lib/libc++abi.dylib \
