@@ -1877,7 +1877,7 @@ function copy_license()
     do
       if [ -f "$f" ]
       then
-        if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
+        if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|Copyright.*|COPYRIGHT.*|FAQ.*|DEPENDENCIES.*|THANKS.* ]]
         then
           install -d -m 0755 \
             "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
