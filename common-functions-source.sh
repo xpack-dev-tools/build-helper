@@ -61,6 +61,19 @@ function xbb_activate_dev()
   # export LD_LIBRARY_PATH
 }
 
+function xbb_activate_libs()
+{
+  LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
+  
+  LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+  if [ -d "${XBB_FOLDER_PATH}/lib64" ]
+  then
+    LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+  fi
+
+  export LD_LIBRARY_PATH
+}
+
 # Add the freshly built binaries.
 function xbb_activate_installed_bin()
 {
