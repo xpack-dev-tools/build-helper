@@ -498,15 +498,19 @@ function prepare_cross_env()
   export CC="${cross_compile_prefix}-gcc"
   export CXX="${cross_compile_prefix}-g++"
 
-  export AS="${cross_compile_prefix}-as"
-  export LD="${cross_compile_prefix}-ld"
-
   export AR="${cross_compile_prefix}-gcc-ar"
+  export AS="${cross_compile_prefix}-as"
+  export DLLTOOL="${cross_compile_prefix}-dlltool"
+  export LD="${cross_compile_prefix}-ld"
   export NM="${cross_compile_prefix}-gcc-nm"
   export OBJCOPY="${cross_compile_prefix}-objcopy"
   export OBJDUMP="${cross_compile_prefix}-objdump"
   export RANLIB="${cross_compile_prefix}-gcc-ranlib"
+  export READELF="${cross_compile_prefix}-readelf"
+  export SIZE="${cross_compile_prefix}-gcc-size"
   export STRIP="${cross_compile_prefix}-strip"
+  export WINDRES="${cross_compile_prefix}-windres"
+  export RC="${cross_compile_prefix}-windres"
 }
 
 # -----------------------------------------------------------------------------
