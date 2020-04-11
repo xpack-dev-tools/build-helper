@@ -750,7 +750,7 @@ function install_archive()
   archive_name="xpack-${app_lc_name}-${version}-${node_platform}-${archive_architecture}.${archive_extension}"
   archive_folder_name="xpack-${app_lc_name}-${version}"
 
-  mkdir -p "${cache_absolute_folder_path}"
+  mkdir -pv "${cache_absolute_folder_path}"
 
   if [ ! -f "${cache_absolute_folder_path}/${archive_name}" ]
   then
@@ -764,7 +764,7 @@ function install_archive()
 
   rm -rf "${app_absolute_folder_path}"
 
-  mkdir -p "${test_absolute_folder_path}"
+  mkdir -pv "${test_absolute_folder_path}"
   cd "${test_absolute_folder_path}"
 
   echo

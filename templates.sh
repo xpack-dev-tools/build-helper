@@ -21,7 +21,7 @@ function do_xxx()
       "${XXX_SRC_FOLDER_NAME}"
 
     (
-      mkdir -p "${BUILD_FOLDER_PATH}/${XXX_FOLDER_NAME}"
+      mkdir -pv "${BUILD_FOLDER_PATH}/${XXX_FOLDER_NAME}"
       cd "${BUILD_FOLDER_PATH}/${XXX_FOLDER_NAME}"
 
       xbb_activate

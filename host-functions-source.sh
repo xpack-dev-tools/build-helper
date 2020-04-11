@@ -19,7 +19,7 @@ function host_get_current_date()
   DISTRIBUTION_FILE_DATE=${DISTRIBUTION_FILE_DATE:-$(date -u +%Y%m%d-%H%M)}
 
   # Leave a track of the start date, in case of resume needed.
-  mkdir -p "${HOST_WORK_FOLDER_PATH}"
+  mkdir -pv "${HOST_WORK_FOLDER_PATH}"
   touch "${HOST_WORK_FOLDER_PATH}/${DISTRIBUTION_FILE_DATE}"
   echo
   echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\""
@@ -157,7 +157,7 @@ function host_prepare_cache()
   HOST_CACHE_FOLDER_PATH=${HOST_CACHE_FOLDER_PATH:-"${HOME}/Work/cache"}
   CONTAINER_CACHE_FOLDER_PATH="/Host${HOST_CACHE_FOLDER_PATH}"
 
-  mkdir -p "${HOST_CACHE_FOLDER_PATH}"
+  mkdir -pv "${HOST_CACHE_FOLDER_PATH}"
 }
 
 function host_options()
@@ -537,8 +537,8 @@ function host_common()
 
   # ---------------------------------------------------------------------------
 
-  mkdir -p "${HOST_WORK_FOLDER_PATH}"
-  mkdir -p "${SOURCES_FOLDER_PATH}"
+  mkdir -pv "${HOST_WORK_FOLDER_PATH}"
+  mkdir -pv "${SOURCES_FOLDER_PATH}"
 
   # ---------------------------------------------------------------------------
 
@@ -758,7 +758,7 @@ function host_build_target()
 
   # ---------------------------------------------------------------------------
 
-  mkdir -p "$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"
+  mkdir -pv "$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"
   echo "${RELEASE_VERSION}" >"$(dirname "${HOST_DEFINES_SCRIPT_PATH}")"/VERSION
 
   rm -rf "${HOST_DEFINES_SCRIPT_PATH}"

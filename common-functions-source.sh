@@ -270,7 +270,7 @@ function prepare_xbb_env()
 
   APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
   # Do it later, only if needed.
-  # mkdir -p "${APP_BUILD_FOLDER_PATH}"
+  # mkdir -pv "${APP_BUILD_FOLDER_PATH}"
 
   INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"
 
@@ -278,16 +278,16 @@ function prepare_xbb_env()
   mkdir -p "${LIBS_INSTALL_FOLDER_PATH}"
 
   APP_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/${APP_LC_NAME}"
-  mkdir -p "${APP_INSTALL_FOLDER_PATH}"
+  mkdir -pv "${APP_INSTALL_FOLDER_PATH}"
 
   LOGS_FOLDER_NAME=${LOGS_FOLDER_NAME:-"logs"}
   LOGS_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/${LOGS_FOLDER_NAME}"
-  mkdir -p "${LOGS_FOLDER_PATH}"
+  mkdir -pv "${LOGS_FOLDER_PATH}"
 
   DEPLOY_FOLDER_NAME=${DEPLOY_FOLDER_NAME:-"deploy"}
   DEPLOY_FOLDER_PATH="${WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
   # Do it later, only if needed.
-  # mkdir -p "${DEPLOY_FOLDER_PATH}"
+  # mkdir -pv "${DEPLOY_FOLDER_PATH}"
 
   DISTRO_INFO_NAME=${DISTRO_INFO_NAME:-"distro-info"}
   
@@ -302,7 +302,7 @@ function prepare_xbb_env()
   # ---------------------------------------------------------------------------
 
   SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/sources"}
-  mkdir -p "${SOURCES_FOLDER_PATH}"
+  mkdir -pv "${SOURCES_FOLDER_PATH}"
 
   # Empty defaults.
   IS_DEVELOP=${IS_DEVELOP:-""}
@@ -856,7 +856,7 @@ function download()
       echo
       echo "Downloading \"${archive_name}\" from \"${url}\"..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
-      mkdir -p "${DOWNLOAD_FOLDER_PATH}"
+      mkdir -pv "${DOWNLOAD_FOLDER_PATH}"
       curl --fail -L -o "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
       mv "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${DOWNLOAD_FOLDER_PATH}/${archive_name}"
     )
@@ -903,7 +903,7 @@ function git_clone()
 function copy_build_git()
 {
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git"
-  mkdir -p "${HOST_WORK_FOLDER_PATH}/build.git"
+  mkdir -pv "${HOST_WORK_FOLDER_PATH}/build.git"
   cp -r "$(dirname ${script_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/.git"
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/build-helper.sh"
@@ -1908,7 +1908,7 @@ function copy_build_files()
   (
     cd "${BUILD_GIT_PATH}"
 
-    mkdir -p patches
+    mkdir -pv patches
 
     find scripts patches -type d \
       -exec install -d -m 0755 \
@@ -1941,7 +1941,7 @@ function copy_dir()
 
   set +u
   # rm -rf "${to_path}"
-  mkdir -p "${to_path}"
+  mkdir -pv "${to_path}"
 
   (
     cd "${from_path}"
@@ -1995,7 +1995,7 @@ function create_archive()
     echo
     echo "Creating distribution..."
 
-    mkdir -p "${DEPLOY_FOLDER_PATH}"
+    mkdir -pv "${DEPLOY_FOLDER_PATH}"
 
     # The folder is temprarily moved into a versioned folder like
     # xpack-<app-name>-<version>, or, in previous versions, 
@@ -2019,7 +2019,7 @@ function create_archive()
       echo "ZIP file: \"${distribution_file}\"."
 
       rm -rf "${INSTALL_FOLDER_PATH}/archive"
-      mkdir -p "${archive_version_path}"
+      mkdir -pv "${archive_version_path}"
       mv "${APP_PREFIX}"/* "${archive_version_path}"
 
       cd "${INSTALL_FOLDER_PATH}/archive"
@@ -2052,7 +2052,7 @@ function create_archive()
       echo "Compressed tarball: \"${distribution_file}\"."
 
       rm -rf "${INSTALL_FOLDER_PATH}/archive"
-      mkdir -p "${archive_version_path}"
+      mkdir -pv "${archive_version_path}"
       mv -v "${APP_PREFIX}"/* "${archive_version_path}"
 
       # Without --hard-dereference the hard links may be turned into

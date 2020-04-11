@@ -56,7 +56,7 @@ function do_ncurses()
       "${ncurses_src_folder_name}"
 
     (
-      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
 
       xbb_activate
