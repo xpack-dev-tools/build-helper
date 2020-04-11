@@ -491,6 +491,24 @@ function prepare_xbb_extras()
   export PKG_CONFIG_LIBDIR
 }
 
+function prepare_cross_env()
+{
+  local cross_compile_prefix="$1"
+
+  export CC="${cross_compile_prefix}-gcc"
+  export CXX="${cross_compile_prefix}-g++"
+
+  export AS="${cross_compile_prefix}-as"
+  export LD="${cross_compile_prefix}-ld"
+
+  export AR="${cross_compile_prefix}-gcc-ar"
+  export NM="${cross_compile_prefix}-gcc-nm"
+  export OBJCOPY="${cross_compile_prefix}-objcopy"
+  export OBJDUMP="${cross_compile_prefix}-objdump"
+  export RANLIB="${cross_compile_prefix}-gcc-ranlib"
+  export STRIP="${cross_compile_prefix}-strip"
+}
+
 # -----------------------------------------------------------------------------
 
 function do_actions()
