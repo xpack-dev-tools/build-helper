@@ -1906,6 +1906,12 @@ function copy_license()
           install -v -c -m 644 "$f" \
             "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
         fi
+      elif [ -d "$f" ] && [[ "$f" =~ [Ll][Ii][Cc][Ee][Nn][Ss][Ee]* ]]
+      then
+        install -d -m 0755 \
+          "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
+        install -v -c -m 644 "$f"/* \
+          "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
       fi
     done
   )
