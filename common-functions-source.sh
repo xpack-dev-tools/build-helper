@@ -1958,6 +1958,21 @@ function copy_build_files()
   )
 }
 
+function copy_cmake_logs()
+{
+  local folder_name="$1"
+
+  echo
+  echo "Preserving CMake log files..."
+  rm -rf "${LOGS_FOLDER_PATH}/${folder_name}"
+  mkdir -pv "${LOGS_FOLDER_PATH}/${folder_name}/CMakeFiles"
+
+  cd "${BUILD_FOLDER_PATH}/${folder_name}"
+  cp -v "CMakeCache.txt" "${LOGS_FOLDER_PATH}/${folder_name}"
+
+  cp -v "CMakeFiles"/*.log "${LOGS_FOLDER_PATH}/${folder_name}/CMakeFiles"
+}
+
 # -----------------------------------------------------------------------------
 
 # Copy one folder to another
