@@ -416,6 +416,9 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
+    export NATIVE_CC=${CC}
+    export NATIVE_CXX=${CXX}
+    
     unset CC
     unset CXX
 
