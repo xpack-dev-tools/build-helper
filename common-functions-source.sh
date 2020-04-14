@@ -273,10 +273,7 @@ function prepare_xbb_env()
   fi
 
   LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/libs"
-  # Use explicit include & especially lib, to prevent compiler complaining
-  # for missing folders.
-  mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/include"
-  mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/lib"
+  mkdir -pv "${LIBS_BUILD_FOLDER_PATH}"
 
   APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
   # Do it later, only if needed.
