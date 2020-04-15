@@ -1141,6 +1141,9 @@ function host_show_sha() {
   if [ -d "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}" ]
   then
     echo
+    echo "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+    ls -l "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"
+    echo
     echo "SHA signatures..."
     set +e
     cat "${HOST_WORK_FOLDER_PATH}/${DEPLOY_FOLDER_NAME}"/*.sha
