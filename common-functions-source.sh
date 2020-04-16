@@ -1183,15 +1183,6 @@ function is_darwin_sys_dylib()
 
   if [[ ${lib_name} == /usr/lib* ]]
   then
-    if [[ ${lib_name} == /usr/lib/libc++* ]]
-    then
-      # Workaround to the lack of -static-libc++
-      return 1 # False
-    elif [[ ${lib_name} == /usr/lib/libgc_s* ]]
-    then
-      # Workaround to the lack of -static-libgcc
-      return 1 # False
-    fi
     return 0 # True
   fi
   if [[ ${lib_name} == /System/Library/Frameworks/* ]]
@@ -1210,17 +1201,31 @@ function is_darwin_allowed_sys_dylib()
 {
   local lib_name="$1"
 
-  # Debatable: since there is no -static-libc++, do not define these here
-  # and will be copied to the application. This guarantees them to be
-  # available, but they are slightly older, from 10.10.
+  # Since there is no -static-libc++, the first attempt was to not 
+  # define these here and have the 10.10 ones copied to the application. 
+  # Building CMake proved that this is ok with 10.11 and 10.12, but 
+  # failes on 10.13 and 10.14 with:
+  # dyld: Symbol not found: __ZNSt3__118shared_timed_mutex13unlock_sharedEv
+  # Referenced from: /System/Library/Frameworks/CoreDisplay.framework/Versions/A/CoreDisplay
+  # Expected in: /Users/travis/test-cmake/xpack-cmake-3.17.1-1/bin/libc++.1.dylib
+  # in /System/Library/Frameworks/CoreDisplay.framework/Versions/A/CoreDisplay
+  #
   # /usr/lib/libc++.dylib \
   # /usr/lib/libc++.1.dylib \
   # /usr/lib/libc++abi.dylib \
 
-  # Same for -static-libgcc
+  # Same for -static-libgcc; there were no cases which failed on later releases,
+  # but for consistency, they are also included here.
+  #
   # /usr/lib/libgcc_s.1.dylib \
 
   local sys_libs=(\
+    /usr/lib/libgcc_s.1.dylib \
+    /
+    /usr/lib/libc++.dylib \
+    /usr/lib/libc++.1.dylib \
+    /usr/lib/libc++abi.dylib \
+    /
     /usr/lib/libSystem.B.dylib \
     /usr/lib/libobjc.A.dylib \
   )
