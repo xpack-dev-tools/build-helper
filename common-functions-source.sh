@@ -108,18 +108,21 @@ function xbb_activate_installed_dev()
   # Add XBB include in front of XBB_CPPFLAGS.
   XBB_CPPFLAGS="-I${LIBS_INSTALL_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
 
-  # Add XBB lib in front of XBB_LDFLAGS.
-  XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
-  XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
-  XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
-  XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
+  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib" ]
+  then
+    # Add XBB lib in front of XBB_LDFLAGS.
+    XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
+    XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
-  # Add XBB lib in front of PKG_CONFIG_PATH.
-  PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    # Add XBB lib in front of PKG_CONFIG_PATH.
+    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
-  # Needed by internal binaries, like the bootstrap compiler, which do not
-  # have a rpath.
-  LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+    # Needed by internal binaries, like the bootstrap compiler, which do not
+    # have a rpath.
+    LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+  fi
 
   # For just in case, apparently not used.
   if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
