@@ -220,6 +220,9 @@ function prepare_xbb_env()
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
 
+    # Disable test when cross compiling for Windows.
+    WITH_TESTS="n"
+
     # For Windows targets, decide which cross toolchain to use.
     if [ ${TARGET_ARCH} == "x32" ]
     then
