@@ -327,7 +327,8 @@ function prepare_xbb_env()
   # Redefine this to "y" to create files that include the architecture.
   HAS_NAME_ARCH=${HAS_NAME_ARCH:-""}
 
-  USE_SINGLE_FOLDER_PATH=${USE_SINGLE_FOLDER_PATH:=""}
+  USE_TAR_GZ=${USE_TAR_GZ:-"y"}
+  USE_SINGLE_FOLDER_PATH=${USE_SINGLE_FOLDER_PATH:-"y"}
 
   # ---------------------------------------------------------------------------
 
