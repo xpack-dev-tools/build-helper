@@ -1060,10 +1060,14 @@ function check_binary_for_libraries()
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
       )
 
+      local relative_path=$(readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)' | sed -e 's/.*\[\$ORIGIN//' | sed -e 's/\].*//')
+      echo $relative_path
+
+      local 
       local n
       for n in ${so_names}
       do
-        if [ ! -f "${folder_path}/${n}" ] 
+        if [ ! -f "${folder_path}${relative_path}/${n}" ] 
         then
           if is_linux_sys_so "${n}"
           then
@@ -1457,17 +1461,27 @@ function change_dylib()
 # stat: Value too large for defined data type (requires -D_FILE_OFFSET_BITS=64)
 function patch_linux_elf_origin()
 {
+  if [ $# -lt 2 ]
+  then 
+    echo "patch_linux_elf_origin requires 2 args." 
+    exit 1
+  fi
+
   local file_path="$1"
+  local libexec_path="$2"
 
   local tmp_path=$(mktemp)
   rm -rf "${tmp_path}"
   cp "${file_path}" "${tmp_path}"
-  patchelf --set-rpath '$ORIGIN' "${tmp_path}"
+  local relative_path="$(realpath --relative-to="$(dirname ${file_path})" "${libexec_path}")"
+  echo "${relative_path}"
+  patchelf --set-rpath "\$ORIGIN/${relative_path}" "${tmp_path}"
   cp "${tmp_path}" "${file_path}"
   rm -rf "${tmp_path}"
 }
 
 # $1 - absolute path to executable
+# Note: must pass libexec path
 function prepare_app_libraries()
 {
   local app_path="$1"
@@ -1532,10 +1546,20 @@ function prepare_app_libraries()
 
 function prepare_app_folder_libraries()
 {
-  local folder_path="${APP_PREFIX}"
+  local folder_path
   if [ $# -ge 1 ]
   then
     folder_path="$1"
+  else
+    folder_path="${APP_PREFIX}"
+  fi
+
+  local libexec_folder_path
+  if [ $# -ge 2 ]
+  then
+    libexec_folder_path="$2"
+  else
+    libexec_folder_path="${APP_PREFIX}/libexec"
   fi
 
   (
@@ -1553,6 +1577,7 @@ function prepare_app_folder_libraries()
       do
         echo
         echo "Preparing ${bin} libraries..."
+        # On Windows the DLLs are copied in the same folder.
         copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
       done
 
@@ -1566,7 +1591,8 @@ function prepare_app_folder_libraries()
         then
           echo
           echo "Preparing ${bin} libraries..."
-          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+          # On macOS the dynamic libraries are copied in libexec folder.
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")" "${libexec_folder_path}"
         fi
       done
 
@@ -1580,7 +1606,8 @@ function prepare_app_folder_libraries()
         then
           echo
           echo "Preparing ${bin} libraries..."
-          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+          # On Linux the dynamic libraries are copied in libexec folder.
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")" "${libexec_folder_path}"
         fi
       done
 
@@ -1590,7 +1617,7 @@ function prepare_app_folder_libraries()
 
 function copy_dependencies_recursive()
 {
-  if [ $# -ne 2 ]
+  if [ $# -lt 2 ]
   then 
     echo "copy_dependencies_recursive requires 2 args." 
     exit 1
@@ -1598,7 +1625,16 @@ function copy_dependencies_recursive()
 
   (
   local file_path="$1"
+  # May be the libexec or the file folder.
   local dest_path="$2"
+
+  local libexec_path
+  if [ $# -ge 3 ]
+  then 
+    libexec_path="$3"
+  else
+    libexec_path="$2"
+  fi
 
   # To help cases like readlink without a path.
   cd "${dest_path}"
@@ -1608,6 +1644,7 @@ function copy_dependencies_recursive()
 
   if is_elf "${file_path}"
   then
+    echo "is_elf $(basename "${file_path}")"
     if [ "${folder_path}" != "${dest_path}" ]
     then
       if [ ! -f "${dest_path}/${file_name}" ]
@@ -1621,7 +1658,7 @@ function copy_dependencies_recursive()
     fi
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      patch_linux_elf_origin "${dest_path}/${file_name}"
+      patch_linux_elf_origin "${dest_path}/${file_name}" "${libexec_path}"
     fi
   else
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -1651,9 +1688,9 @@ function copy_dependencies_recursive()
             cd "${folder_path}"
             # Compute the absolute path of the link.
             local real_path="$(realpath "${link_path}")"
-            copy_dependencies_recursive "${real_path}" "${dest_path}"
+            copy_dependencies_recursive "${real_path}" "${libexec_path}"
 
-            cd "${dest_path}"
+            cd "${libexec_path}"
             if [ \( "$(basename "${link_path}")" != "${file_name}" \) -a \( ! -L "${file_name}" \) ]
             then
               rm -rf "${file_name}"
@@ -1663,9 +1700,9 @@ function copy_dependencies_recursive()
             # Compute the final absolute path of the link, regardless
             # how many links there are on the way.
             local link_path="$(readlink -f "${file_path}")"
-            copy_dependencies_recursive "${link_path}" "${dest_path}"
+            copy_dependencies_recursive "${link_path}" "${libexec_path}"
 
-            cd "${dest_path}"
+            cd "${libexec_path}"
             if [ \( "$(basename "${link_path}")" != "${file_name}" \) -a \( ! -L "${file_name}" \) ]
             then
               rm -rf "${file_name}"
@@ -1677,6 +1714,7 @@ function copy_dependencies_recursive()
       else
         if [ ! -f "${dest_path}/${file_name}" ]
         then
+          echo "xxxxx non is_elf and not present at dest xxxxxx" # What non-elf can it be?
           install -v -c -m 644 "${file_path}" "${dest_path}"
           if [ "${WITH_STRIP}" == "y" ]
           then
@@ -1685,7 +1723,7 @@ function copy_dependencies_recursive()
         fi
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
-          patch_linux_elf_origin "${dest_path}/${file_name}"
+          patch_linux_elf_origin "${dest_path}/${file_name}" "${libexec_path}"
         fi
       fi
     fi
@@ -1706,23 +1744,23 @@ function copy_dependencies_recursive()
       else
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}" ]
         then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}" "${dest_path}"
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib}" "${libexec_path}" 
         elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
         then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" "${dest_path}"
+          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" "${libexec_path}"
         else
           local full_path=$(${CC} -print-file-name=${lib})
           # -print-file-name outputs back the requested name if not found.
           if [ "${full_path}" != "${lib}" ]
           then
-            copy_dependencies_recursive "${full_path}" "${dest_path}"
+            copy_dependencies_recursive "${full_path}" "${libexec_path}"
           else
             if [ -f "${XBB_FOLDER_PATH}/lib64/${lib}" ]
             then
-              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib64/${lib}" "${dest_path}"
+              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib64/${lib}" "${libexec_path}"
             elif [ -f "${XBB_FOLDER_PATH}/lib/${lib}" ]
             then
-              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib}" "${dest_path}"
+              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib}" "${libexec_path}"
             else
               echo "${lib} not found"
               exit 1
@@ -1785,10 +1823,10 @@ function copy_dependencies_recursive()
           else
             if [ -f "${lib}" ]
             then
-              copy_dependencies_recursive "${lib}" "${dest_path}"
+              copy_dependencies_recursive "${lib}" "${libexec_path}"
             elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" ]
             then
-              copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" "${dest_path}"
+              copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib}" "${libexec_path}"
             else
               echo "${lib} not found"
               exit 1
