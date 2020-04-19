@@ -14,6 +14,756 @@
 
 # -----------------------------------------------------------------------------
 
+function do_zlib() 
+{
+  # http://zlib.net
+  # http://zlib.net/fossils/
+
+  # https://archlinuxarm.org/packages/aarch64/zlib/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=zlib-static
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=zlib-git
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-zlib
+
+  # 2013-04-28 "1.2.8"
+  # 2017-01-15 "1.2.11"
+
+  local zlib_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local zlib_src_folder_name="zlib-${zlib_version}"
+  # The folder name for build, licenses, etc.
+  local zlib_folder_name="${zlib_src_folder_name}"
+
+  local zlib_archive="${zlib_src_folder_name}.tar.gz"
+  local zlib_url="http://zlib.net/fossils/${zlib_archive}"
+
+  local zlib_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-zlib-${zlib_version}-installed"
+  if [ ! -f "${zlib_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${zlib_url}" "${zlib_archive}" "${zlib_src_folder_name}"
+
+    (
+      # In-source build. Make a local copy.
+      if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
+      then
+        mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
+        # Copy the sources in the build folder.
+        cp -r "${SOURCES_FOLDER_PATH}/${zlib_src_folder_name}"/* \
+          "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
+      fi
+      cd "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        (
+          echo
+          echo "Running zlib make..."
+
+          # Build.
+          make -f win32/Makefile.gcc \
+            PREFIX=${CROSS_COMPILE_PREFIX}- \
+            prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            CFLAGS="${XBB_CFLAGS} -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4"
+          make -f win32/Makefile.gcc install \
+            DESTDIR="${LIBS_INSTALL_FOLDER_PATH}/" \
+            INCLUDE_PATH="include" \
+            LIBRARY_PATH="lib" \
+            BINARY_PATH="bin"
+
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/make-output.txt"
+      else
+        export CFLAGS="${XBB_CFLAGS} -Wno-shift-negative-value"
+        # export LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+        # No config.status left, use the library.
+        if [ ! -f "libz.a" ]
+        then
+          (
+            echo
+            echo "Running zlib configure..."
+
+            bash "./configure" --help
+
+            bash ${DEBUG} "./configure" \
+              --prefix="${LIBS_INSTALL_FOLDER_PATH}" 
+            
+            cp "configure.log" "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-log.txt"
+          ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-output.txt"
+        fi
+
+        (
+          echo
+          echo "Running zlib make..."
+
+          # Build.
+          make -j ${JOBS}
+
+          if [ "${WITH_TESTS}" == "y" ]
+          then
+            make test
+          fi
+
+          make install
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/make-output.txt"
+      fi
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${zlib_src_folder_name}" \
+        "${zlib_folder_name}"
+
+    )
+
+    touch "${zlib_stamp_file_path}"
+
+  else
+    echo "Library zlib already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function do_gmp() 
+{
+  # https://gmplib.org
+  # https://gmplib.org/download/gmp/
+
+  # https://archlinuxarm.org/packages/aarch64/gmp/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gmp-hg
+
+  # 01-Nov-2015 "6.1.0"
+  # 16-Dec-2016 "6.1.2"
+  # 17-Jan-2020 "6.2.0"
+
+  local gmp_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local gmp_src_folder_name="gmp-${gmp_version}"
+  # The folder name for build, licenses, etc.
+  local gmp_folder_name="${gmp_src_folder_name}"
+
+  local gmp_archive="${gmp_src_folder_name}.tar.xz"
+  local gmp_url="https://gmplib.org/download/gmp/${gmp_archive}"
+
+  local gmp_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-gmp-${gmp_version}-installed"
+  if [ ! -f "${gmp_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${gmp_url}" "${gmp_archive}" "${gmp_src_folder_name}"
+    
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="-Wno-unused-value -Wno-empty-translation-unit -Wno-tautological-compare -Wno-overflow"
+      export CXXFLAGS="${XBB_CXXFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      # ABI is mandatory, otherwise configure fails on 32-bit.
+      # (see https://gmplib.org/manual/ABI-and-ISA.html)
+      if [ "${TARGET_ARCH}" == "x64" -o "${TARGET_ARCH}" == "x32" ]
+      then
+        export ABI="${TARGET_BITS}"
+      fi
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running gmp configure..."
+
+          # ABI is mandatory, otherwise configure fails on 32-bit.
+          # (see https://gmplib.org/manual/ABI-and-ISA.html)
+
+          bash "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" --help
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
+            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            \
+            --build=${BUILD} \
+            --host=${HOST} \
+            --target=${TARGET} \
+            \
+            --enable-cxx \
+            --enable-shared \
+            --disable-static
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${gmp_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running gmp make..."
+
+        # Build.
+        # Parallel builds may fail.
+        make -j ${JOBS}
+        # make
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          make check
+        fi
+
+        make install-strip
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}" \
+        "${gmp_folder_name}"
+
+    )
+
+    touch "${gmp_stamp_file_path}"
+
+  else
+    echo "Library gmp already installed."
+  fi
+}
+
+function do_mpfr()
+{
+  # http://www.mpfr.org
+  # http://www.mpfr.org/history.html
+
+  # https://archlinuxarm.org/packages/aarch64/mpfr/files/PKGBUILD
+  # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/mpfr
+
+  # 6 March 2016 "3.1.4"
+  # 7 September 2017 "3.1.6"
+  # 31 January 2019 "4.0.2"
+
+  local mpfr_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local mpfr_src_folder_name="mpfr-${mpfr_version}"
+  # The folder name for build, licenses, etc.
+  local mpfr_folder_name="${mpfr_src_folder_name}"
+
+  local mpfr_archive="${mpfr_src_folder_name}.tar.xz"
+  local mpfr_url="http://www.mpfr.org/${mpfr_folder_name}/${mpfr_archive}"
+
+  local mpfr_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-mpfr-${mpfr_version}-installed"
+  if [ ! -f "${mpfr_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${mpfr_url}" "${mpfr_archive}" "${mpfr_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="${XBB_CFLAGS}"
+      export CXXFLAGS="${XBB_CXXFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running mpfr configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" --help
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
+            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            \
+            --build=${BUILD} \
+            --host=${HOST} \
+            --target=${TARGET} \
+            \
+            --disable-warnings 
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running mpfr make..."
+
+        # Build.
+        make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          make check
+        fi
+
+        make install-strip
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}" \
+        "${mpfr_folder_name}"
+
+    )
+    touch "${mpfr_stamp_file_path}"
+
+  else
+    echo "Library mpfr already installed."
+  fi
+}
+
+function do_mpc()
+{
+  # http://www.multiprecision.org/
+  # ftp://ftp.gnu.org/gnu/mpc
+
+  # https://archlinuxarm.org/packages/aarch64/mpc/files/PKGBUILD
+  # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/libmpc
+
+  # 20 Feb 2015 "1.0.3"
+  # 2018-01-11 "1.1.0"
+
+  local mpc_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local mpc_src_folder_name="mpc-${mpc_version}"
+  # The folder name for build, licenses, etc.
+  local mpc_folder_name="${mpc_src_folder_name}"
+
+  local mpc_archive="${mpc_src_folder_name}.tar.gz"
+  local mpc_url="ftp://ftp.gnu.org/gnu/mpc/${mpc_archive}"
+  if [[ "${mpc_version}" =~ 0\.* ]]
+  then
+    mpc_url="http://www.multiprecision.org/downloads/${mpc_archive}"
+  fi
+
+  local mpc_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-mpc-${mpc_version}-installed"
+  if [ ! -f "${mpc_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${mpc_url}" "${mpc_archive}" "${mpc_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="${XBB_CFLAGS} -Wno-unused-value -Wno-empty-translation-unit -Wno-tautological-compare"
+      export CXXFLAGS="${XBB_CXXFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running mpc configure..."
+        
+          bash "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" --help
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" \
+            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            \
+            --build=${BUILD} \
+            --host=${HOST} \
+            --target=${TARGET} \
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${mpc_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running mpc make..."
+
+        # Build.
+        make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          make check
+        fi
+
+        make install-strip
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}" \
+        "${mpc_folder_name}"
+
+    )
+    touch "${mpc_stamp_file_path}"
+
+  else
+    echo "Library mpc already installed."
+  fi
+}
+
+function do_isl()
+{
+  # http://isl.gforge.inria.fr
+
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=isl
+
+  # 2015-06-12 "0.15"
+  # 2016-01-15 "0.16.1"
+  # 2016-12-20 "0.18"
+  # 2019-03-26 "0.21"
+  # 2020-01-16 "0.22"
+
+  local isl_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local isl_src_folder_name="isl-${isl_version}"
+  # The folder name for build, licenses, etc.
+  local isl_folder_name="${isl_src_folder_name}"
+
+  local isl_archive="${isl_src_folder_name}.tar.xz"
+  if [[ "${isl_version}" =~ 0\.12\.* ]]
+  then
+    isl_archive="${isl_src_folder_name}.tar.gz"
+  fi
+
+  local isl_url="http://isl.gforge.inria.fr/${isl_archive}"
+
+  local isl_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-isl-${isl_version}-installed"
+  if [ ! -f "${isl_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${isl_url}" "${isl_archive}" "${isl_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="${XBB_CFLAGS} -Wno-dangling-else -Wno-header-guard"
+      export CXXFLAGS="${XBB_CXXFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running isl configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" --help
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
+            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            \
+            --build=${BUILD} \
+            --host=${HOST} \
+            --target=${TARGET} \
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${isl_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running isl make..."
+
+        # Build.
+        make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          if [ "${TARGET_PLATFORM}" == "linux" -a \
+            \( "${TARGET_ARCH}" == "x64" -o "${TARGET_ARCH}" == "x32" \) ] 
+          then
+            # /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x64/build/libs/isl-0.22/.libs/lt-isl_test_cpp: relocation error: /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x64/build/libs/isl-0.22/.libs/lt-isl_test_cpp: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
+            # FAIL isl_test_cpp (exit status: 127)
+            # /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x32/build/libs/isl-0.22/.libs/lt-isl_test_cpp: relocation error: /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x32/build/libs/isl-0.22/.libs/lt-isl_test_cpp: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERjj, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
+            # FAIL isl_test_cpp (exit status: 127)
+
+            make check || true
+          else
+            make check
+          fi
+        fi
+
+        make install-strip
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}" \
+        "${isl_folder_name}"
+
+    )
+    touch "${isl_stamp_file_path}"
+
+  else
+    echo "Library isl already installed."
+  fi
+}
+
+function do_zstd()
+{
+  # https://facebook.github.io/zstd/
+  # https://github.com/facebook/zstd/releases
+  # https://github.com/facebook/zstd/archive/v1.4.4.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/zstd/files/PKGBUILD
+
+  # 5 Nov 2019 "1.4.4"
+
+  local zstd_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local zstd_src_folder_name="zstd-${zstd_version}"
+  # The folder name for build, licenses, etc.
+  local zstd_folder_name="${zstd_src_folder_name}"
+
+  local zstd_archive="${zstd_src_folder_name}.tar.gz"
+
+  # GitHub release archive.
+  local zstd_github_archive="v${zstd_version}.tar.gz"
+
+  local zstd_url="https://github.com/facebook/zstd/archive/${zstd_github_archive}"
+
+  local zstd_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-zstd-${zstd_version}-installed"
+  if [ ! -f "${zstd_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${zstd_url}" "${zstd_archive}" "${zstd_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${zstd_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        prepare_cross_env "${CROSS_COMPILE_PREFIX}"
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS}"
+      CXXFLAGS="${XBB_CXXFLAGS}"
+      DFLAGS="${XBB_LDFLAGS_LIB}"
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      local build_type
+      if [ "${IS_DEBUG}" == "y" ]
+      then
+        build_type=Debug
+      else
+        build_type=Release
+      fi
+
+      if [ ! -f "CMakeCache.txt" ]
+      then 
+        (
+          echo
+          echo "Running zstd cmake..."
+        
+          config_options=()
+
+          config_options+=("-LH")
+          config_options+=("-G" "Ninja")
+
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("-DZSTD_BUILD_PROGRAMS=OFF")
+
+          if [ "${WITH_TESTS}" == "y" ]
+          then
+            config_options+=("-DZSTD_BUILD_TESTS=ON")
+          fi
+
+          cmake \
+            ${config_options[@]} \
+            \
+            "${SOURCES_FOLDER_PATH}/${zstd_src_folder_name}/build/cmake"
+            
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zstd_folder_name}/zstd-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running zstd build..."
+
+        cmake \
+          --build . \
+          --parallel ${JOBS} \
+          --config "${build_type}" \
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          ctest \
+            -V \
+
+        fi
+
+        (
+          # The install procedure runs some resulted exxecutables, which require
+          # the libssl and libcrypt libraries from XBB.
+          # xbb_activate_libs
+
+          echo
+          echo "Running zstd install..."
+
+          cmake \
+            --build . \
+            --config "${build_type}" \
+            -- \
+            install
+
+        )
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zstd_folder_name}/build-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${zstd_src_folder_name}" \
+        "${zstd_folder_name}"
+
+      (
+        cd "${LIBS_BUILD_FOLDER_PATH}"
+
+        copy_cmake_logs "${zstd_folder_name}"
+      )
+
+    )
+    touch "${zstd_stamp_file_path}"
+
+  else
+    echo "Library zstd already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function do_libiconv()
+{
+  # https://www.gnu.org/software/libiconv/
+  # https://ftp.gnu.org/pub/gnu/libiconv/
+
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libiconv
+
+  # 2011-08-07 1.14"
+  # 2017-02-02 "1.15"
+  # 2019-04-26 "1.16"
+
+  local libiconv_version="$1"
+
+  local libiconv_src_folder_name="libiconv-${libiconv_version}"
+  local libiconv_folder_name="${libiconv_src_folder_name}"
+
+  local libiconv_archive="${libiconv_src_folder_name}.tar.gz"
+  local libiconv_url="https://ftp.gnu.org/pub/gnu/libiconv/${libiconv_archive}"
+
+  local libiconv_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libiconv-${libiconv_version}-installed"
+  if [ ! -f "${libiconv_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libiconv_url}" "${libiconv_archive}" "${libiconv_src_folder_name}"
+
+    (
+      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      # -fgnu89-inline fixes "undefined reference to `aliases2_lookup'"
+      #  https://savannah.gnu.org/bugs/?47953
+      export CFLAGS="${XBB_CFLAGS} -fgnu89-inline -Wno-tautological-compare -Wno-parentheses-equality -Wno-static-in-inline -Wno-pointer-to-int-cast"
+      export CXXFLAGS="${XBB_CXXFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running libiconv configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}/configure" --help
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}/configure" \
+            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            \
+            --build=${BUILD} \
+            --host=${HOST} \
+            --target=${TARGET} \
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running libiconv make..."
+
+        # Build.
+        make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          make check
+        fi
+
+        make install-strip
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}" \
+        "${libiconv_folder_name}"
+
+    )
+
+    touch "${libiconv_stamp_file_path}"
+
+  else
+    echo "Library libiconv already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 function do_ncurses()
 {
   # https://invisible-island.net/ncurses/
@@ -200,3 +950,5 @@ function do_ncurses()
     echo "Library ncurses already installed."
   fi
 }
+
+# -----------------------------------------------------------------------------
