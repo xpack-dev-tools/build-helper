@@ -961,7 +961,7 @@ function check_binary_for_libraries()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       echo
-      echo "${file_name}"
+      echo "${file_name} (${file_path})"
       set +e
       ${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" | grep -i 'DLL Name'
 
@@ -1049,9 +1049,11 @@ function check_binary_for_libraries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
       echo
-      echo "${file_name}"
+      echo "${file_name} (${file_path})"
       set +e
-      readelf -d "${file_path}" | egrep -i 'library|dynamic'
+      readelf -d "${file_path}" | egrep -i '(SONAME)'
+      readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)'
+      readelf -d "${file_path}" | egrep -i '(NEEDED)'
 
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
