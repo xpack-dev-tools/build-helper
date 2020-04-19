@@ -1963,6 +1963,10 @@ function copy_build_files()
   )
 }
 
+# Must be called in the build folder, like 
+# cd "${LIBS_BUILD_FOLDER_PATH}"
+# cd "${UILD_FOLDER_PATH}"
+
 function copy_cmake_logs()
 {
   local folder_name="$1"
@@ -1972,10 +1976,12 @@ function copy_cmake_logs()
   rm -rf "${LOGS_FOLDER_PATH}/${folder_name}"
   mkdir -pv "${LOGS_FOLDER_PATH}/${folder_name}/CMakeFiles"
 
-  cd "${BUILD_FOLDER_PATH}/${folder_name}"
-  cp -v "CMakeCache.txt" "${LOGS_FOLDER_PATH}/${folder_name}"
+  (
+    cd "${folder_name}"
+    cp -v "CMakeCache.txt" "${LOGS_FOLDER_PATH}/${folder_name}"
 
-  cp -v "CMakeFiles"/*.log "${LOGS_FOLDER_PATH}/${folder_name}/CMakeFiles"
+    cp -v "CMakeFiles"/*.log "${LOGS_FOLDER_PATH}/${folder_name}/CMakeFiles"
+  )
 }
 
 # -----------------------------------------------------------------------------
