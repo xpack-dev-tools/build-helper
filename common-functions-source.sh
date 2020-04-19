@@ -286,6 +286,7 @@ function prepare_xbb_env()
   # mkdir -pv "${APP_BUILD_FOLDER_PATH}"
 
   INSTALL_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"
+  STAMPS_FOLDER_PATH="${INSTALL_FOLDER_PATH}"
 
   LIBS_INSTALL_FOLDER_PATH="${INSTALL_FOLDER_PATH}/libs"
   # Use explicit include & especially lib, to prevent compiler complaining

@@ -11,7 +11,7 @@ function do_xxx()
   local xxx_archive="${XXX_SRC_FOLDER_NAME}.tar.gz"
   local xxx_url="http://.../${xxx_archive}"
 
-  local xxx_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-xxx-installed"
+  local xxx_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-xxx-installed"
   if [ ! -f "${xxx_stamp_file_path}" ]
   then
 

@@ -37,7 +37,7 @@ function do_zlib()
   local zlib_archive="${zlib_src_folder_name}.tar.gz"
   local zlib_url="http://zlib.net/fossils/${zlib_archive}"
 
-  local zlib_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-zlib-${zlib_version}-installed"
+  local zlib_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-zlib-${zlib_version}-installed"
   if [ ! -f "${zlib_stamp_file_path}" ]
   then
 
@@ -152,7 +152,7 @@ function do_gmp()
   local gmp_archive="${gmp_src_folder_name}.tar.xz"
   local gmp_url="https://gmplib.org/download/gmp/${gmp_archive}"
 
-  local gmp_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-gmp-${gmp_version}-installed"
+  local gmp_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-gmp-${gmp_version}-installed"
   if [ ! -f "${gmp_stamp_file_path}" ]
   then
 
@@ -259,7 +259,7 @@ function do_mpfr()
   local mpfr_archive="${mpfr_src_folder_name}.tar.xz"
   local mpfr_url="http://www.mpfr.org/${mpfr_folder_name}/${mpfr_archive}"
 
-  local mpfr_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-mpfr-${mpfr_version}-installed"
+  local mpfr_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-mpfr-${mpfr_version}-installed"
   if [ ! -f "${mpfr_stamp_file_path}" ]
   then
 
@@ -354,7 +354,7 @@ function do_mpc()
     mpc_url="http://www.multiprecision.org/downloads/${mpc_archive}"
   fi
 
-  local mpc_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-mpc-${mpc_version}-installed"
+  local mpc_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-mpc-${mpc_version}-installed"
   if [ ! -f "${mpc_stamp_file_path}" ]
   then
 
@@ -449,7 +449,7 @@ function do_isl()
 
   local isl_url="http://isl.gforge.inria.fr/${isl_archive}"
 
-  local isl_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-isl-${isl_version}-installed"
+  local isl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-isl-${isl_version}-installed"
   if [ ! -f "${isl_stamp_file_path}" ]
   then
 
@@ -552,7 +552,7 @@ function do_zstd()
 
   local zstd_url="https://github.com/facebook/zstd/archive/${zstd_github_archive}"
 
-  local zstd_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-zstd-${zstd_version}-installed"
+  local zstd_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-zstd-${zstd_version}-installed"
   if [ ! -f "${zstd_stamp_file_path}" ]
   then
 
@@ -691,7 +691,7 @@ function do_libiconv()
   local libiconv_archive="${libiconv_src_folder_name}.tar.gz"
   local libiconv_url="https://ftp.gnu.org/pub/gnu/libiconv/${libiconv_archive}"
 
-  local libiconv_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libiconv-${libiconv_version}-installed"
+  local libiconv_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-libiconv-${libiconv_version}-installed"
   if [ ! -f "${libiconv_stamp_file_path}" ]
   then
 
@@ -800,7 +800,7 @@ function do_ncurses()
   local ncurses_version_major="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
   local ncurses_version_minor="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\2|')"
 
-  local ncurses_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-ncurses-${ncurses_version}-installed"
+  local ncurses_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-ncurses-${ncurses_version}-installed"
   if [ ! -f "${ncurses_stamp_file_path}" ]
   then
 
