@@ -954,3 +954,139 @@ function do_ncurses()
 }
 
 # -----------------------------------------------------------------------------
+
+# Installs in a separate location compared to the other libs.
+
+function do_glibc()
+{
+  # https://www.gnu.org/software/libc/
+  # https://sourceware.org/glibc/wiki/FAQ
+  # https://www.glibc.org/history.html
+  # https://ftp.gnu.org/gnu/glibc
+  # https://ftp.gnu.org/gnu/glibc/glibc-2.31.tar.xz
+
+  # https://archlinuxarm.org/packages/aarch64/glibc/files
+  # https://archlinuxarm.org/packages/aarch64/glibc/files/PKGBUILD
+
+  # 2019-08-01 "2.30"
+  # 2020-02-01 "2.31"
+
+  local glibc_version="$1"
+
+  # The folder name as resulted after being extracted from the archive.
+  local glibc_src_folder_name="glibc-${glibc_version}"
+  # The folder name for build, licenses, etc.
+  local glibc_folder_name="${glibc_src_folder_name}"
+
+  local glibc_archive="${glibc_src_folder_name}.tar.xz"
+  local glibc_url="https://ftp.gnu.org/gnu/glibc/${glibc_archive}"
+
+  local glibc_patch_file_name="glibc-${glibc_version}.patch"
+  local glibc_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-glibc-${glibc_version}-installed"
+  if [ ! -f "${glibc_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${glibc_url}" "${glibc_archive}" \
+      "${glibc_src_folder_name}" "${glibc_patch_file_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${glibc_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${glibc_folder_name}"
+
+      mkdir -pv "${LOGS_FOLDER_PATH}/${glibc_folder_name}"
+
+      xbb_activate
+      # Do not do this, glibc is more or less standalone.
+      # gmp headers from the real gmp will crash the build.
+      # xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="${XBB_CFLAGS} -Wno-implicit-function-declaration"
+      export CXXFLAGS="${XBB_CXXFLAGS}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running glibc configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${glibc_src_folder_name}/configure" --help
+
+          config_options=()
+
+          # config_options+=("--prefix=${INSTALL_FOLDER_PATH}/glibc")
+
+          config_options+=("--prefix=${APP_PREFIX}/usr")
+
+          # From Arch:
+          #  - Don't --enable-static-pie, broken on ARM
+          #  - Don't --enable-cet, x86 only
+
+          # --with-pkgversion=VERSION
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-headers=/usr/include")
+
+          config_options+=("--enable-kernel=3.2")
+          config_options+=("--enable-add-ons")
+          config_options+=("--enable-bind-now")
+          config_options+=("--enable-lock-elision")
+          config_options+=("--enable-stack-protector=strong")
+          config_options+=("--enable-stackguard-randomization")
+
+          config_options+=("--disable-multi-arch")
+          config_options+=("--disable-build-nscd")
+          config_options+=("--disable-profile")
+          config_options+=("--disable-werror")
+          config_options+=("--disable-timezone-tools")
+          config_options+=("--disable-all-warnings")
+
+          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${glibc_src_folder_name}/configure" \
+            ${config_options[@]}
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${glibc_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glibc_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running glibc make..."
+
+        # Build.
+        make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          : # make check
+        fi
+
+        mkdir -pv "${APP_PREFIX}/usr/include"
+        if false
+        then
+          cp -rv /usr/include/* "${APP_PREFIX}/usr/include"
+        fi
+
+        # make install-strip
+        make install
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glibc_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${glibc_src_folder_name}" \
+        "${glibc_folder_name}"
+
+    )
+    touch "${glibc_stamp_file_path}"
+
+  else
+    echo "Library glibc already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
