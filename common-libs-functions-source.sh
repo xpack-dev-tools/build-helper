@@ -831,6 +831,12 @@ function do_ncurses()
 
           config_options=()
 
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
           # Not yet functional on windows.
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
@@ -910,12 +916,6 @@ function do_ncurses()
           fi
 
           bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" \
-            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-            \
-            --build=${BUILD} \
-            --host=${HOST} \
-            --target=${TARGET} \
-            \
             ${config_options[@]}
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/config-log.txt"
