@@ -70,12 +70,22 @@ function xbb_activate_libs()
 
   if [ -d "${XBB_FOLDER_PATH}/lib" ]
   then
-    LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+    if [ -z "${LD_LIBRARY_PATH}" ]
+    then
+      LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib"
+    else
+      LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+    fi
   fi
 
   if [ -d "${XBB_FOLDER_PATH}/lib64" ]
   then
-    LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+    if [ -z "${LD_LIBRARY_PATH}" ]
+    then
+      LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64"
+    else
+      LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+    fi
   fi
 
   export LD_LIBRARY_PATH
@@ -121,7 +131,12 @@ function xbb_activate_installed_dev()
 
     # Needed by internal binaries, like the bootstrap compiler, which do not
     # have a rpath.
-    LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+    if [ -z "${LD_LIBRARY_PATH}" ]
+    then
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
+    else
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+    fi
   fi
 
   # For just in case, apparently not used.
@@ -135,7 +150,12 @@ function xbb_activate_installed_dev()
 
     PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
 
-    LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+    if [ -z "${LD_LIBRARY_PATH}" ]
+    then
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64"
+    else
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+    fi
   fi
 
   export XBB_CPPFLAGS
@@ -890,6 +910,7 @@ function download()
   fi
 }
 
+# $4 is the patch file name
 function download_and_extract()
 {
   local url="$1"
