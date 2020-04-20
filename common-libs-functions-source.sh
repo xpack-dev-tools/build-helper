@@ -112,6 +112,7 @@ function do_zlib()
           fi
 
           make install
+
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/make-output.txt"
       fi
 
@@ -210,9 +211,7 @@ function do_gmp()
         echo "Running gmp make..."
 
         # Build.
-        # Parallel builds may fail.
         make -j ${JOBS}
-        # make
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -220,6 +219,7 @@ function do_gmp()
         fi
 
         make install-strip
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/make-output.txt"
 
       copy_license \
@@ -313,6 +313,7 @@ function do_mpfr()
         fi
 
         make install-strip
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/make-output.txt"
 
       copy_license \
@@ -406,6 +407,7 @@ function do_mpc()
         fi
 
         make install-strip
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/make-output.txt"
 
       copy_license \
@@ -512,6 +514,7 @@ function do_isl()
         fi
 
         make install-strip
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/make-output.txt"
 
       copy_license \
@@ -745,6 +748,7 @@ function do_libiconv()
         fi
 
         make install-strip
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/make-output.txt"
 
       copy_license \
