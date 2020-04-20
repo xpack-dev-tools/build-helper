@@ -72,6 +72,7 @@ function do_zlib()
             PREFIX=${CROSS_COMPILE_PREFIX}- \
             prefix="${LIBS_INSTALL_FOLDER_PATH}" \
             CFLAGS="${XBB_CFLAGS} -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4"
+          
           make -f win32/Makefile.gcc install \
             DESTDIR="${LIBS_INSTALL_FOLDER_PATH}/" \
             INCLUDE_PATH="include" \
@@ -193,14 +194,26 @@ function do_gmp()
 
           bash "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" --help
 
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+            
+          config_options+=("--enable-cxx")
+
+          if [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+            # mpfr asks for this explicitly during configure.
+            # (although the message is wrong)
+            config_options+=("--enable-shared")
+            config_options+=("--disable-static")
+          fi
+
           bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
-            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-            \
-            --build=${BUILD} \
-            --host=${HOST} \
-            --target=${TARGET} \
-            \
-            --enable-cxx \
+            ${config_options[@]}
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${gmp_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/configure-output.txt"
