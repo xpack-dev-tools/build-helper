@@ -200,8 +200,6 @@ function do_gmp()
             --target=${TARGET} \
             \
             --enable-cxx \
-            --enable-shared \
-            --disable-static
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${gmp_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/configure-output.txt"
