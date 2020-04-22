@@ -665,6 +665,11 @@ function host_prepare_docker()
     echo "If not installed, see https://docs.docker.com/installation/."
     exit 1
   fi
+
+  echo
+  echo "Pruning Docker..."
+  
+  docker system prune -f
   set -e
 }
 
