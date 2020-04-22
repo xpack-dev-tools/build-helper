@@ -923,7 +923,7 @@ function extract()
         fi
       fi
 
-      if [ $# -gt 2 ]
+      if [ $# -ge 3 ]
       then
         cd "${folder_name}"
         do_patch "$3"
@@ -965,7 +965,7 @@ function download_and_extract()
   local folder_name="$3"
 
   download "${url}" "${archive_name}"
-  if [ $# -gt 3 ]
+  if [ $# -ge 4 ]
   then
     extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}" "$4"
   else
