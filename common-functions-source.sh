@@ -33,12 +33,20 @@ function xbb_activate_dev()
     XBB_LDFLAGS_LIB="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
     XBB_LDFLAGS_APP="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
     XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+    # Add XBB lib in front of PKG_CONFIG_PATH.
+    if [ -d "${XBB_FOLDER_PATH}/lib/pkgconfig" ]
+    then
+      if [ -z "${PKG_CONFIG_PATH}" ]
+      then
+        PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig"
+      else
+        PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+      fi
+    fi
+
+    # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
   fi
-
-  # Add XBB lib in front of PKG_CONFIG_PATH.
-  PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
-
-  # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
 
   if [ -d "${XBB_FOLDER_PATH}/lib64" ]
   then
@@ -48,7 +56,15 @@ function xbb_activate_dev()
     XBB_LDFLAGS_APP="-L${XBB_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP}"
     XBB_LDFLAGS_APP_STATIC_GCC="-L${XBB_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
-    PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
+    if [ -d "${XBB_FOLDER_PATH}/lib64/pkgconfig" ]
+    then
+      if [ -z "${PKG_CONFIG_PATH}" ]
+      then
+        PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib64/pkgconfig"
+      else
+        PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
+      fi
+    fi
 
     # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
   fi
@@ -484,11 +500,12 @@ function prepare_xbb_extras()
   fi
   set -u
 
-  PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-":"}
+  # Hopefully defining it empty would be enough...
+  PKG_CONFIG_PATH=${PKG_CONFIG_PATH:-""}
 
   # Prevent pkg-config to search the system folders (configured in the
   # pkg-config at build time).
-  PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-":"}
+  PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR:-""}
 
   set +u
   echo
