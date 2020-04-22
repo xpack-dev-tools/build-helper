@@ -1716,7 +1716,10 @@ function copy_dependencies_recursive()
 
   if is_elf "${file_path}"
   then
-    echo "is_elf $(basename "${file_path}")"
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      echo "is_elf $(basename "${file_path}")"
+    fi
     if [ "${folder_path}" != "${dest_path}" ]
     then
       if [ ! -f "${dest_path}/${file_name}" ]
