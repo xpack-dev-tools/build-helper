@@ -409,20 +409,17 @@ function prepare_xbb_extras()
 
   if [ ! -z "$(xbb_activate; which "g++-9")" ]
   then
-    CC="gcc-9"
-    CXX="g++-9"
+    prepare_gcc_env "" "-9"
   elif [ ! -z "$(xbb_activate; which "g++-8")" ]
   then
-    CC="gcc-8"
-    CXX="g++-8"
+    prepare_gcc_env "" "-8"
   elif [ ! -z "$(xbb_activate; which "g++-7")" ]
   then
-    CC="gcc-7"
-    CXX="g++-7"
+    prepare_gcc_env "" "-7"
   else
-    CC="gcc"
-    CXX="g++"
+    prepare_gcc_env "" ""
   fi
+
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
@@ -446,6 +443,20 @@ function prepare_xbb_extras()
     
     unset CC
     unset CXX
+    unset AR
+    unset AS
+    unset DLLTOOL
+    unset LD
+    unset NM
+    unset OBJCOPY
+    unset OBJDUMP
+    unset RANLIB
+    unset READELF
+    unset SIZE
+    unset STRIP
+    unset WINDRES
+    unset WINDMC
+    unset RC
 
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
@@ -532,26 +543,36 @@ function prepare_xbb_extras()
   export PKG_CONFIG_LIBDIR
 }
 
-function prepare_cross_env()
+function prepare_gcc_env()
 {
-  local cross_compile_prefix="$1"
+  local prefix="$1"
 
-  export CC="${cross_compile_prefix}-gcc"
-  export CXX="${cross_compile_prefix}-g++"
+  local suffix
+  if [ $# -ge 2 ]
+  then
+    suffix="$2"
+  else
+    suffix=""
+  fi
 
-  export AR="${cross_compile_prefix}-gcc-ar"
-  export AS="${cross_compile_prefix}-as"
-  export DLLTOOL="${cross_compile_prefix}-dlltool"
-  export LD="${cross_compile_prefix}-ld"
-  export NM="${cross_compile_prefix}-gcc-nm"
-  export OBJCOPY="${cross_compile_prefix}-objcopy"
-  export OBJDUMP="${cross_compile_prefix}-objdump"
-  export RANLIB="${cross_compile_prefix}-gcc-ranlib"
-  export READELF="${cross_compile_prefix}-readelf"
-  export SIZE="${cross_compile_prefix}-gcc-size"
-  export STRIP="${cross_compile_prefix}-strip"
-  export WINDRES="${cross_compile_prefix}-windres"
-  export RC="${cross_compile_prefix}-windres"
+
+  export CC="${prefix}gcc${suffix}"
+  export CXX="${prefix}g++${suffix}"
+
+  export AR="${prefix}gcc-ar${suffix}"
+  export AS="${prefix}as"
+  export DLLTOOL="${prefix}dlltool"
+  export LD="${prefix}ld"
+  export NM="${prefix}gcc-nm${suffix}"
+  export OBJCOPY="${prefix}objcopy"
+  export OBJDUMP="${prefix}objdump"
+  export RANLIB="${prefix}gcc-ranlib${suffix}"
+  export READELF="${prefix}readelf"
+  export SIZE="${prefix}size"
+  export STRIP="${prefix}strip"
+  export WINDRES="${prefix}windres"
+  export WINDMC="${prefix}windmc"
+  export RC="${prefix}windres"
 }
 
 # -----------------------------------------------------------------------------
