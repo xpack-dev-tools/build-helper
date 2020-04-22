@@ -420,6 +420,15 @@ function prepare_xbb_extras()
     prepare_gcc_env "" ""
   fi
 
+  (
+    set +x
+    cd "${XBB_FOLDER_PATH}/bin"
+    rm -rf gcc g++ cc c++
+    ln -s "${CC}" gcc
+    ln -s "${CC}" cc
+    ln -s "${CXX}" g++
+    ln -s "${CXX}" c++
+  )
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
