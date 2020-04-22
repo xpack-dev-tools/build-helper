@@ -174,7 +174,7 @@ function do_gmp()
       export CPPFLAGS="${XBB_CPPFLAGS}"
       export CFLAGS="-Wno-unused-value -Wno-empty-translation-unit -Wno-tautological-compare -Wno-overflow"
       export CXXFLAGS="${XBB_CXXFLAGS}"
-      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       # ABI is mandatory, otherwise configure fails on 32-bit.
       # (see https://gmplib.org/manual/ABI-and-ISA.html)
@@ -207,7 +207,7 @@ function do_gmp()
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             # mpfr asks for this explicitly during configure.
-            # (although the message is wrong)
+            # (although the message is confusing)
             config_options+=("--enable-shared")
             config_options+=("--disable-static")
           fi
@@ -290,7 +290,7 @@ function do_mpfr()
       export CPPFLAGS="${XBB_CPPFLAGS}"
       export CFLAGS="${XBB_CFLAGS}"
       export CXXFLAGS="${XBB_CXXFLAGS}"
-      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       if [ ! -f "config.status" ]
       then 
@@ -390,7 +390,7 @@ function do_mpc()
       export CPPFLAGS="${XBB_CPPFLAGS}"
       export CFLAGS="${XBB_CFLAGS} -Wno-unused-value -Wno-empty-translation-unit -Wno-tautological-compare"
       export CXXFLAGS="${XBB_CXXFLAGS}"
-      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       if [ ! -f "config.status" ]
       then 
@@ -603,7 +603,7 @@ function do_zstd()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS}"
       CXXFLAGS="${XBB_CXXFLAGS}"
-      DFLAGS="${XBB_LDFLAGS_LIB}"
+      LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       export CPPFLAGS
       export CFLAGS
@@ -739,7 +739,7 @@ function do_libiconv()
       #  https://savannah.gnu.org/bugs/?47953
       export CFLAGS="${XBB_CFLAGS} -fgnu89-inline -Wno-tautological-compare -Wno-parentheses-equality -Wno-static-in-inline -Wno-pointer-to-int-cast"
       export CXXFLAGS="${XBB_CXXFLAGS}"
-      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       if [ ! -f "config.status" ]
       then 
@@ -852,7 +852,7 @@ function do_ncurses()
       export CPPFLAGS="${XBB_CPPFLAGS}"
       export CFLAGS="${XBB_CFLAGS}"
       export CXXFLAGS="${XBB_CXXFLAGS}"
-      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       if [ ! -f "config.status" ]
       then 
@@ -1034,7 +1034,7 @@ function do_glibc()
       export CPPFLAGS="${XBB_CPPFLAGS}"
       export CFLAGS="${XBB_CFLAGS} -Wno-implicit-function-declaration"
       export CXXFLAGS="${XBB_CXXFLAGS}"
-      export LDFLAGS="${XBB_LDFLAGS_LIB}"
+      export LDFLAGS="${XBB_LDFLAGS_LIB} -v"
 
       if [ ! -f "config.status" ]
       then 
@@ -1095,7 +1095,9 @@ function do_glibc()
           : # make check
         fi
 
+        # The presence of this folder is chekced if configured as sysroot.
         mkdir -pv "${APP_PREFIX}/usr/include"
+
         if false
         then
           cp -rv /usr/include/* "${APP_PREFIX}/usr/include"
