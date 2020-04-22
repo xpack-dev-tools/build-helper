@@ -500,12 +500,16 @@ function do_isl()
 
           bash "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" --help
 
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
           bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
-            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-            \
-            --build=${BUILD} \
-            --host=${HOST} \
-            --target=${TARGET} \
+            ${config_options[@]}
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${isl_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/configure-output.txt"
