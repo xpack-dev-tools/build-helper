@@ -597,7 +597,7 @@ function do_zstd()
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
-        prepare_cross_env "${CROSS_COMPILE_PREFIX}"
+        prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
       fi
 
       CPPFLAGS="${XBB_CPPFLAGS}"
