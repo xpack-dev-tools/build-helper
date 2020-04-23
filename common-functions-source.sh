@@ -466,6 +466,7 @@ function prepare_xbb_extras()
     export NATIVE_CC=${CC}
     export NATIVE_CXX=${CXX}
     
+    prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
 
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
@@ -511,30 +512,16 @@ function prepare_xbb_extras()
   (
     xbb_activate
 
-    echo
-    if [ "${TARGET_PLATFORM}" == "win32" ]
-    then
-      which ${CROSS_COMPILE_PREFIX}-gcc
-      ${CROSS_COMPILE_PREFIX}-gcc --version
-    else
-      which ${CC}
-      ${CC} --version
-    fi
+    which ${CC}
+    ${CC} --version
 
     which make
     make --version
   )
 
-  set +u
-  if [ "${TARGET_PLATFORM}" == "win32" -a ! -z "${CC}" -a ! -z  "${CXX}" ]
-  then
-    echo "CC and CXX must not be set for cross builds."
-    exit 1
-  fi
-  set -u
-
   # ---------------------------------------------------------------------------
 
+  # CC & co were exported by prepare_gcc_env.
   export XBB_CPPFLAGS
 
   export XBB_CFLAGS
@@ -544,9 +531,6 @@ function prepare_xbb_extras()
   export XBB_LDFLAGS_LIB
   export XBB_LDFLAGS_APP
   export XBB_LDFLAGS_APP_STATIC_GCC
-
-  export CC
-  export CXX
 
   export PKG_CONFIG
   export PKG_CONFIG_PATH
@@ -564,7 +548,6 @@ function prepare_gcc_env()
   else
     suffix=""
   fi
-
 
   export CC="${prefix}gcc${suffix}"
   export CXX="${prefix}g++${suffix}"
