@@ -474,6 +474,9 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
+  else
+    echo "Unsupported ${TARGET_PLATFORM}."
+    exit 1
   fi
 
   set +u
