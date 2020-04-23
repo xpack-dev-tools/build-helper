@@ -595,11 +595,6 @@ function do_zstd()
       xbb_activate
       xbb_activate_installed_dev
 
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
-      fi
-
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS}"
       CXXFLAGS="${XBB_CXXFLAGS}"
