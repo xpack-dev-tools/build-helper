@@ -466,22 +466,6 @@ function prepare_xbb_extras()
     export NATIVE_CC=${CC}
     export NATIVE_CXX=${CXX}
     
-    unset CC
-    unset CXX
-    unset AR
-    unset AS
-    unset DLLTOOL
-    unset LD
-    unset NM
-    unset OBJCOPY
-    unset OBJDUMP
-    unset RANLIB
-    unset READELF
-    unset SIZE
-    unset STRIP
-    unset WINDRES
-    unset WINDMC
-    unset RC
 
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
@@ -599,6 +583,26 @@ function prepare_gcc_env()
   export WINDRES="${prefix}windres"
   export WINDMC="${prefix}windmc"
   export RC="${prefix}windres"
+}
+
+function unset_gcc_env()
+{
+  unset CC
+  unset CXX
+  unset AR
+  unset AS
+  unset DLLTOOL
+  unset LD
+  unset NM
+  unset OBJCOPY
+  unset OBJDUMP
+  unset RANLIB
+  unset READELF
+  unset SIZE
+  unset STRIP
+  unset WINDRES
+  unset WINDMC
+  unset RC
 }
 
 # -----------------------------------------------------------------------------
