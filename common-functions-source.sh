@@ -437,6 +437,7 @@ function prepare_xbb_extras()
   fi
 
   (
+    # TODO: remove after updating the XBB.
     set +x
     cd "${XBB_FOLDER_PATH}/bin"
     rm -rf gcc g++ cc c++
