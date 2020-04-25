@@ -1124,22 +1124,20 @@ function check_binary_for_libraries()
       )
 
       local relative_path=$(readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)' | sed -e 's/.*\[\$ORIGIN//' | sed -e 's/\].*//')
-      echo $relative_path
+      # echo $relative_path
 
-      local 
-      local n
-      for n in ${so_names}
+      for so_name in ${so_names}
       do
-        if [ ! -f "${folder_path}${relative_path}/${n}" ] 
+        if [ ! -f "${folder_path}${relative_path}/${so_name}" ] 
         then
-          if is_linux_sys_so "${n}"
+          if is_linux_sys_so "${so_name}"
           then
             :
-          elif [[ ${n} == libpython* ]] && [[ ${file_name} == *-gdb-py ]]
+          elif [[ ${so_name} == libpython* ]] && [[ ${file_name} == *-gdb-py ]]
           then
             :
           else
-            echo "Unexpected |${n}|"
+            echo "Unexpected |${so_name}|"
             exit 1
           fi
         fi
@@ -1205,7 +1203,7 @@ function is_win_sys_dll()
   do
     if [ "${dll}" == "${dll_name}" ]
     then
-        return 0 # True
+      return 0 # True
     fi
   done
   return 1 # False
@@ -1222,7 +1220,7 @@ function is_linux_sys_so()
 
   # Shared libraries that are expected to be present on any Linux.
   # Note the X11 libraries.
-  local sys_libs=(\
+  local sys_lib_names=(\
     librt.so.1 \
     libm.so.6 \
     libc.so.6 \
@@ -1240,10 +1238,10 @@ function is_linux_sys_so()
     libxcb.so.1 \
   )
 
-  local lib
-  for lib in "${sys_libs[@]}"
+  local sys_lib_name
+  for sys_lib_name in "${sys_lib_names[@]}"
   do
-    if [ "${lib}" == "${lib_name}" ]
+    if [ "${lib_name}" == "${sys_lib_name}" ]
     then
       return 0 # True
     fi
@@ -1347,6 +1345,7 @@ function has_origin()
 # (linux/mac) and mingw.
 function strip_binary2() 
 {
+  (
     set +e
     if [ $# -lt 2 ]
     then
@@ -1372,6 +1371,7 @@ function strip_binary2()
     fi
 
     set -e
+  )
 }
 
 function strip_binary() 
@@ -1382,28 +1382,28 @@ function strip_binary()
     exit 1
   fi
 
-  local bin="$1"
+  local file_path="$1"
 
   local strip="strip"
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
     strip="${CROSS_COMPILE_PREFIX}-strip"
-    if [[ "${bin}" != *.exe ]] && [[ "${bin}" != *.dll ]]
+    if [[ "${file_path}" != *.exe ]] && [[ "${file_path}" != *.dll ]]
     then
-      bin="${bin}.exe"
+      bin="${file_path}.exe"
     fi
   fi
 
-  if has_origin "${bin}"
+  if has_origin "${file_path}"
   then
     # If the file was patched, skip strip, otherwise
     # we may damage the binary due to a bug in strip.
-    echo "${strip} ${bin} skipped (patched)"
+    echo "${strip} ${file_path} skipped (patched)"
     return
   fi
 
-  echo "${strip} ${bin}"
-  "${strip}" -S "${bin}" || true
+  echo "${strip} ${file_path}"
+  "${strip}" -S "${file_path}" || true
 }
 
 function is_elf()
@@ -1413,18 +1413,19 @@ function is_elf()
     warning "is_elf: Missing arguments"
     exit 1
   fi
-  local bin="$1"
+
+  local bin_path="$1"
 
   # Symlinks do not match.
-  if [ -L "${bin}" ]
+  if [ -L "${bin_path}" ]
   then
     return 1
   fi
 
-  if [ -f "${bin}" -a -x "${bin}" ]
+  if [ -f "${bin_path}" ]
   then
     # Return 0 (true) if found.
-    file ${bin} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
+    file ${bin_path} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
   else
     return 1
   fi
