@@ -480,6 +480,9 @@ function prepare_xbb_extras()
     exit 1
   fi
 
+  XBB_CFLAGS_NO_W="${XBB_CFLAGS} -w"
+  XBB_CXXFLAGS_NO_W="${XBB_CXXFLAGS} -w"
+
   set +u
   if [ ! -z "${XBB_FOLDER_PATH}" -a -x "${XBB_FOLDER_PATH}/bin/pkg-config-verbose" ]
   then
@@ -530,6 +533,9 @@ function prepare_xbb_extras()
 
   export XBB_CFLAGS
   export XBB_CXXFLAGS
+
+  export XBB_CFLAGS_NO_W
+  export XBB_CXXFLAGS_NO_W
 
   export XBB_LDFLAGS
   export XBB_LDFLAGS_LIB
