@@ -266,6 +266,9 @@ function prepare_xbb_env()
     elif [ ${TARGET_ARCH} == "x64" ]
     then
       CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
+    else
+      echo "Oops! Unsupported ${TARGET_ARCH}."
+      exit 1
     fi
 
     do_config_guess
@@ -290,7 +293,7 @@ function prepare_xbb_env()
     TARGET="${HOST}"
 
   else
-    echo "Unsupported target platform ${TARGET_PLATFORM}"
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
     exit 1
   fi
 
@@ -476,7 +479,7 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   else
-    echo "Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
     exit 1
   fi
 
@@ -848,6 +851,9 @@ function run_app()
         fi
       )
     fi
+  else
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    exit 1
   fi
 }
 
@@ -875,6 +881,9 @@ function show_libs()
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     : # TODO
+  else
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    exit 1
   fi
 }
 
@@ -1149,6 +1158,9 @@ function check_binary_for_libraries()
         fi
       done
       set -e
+    else
+      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      exit 1
     fi
   )
 }
@@ -1627,6 +1639,9 @@ function prepare_app_libraries()
       echo
       echo "Preparing libraries..."
       copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
+    else
+      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      exit 1
     fi
   )
 }
@@ -1702,6 +1717,9 @@ function prepare_app_folder_libraries()
         fi
       done
 
+    else
+      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      exit 1
     fi
   )
 }
@@ -1914,7 +1932,7 @@ function copy_dependencies_recursive()
           : # System library, no need to copy it.
           if ! is_darwin_allowed_sys_dylib "${lib_name}"
           then
-            echo "Ooops! \"${lib_name}\" should not be there!"
+            echo "Oops! \"${lib_name}\" should not be there!"
           fi
         else
           # The libs can be relative to @executable_path or absolute.
@@ -1975,6 +1993,9 @@ function copy_dependencies_recursive()
         fi
       fi
     done
+  else
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    exit 1
   fi
 
   if [ "${IS_DEVELOP}" == "y" ]
@@ -2031,6 +2052,9 @@ function check_binaries()
         fi
       done
 
+    else
+      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      exit 1
     fi
   )
 }
@@ -2188,6 +2212,9 @@ function create_archive()
       elif [ "${TARGET_PLATFORM}" == "linux" ]
       then
         target_folder_name="${CONTAINER_DISTRO_LC_NAME}${TARGET_BITS}"
+      else
+        echo "Oops! Unsupported ${TARGET_PLATFORM}."
+        exit 1
       fi
     fi
 
@@ -2338,10 +2365,8 @@ function check_application()
     done
 
   else
-
-    echo "Unsupported TARGET_PLATFORM ${TARGET_PLATFORM}"
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
     exit 1
-
   fi
 
   echo
