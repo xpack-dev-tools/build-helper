@@ -837,7 +837,7 @@ function show_libs()
     readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
     echo
     echo "ldd -v ${app_path}"
-    ldd -v "${app_path}" 2>&1
+    ldd -v "${app_path}" 2>&1 || true
   elif [ "${node_platform}" == "darwin" ]
   then
     echo
