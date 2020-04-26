@@ -831,11 +831,13 @@ function show_libs()
   if [ "${node_platform}" == "linux" ]
   then
     echo
-    echo "readelf -d ${app_path} | grep 'ibrary'"
-    readelf -d "${app_path}" | grep 'ibrary'
+    echo "readelf -d ${app_path} | egre -i ..."
+    readelf -d "${app_path}" | egrep -i '(SONAME)'
+    readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)'
+    readelf -d "${app_path}" | egrep -i '(NEEDED)'
     echo
-    echo "ldd ${app_path}"
-    ldd "${app_path}" 2>&1
+    echo "ldd -v ${app_path}"
+    ldd -v "${app_path}" 2>&1
   elif [ "${node_platform}" == "darwin" ]
   then
     echo
