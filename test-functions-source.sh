@@ -706,7 +706,7 @@ function prepare_env()
   container_work_folder_absolute_path="/Host/Work"
   container_repo_folder_absolute_path="/Host/repo"
 
-  if [ -f "/.dockerenv" ]
+  if [ -f "/.dockerenv" -a -d "${container_work_folder_absolute_path}" ]
   then
     work_folder_absolute_path="${container_work_folder_absolute_path}"
     repo_folder_absolute_path="${container_repo_folder_absolute_path}"
