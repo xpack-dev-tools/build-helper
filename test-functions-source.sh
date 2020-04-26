@@ -882,6 +882,22 @@ function do_run()
   "${app_path}" $@ 2>&1
 }
 
+function do_expect()
+{
+  local app_name="$1"
+  local expected="$2"
+
+  show_libs "${app_name}"
+
+  local output="$(run_app_silent "./${app_name}")"
+
+  if [ "x${output}x" == "x${expected}x" ]
+  then
+    echo "Test ${app_name} ok"
+  else
+    exit 1
+  fi
+}
 
 function good_bye()
 {
