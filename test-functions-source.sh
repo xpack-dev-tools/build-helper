@@ -716,7 +716,7 @@ function prepare_env()
     repo_folder_absolute_path="$1"
   fi
 
-  cache_absolute_folder_path="${work_folder_absolute_path}/cache"
+  cache_folder_path="${work_folder_absolute_path}/cache"
 
   # Extract only the first line
   version="$(cat ${repo_folder_absolute_path}/scripts/VERSION | sed -e '2,$d')"
@@ -727,7 +727,7 @@ function prepare_env()
   fi
 
   # Always in the user home, even when inside a container.
-  test_absolute_folder_path="${HOME}/test-${app_lc_name}"
+  test_folder_path="${HOME}/test-${app_lc_name}"
 }
 
 # -----------------------------------------------------------------------------
@@ -750,33 +750,33 @@ function install_archive()
   archive_name="xpack-${app_lc_name}-${version}-${node_platform}-${archive_architecture}.${archive_extension}"
   archive_folder_name="xpack-${app_lc_name}-${version}"
 
-  mkdir -pv "${cache_absolute_folder_path}"
+  mkdir -pv "${cache_folder_path}"
 
-  if [ ! -f "${cache_absolute_folder_path}/${archive_name}" ]
+  if [ ! -f "${cache_folder_path}/${archive_name}" ]
   then
     echo
     echo "Downloading ${archive_name}..."
-    curl -L --fail -o "${cache_absolute_folder_path}/${archive_name}" \
+    curl -L --fail -o "${cache_folder_path}/${archive_name}" \
       "${base_url}/${archive_name}"
   fi
 
-  app_absolute_folder_path="${test_absolute_folder_path}/${archive_folder_name}"
+  app_folder_path="${test_folder_path}/${archive_folder_name}"
 
-  rm -rf "${app_absolute_folder_path}"
+  rm -rf "${app_folder_path}"
 
-  mkdir -pv "${test_absolute_folder_path}"
-  cd "${test_absolute_folder_path}"
+  mkdir -pv "${test_folder_path}"
+  cd "${test_folder_path}"
 
   echo
   echo "Extracting ${archive_name}..."
   if [[ "${archive_name}" == *.zip ]]
   then
-    unzip -q "${cache_absolute_folder_path}/${archive_name}"
+    unzip -q "${cache_folder_path}/${archive_name}"
   else 
-    tar xf "${cache_absolute_folder_path}/${archive_name}"
+    tar xf "${cache_folder_path}/${archive_name}"
   fi
 
-  ls -lL "${app_absolute_folder_path}"
+  ls -lL "${app_folder_path}"
 }
 
 # -----------------------------------------------------------------------------
