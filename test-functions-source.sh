@@ -846,7 +846,32 @@ function show_libs()
 
 function run_app()
 {
-  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+  if [ "${node_platform}" == "win32" ]
+  then
+    app_path+='.exe'
+  fi
+
+  echo
+  echo "${app_path} $@"
+  "${app_path}" $@ 2>&1
+}
+
+function run_app_silent()
+{
+  local app_path=$1
+  shift
+  if [ "${node_platform}" == "win32" ]
+  then
+    app_path+='.exe'
+  fi
+
+  "${app_path}" $@ 2>&1
+}
+
+function do_run()
+{
   local app_path=$1
   shift
 
@@ -855,19 +880,20 @@ function run_app()
   "${app_path}" $@ 2>&1
 }
 
+
 function good_bye()
 {
   echo
   echo "All tests completed successfully."
 
-  run_app uname -a
+  do_run uname -a
   if [ "${node_platform}" == "linux" ]
   then
-    run_app lsb_release -a
-    run_app ldd --version
+    do_run lsb_release -a
+    do_run ldd --version
   elif [ "${node_platform}" == "darwin" ]
   then
-    run_app sw_vers
+    do_run sw_vers
   fi
 }
 
