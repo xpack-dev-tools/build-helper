@@ -832,9 +832,9 @@ function show_libs()
   then
     echo
     echo "readelf -d ${app_path} | egre -i ..."
-    readelf -d "${app_path}" | egrep -i '(SONAME)'
-    readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)'
-    readelf -d "${app_path}" | egrep -i '(NEEDED)'
+    readelf -d "${app_path}" | egrep -i '(SONAME)' || true
+    readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
+    readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
     echo
     echo "ldd -v ${app_path}"
     ldd -v "${app_path}" 2>&1
