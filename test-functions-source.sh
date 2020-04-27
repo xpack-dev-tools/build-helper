@@ -727,7 +727,7 @@ function prepare_env()
   fi
 
   # Always in the user home, even when inside a container.
-  test_folder_path="${HOME}/test-${app_lc_name}"
+  test_folder_path="${HOME}/tmp/test-${app_lc_name}"
 }
 
 # -----------------------------------------------------------------------------
