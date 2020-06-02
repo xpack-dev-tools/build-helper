@@ -1402,6 +1402,12 @@ function strip_binary()
 
   local file_path="$1"
 
+  if ! is_elf "${file_path}"
+  then
+    echo $(file "${file_path}")
+    return
+  fi  
+
   local strip="strip"
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
