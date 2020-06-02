@@ -1682,6 +1682,7 @@ function prepare_app_libraries()
   )
 }
 
+# Process all executables and shared libraries.
 function prepare_app_folder_libraries()
 {
   local folder_path
@@ -1841,6 +1842,8 @@ function copy_dependencies_recursive()
     then
       install -v -c -m 644 "${actual_source_file_path}" "${copied_file_path}"
     fi
+  else
+    actual_source_file_path="${source_file_path}"
   fi
 
   if [ "${WITH_STRIP}" == "y" ]
@@ -1882,8 +1885,11 @@ function copy_dependencies_recursive()
         continue # System library, no need to copy it.
       else
         
-        # If the library is one of the compiled dependencied, recurse.
-        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
+        if [ -f "$(dirname "${actual_source_file_path}")/${lib_name}" ]
+        then
+          copy_dependencies_recursive "$(dirname "${actual_source_file_path}")/${lib_name}" \
+            "${actual_dest_folder_path}" "${libexec_folder_path}" 
+        elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
         then
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
             "${actual_dest_folder_path}" "${libexec_folder_path}" 
