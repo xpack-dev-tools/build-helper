@@ -831,7 +831,7 @@ function show_libs()
   if [ "${node_platform}" == "linux" ]
   then
     echo
-    echo "readelf -d ${app_path} | egre -i ..."
+    echo "readelf -d ${app_path} | egrep -i ..."
     readelf -d "${app_path}" | egrep -i '(SONAME)' || true
     readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
     readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
