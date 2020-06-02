@@ -1455,6 +1455,31 @@ function is_elf()
   fi
 }
 
+function is_ar()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_ar: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+
+  # Symlinks do not match.
+  if [ -L "${bin_path}" ]
+  then
+    return 1
+  fi
+
+  if [ -f "${bin_path}" ]
+  then
+    # Return 0 (true) if found.
+    file ${bin_path} | egrep -q "ar archive"
+  else
+    return 1
+  fi
+}
+
 # -----------------------------------------------------------------------------
 
 # Deprecated, use copy_dependencies_recursive().
