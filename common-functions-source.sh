@@ -1602,7 +1602,12 @@ function patch_linux_elf_origin()
     fi
     patchelf --set-rpath "\$ORIGIN/${relative_path}" "${tmp_path}"
   else
-    patchelf --set-rpath "\$ORIGIN" "${tmp_path}"
+    if file "${tmp_path}" | grep statically
+    then
+      file "${file_path}"
+    else
+      patchelf --set-rpath "\$ORIGIN" "${tmp_path}"
+    fi
   fi
   cp "${tmp_path}" "${file_path}"
   rm -rf "${tmp_path}"
