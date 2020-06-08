@@ -421,7 +421,10 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -O2"
   fi
 
-  if [ ! -z "$(xbb_activate; which "g++-9")" ]
+  if [ ! -z "$(xbb_activate; which "g++-xbb")" ]
+  then
+    prepare_gcc_env "" "-xbb"
+  elif [ ! -z "$(xbb_activate; which "g++-9")" ]
   then
     prepare_gcc_env "" "-9"
   elif [ ! -z "$(xbb_activate; which "g++-8")" ]
