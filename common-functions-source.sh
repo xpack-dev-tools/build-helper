@@ -223,28 +223,23 @@ function prepare_xbb_env()
 
   if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
+    XBB_FOLDER_PATH="${HOME}/opt/xbb"
     echo
     echo "Sourcing ${HOME}/opt/xbb/xbb-source.sh..."
     source "${HOME}/opt/xbb/xbb-source.sh"
   elif [ -f "${HOME}/opt/homebrew/xbb/xbb-source.sh" ]
   then
+    XBB_FOLDER_PATH="${HOME}/opt/homebrew/xbb"
     # Deprecated, on macOS it was moved to HOME/opt/xbb
     echo
     echo "Sourcing ${HOME}/opt/homebrew/xbb/xbb-source.sh..."
     source "${HOME}/opt/homebrew/xbb/xbb-source.sh"
   elif [ -f "/opt/xbb/xbb-source.sh" ]
   then
+    XBB_FOLDER_PATH="/opt/xbb"
     echo
     echo "Sourcing /opt/xbb/xbb-source.sh..."
     source "/opt/xbb/xbb-source.sh"
-    
-    # The CentOS image sets XBB_FOLDER, move it to XBB_FOLDER_PATH.
-    set +u
-    if [ -n "${XBB_FOLDER}" ]
-    then
-      XBB_FOLDER_PATH=${XBB_FOLDER}
-    fi
-    set -u
   else
     XBB_FOLDER_PATH=""
   fi
