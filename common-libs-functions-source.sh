@@ -43,7 +43,8 @@ function build_zlib()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${zlib_url}" "${zlib_archive}" "${zlib_src_folder_name}"
+    download_and_extract "${zlib_url}" "${zlib_archive}" \
+      "${zlib_src_folder_name}"
 
     (
       # In-source build. Make a local copy.
@@ -252,7 +253,12 @@ function build_gmp()
           make check
         fi
 
-        make install-strip
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          make install-strip
+        else
+          make install
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/make-output.txt"
 
@@ -359,7 +365,12 @@ function build_mpfr()
           make check
         fi
 
-        make install-strip
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          make install-strip
+        else
+          make install
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/make-output.txt"
 
@@ -466,7 +477,12 @@ function build_mpc()
           make check
         fi
 
-        make install-strip
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          make install-strip
+        else
+          make install
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/make-output.txt"
 
@@ -586,7 +602,12 @@ function build_isl()
           fi
         fi
 
-        make install-strip
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          make install-strip
+        else
+          make install
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/make-output.txt"
 
@@ -832,7 +853,12 @@ function build_libiconv()
           make check
         fi
 
-        make install-strip
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          make install-strip
+        else
+          make install
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/make-output.txt"
 
