@@ -2009,6 +2009,11 @@ function copy_dependencies_recursive()
         then
           copy_dependencies_recursive "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" \
             "${dest_folder_path}"
+        elif [ -f "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" ]
+        then
+          # Mainly to get libwinpthread-1.dll.
+          copy_dependencies_recursive "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" \
+            "${dest_folder_path}"
         else
           local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib_name})
           # -print-file-name outputs back the requested name if not found.
