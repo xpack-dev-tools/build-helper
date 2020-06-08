@@ -14,7 +14,7 @@
 
 # -----------------------------------------------------------------------------
 
-function do_zlib() 
+function build_zlib() 
 {
   # http://zlib.net
   # http://zlib.net/fossils/
@@ -144,7 +144,7 @@ function do_zlib()
 
 # -----------------------------------------------------------------------------
 
-function do_gmp() 
+function build_gmp() 
 {
   # https://gmplib.org
   # https://gmplib.org/download/gmp/
@@ -269,7 +269,7 @@ function do_gmp()
   fi
 }
 
-function do_mpfr()
+function build_mpfr()
 {
   # http://www.mpfr.org
   # http://www.mpfr.org/history.html
@@ -375,7 +375,7 @@ function do_mpfr()
   fi
 }
 
-function do_mpc()
+function build_mpc()
 {
   # http://www.multiprecision.org/
   # ftp://ftp.gnu.org/gnu/mpc
@@ -482,7 +482,7 @@ function do_mpc()
   fi
 }
 
-function do_isl()
+function build_isl()
 {
   # http://isl.gforge.inria.fr
 
@@ -602,7 +602,7 @@ function do_isl()
   fi
 }
 
-function do_zstd()
+function build_zstd()
 {
   # https://facebook.github.io/zstd/
   # https://github.com/facebook/zstd/releases
@@ -745,7 +745,7 @@ function do_zstd()
 
 # -----------------------------------------------------------------------------
 
-function do_libiconv()
+function build_libiconv()
 {
   # https://www.gnu.org/software/libiconv/
   # https://ftp.gnu.org/pub/gnu/libiconv/
@@ -851,7 +851,7 @@ function do_libiconv()
 
 # -----------------------------------------------------------------------------
 
-function do_ncurses()
+function build_ncurses()
 {
   # https://invisible-island.net/ncurses/
   # ftp://ftp.invisible-island.net/pub/ncurses
