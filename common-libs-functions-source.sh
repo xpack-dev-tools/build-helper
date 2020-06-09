@@ -31,11 +31,12 @@ function build_zlib()
 
   # The folder name as resulted after being extracted from the archive.
   local zlib_src_folder_name="zlib-${zlib_version}"
-  # The folder name for build, licenses, etc.
-  local zlib_folder_name="${zlib_src_folder_name}"
 
   local zlib_archive="${zlib_src_folder_name}.tar.gz"
   local zlib_url="http://zlib.net/fossils/${zlib_archive}"
+
+  # The folder name for build, licenses, etc.
+  local zlib_folder_name="${zlib_src_folder_name}"
 
   local zlib_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-zlib-${zlib_version}-installed"
   if [ ! -f "${zlib_stamp_file_path}" ]
@@ -161,11 +162,12 @@ function build_gmp()
 
   # The folder name as resulted after being extracted from the archive.
   local gmp_src_folder_name="gmp-${gmp_version}"
-  # The folder name for build, licenses, etc.
-  local gmp_folder_name="${gmp_src_folder_name}"
 
   local gmp_archive="${gmp_src_folder_name}.tar.xz"
   local gmp_url="https://gmplib.org/download/gmp/${gmp_archive}"
+
+  # The folder name for build, licenses, etc.
+  local gmp_folder_name="${gmp_src_folder_name}"
 
   local gmp_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-gmp-${gmp_version}-installed"
   if [ ! -f "${gmp_stamp_file_path}" ]
@@ -291,11 +293,12 @@ function build_mpfr()
 
   # The folder name as resulted after being extracted from the archive.
   local mpfr_src_folder_name="mpfr-${mpfr_version}"
-  # The folder name for build, licenses, etc.
-  local mpfr_folder_name="${mpfr_src_folder_name}"
 
   local mpfr_archive="${mpfr_src_folder_name}.tar.xz"
   local mpfr_url="http://www.mpfr.org/${mpfr_folder_name}/${mpfr_archive}"
+
+  # The folder name for build, licenses, etc.
+  local mpfr_folder_name="${mpfr_src_folder_name}"
 
   local mpfr_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-mpfr-${mpfr_version}-installed"
   if [ ! -f "${mpfr_stamp_file_path}" ]
@@ -401,8 +404,6 @@ function build_mpc()
 
   # The folder name as resulted after being extracted from the archive.
   local mpc_src_folder_name="mpc-${mpc_version}"
-  # The folder name for build, licenses, etc.
-  local mpc_folder_name="${mpc_src_folder_name}"
 
   local mpc_archive="${mpc_src_folder_name}.tar.gz"
   local mpc_url="ftp://ftp.gnu.org/gnu/mpc/${mpc_archive}"
@@ -410,6 +411,9 @@ function build_mpc()
   then
     mpc_url="http://www.multiprecision.org/downloads/${mpc_archive}"
   fi
+
+  # The folder name for build, licenses, etc.
+  local mpc_folder_name="${mpc_src_folder_name}"
 
   local mpc_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-mpc-${mpc_version}-installed"
   if [ ! -f "${mpc_stamp_file_path}" ]
@@ -514,8 +518,6 @@ function build_isl()
 
   # The folder name as resulted after being extracted from the archive.
   local isl_src_folder_name="isl-${isl_version}"
-  # The folder name for build, licenses, etc.
-  local isl_folder_name="${isl_src_folder_name}"
 
   local isl_archive="${isl_src_folder_name}.tar.xz"
   if [[ "${isl_version}" =~ 0\.12\.* ]]
@@ -524,6 +526,9 @@ function build_isl()
   fi
 
   local isl_url="http://isl.gforge.inria.fr/${isl_archive}"
+
+  # The folder name for build, licenses, etc.
+  local isl_folder_name="${isl_src_folder_name}"
 
   local isl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-isl-${isl_version}-installed"
   if [ ! -f "${isl_stamp_file_path}" ]
@@ -637,8 +642,6 @@ function build_zstd()
 
   # The folder name as resulted after being extracted from the archive.
   local zstd_src_folder_name="zstd-${zstd_version}"
-  # The folder name for build, licenses, etc.
-  local zstd_folder_name="${zstd_src_folder_name}"
 
   local zstd_archive="${zstd_src_folder_name}.tar.gz"
 
@@ -646,6 +649,9 @@ function build_zstd()
   local zstd_github_archive="v${zstd_version}.tar.gz"
 
   local zstd_url="https://github.com/facebook/zstd/archive/${zstd_github_archive}"
+
+  # The folder name for build, licenses, etc.
+  local zstd_folder_name="${zstd_src_folder_name}"
 
   local zstd_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-zstd-${zstd_version}-installed"
   if [ ! -f "${zstd_stamp_file_path}" ]
@@ -780,10 +786,11 @@ function build_libiconv()
   local libiconv_version="$1"
 
   local libiconv_src_folder_name="libiconv-${libiconv_version}"
-  local libiconv_folder_name="${libiconv_src_folder_name}"
 
   local libiconv_archive="${libiconv_src_folder_name}.tar.gz"
   local libiconv_url="https://ftp.gnu.org/pub/gnu/libiconv/${libiconv_archive}"
+
+  local libiconv_folder_name="${libiconv_src_folder_name}"
 
   local libiconv_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-libiconv-${libiconv_version}-installed"
   if [ ! -f "${libiconv_stamp_file_path}" ]
