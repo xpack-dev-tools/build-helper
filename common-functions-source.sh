@@ -826,16 +826,16 @@ function run_app()
   echo "${app_path} $@"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    "${app_path}" $@
+    "${app_path}" "$@"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    "${app_path}" $@
+    "${app_path}" "$@"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     local wsl_path=$(which wsl.exe)
     if [ ! -z "${wsl_path}" ]
     then
-      "${app_path}.exe" $@
+      "${app_path}.exe" "$@"
     else 
       (
         xbb_activate
@@ -843,7 +843,7 @@ function run_app()
         local wine_path=$(which wine)
         if [ ! -z "${wine_path}" ]
         then
-          wine "${app_path}.exe" $@
+          wine "${app_path}.exe" "$@"
         else
           echo "Install wine if you want to run the .exe binaries on Linux."
         fi
