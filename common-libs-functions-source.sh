@@ -70,12 +70,12 @@ function build_zlib()
           echo "Running zlib make..."
 
           # Build.
-          make -f win32/Makefile.gcc \
+          run_verbose make -f win32/Makefile.gcc \
             PREFIX=${CROSS_COMPILE_PREFIX}- \
             prefix="${LIBS_INSTALL_FOLDER_PATH}" \
             CFLAGS="${XBB_CFLAGS_NO_W} -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4"
           
-          make -f win32/Makefile.gcc install \
+          run_verbose make -f win32/Makefile.gcc install \
             DESTDIR="${LIBS_INSTALL_FOLDER_PATH}/" \
             INCLUDE_PATH="include" \
             LIBRARY_PATH="lib" \
@@ -105,9 +105,9 @@ function build_zlib()
             echo
             echo "Running zlib configure..."
 
-            bash "./configure" --help
+            bash "configure" --help
 
-            bash ${DEBUG} "./configure" \
+            run_verbose bash ${DEBUG} "configure" \
               --prefix="${LIBS_INSTALL_FOLDER_PATH}" 
             
             cp "configure.log" "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-log.txt"
@@ -119,14 +119,14 @@ function build_zlib()
           echo "Running zlib make..."
 
           # Build.
-          make -j ${JOBS}
+          run_verbose make -j ${JOBS}
 
           if [ "${WITH_TESTS}" == "y" ]
           then
-            make test
+            run_verbose make test
           fi
 
-          make install
+          run_verbose make install
 
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/make-output.txt"
       fi
@@ -236,7 +236,7 @@ function build_gmp()
             config_options+=("--disable-static")
           fi
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
             ${config_options[@]}
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${gmp_folder_name}/config-log.txt"
@@ -248,18 +248,18 @@ function build_gmp()
         echo "Running gmp make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          make check
+          run_verbose make check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
         then
-          make install-strip
+          run_verbose make install-strip
         else
-          make install
+          run_verbose make install
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/make-output.txt"
@@ -349,7 +349,7 @@ function build_mpfr()
 
           config_options+=("--disable-warnings")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
             ${config_options[@]}
              
           cp "config.log" "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/config-log.txt"
@@ -361,18 +361,18 @@ function build_mpfr()
         echo "Running mpfr make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          make check
+          run_verbose make check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
         then
-          make install-strip
+          run_verbose make install-strip
         else
-          make install
+          run_verbose make install
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/make-output.txt"
@@ -463,7 +463,7 @@ function build_mpc()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" \
             ${config_options[@]}
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${mpc_folder_name}/config-log.txt"
@@ -475,18 +475,18 @@ function build_mpc()
         echo "Running mpc make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          make check
+          run_verbose make check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
         then
-          make install-strip
+          run_verbose make install-strip
         else
-          make install
+          run_verbose make install
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/make-output.txt"
@@ -578,7 +578,7 @@ function build_isl()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
             ${config_options[@]}
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${isl_folder_name}/config-log.txt"
@@ -590,7 +590,7 @@ function build_isl()
         echo "Running isl make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -602,17 +602,17 @@ function build_isl()
             # /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x32/build/libs/isl-0.22/.libs/lt-isl_test_cpp: relocation error: /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x32/build/libs/isl-0.22/.libs/lt-isl_test_cpp: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERjj, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
             # FAIL isl_test_cpp (exit status: 127)
 
-            make check || true
+            run_verbose make check || true
           else
-            make check
+            run_verbose make check
           fi
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
         then
-          make install-strip
+          run_verbose make install-strip
         else
-          make install
+          run_verbose make install
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/make-output.txt"
@@ -712,7 +712,7 @@ function build_zstd()
             config_options+=("-DZSTD_BUILD_TESTS=ON")
           fi
 
-          cmake \
+          run_verbose cmake \
             ${config_options[@]} \
             \
             "${SOURCES_FOLDER_PATH}/${zstd_src_folder_name}/build/cmake"
@@ -724,14 +724,14 @@ function build_zstd()
         echo
         echo "Running zstd build..."
 
-        cmake \
+        run_verbose cmake \
           --build . \
           --parallel ${JOBS} \
           --config "${build_type}" \
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          ctest \
+          run_verbose ctest \
             -V \
 
         fi
@@ -744,7 +744,7 @@ function build_zstd()
           echo
           echo "Running zstd install..."
 
-          cmake \
+          run_verbose cmake \
             --build . \
             --config "${build_type}" \
             -- \
@@ -842,7 +842,7 @@ function build_libiconv()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}/configure" \
             ${config_options[@]}
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/config-log.txt"
@@ -854,18 +854,18 @@ function build_libiconv()
         echo "Running libiconv make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          make check
+          run_verbose make check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
         then
-          make install-strip
+          run_verbose make install-strip
         else
-          make install
+          run_verbose make install
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/make-output.txt"
@@ -1047,7 +1047,7 @@ function build_ncurses()
             config_options+=("--disable-widec")
           fi
 
-          bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" \
             ${config_options[@]}
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/config-log.txt"
@@ -1059,12 +1059,12 @@ function build_ncurses()
         echo "Running ncurses make..."
 
         # Build.
-        make -j ${JOBS}
+        run_verbose make -j ${JOBS}
 
         # The test-programs are interactive
 
         # make install-strip
-        make install
+        run_verbose make install
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/make-output.txt"
 
