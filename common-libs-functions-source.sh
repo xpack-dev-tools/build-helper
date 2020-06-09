@@ -1082,3 +1082,132 @@ function build_ncurses()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_libffi() 
+{
+  # http://www.sourceware.org/libffi/
+  # ftp://sourceware.org/pub/libffi/
+  # https://github.com/libffi/libffi/archive/v3.2.1.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/libffi/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libffi-git
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libffi
+
+  # 12-Nov-2014, "3.2.1"
+  # 23 Nov 2019, "3.3"
+
+  local libffi_version="$1"
+
+  local libffi_src_folder_name="libffi-${libffi_version}"
+
+  local libffi_archive="${libffi_src_folder_name}.tar.gz"
+  # local libffi_url="ftp://sourceware.org/pub/libffi/${libffi_archive}"
+  # GitHub release archive.
+  local libffi_url="https://github.com/libffi/libffi/archive/v${libffi_version}.tar.gz"
+
+  local libffi_folder_name="${libffi_src_folder_name}"
+
+  local libffi_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libffi-${libffi_version}-installed"
+  if [ ! -f "${libffi_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libffi_url}" "${libffi_archive}" \
+      "${libffi_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${libffi_folder_name}"
+
+    (
+      if [ ! -x "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" ]
+      then
+
+        cd "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}"
+        
+        xbb_activate
+        xbb_activate_installed_dev
+
+        run_verbose bash ${DEBUG} "autogen.sh"
+
+      fi
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libffi_folder_name}/autogen-output.txt"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libffi_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libffi_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CPPFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+    
+      if [ ! -f "config.status" ]
+      then 
+
+        (
+          echo
+          echo "Running libffi configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--enable-pax_emutramp")
+
+          # --enable-pax_emutramp is inspired by AUR
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libffi_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libffi_folder_name}/configure-output.txt"
+
+      fi
+
+      (
+        echo
+        echo "Running libffi make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libffi_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}" \
+        "${libffi_folder_name}"
+
+    )
+
+    touch "${libffi_stamp_file_path}"
+
+  else
+    echo "Library libffi already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
