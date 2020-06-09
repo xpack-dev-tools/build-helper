@@ -813,7 +813,7 @@ function build_libiconv()
       CPPFLAGS="${XBB_CPPFLAGS}"
       # -fgnu89-inline fixes "undefined reference to `aliases2_lookup'"
       #  https://savannah.gnu.org/bugs/?47953
-      CFLAGS="${XBB_CFLAGS} -fgnu89-inline -w"
+      CFLAGS="${XBB_CFLAGS_NO_W} -fgnu89-inline"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${IS_DEVELOP}" == "y" ]
