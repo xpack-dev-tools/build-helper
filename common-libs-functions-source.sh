@@ -804,7 +804,7 @@ function build_libiconv()
     mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
 
     (
-      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
 
       xbb_activate
