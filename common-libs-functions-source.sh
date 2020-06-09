@@ -47,6 +47,8 @@ function build_zlib()
     download_and_extract "${zlib_url}" "${zlib_archive}" \
       "${zlib_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
+
     (
       # In-source build. Make a local copy.
       if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
@@ -57,8 +59,6 @@ function build_zlib()
           "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
       fi
       cd "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -176,12 +176,12 @@ function build_gmp()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${gmp_url}" "${gmp_archive}" "${gmp_src_folder_name}"
-    
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
+
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -308,11 +308,11 @@ function build_mpfr()
 
     download_and_extract "${mpfr_url}" "${mpfr_archive}" "${mpfr_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
+
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -423,11 +423,12 @@ function build_mpc()
 
     download_and_extract "${mpc_url}" "${mpc_archive}" "${mpc_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
+
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
 
-      mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -538,11 +539,11 @@ function build_isl()
 
     download_and_extract "${isl_url}" "${isl_archive}" "${isl_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
+
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -661,11 +662,11 @@ function build_zstd()
 
     download_and_extract "${zstd_url}" "${zstd_archive}" "${zstd_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${zstd_folder_name}"
+
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${zstd_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -800,11 +801,11 @@ function build_libiconv()
 
     download_and_extract "${libiconv_url}" "${libiconv_archive}" "${libiconv_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
+
     (
       mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
@@ -929,11 +930,11 @@ function build_ncurses()
     download_and_extract "${ncurses_url}" "${ncurses_archive}" \
       "${ncurses_src_folder_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${ncurses_folder_name}"
+
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
-
-      mkdir -pv "${LOGS_FOLDER_PATH}/${ncurses_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
