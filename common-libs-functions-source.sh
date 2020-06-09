@@ -1211,3 +1211,136 @@ function build_libffi()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_gettext() 
+{
+  # https://www.gnu.org/software/gettext/
+  # http://ftp.gnu.org/pub/gnu/gettext/
+
+  # https://archlinuxarm.org/packages/aarch64/gettext/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gettext-git
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-gettext
+
+  # gettext_version="0.19.5.1"
+  # gettext_version="0.19.8.1" # 2016-06-11
+
+  local gettext_version="$1"
+
+  local gettext_src_folder_name="gettext-${gettext_version}"
+
+  local gettext_archive="${gettext_src_folder_name}.tar.gz"
+  local gettext_url="http://ftp.gnu.org/pub/gnu/gettext/${gettext_archive}"
+
+  local gettext_folder_name="${gettext_src_folder_name}"
+  local gettext_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-gettext-${gettext_version}-installed"
+  if [ ! -f "${gettext_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${gettext_url}" "${gettext_archive}" \
+      "${gettext_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${gettext_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gettext_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${gettext_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then 
+
+        (
+          echo
+          echo "Running gettext configure..."
+
+          # Build only the /gettext-runtime folder, attempts to build
+          # the full package fail with a CXX='no' problem.
+          bash "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          if [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+            config_options+=("--enable-threads=windows")
+            config_options+=("--with-gnu-ld")
+          elif [ "${TARGET_PLATFORM}" == "linux" ]
+          then
+            config_options+=("--enable-threads=posix")
+            config_options+=("--with-gnu-ld")
+          elif [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+            config_options+=("--enable-threads=posix")
+          fi
+
+          config_options+=("--disable-installed-tests")
+          config_options+=("--disable-always-build-tests")
+          # config_options+=("--enable-nls")
+          config_options+=("--disable-rpath")
+          config_options+=("--disable-java")
+          config_options+=("--disable-native-java")
+          config_options+=("--disable-c++")
+          config_options+=("--disable-libasprintf")
+
+          #  --enable-nls needed to include libintl
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${gettext_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gettext_folder_name}/configure-output.txt"
+
+      fi
+
+      (
+        echo
+        echo "Running gettext make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gettext_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}" \
+        "${gettext_folder_name}"
+
+    )
+
+    touch "${gettext_stamp_file_path}"
+
+  else
+    echo "Library gettext already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
