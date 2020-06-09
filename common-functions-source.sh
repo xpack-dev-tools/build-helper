@@ -805,6 +805,17 @@ function do_actions()
 
 # -----------------------------------------------------------------------------
 
+function run_verbose()
+{
+  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+
+  echo
+  echo "${app_path} $@"
+  "${app_path}" "$@" 2>&1
+}
+
 function run_app()
 {
   # Does not include the .exe extension.
