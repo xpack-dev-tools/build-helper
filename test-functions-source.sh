@@ -703,23 +703,23 @@ function detect_architecture()
 
 function prepare_env() 
 {
-  container_work_folder_absolute_path="/Host/Work"
-  container_repo_folder_absolute_path="/Host/repo"
+  container_work_folder_path="/Host/Work"
+  container_repo_folder_path="/Host/repo"
 
-  if [ -f "/.dockerenv" -a -d "${container_work_folder_absolute_path}" ]
+  if [ -f "/.dockerenv" -a -d "${container_work_folder_path}" ]
   then
-    work_folder_absolute_path="${container_work_folder_absolute_path}"
-    repo_folder_absolute_path="${container_repo_folder_absolute_path}"
+    work_folder_path="${container_work_folder_path}"
+    repo_folder_path="${container_repo_folder_path}"
   else
-    work_folder_absolute_path="${HOME}/Work"
+    work_folder_path="${HOME}/Work"
     # On the host, it must be called using the script folder path.
-    repo_folder_absolute_path="$1"
+    repo_folder_path="$1"
   fi
 
-  cache_folder_path="${work_folder_absolute_path}/cache"
+  cache_folder_path="${work_folder_path}/cache"
 
   # Extract only the first line
-  version="$(cat ${repo_folder_absolute_path}/scripts/VERSION | sed -e '2,$d')"
+  version="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')"
   if [ -z "${version}" ]
   then
     echo "Check the version, it cannot be empty."
@@ -798,10 +798,10 @@ function docker_run_test() {
       --hostname "docker" \
       --workdir="/root" \
       --env DEBUG=${DEBUG} \
-      --volume "${work_folder_absolute_path}:${container_work_folder_absolute_path}" \
-      --volume "${repo_folder_absolute_path}:${container_repo_folder_absolute_path}" \
+      --volume "${work_folder_path}:${container_work_folder_path}" \
+      --volume "${repo_folder_path}:${container_repo_folder_path}" \
       "${image_name}" \
-      ${prefix32} /bin/bash "${container_repo_folder_absolute_path}/tests/scripts/container-test.sh" \
+      ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/container-test.sh" \
         "${image_name}" \
         "${base_url}" \
         $@
