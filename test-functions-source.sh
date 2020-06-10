@@ -286,6 +286,18 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
+          "name": "macOS 10.15 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode11.5",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
           "name": "macOS 10.14 Intel",
           "os": "osx",
           "arch": "amd64",
