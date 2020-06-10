@@ -1082,24 +1082,24 @@ function check_binary_for_libraries()
       if [[ "${file_name}" == *\.dylib ]]
       then
         # Skip the second line too, which is the library again.
-        libs=$(otool -L "${file_path}" \
+        lib_names=$(otool -L "${file_path}" \
               | sed '1d' \
               | sed '1d' \
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       else
-        libs=$(otool -L "${file_path}" \
+        lib_names=$(otool -L "${file_path}" \
               | sed '1d' \
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       fi
-      for lib in ${libs}
+      for lib_name in ${lib_names}
       do
-        if [ "${lib:0:1}" != "@" ]
+        if [ "${lib_name:0:1}" != "@" ]
         then
-          if ! is_darwin_allowed_sys_dylib "${lib}"
+          if ! is_darwin_allowed_sys_dylib "${lib_name}"
           then
-            echo ">>> \"${lib}\" is not expected here"
+            echo ">>> \"${lib_name}\" is not expected here"
             exit 1
           fi
         fi
@@ -1932,16 +1932,16 @@ function copy_dependencies_recursive()
   then
     echo
     otool -L "${dest_folder_path}/${source_file_name}"
-    local libs
+    local lib_names
     if [[ "${source_file_name}" == *\.dylib ]]
     then
-      libs=$(otool -L "${dest_folder_path}/${source_file_name}" \
+      lib_names=$(otool -L "${dest_folder_path}/${source_file_name}" \
             | sed '1d' \
             | sed '1d' \
             | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
           )
     else
-      libs=$(otool -L "${dest_folder_path}/${source_file_name}" \
+      lib_names=$(otool -L "${dest_folder_path}/${source_file_name}" \
             | sed '1d' \
             | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
           )
@@ -1949,10 +1949,10 @@ function copy_dependencies_recursive()
     local exec_prefix="@executable_path/"
     local loader_path="@loader_path/"
     local lib_name
-    for lib_name in ${libs}
+    for lib_name in ${lib_names}
     do
       local lib_link_base=""
-      if [ "${lib:0:1}" != "@" ]
+      if [ "${lib_name:0:1}" != "@" ]
       then
         lib_link_base="$(basename $(readlink -f ${lib_name}))"
       fi
@@ -1976,7 +1976,7 @@ function copy_dependencies_recursive()
           fi
         else
           # The libs can be relative to @executable_path or absolute.
-          if [ "${lib:0:${#exec_prefix}}" == "${exec_prefix}" ]
+          if [ "${lib_name:0:${#exec_prefix}}" == "${exec_prefix}" ]
           then
             : 
           else
