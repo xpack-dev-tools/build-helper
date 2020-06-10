@@ -98,6 +98,8 @@ function build_zlib()
         export CXXFLAGS
         export LDFLAGS
 
+        env | sort
+
         # No config.status left, use the library.
         if [ ! -f "libz.a" ]
         then
@@ -206,6 +208,8 @@ function build_gmp()
       then
         export ABI="${TARGET_BITS}"
       fi
+
+      env | sort
 
       if [ ! -f "config.status" ]
       then 
@@ -331,6 +335,8 @@ function build_mpfr()
       export CXXFLAGS
       export LDFLAGS
 
+      env | sort
+
       if [ ! -f "config.status" ]
       then 
         (
@@ -429,7 +435,6 @@ function build_mpc()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
 
-
       xbb_activate
       xbb_activate_installed_dev
 
@@ -446,6 +451,8 @@ function build_mpc()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+
+      env | sort
 
       if [ ! -f "config.status" ]
       then 
@@ -561,6 +568,8 @@ function build_isl()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+
+      env | sort
 
       if [ ! -f "config.status" ]
       then 
@@ -692,6 +701,8 @@ function build_zstd()
       else
         build_type=Release
       fi
+
+      env | sort
 
       if [ ! -f "CMakeCache.txt" ]
       then 
@@ -826,6 +837,8 @@ function build_libiconv()
       export CXXFLAGS
       export LDFLAGS
 
+      env | sort
+
       if [ ! -f "config.status" ]
       then 
         (
@@ -952,6 +965,8 @@ function build_ncurses()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+
+      env | sort
 
       if [ ! -f "config.status" ]
       then 
@@ -1152,7 +1167,9 @@ function build_libffi()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-    
+
+      env | sort
+
       if [ ! -f "config.status" ]
       then 
 
@@ -1263,6 +1280,8 @@ function build_gettext()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+
+      env | sort
 
       if [ ! -f "config.status" ]
       then 
