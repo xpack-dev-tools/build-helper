@@ -792,7 +792,7 @@ function run_verbose()
   shift
 
   echo
-  echo "${app_path} $@"
+  echo "[${app_path} $@]"
   "${app_path}" "$@" 2>&1
 }
 
