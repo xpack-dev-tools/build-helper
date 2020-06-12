@@ -1382,3 +1382,496 @@ function build_gettext()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_libelf()
+{
+  # http://www.mr511.de/ (?Deprecated?)
+  # http://www.mr511.de/software/
+  # https://sourceware.org/elfutils/
+  # ftp://sourceware.org/pub/elfutils//0.178/elfutils-0.178.tar.bz2
+
+  # https://archlinuxarm.org/packages/aarch64/libelf/files/PKGBUILD
+
+  # libelf_version="0.8.13" (deprecated)
+  # 26 Nov 2019, 0.178
+  # 2020-03-30, 0.179
+  # 2020-06-11, 0.180
+
+  local libelf_version="$1"
+
+  local libelf_src_folder_name="libelf-${libelf_version}"
+  local libelf_archive="${libelf_src_folder_name}.tar.gz"
+
+  # local libelf_url="http://www.mr511.de/software/${libelf_archive}"
+  # The original site seems unavailable, use a mirror.
+  local libelf_url="https://fossies.org/linux/misc/old/${libelf_archive}"
+
+  local libelf_folder_name="${libelf_src_folder_name}"
+
+  local libelf_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libelf_folder_name}-installed"
+  if [ ! -f "${libelf_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libelf_url}" "${libelf_archive}" \
+      "${libelf_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${libelf_folder_name}"
+
+    (
+      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running libelf configure..."
+
+          run_verbose bash "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-nls")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}/configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libelf_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libelf_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running libelf make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make check
+        fi
+
+        run_verbose make install
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libelf_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}" \
+        "${libelf_folder_name}"
+
+    )
+
+    touch "${libelf_stamp_file_path}"
+
+  else
+    echo "Library libelf already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_expat()
+{
+  # https://libexpat.github.io
+  # https://github.com/libexpat/libexpat/releases
+
+  # https://archlinuxarm.org/packages/aarch64/expat/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=expat-git
+
+  # Oct 21, 2017 "2.1.1"
+  # Nov 1, 2017 "2.2.5"
+  # 26 Sep 2019 "2.2.9"
+
+  local expat_version="$1"
+
+  local expat_src_folder_name="expat-${expat_version}"
+  local expat_archive="${expat_src_folder_name}.tar.bz2"
+  if [[ "${expat_version}" =~ 2\.0\.* ]]
+  then
+    expat_archive="${expat_src_folder_name}.tar.gz"
+  fi
+  
+  local expat_release="R_$(echo ${expat_version} | sed -e 's|[.]|_|g')"
+  local expat_url="https://github.com/libexpat/libexpat/releases/download/${expat_release}/${expat_archive}"
+
+  local expat_folder_name="${expat_src_folder_name}"
+
+  local expat_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${expat_folder_name}-installed"
+  if [ ! -f "${expat_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${expat_url}" "${expat_archive}" \
+      "${expat_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${expat_folder_name}"
+
+    (
+      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running expat configure..."
+
+          run_verbose bash "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" \
+            ${config_options[@]}
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${expat_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${expat_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running expat make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make check
+        fi
+
+        run_verbose make install
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${expat_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}" \
+        "${expat_folder_name}"
+
+    )
+
+    touch "${expat_stamp_file_path}"
+
+  else
+    echo "Library expat already installed."
+  fi
+}
+
+
+# -----------------------------------------------------------------------------
+
+function build_xz()
+{
+  # https://tukaani.org/xz/
+  # https://sourceforge.net/projects/lzmautils/files/
+
+  # https://archlinuxarm.org/packages/aarch64/xz/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=xz-git
+
+  # 2016-12-30 "5.2.3"
+  # 2018-04-29 "5.2.4"
+
+  local xz_version="$1"
+
+  local xz_src_folder_name="xz-${xz_version}"
+  local xz_archive="${xz_src_folder_name}.tar.xz"
+  local xz_url="https://sourceforge.net/projects/lzmautils/files/${xz_archive}"
+
+  local xz_folder_name="${xz_src_folder_name}"
+
+  local xz_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${xz_folder_name}-installed"
+  if [ ! -f "${xz_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${xz_url}" "${xz_archive}" \
+      "${xz_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${xz_folder_name}"
+
+    (
+      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running xz configure..."
+
+          run_verbose bash "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-rpath")
+          config_options+=("--disable-nls")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${xz_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xz_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running xz make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make check
+        fi
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xz_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}" \
+        "${xz_folder_name}"
+
+    )
+
+    touch "${xz_stamp_file_path}"
+
+  else
+    echo "Library xz already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_gpm()
+{
+  # General purpose mouse. Used by ncurses.
+  # https://www.nico.schottelius.org/software/gpm/
+  # https://github.com/telmich/gpm
+  # https://github.com/telmich/gpm/releases/tag/1.20.7
+  # https://github.com/telmich/gpm/archive/1.20.7.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/gpm/files/PKGBUILD
+
+  # 27 Oct 2012 "1.20.7"
+
+  local gpm_version="$1"
+
+  local gpm_src_folder_name="gpm-${gpm_version}"
+  local gpm_archive="${gpm_src_folder_name}.tar.gz"
+  local gpm_github_archive="${gpm_version}.tar.gz"
+  
+  local gpm_url="https://github.com/telmich/gpm/archive/${gpm_github_archive}"
+
+  local gpm_folder_name="${gpm_src_folder_name}"
+
+  local gpm_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${gpm_folder_name}-installed"
+  if [ ! -f "${gpm_stamp_file_path}" ]
+  then
+
+    # In-source build.
+
+    cd "${LIBS_BUILD_FOLDER_PATH}"
+
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}" ]
+    then
+      cd "${LIBS_BUILD_FOLDER_PATH}"
+
+      download_and_extract "${gpm_url}" "${gpm_archive}" \
+        "${gpm_src_folder_name}"
+
+      if [ "${gpm_src_folder_name}" != "${gpm_folder_name}" ]
+      then
+        mv -v "${gpm_src_folder_name}" "${gpm_folder_name}"
+      fi
+    fi
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${gpm_folder_name}"
+
+    (
+      cd "${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}"
+      if [ ! -f "stamp-autogen" ]
+      then
+
+        xbb_activate
+        
+        run_app bash ${DEBUG} "autogen.sh"
+
+        touch "stamp-autogen"
+      fi
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gpm_folder_name}/autogen-output.txt"
+
+    (
+      cd "${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running gpm configure..."
+
+          run_verbose bash "configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-pic")
+
+          run_verbose bash ${DEBUG} "configure" \
+            ${config_options[@]}
+            
+          cp "config.log" "${LOGS_FOLDER_PATH}/${gpm_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gpm_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running gpm make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make check
+        fi
+
+        run_verbose make install
+
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          (
+            mkdir -p "${APP_PREFIX}/bin"
+            cd "${APP_PREFIX}/bin"
+
+            # Manual copy, since it is not refered in the elf.
+            cp -v "${LIBS_INSTALL_FOLDER_PATH}/lib/libgpm.so.2.1.0" .
+            rm -f "libgpm.so.2"
+            ln -s -v "libgpm.so.2.1.0" "libgpm.so.2"
+          )
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gpm_folder_name}/make-output.txt"
+
+      copy_license \
+        "${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}" \
+        "${gpm_folder_name}"
+    )
+
+    touch "${gpm_stamp_file_path}"
+
+  else
+    echo "Library gpm already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
