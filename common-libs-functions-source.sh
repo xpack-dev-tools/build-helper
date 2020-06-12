@@ -38,26 +38,30 @@ function build_zlib()
   # The folder name for build, licenses, etc.
   local zlib_folder_name="${zlib_src_folder_name}"
 
-  local zlib_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-zlib-${zlib_version}-installed"
+  local zlib_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${zlib_folder_name}-installed"
   if [ ! -f "${zlib_stamp_file_path}" ]
   then
 
-    cd "${SOURCES_FOLDER_PATH}"
+    # In-source build.
 
-    download_and_extract "${zlib_url}" "${zlib_archive}" \
-      "${zlib_src_folder_name}"
+    cd "${LIBS_BUILD_FOLDER_PATH}"
+
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
+    then
+      cd "${LIBS_BUILD_FOLDER_PATH}"
+
+      download_and_extract "${zlib_url}" "${zlib_archive}" \
+        "${zlib_src_folder_name}"
+
+      if [ "${zlib_src_folder_name}" != "${zlib_folder_name}" ]
+      then
+        mv -v "${zlib_src_folder_name}" "${zlib_folder_name}"
+      fi
+    fi
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
 
     (
-      # In-source build. Make a local copy.
-      if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
-      then
-        mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
-        # Copy the sources in the build folder.
-        cp -r "${SOURCES_FOLDER_PATH}/${zlib_src_folder_name}"/* \
-          "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
-      fi
       cd "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
 
       xbb_activate
