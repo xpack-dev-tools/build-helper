@@ -1418,7 +1418,7 @@ function build_libelf()
     mkdir -pv "${LOGS_FOLDER_PATH}/${libelf_folder_name}"
 
     (
-      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
 
       xbb_activate
@@ -1534,7 +1534,7 @@ function build_expat()
     mkdir -pv "${LOGS_FOLDER_PATH}/${expat_folder_name}"
 
     (
-      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
 
       xbb_activate
@@ -1642,7 +1642,7 @@ function build_xz()
     mkdir -pv "${LOGS_FOLDER_PATH}/${xz_folder_name}"
 
     (
-      mkdir -p "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
 
       xbb_activate
@@ -1848,7 +1848,7 @@ function build_gpm()
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
           (
-            mkdir -p "${APP_PREFIX}/bin"
+            mkdir -pv "${APP_PREFIX}/bin"
             cd "${APP_PREFIX}/bin"
 
             # Manual copy, since it is not refered in the elf.
