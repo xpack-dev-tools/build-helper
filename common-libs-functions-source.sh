@@ -181,7 +181,8 @@ function build_gmp()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${gmp_url}" "${gmp_archive}" "${gmp_src_folder_name}"
+    download_and_extract "${gmp_url}" "${gmp_archive}" \
+      "${gmp_src_folder_name}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
 
@@ -314,7 +315,8 @@ function build_mpfr()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${mpfr_url}" "${mpfr_archive}" "${mpfr_src_folder_name}"
+    download_and_extract "${mpfr_url}" "${mpfr_archive}" \
+      "${mpfr_src_folder_name}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
 
@@ -431,7 +433,8 @@ function build_mpc()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${mpc_url}" "${mpc_archive}" "${mpc_src_folder_name}"
+    download_and_extract "${mpc_url}" "${mpc_archive}" \
+      "${mpc_src_folder_name}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
 
@@ -548,7 +551,8 @@ function build_isl()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${isl_url}" "${isl_archive}" "${isl_src_folder_name}"
+    download_and_extract "${isl_url}" "${isl_archive}" \
+      "${isl_src_folder_name}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
 
@@ -673,7 +677,8 @@ function build_zstd()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${zstd_url}" "${zstd_archive}" "${zstd_src_folder_name}"
+    download_and_extract "${zstd_url}" "${zstd_archive}" \
+      "${zstd_src_folder_name}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${zstd_folder_name}"
 
@@ -814,7 +819,8 @@ function build_libiconv()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${libiconv_url}" "${libiconv_archive}" "${libiconv_src_folder_name}"
+    download_and_extract "${libiconv_url}" "${libiconv_archive}" \
+      "${libiconv_src_folder_name}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
 
@@ -902,6 +908,7 @@ function build_libiconv()
 
 # -----------------------------------------------------------------------------
 
+# Could not make it work on Windows.
 function build_ncurses()
 {
   # https://invisible-island.net/ncurses/
