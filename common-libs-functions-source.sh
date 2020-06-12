@@ -1792,7 +1792,7 @@ function build_gpm()
       xbb_activate
       xbb_activate_installed_dev
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
+      CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}/src/headers"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
