@@ -175,7 +175,7 @@ function build_gmp()
   # The folder name for build, licenses, etc.
   local gmp_folder_name="${gmp_src_folder_name}"
 
-  local gmp_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-gmp-${gmp_version}-installed"
+  local gmp_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${gmp_folder_name}-installed"
   if [ ! -f "${gmp_stamp_file_path}" ]
   then
 
@@ -303,12 +303,12 @@ function build_mpfr()
   local mpfr_src_folder_name="mpfr-${mpfr_version}"
 
   local mpfr_archive="${mpfr_src_folder_name}.tar.xz"
-  local mpfr_url="http://www.mpfr.org/${mpfr_folder_name}/${mpfr_archive}"
+  local mpfr_url="http://www.mpfr.org/${mpfr_src_folder_name}/${mpfr_archive}"
 
   # The folder name for build, licenses, etc.
   local mpfr_folder_name="${mpfr_src_folder_name}"
 
-  local mpfr_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-mpfr-${mpfr_version}-installed"
+  local mpfr_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mpfr_folder_name}-installed"
   if [ ! -f "${mpfr_stamp_file_path}" ]
   then
 
@@ -425,7 +425,7 @@ function build_mpc()
   # The folder name for build, licenses, etc.
   local mpc_folder_name="${mpc_src_folder_name}"
 
-  local mpc_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-mpc-${mpc_version}-installed"
+  local mpc_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mpc_folder_name}-installed"
   if [ ! -f "${mpc_stamp_file_path}" ]
   then
 
@@ -542,7 +542,7 @@ function build_isl()
   # The folder name for build, licenses, etc.
   local isl_folder_name="${isl_src_folder_name}"
 
-  local isl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-isl-${isl_version}-installed"
+  local isl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${isl_folder_name}-installed"
   if [ ! -f "${isl_stamp_file_path}" ]
   then
 
@@ -667,7 +667,7 @@ function build_zstd()
   # The folder name for build, licenses, etc.
   local zstd_folder_name="${zstd_src_folder_name}"
 
-  local zstd_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-zstd-${zstd_version}-installed"
+  local zstd_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${zstd_folder_name}-installed"
   if [ ! -f "${zstd_stamp_file_path}" ]
   then
 
@@ -808,7 +808,7 @@ function build_libiconv()
 
   local libiconv_folder_name="${libiconv_src_folder_name}"
 
-  local libiconv_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-libiconv-${libiconv_version}-installed"
+  local libiconv_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libiconv_folder_name}-installed"
   if [ ! -f "${libiconv_stamp_file_path}" ]
   then
 
@@ -929,16 +929,17 @@ function build_ncurses()
 
   # The folder name as resulted after being extracted from the archive.
   local ncurses_src_folder_name="ncurses-${ncurses_version}"
+
+  local ncurses_archive="${ncurses_src_folder_name}.tar.gz"
+  local ncurses_url="ftp://ftp.invisible-island.net//pub/ncurses/${ncurses_archive}"
+
   # The folder name  for build, licenses, etc.
   local ncurses_folder_name="${ncurses_src_folder_name}"
 
-  local ncurses_archive="${ncurses_folder_name}.tar.gz"
-  local ncurses_url="ftp://ftp.invisible-island.net//pub/ncurses/${ncurses_archive}"
+  # local ncurses_version_major="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
+  # local ncurses_version_minor="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\2|')"
 
-  local ncurses_version_major="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
-  local ncurses_version_minor="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\2|')"
-
-  local ncurses_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-ncurses-${ncurses_version}-installed"
+  local ncurses_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${ncurses_folder_name}-installed"
   if [ ! -f "${ncurses_stamp_file_path}" ]
   then
 
@@ -1126,7 +1127,7 @@ function build_libffi()
 
   local libffi_folder_name="${libffi_src_folder_name}"
 
-  local libffi_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libffi-${libffi_version}-installed"
+  local libffi_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libffi_folder_name}-installed"
   if [ ! -f "${libffi_stamp_file_path}" ]
   then
 
@@ -1253,7 +1254,7 @@ function build_gettext()
   local gettext_url="http://ftp.gnu.org/pub/gnu/gettext/${gettext_archive}"
 
   local gettext_folder_name="${gettext_src_folder_name}"
-  local gettext_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-gettext-${gettext_version}-installed"
+  local gettext_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${gettext_folder_name}-installed"
   if [ ! -f "${gettext_stamp_file_path}" ]
   then
 
