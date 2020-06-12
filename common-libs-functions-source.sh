@@ -1352,7 +1352,14 @@ function build_gettext()
         # Build.
         run_verbose make -j ${JOBS}
 
-        if [ "${WITH_STRIP}" == "y" ]
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          make check # || true
+        fi
+
+        # Avoid strip here, it may interfere with patchelf.
+        # make install-strip
+        if false # [ "${WITH_STRIP}" == "y" ]
         then
           run_verbose make install-strip
         else
