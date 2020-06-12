@@ -44,8 +44,6 @@ function xbb_activate_dev()
         PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
       fi
     fi
-
-    # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
   fi
 
   if [ -d "${XBB_FOLDER_PATH}/lib64" ]
@@ -65,8 +63,6 @@ function xbb_activate_dev()
         PKG_CONFIG_PATH="${XBB_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
       fi
     fi
-
-    # LD_LIBRARY_PATH="${XBB_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
   fi
 
   export XBB_CPPFLAGS
@@ -77,7 +73,6 @@ function xbb_activate_dev()
   export XBB_LDFLAGS_APP_STATIC_GCC
 
   export PKG_CONFIG_PATH
-  # export LD_LIBRARY_PATH
 }
 
 function xbb_activate_libs()
@@ -113,19 +108,7 @@ function xbb_activate_installed_bin()
   # Add the XBB bin to the PATH.
   PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
 
-  # Disabled, shared libs must be located via rpath.
-
-  # Add the XBB lib to the LD_LIBRARY_PATH.
-  # LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
-
-  # if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
-  # then
-    # On 64-bit systems, add lib64 to the LD_LIBRARY_PATH.
-    # LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
-  # fi
-
   export PATH
-  # export LD_LIBRARY_PATH
 }
 
 # Add the freshly built headrs and libraries.
@@ -217,9 +200,6 @@ function prepare_xbb_env()
   # Defaults, to ensure the variables are defined.
   PATH="${PATH:-""}"
   LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-""}"
-
-  # Without this, on 32-bit the bootstrap perl fails to find libcrypt.
-  # LD_LIBRARY_PATH="/lib:${LD_LIBRARY_PATH}"
 
   if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
