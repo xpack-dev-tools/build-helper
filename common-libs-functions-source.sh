@@ -44,8 +44,6 @@ function build_zlib()
 
     # In-source build.
 
-    cd "${LIBS_BUILD_FOLDER_PATH}"
-
     if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
     then
       cd "${LIBS_BUILD_FOLDER_PATH}"
@@ -138,7 +136,7 @@ function build_zlib()
       fi
 
       copy_license \
-        "${SOURCES_FOLDER_PATH}/${zlib_src_folder_name}" \
+        "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" \
         "${zlib_folder_name}"
 
     )
