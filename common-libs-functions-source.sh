@@ -855,7 +855,7 @@ function build_libiconv()
           echo
           echo "Running libiconv configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}/configure" --help
+          bash "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" --help
 
           config_options=()
 
@@ -865,7 +865,7 @@ function build_libiconv()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
             ${config_options[@]}
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/config-log.txt"
@@ -894,7 +894,7 @@ function build_libiconv()
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/make-output.txt"
 
       copy_license \
-        "${SOURCES_FOLDER_PATH}/${libiconv_folder_name}" \
+        "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}" \
         "${libiconv_folder_name}"
 
     )
