@@ -1168,7 +1168,7 @@ function build_libffi()
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
-      CPPFLAGS="${XBB_CXXFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${IS_DEVELOP}" == "y" ]
       then
