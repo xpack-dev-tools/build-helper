@@ -1458,7 +1458,7 @@ function build_libelf()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--disable-nls")
+          # config_options+=("--disable-nls")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}/configure" \
             ${config_options[@]}
@@ -1682,8 +1682,8 @@ function build_xz()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--disable-rpath")
-          config_options+=("--disable-nls")
+          # config_options+=("--disable-rpath")
+          # config_options+=("--disable-nls")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" \
             ${config_options[@]}
@@ -1824,7 +1824,7 @@ function build_gpm()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--with-pic")
+          # config_options+=("--with-pic")
 
           run_verbose bash ${DEBUG} "configure" \
             ${config_options[@]}
