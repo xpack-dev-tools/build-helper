@@ -1708,9 +1708,15 @@ function prepare_app_folder_libraries()
         then
           echo
           echo "Preparing $(basename "${bin}") ${bin} libraries..."
-          # On macOS the dynamic libraries are copied in libexec folder.
-          copy_dependencies_recursive "${bin}" \
-            "$(dirname "${bin}")" "${libexec_folder_path}"
+          if true
+          then
+            copy_dependencies_recursive "${bin}" \
+              "$(dirname "${bin}")"
+          else
+            # On macOS the dynamic libraries can be copied in the libexec folder.
+            copy_dependencies_recursive "${bin}" \
+              "$(dirname "${bin}")" "${libexec_folder_path}"
+          fi
         fi
       done
 
@@ -1724,10 +1730,19 @@ function prepare_app_folder_libraries()
         then
           echo
           echo "Preparing $(basename "${bin_path}") (${bin_path}) libraries..."
-          # On Linux the dynamic libraries are copied in the libexec folder,
-          # and links are kept in the current folder.
-          copy_dependencies_recursive "${bin_path}" \
-            "$(dirname "${bin_path}")" "${libexec_folder_path}"
+          # On Linux the shared libraries can be copied in the libexec folder,
+          # and links be kept in the current folder, but not for 32-bit
+          # Intel distros.
+          # For consistency reasons, do the same on all platforms.
+          if true # [ "${TARGET_ARCH}" == "x32" ]
+          then
+            copy_dependencies_recursive "${bin_path}" \
+              "$(dirname "${bin_path}")"
+          else
+            copy_dependencies_recursive "${bin_path}" \
+              "$(dirname "${bin_path}")" "${libexec_folder_path}"
+          fi
+
           # echo $(basename "${bin_path}") $(readelf -d "${bin_path}" | egrep -i '(RUNPATH|RPATH)')
         fi
       done
