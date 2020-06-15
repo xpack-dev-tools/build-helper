@@ -1685,6 +1685,9 @@ function prepare_app_folder_libraries()
     echo
     echo "Preparing ${folder_path} libraries..."
 
+    # Otherwise `find` may fail.
+    cd "${WORK_FOLDER_PATH}"
+
     local binaries
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
@@ -2057,6 +2060,9 @@ function check_binaries()
     
     echo
     echo "Checking binaries for unwanted libraries..."
+
+    # Otherwise `find` may fail.
+    cd "${WORK_FOLDER_PATH}"
 
     local binaries
     if [ "${TARGET_PLATFORM}" == "win32" ]
