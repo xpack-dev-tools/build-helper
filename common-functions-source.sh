@@ -2470,3 +2470,29 @@ function copy_distro_files()
 }
 
 # -----------------------------------------------------------------------------
+
+function tests_initialize()
+{
+  test_functions=()
+}
+
+function tests_add()
+{
+  test_functions+=("$1")
+}
+
+function tests_run()
+{
+  echo
+  echo "Runnng final tests..."
+
+  for test_function in ${test_functions[@]}
+  do
+    echo
+    local func=$(echo ${test_function} | sed -e 's|-|_|g')
+    echo "Running ${func}..."
+    ${func}
+  done
+}
+
+# -----------------------------------------------------------------------------
