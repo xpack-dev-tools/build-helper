@@ -841,28 +841,34 @@ function show_libs()
   local app_path=$1
   shift
 
-  if [ "${TARGET_PLATFORM}" == "linux" ]
-  then
-    echo
-    echo "readelf -d ${app_path} | grep 'ibrary'"
-    # Ignore errors in case it is not using shared libraries.
-    set +e 
-    readelf -d "${app_path}" | grep 'ibrary'
-    echo "ldd -v ${app_path}"
-    ldd -v "${app_path}"
-    set -e
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-    echo
-    echo "otool -L ${app_path}"
-    otool -L "${app_path}"
-  elif [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    : # TODO
-  else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
-    exit 1
-  fi
+  (
+    xbb_activate
+
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      echo
+      echo "readelf -d ${app_path} | grep 'ibrary'"
+      # Ignore errors in case it is not using shared libraries.
+      set +e 
+      readelf -d "${app_path}" | grep 'ibrary'
+      echo "ldd -v ${app_path}"
+      ldd -v "${app_path}"
+      set -e
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      echo
+      echo "otool -L ${app_path}"
+      otool -L "${app_path}"
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe
+      ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' 
+    else
+      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      exit 1
+    fi
+  )
 }
 
 # -----------------------------------------------------------------------------
