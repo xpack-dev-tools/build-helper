@@ -1873,3 +1873,158 @@ function build_gpm()
 }
 
 # -----------------------------------------------------------------------------
+
+# Download the Windows Python 2 libraries and headers.
+function download_python2_win() 
+{
+  # https://www.python.org/downloads/release/python-2714/
+  # https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
+  # https://www.python.org/ftp/python/2.7.14/python-2.7.14.amd64.msi
+
+  local python2_version="$1"
+
+  local python2_version_major=$(echo ${python2_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  local python2_version_minor=$(echo ${python2_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+
+  if [ "${TARGET_BITS}" == "32" ]
+  then
+    PYTHON2_SRC_FOLDER_NAME=python-"${python2_version}"
+  else
+    PYTHON2_SRC_FOLDER_NAME=python-"${python2_version}".amd64
+  fi
+
+  # Used to compute GNURM_PYTHON_WIN_DIR.
+  export PYTHON2_SRC_FOLDER_NAME
+
+  local python2_win_pack="${PYTHON2_SRC_FOLDER_NAME}.msi"
+  local python2_win_url="https://www.python.org/ftp/python/${python2_version}/${python2_win_pack}"
+
+  cd "${SOURCES_FOLDER_PATH}"
+
+  download "${python2_win_url}" "${python2_win_pack}"
+
+  (
+    xbb_activate
+
+    if [ ! -d "${PYTHON2_SRC_FOLDER_NAME}" ]
+    then
+      cd "${SOURCES_FOLDER_PATH}"
+
+      # Include only the headers and the python library and executable.
+      echo '*.h' >"/tmp/included"
+      echo 'python*.dll' >>"/tmp/included"
+      echo 'python*.lib' >>"/tmp/included"
+      7za x -o"${PYTHON2_SRC_FOLDER_NAME}" "${DOWNLOAD_FOLDER_PATH}/${python2_win_pack}" -i@"/tmp/included"
+
+      # Patch to disable the macro that renames hypot.
+      local patch_path="${BUILD_GIT_PATH}/patches/${PYTHON2_SRC_FOLDER_NAME}.patch"
+      if [ -f "${patch_path}" ]
+      then
+        (
+          cd "${PYTHON2_SRC_FOLDER_NAME}"
+          patch -p0 <"${patch_path}" 
+        )
+      fi
+    else
+      echo "Folder ${PYTHON2_SRC_FOLDER_NAME} already present."
+    fi
+
+    echo "Copying python${python2_version_major}${python2_version_minor}.dll..."
+    # From here it'll be copied as dependency.
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+    install -v -c -m 644 "${PYTHON2_SRC_FOLDER_NAME}/python${python2_version_major}${python2_version_minor}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+    install -v -c -m 644 "${PYTHON2_SRC_FOLDER_NAME}/python${python2_version_major}${python2_version_minor}.lib" \
+      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+  )
+}
+
+# -----------------------------------------------------------------------------
+
+# Download the Windows Python 3 libraries and headers.
+function download_python3_win() 
+{
+  # https://www.python.org/downloads/windows/
+  # https://www.python.org/downloads/release/python-372/
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.post1-embed-win32.zip
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.post1-embed-amd64.zip
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.exe
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2-amd64.exe
+  # https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
+  # https://www.python.org/ftp/python/3.7.6/
+  # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-amd64.zip
+  # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-win32.zip
+
+  local python3_version="$1"
+  
+  local python3_version_major=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  local python3_version_minor=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+
+  # Version 3.7.2 uses a longer name, like python-3.7.2.post1-embed-amd64.zip.
+  if [ "${TARGET_BITS}" == "32" ]
+  then
+    PYTHON3_WIN_EMBED_FOLDER_NAME=python-"${python3_version}-embed-win32"
+  else
+    PYTHON3_WIN_EMBED_FOLDER_NAME=python-"${python3_version}-embed-amd64"
+  fi
+
+  # Used in python3-config.sh
+  export PYTHON3_WIN_EMBED_FOLDER_NAME
+  export PYTHON3_SRC_FOLDER_NAME="Python-${python3_version}"
+
+  local python3_win_embed_pack="${PYTHON3_WIN_EMBED_FOLDER_NAME}.zip"
+  local python3_win_embed_url="https://www.python.org/ftp/python/${python3_version}/${python3_win_embed_pack}"
+
+  (
+    xbb_activate
+
+    if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}" ]
+    then
+      mkdir -pv "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
+      cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
+
+      download_and_extract "${python3_win_embed_url}" "${python3_win_embed_pack}" "${PYTHON3_WIN_EMBED_FOLDER_NAME}"
+    else
+      echo "Folder ${PYTHON3_WIN_EMBED_FOLDER_NAME} already present."
+    fi
+      
+    cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
+    echo "Copying python${python3_version_major}${python3_version_minor}.dll..."
+    # From here it'll be copied as dependency.
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+    install -v -c -m 644 "python${python3_version_major}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+    install -v -c -m 644 "python${python3_version_major}${python3_version_minor}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+    install -v -c -m 644 "python${python3_version_major}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+    install -v -c -m 644 "python${python3_version_major}${python3_version_minor}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+  )
+
+  local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
+  local python3_url="https://www.python.org/ftp/python/${python3_version}/${python3_archive}"
+
+  # local python3_folder_name="python-${python3_version}"
+
+  if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}" ]
+  then
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${python3_url}" "${python3_archive}" \
+      "${PYTHON3_SRC_FOLDER_NAME}"
+  fi
+
+  # The source archive includes only the pyconfig.h.in, which needs
+  # to be configured, which is not an easy task. Thus add the file copied 
+  # from a Windows install.
+  cp -v "${BUILD_GIT_PATH}/patches/pyconfig-${python3_version}.h" \
+    "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/Include/pyconfig.h"
+}
+
+# -----------------------------------------------------------------------------
+
