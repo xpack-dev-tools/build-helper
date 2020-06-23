@@ -1189,10 +1189,14 @@ function is_win_sys_dll()
     api-ms-win-crt-heap-l1-1-0.dll \
     api-ms-win-crt-conio-l1-1-0.dll \
     api-ms-win-crt-filesystem-l1-1-0.dll \
-    python27.dll \
-    python37.dll \
   )
-  # The Python DLL prevents it from being copied.
+
+  # The Python DLL were a permanent source of trouble.
+  # python27.dll \
+  # The latest Python 2.7.18 has no DLL at all, so it cannot be skipped.
+  # python37.dll \
+  # The Python 3 seems better, allow to copy it in the archive,
+  # to be sure it matches the version used during build.
 
   local dll
   for dll in "${sys_dlls[@]}"
