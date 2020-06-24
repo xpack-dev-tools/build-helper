@@ -979,7 +979,7 @@ function docker_run_test() {
       ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/container-test.sh" \
         "${image_name}" \
         "${base_url}" \
-        $@
+        "$@"
   )
 }
 
@@ -987,7 +987,7 @@ function docker_run_test_32() {
   (
     prefix32="linux32"
 
-    docker_run_test $@
+    docker_run_test "$@"
   )
 }
 
@@ -1032,7 +1032,7 @@ function run_app()
 
   echo
   echo "${app_path} $@"
-  "${app_path}" $@ 2>&1
+  "${app_path}" "$@" 2>&1
 }
 
 function run_app_silent()
@@ -1044,7 +1044,7 @@ function run_app_silent()
     app_path+='.exe'
   fi
 
-  "${app_path}" $@ 2>&1
+  "${app_path}" "$@" 2>&1
 }
 
 function do_run()
@@ -1054,7 +1054,7 @@ function do_run()
 
   echo
   echo "${app_path} $@"
-  "${app_path}" $@ 2>&1
+  "${app_path}" "$@" 2>&1
 }
 
 function do_expect()
