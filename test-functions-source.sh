@@ -1021,6 +1021,13 @@ function show_libs()
   fi
 }
 
+function run_verbose()
+{
+  echo
+  echo "$@"
+  "$@" 2>&1
+}
+
 function run_app()
 {
   local app_path=$1
