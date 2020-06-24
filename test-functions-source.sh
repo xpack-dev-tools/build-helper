@@ -53,7 +53,7 @@ cat <<__EOF__ > "${data_file_path}"
       "merge_mode": "replace",
       "jobs": [
         {
-          "name": "Ubuntu Intel 64-bit",
+          "name": "Ubuntu 12, 14, 16, 18, 20 (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -70,7 +70,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu Intel 32-bit",
+          "name": "Ubuntu 14, 16, 18 (Intel 32-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -85,7 +85,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu Arm 64-bit",
+          "name": "Ubuntu 16, 18, 20 (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -100,7 +100,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu Arm 32-bit",
+          "name": "Ubuntu 16, 18 (Arm 32-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -114,7 +114,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Intel 64-bit",
+          "name": "Debian 8, 9, 10 (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -129,7 +129,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Intel 32-bit",
+          "name": "Debian 8, 9, 10 (Intel 32-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -144,7 +144,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Arm 64-bit",
+          "name": "Debian 9, 10 (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -158,7 +158,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Arm 32-bit",
+          "name": "Debian 9, 10 (Arm 32-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -172,7 +172,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "CentOS Intel 64-bit",
+          "name": "CentOS 7, 8 (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -186,7 +186,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "CentOS Intel 32-bit",
+          "name": "CentOS 7 (Intel 32-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -199,7 +199,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "CentOS Arm 64-bit",
+          "name": "CentOS 7, 8 (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -213,7 +213,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "OpenSUSE Intel 64-bit",
+          "name": "OpenSUSE 13, 15 (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -227,7 +227,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "OpenSUSE Arm 64-bit",
+          "name": "OpenSUSE 15 (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -240,7 +240,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Fedora Intel 64-bit",
+          "name": "Fedora 20, 25, 27, 29, 31 (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -257,7 +257,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Fedora Arm 64-bit",
+          "name": "Fedora 27, 29, 31 (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -272,7 +272,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Raspbian Arm 32-bit",
+          "name": "Raspbian 8, 9 (Arm 32-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -358,7 +358,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Windows 10 Intel 64-bit",
+          "name": "Windows 10 (Intel 64-bit)",
           "os": "windows",
           "arch": "amd64",
           "language": "minimal",
@@ -369,7 +369,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Windows 10 Intel 32-bit",
+          "name": "Windows 10 (Intel 32-bit)",
           "os": "windows",
           "arch": "amd64",
           "language": "minimal",
@@ -410,7 +410,7 @@ cat <<__EOF__ > "${data_file_path}"
       "merge_mode": "replace",
       "jobs": [
         {
-          "name": "Ubuntu Intel 64-bit",
+          "name": "Ubuntu rolling, latest (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -424,7 +424,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu Intel 32-bit",
+          "name": "Ubuntu rolling, latest (Intel 32-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -438,7 +438,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu Arm 64-bit",
+          "name": "Ubuntu rolling, latest (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -452,7 +452,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu Arm 32-bit",
+          "name": "Ubuntu rolling, latest (Arm 32-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -466,7 +466,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Intel 64-bit",
+          "name": "Debian latet, testing (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -480,7 +480,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Intel 32-bit",
+          "name": "Debian testing (Intel 32-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -493,7 +493,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Arm 64-bit",
+          "name": "Debian latest, testing (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -507,7 +507,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian Arm 32-bit",
+          "name": "Debian testing (Arm 32-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -520,7 +520,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "CentOS Intel 64-bit",
+          "name": "CentOS latest (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -533,7 +533,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "CentOS Intel 32-bit",
+          "name": "CentOS latest (Intel 32-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -546,7 +546,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "CentOS Arm 64-bit",
+          "name": "CentOS latest (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -559,7 +559,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "OpenSUSE Intel 64-bit",
+          "name": "OpenSUSE tumbleweed (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -572,7 +572,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "OpenSUSE Arm 64-bit",
+          "name": "OpenSUSE tumbleweed (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -585,7 +585,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Fedora Intel 64-bit",
+          "name": "Fedora latest, rawhide (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -599,7 +599,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Fedora Arm 64-bit",
+          "name": "Fedora latest, rawhide (Arm 64-bit)",
           "os": "linux",
           "arch": "arm64",
           "dist": "bionic",
@@ -613,7 +613,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Arch Intel 64-bit",
+          "name": "Arch latest (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
@@ -622,11 +622,11 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh archlinux ${base_url} "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh archlinux:latest ${base_url} "
           ]
         },
         {
-          "name": "Manjaro Intel 64-bit",
+          "name": "Manjaro base (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
