@@ -849,6 +849,13 @@ function trigger_travis()
 
 # -----------------------------------------------------------------------------
 
+# Runs inside a container.
+# Set the following variables:
+#
+# - node_platform={win32,linux,darwin}
+# - node_architecture={x64,x32,arm64,arm}
+# - bits={32,64}
+
 function detect_architecture()
 {
   uname -a
