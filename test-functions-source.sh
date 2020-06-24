@@ -740,28 +740,6 @@ cat <<__EOF__ > "${data_file_path}"
             "pwd",
             "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
           ]
-        },
-        {
-          "name": "Windows 10 (Intel 64-bit)",
-          "os": "windows",
-          "arch": "amd64",
-          "language": "minimal",
-          "script": [
-            "env | sort",
-            "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url} " 
-          ]
-        },
-        {
-          "name": "Windows 10 (Intel 32-bit)",
-          "os": "windows",
-          "arch": "amd64",
-          "language": "minimal",
-          "script": [
-            "env | sort",
-            "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh --32 ${base_url} " 
-          ]
         }
       ],
       "notifications": {
