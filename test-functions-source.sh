@@ -953,6 +953,7 @@ function install_archive()
     echo "Downloading ${archive_name}..."
     curl -L --fail -o "${cache_folder_path}/${archive_name}" \
       "${base_url}/${archive_name}"
+    echo
   fi
 
   app_folder_path="${test_folder_path}/${archive_folder_name}"
@@ -971,6 +972,7 @@ function install_archive()
     tar xf "${cache_folder_path}/${archive_name}"
   fi
 
+  echo ls -lL "${app_folder_path}"
   ls -lL "${app_folder_path}"
 }
 
