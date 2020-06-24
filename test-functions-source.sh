@@ -653,6 +653,182 @@ __EOF__
 
 }
 
+function create_macos_data_file()
+{
+  local message="$1"
+  local branch="$2"
+  local base_url="$3"
+  local data_file_path="$4"
+
+# Note: __EOF__ is NOT quoted to allow substitutions.
+cat <<__EOF__ > "${data_file_path}"
+{
+  "request": {
+    "message": "${message}",
+    "branch": "${branch}",
+    "config": {
+      "merge_mode": "replace",
+      "jobs": [
+        {
+          "name": "macOS 10.15 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode11.5",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 10.14 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode11.3",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 10.13 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode10.1",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 10.12 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode9.2",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 10.11 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode8",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 10.10 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode6.4",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "Windows 10 (Intel 64-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url} " 
+          ]
+        },
+        {
+          "name": "Windows 10 (Intel 32-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh --32 ${base_url} " 
+          ]
+        }
+      ],
+      "notifications": {
+        "email": {
+          "on_success": "always",
+          "on_failure": "always"
+        }
+      }
+    }
+  }
+}
+__EOF__
+
+}
+
+function create_windows_data_file()
+{
+  local message="$1"
+  local branch="$2"
+  local base_url="$3"
+  local data_file_path="$4"
+
+# Note: __EOF__ is NOT quoted to allow substitutions.
+cat <<__EOF__ > "${data_file_path}"
+{
+  "request": {
+    "message": "${message}",
+    "branch": "${branch}",
+    "config": {
+      "merge_mode": "replace",
+      "jobs": [
+        {
+          "name": "Windows 10 (Intel 64-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url} " 
+          ]
+        },
+        {
+          "name": "Windows 10 (Intel 32-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh --32 ${base_url} " 
+          ]
+        }
+      ],
+      "notifications": {
+        "email": {
+          "on_success": "always",
+          "on_failure": "always"
+        }
+      }
+    }
+  }
+}
+__EOF__
+
+}
+
 # data_file_path
 # github_org
 # github_repo
