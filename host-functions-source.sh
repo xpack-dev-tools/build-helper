@@ -180,7 +180,7 @@ function host_options()
 
   argc=$#
   declare -a argv
-  argv=( $@ )
+  argv=( "$@" )
   if [ ! -z "${DEBUG}" ]
   then
     echo ${argv[@]-}
@@ -323,7 +323,7 @@ function host_options_windows()
 
   argc=$#
   declare -a argv
-  argv=( $@ )
+  argv=( "$@" )
   if [ ! -z "${DEBUG}" ]
   then
     echo ${argv[@]-}
@@ -755,10 +755,10 @@ function host_build_target()
     target_bits=""
   fi
 
-  # The remaining $@ options will be passed to the inner script.
+  # The remaining "$@" options will be passed to the inner script.
   if [ -n "${DEBUG}" ]
   then
-    echo $@
+    echo "$@"
   fi
 
   # ---------------------------------------------------------------------------
@@ -802,7 +802,7 @@ function host_build_target()
       --script "${container_script_path}" \
       --env-file "${env_file}" \
       -- \
-      $@
+      "$@"
 
   else
 
@@ -813,7 +813,7 @@ function host_build_target()
       --env-file "${env_file}" \
       --host-uname "${HOST_UNAME}" \
       -- \
-      $@    
+      "$@"    
 
   fi
 
@@ -870,7 +870,7 @@ function host_run_native_script()
     then
       source "${env_file}"
     fi
-    /bin/bash ${DEBUG} "${local_script}" $@
+    /bin/bash ${DEBUG} "${local_script}" "$@"
   )
 }
 
@@ -956,7 +956,7 @@ function host_run_docker_script()
       --volume="${HOST_CACHE_FOLDER_PATH}/:${CONTAINER_CACHE_FOLDER_PATH}" \
       ${env_file_option} \
       "${docker_image}" \
-      /bin/bash ${DEBUG} "${docker_script}" $@
+      /bin/bash ${DEBUG} "${docker_script}" "$@"
 
   else
 
