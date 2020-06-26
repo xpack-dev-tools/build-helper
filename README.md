@@ -62,6 +62,12 @@ will be consumeed with `git apply file.git-patch`.
 $ git diff > file.git-patch
 ```
 
+It is also possible to vreate patches with git and consume them with patche
+
+```console
+$ git diff --no-prefix -u > file.patch
+```
+
 Links:
 
 - https://git-scm.com/docs/git-diff
