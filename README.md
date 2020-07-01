@@ -62,7 +62,7 @@ will be consumeed with `git apply file.git-patch`.
 $ git diff > file.git-patch
 ```
 
-It is also possible to vreate patches with git and consume them with patche
+It is also possible to create patches with git and consume them with patch
 
 ```console
 $ git diff --no-prefix -u > file.patch
