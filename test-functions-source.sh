@@ -466,7 +466,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Debian latet, testing (Intel 64-bit)",
+          "name": "Debian latest, testing (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
           "dist": "bionic",
