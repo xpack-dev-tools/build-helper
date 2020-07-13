@@ -685,7 +685,7 @@ function host_build_target()
   echo "=== ${message}"
 
   echo
-  echo $@
+  echo "$@"
 
   local container_script_path=""
   local target_platform="${HOST_NODE_PLATFORM}"
