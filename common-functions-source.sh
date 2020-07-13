@@ -2315,7 +2315,7 @@ function create_archive()
       cd "${INSTALL_FOLDER_PATH}/archive"
       zip -r9 -q "${distribution_file}" *
 
-      # Put folders back.
+      # Put everything back.
       mv "${archive_version_path}"/* "${APP_PREFIX}"
 
     else
