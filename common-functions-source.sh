@@ -1588,13 +1588,13 @@ function patch_linux_elf_origin()
     then
       echo "\$ORIGIN/${relative_path}" "${file_path}"
     fi
-    patchelf --set-rpath "\$ORIGIN/${relative_path}" "${tmp_path}"
+    patchelf --force-rpath --set-rpath "\$ORIGIN/${relative_path}" "${tmp_path}"
   else
     if file "${tmp_path}" | grep statically
     then
       file "${file_path}"
     else
-      patchelf --set-rpath "\$ORIGIN" "${tmp_path}"
+      patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
     fi
   fi
   cp "${tmp_path}" "${file_path}"
