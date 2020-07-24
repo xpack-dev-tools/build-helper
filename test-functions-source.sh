@@ -968,8 +968,12 @@ function docker_run_test() {
   (
     prefix32="${prefix32:-""}"
 
+    # For --security-opt see:
+    # https://github.com/tianon/docker-brew-ubuntu-core/issues/183
+
     docker run \
       --tty \
+      --security-opt seccomp:unconfined \
       --hostname "docker" \
       --workdir="/root" \
       --env DEBUG=${DEBUG} \
