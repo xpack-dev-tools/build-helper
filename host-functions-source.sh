@@ -477,7 +477,7 @@ function host_native_options()
 
   done
 
-  if [ IS_DEVELOP == "y" ]
+  if [ ${IS_DEVELOP} == "y" ]
   then
     WITH_STRIP="n"
   fi
