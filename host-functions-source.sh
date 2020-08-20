@@ -477,6 +477,11 @@ function host_native_options()
 
   done
 
+  if [ IS_DEVELOP == "y" ]
+  then
+    WITH_STRIP="n"
+  fi
+
   if [ "${DO_BUILD_WIN}" == "y" ]
   then
     if [ "${HOST_NODE_PLATFORM}" == "linux" ]
