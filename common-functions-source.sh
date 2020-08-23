@@ -1390,21 +1390,21 @@ function strip_binary()
 
   local file_path="$1"
 
-  if ! is_elf "${file_path}"
-  then
-    echo $(file "${file_path}")
-    return
-  fi  
-
   local strip="strip"
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
     strip="${CROSS_COMPILE_PREFIX}-strip"
     if [[ "${file_path}" != *.exe ]] && [[ "${file_path}" != *.dll ]]
     then
-      bin="${file_path}.exe"
+      file_path="${file_path}.exe"
     fi
   fi
+
+  if ! is_elf "${file_path}"
+  then
+    echo $(file "${file_path}")
+    return
+  fi  
 
   if has_origin "${file_path}"
   then
@@ -2176,11 +2176,12 @@ function copy_build_files()
 
     mkdir -pv patches
 
-    find scripts patches -type d \
+    # Ignore hidden folders/files (like .DS_Store).
+    find scripts patches -type d ! -iname '.*' \
       -exec install -d -m 0755 \
         "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
-    find scripts patches -type f \
+    find scripts patches -type f ! -iname '.*' \
       -exec install -v -c -m 644 \
         '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
@@ -2199,7 +2200,7 @@ function copy_build_files()
 
 # Must be called in the build folder, like 
 # cd "${LIBS_BUILD_FOLDER_PATH}"
-# cd "${UILD_FOLDER_PATH}"
+# cd "${BUILD_FOLDER_PATH}"
 
 function copy_cmake_logs()
 {
