@@ -1958,7 +1958,7 @@ function download_python3_win()
   # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-win32.zip
 
   local python3_version="$1"
-  
+
   local python3_version_major=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
   local python3_version_minor=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
 
@@ -2022,9 +2022,11 @@ function download_python3_win()
   # The source archive includes only the pyconfig.h.in, which needs
   # to be configured, which is not an easy task. Thus add the file copied 
   # from a Windows install.
-  cp -v "${BUILD_GIT_PATH}/patches/pyconfig-${python3_version}.h" \
-    "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/Include/pyconfig.h"
+  if [ -f "${BUILD_GIT_PATH}/patches/pyconfig-${python3_version}.h" ]
+  then
+    cp -v "${BUILD_GIT_PATH}/patches/pyconfig-${python3_version}.h" \
+      "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/Include/pyconfig.h"
+  fi
 }
 
 # -----------------------------------------------------------------------------
-
