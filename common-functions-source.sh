@@ -2022,6 +2022,7 @@ function copy_dependencies_recursive()
       else
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" ]
         then
+          # The first source is the install/libs/bin.
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
             "${dest_folder_path}"
         elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
