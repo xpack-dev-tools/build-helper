@@ -1959,8 +1959,9 @@ function download_python3_win()
 
   local python3_version="$1"
 
-  local python3_version_major=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
-  local python3_version_minor=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  PYTHON3_VERSION_MAJOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  PYTHON3_VERSION_MINOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
 
   # Version 3.7.2 uses a longer name, like python-3.7.2.post1-embed-amd64.zip.
   if [ "${TARGET_BITS}" == "32" ]
@@ -1991,19 +1992,22 @@ function download_python3_win()
     fi
       
     cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
-    echo "Copying python${python3_version_major}${python3_version_minor}.dll..."
+    echo "Copying python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll..."
     # From here it'll be copied as dependency.
     mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-    install -v -c -m 644 "python${python3_version_major}.dll" \
+    install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}.dll" \
       "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-    install -v -c -m 644 "python${python3_version_major}${python3_version_minor}.dll" \
+    install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll" \
       "${LIBS_INSTALL_FOLDER_PATH}/bin/"
 
-    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-    install -v -c -m 644 "python${python3_version_major}.dll" \
-      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-    install -v -c -m 644 "python${python3_version_major}${python3_version_minor}.dll" \
-      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+    if false
+    then
+      mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+      install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}.dll" \
+        "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+      install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll" \
+        "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+    fi
   )
 
   local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
