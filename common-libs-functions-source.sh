@@ -191,7 +191,8 @@ function build_gmp()
       xbb_activate
       xbb_activate_installed_dev
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
+      # Exceptions used by Arm GCC script.
+      CPPFLAGS="${XBB_CPPFLAGS} -fexceptions"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
