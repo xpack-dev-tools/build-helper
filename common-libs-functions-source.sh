@@ -1329,7 +1329,6 @@ function build_gettext()
           config_options+=("--disable-installed-tests")
           config_options+=("--disable-always-build-tests")
           # config_options+=("--enable-nls")
-          config_options+=("--disable-rpath")
           config_options+=("--disable-java")
           config_options+=("--disable-native-java")
           config_options+=("--disable-c++")
@@ -1681,7 +1680,6 @@ function build_xz()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          # config_options+=("--disable-rpath")
           # config_options+=("--disable-nls")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" \
