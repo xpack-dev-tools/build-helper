@@ -807,6 +807,86 @@ __EOF__
 
 }
 
+function create_xpm_install_data_file()
+{
+  local message="$1"
+  local branch="$2"
+  local data_file_path="$3"
+
+# Note: __EOF__ is NOT quoted to allow substitutions.
+cat <<__EOF__ > "${data_file_path}"
+{
+  "request": {
+    "message": "${message}",
+    "branch": "${branch}",
+    "config": {
+      "merge_mode": "replace",
+      "jobs": [
+        {
+          "name": "Ubuntu 18 (Intel 64-bit)",
+          "os": "linux",
+          "arch": "amd64",
+          "dist": "bionic",
+          "language": "node_js",
+          "before_script": [
+            "nvm install --lts node",
+            "nvm use --lts node",
+            "nvm install-latest-npm",
+            "npm install --global xpm@latest"
+          ],
+          "script": [
+            "env | sort",
+            "pwd",
+            "xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@next"
+          ]
+        },
+        {
+          "name": "macOS 10.15 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode11.5",
+          "language": "node_js",
+          "before_script": [
+            "nvm install --lts node",
+            "nvm use --lts node",
+            "nvm install-latest-npm",
+            "npm install --global xpm@latest"
+          ],
+          "script": [
+            "env | sort",
+            "pwd",
+            "xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@next"
+          ]
+        },
+        {
+          "name": "Windows 10 (Intel 64-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "node_js",
+          "node_js": "lts/*",
+          "before_script": [
+            "npm install --global xpm@latest"
+          ],
+          "script": [
+            "env | sort",
+            "pwd",
+            "xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@next"
+          ]
+        }
+      ],
+      "notifications": {
+        "email": {
+          "on_success": "always",
+          "on_failure": "always"
+        }
+      }
+    }
+  }
+}
+__EOF__
+
+}
+
 # data_file_path
 # github_org
 # github_repo
