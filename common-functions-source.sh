@@ -847,12 +847,14 @@ function show_libs()
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       echo
-      echo "readelf -d ${app_path} | grep 'ibrary'"
+      echo "readelf -d ${app_path} | egrep -i ..."
       # Ignore errors in case it is not using shared libraries.
       set +e 
-      readelf -d "${app_path}" | grep 'ibrary'
+      readelf -d "${app_path}" | egrep -i '(SONAME)' || true
+      readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
+      readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
       echo "ldd -v ${app_path}"
-      ldd -v "${app_path}"
+      ldd -v "${app_path}" || true
       set -e
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
