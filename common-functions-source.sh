@@ -1585,11 +1585,22 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
   cp "${file_path}" "${tmp_path}"
 
-  if file "${tmp_path}" | grep statically
+  if false
   then
-    file "${file_path}"
+    local relative_path="$(realpath --relative-to="$(dirname ${file_path})" "${libexec_path}")"
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      echo "\$ORIGIN/${relative_path}" "${file_path}"
+    fi
+    patchelf --force-rpath --set-rpath "\$ORIGIN/${relative_path}" "${tmp_path}"
   else
-    patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+    if file "${tmp_path}" | grep statically
+    then
+      file "${file_path}"
+    else
+      echo patchelf --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
+      patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+    fi
   fi
 
   cp "${tmp_path}" "${file_path}"
