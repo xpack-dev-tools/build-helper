@@ -2033,3 +2033,129 @@ function download_python3_win()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_libmpdec()
+{
+  # http://www.bytereef.org/mpdecimal/index.html
+  # https://www.bytereef.org/mpdecimal/download.html
+  # https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-2.4.2.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/mpdecimal/files/PKGBUILD
+
+  # 2016-02-28, "2.4.2"
+  # 2020-06-28, "2.5.0"
+
+  local libmpdec_version="$1"
+
+  local libmpdec_src_folder_name="mpdecimal-${libmpdec_version}"
+
+  local libmpdec_archive="${libmpdec_src_folder_name}.tar.gz"
+  local libmpdec_url="https://www.bytereef.org/software/mpdecimal/releases/${libmpdec_archive}"
+
+  local libmpdec_folder_name="${libmpdec_src_folder_name}"
+
+  local libmpdec_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libmpdec_folder_name}-installed"
+  if [ ! -f "${libmpdec_stamp_file_path}" ]
+  then
+
+    # In-source build
+
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_folder_name}" ]
+    then
+      cd "${LIBS_BUILD_FOLDER_PATH}"
+
+      download_and_extract "${libmpdec_url}" "${libmpdec_archive}" \
+        "${libmpdec_src_folder_name}"
+
+      if [ "${libmpdec_src_folder_name}" != "${libmpdec_folder_name}" ]
+      then
+        mv -v "${libmpdec_src_folder_name}" "${libmpdec_folder_name}"
+      fi
+    fi
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}"
+
+    (
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_src_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+      LD=${CC}
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+      export LD
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          echo
+          echo "Running libmpdec configure..."
+
+          bash "configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+            
+          config_options+=("--enable-cxx")
+
+          run_verbose bash ${DEBUG} "configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running libmpdec make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        run_verbose make install
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          if is_linux
+          then
+            # TODO
+            # Fails shared on darwin
+            run_verbose make -j1 check
+          fi
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/make-output.txt"
+
+      copy_license \
+        "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_folder_name}" \
+        "${libmpdec_folder_name}"
+
+    )
+
+    touch "${libmpdec_stamp_file_path}"
+
+  else
+    echo "Library libmpdec already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
