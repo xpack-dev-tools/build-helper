@@ -1230,6 +1230,7 @@ function is_linux_sys_so()
     librt.so.1 \
     libm.so.6 \
     libc.so.6 \
+    libnsl.so.1 \
     libutil.so.1 \
     libpthread.so.0 \
     libdl.so.2 \
