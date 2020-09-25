@@ -416,6 +416,7 @@ function host_native_options()
   IS_DEBUG=""
   IS_DEVELOP=""
   WITH_STRIP="y"
+  WITH_TESTS="y"
   IS_NATIVE="y"
 
   if [ "$(uname)" == "Linux" ]
@@ -455,6 +456,11 @@ function host_native_options()
 
       --disable-strip)
         WITH_STRIP="n"
+        shift
+        ;;
+
+      --disable-tests)
+        WITH_TESTS="n"
         shift
         ;;
 

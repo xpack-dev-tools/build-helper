@@ -340,7 +340,7 @@ function prepare_xbb_env()
   IS_DEBUG=${IS_DEBUG:-""}
   WITH_PDF=${WITH_PDF:-""}
   WITH_HTML=${WITH_HTML:-""}
-  WITH_TESTS=${WITH_TESTS:-""}
+  WITH_TESTS=${WITH_TESTS:-"y"}
 
   # Redefine this to "y" to create files that include the architecture.
   HAS_NAME_ARCH=${HAS_NAME_ARCH:-""}
