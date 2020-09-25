@@ -419,6 +419,8 @@ function prepare_xbb_extras()
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
+    SHLIB_EXT="so"
+
     # Do not add -static here, it fails.
     # Do not try to link pthread statically, it must match the system glibc.
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
@@ -426,6 +428,8 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
+    SHLIB_EXT="dylib"
+
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
@@ -434,6 +438,8 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
+    SHLIB_EXT="dll"
+
     export NATIVE_CC=${CC}
     export NATIVE_CXX=${CXX}
     
@@ -497,6 +503,8 @@ function prepare_xbb_extras()
   )
 
   # ---------------------------------------------------------------------------
+
+  export SHLIB_EXT
 
   # CC & co were exported by prepare_gcc_env.
   export XBB_CPPFLAGS
