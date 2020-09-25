@@ -1008,7 +1008,7 @@ function check_binary()
 {
   local file_path="$1"
 
-  if [ ! -x "${file_path}" ]
+  if [ "${TARGET_PLATFORM}" != "win32" -a ! -x "${file_path}" ]
   then
     return 0
   fi
@@ -2108,7 +2108,7 @@ function check_binaries()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
-      binaries=$(find "${folder_path}" -name \*.exe)
+      binaries=$(find "${folder_path}" \( -name \*.exe -o -name \*.dll -o -name \*.pyd \))
       for bin in ${binaries} 
       do
         check_binary "${bin}"
