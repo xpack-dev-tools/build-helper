@@ -2159,3 +2159,167 @@ function build_libmpdec()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_libxcrypt() 
+{
+  # Replacement for the old libcrypt.so.1.
+
+  # https://github.com/besser82/libxcrypt
+  # https://github.com/besser82/libxcrypt/archive/v4.4.15.tar.gz
+
+  # 26 Jul 2018, "4.1.1"
+  # 26 Oct 2018, "4.2.3"
+  # 14 Nov 2018, "4.3.4"
+  # Requires new autotools.
+  # m4/ax_valgrind_check.m4:80: warning: macro `AM_EXTRA_RECURSIVE_TARGETS' not found in library
+  # Feb 25 2020, "4.4.15"
+  # 23 Aug 2020, "4.4.17"
+
+  local libxcrypt_version="$1"
+
+  local libxcrypt_src_folder_name="libxcrypt-${libxcrypt_version}"
+
+  local libxcrypt_archive="${libxcrypt_src_folder_name}.tar.gz"
+  # GitHub release archive.
+  local libxcrypt_url="https://github.com/besser82/libxcrypt/archive/v${libxcrypt_version}.tar.gz"
+
+  local libxcrypt_folder_name="${libxcrypt_src_folder_name}"
+
+  local libxcrypt_patch_file_path="${BUILD_GIT_PATH}/patches/${libxcrypt_folder_name}.patch"
+  local libxcrypt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libxcrypt_folder_name}-installed"
+  if [ ! -f "${libxcrypt_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    set +e
+    download_and_extract "${libxcrypt_url}" "${libxcrypt_archive}" \
+      "${libxcrypt_src_folder_name}" "${libxcrypt_patch_file_path}"
+    set -e
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}"
+
+    if [ ! -x "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" ]
+    then
+      (
+        cd "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}"
+
+        xbb_activate
+        xbb_activate_installed_dev
+
+        if [ -f "autogen.sh" ]
+        then
+          run_verbose bash ${DEBUG} autogen.sh
+        elif [ -f "bootstrap" ]
+        then
+          run_verbose bash ${DEBUG} bootstrap
+        else
+          # 
+          run_verbose autoreconf -fiv
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}/autogen-output.txt"
+
+    fi
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libxcrypt_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libxcrypt_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          echo
+          echo "Running libxcrypt configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" \
+            ${config_options[@]}
+
+          # patch_all_libtool_rpath
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running libxcrypt make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # install is not able to rewrite them.
+        rm -rfv "${INSTALL_FOLDER_PATH}"/lib*/libxcrypt.*
+        rm -rfv "${INSTALL_FOLDER_PATH}"/lib*/libowcrypt.*
+        rm -rfv "${INSTALL_FOLDER_PATH}"/lib/pkgconfig/libcrypt.pc
+
+        # make install-strip
+        run_verbose make install
+
+        if [ "${TARGET_PLATFORM}" == "darwin" ]
+        then
+          # macOS FAIL: test/symbols-static.sh
+          # macOS FAIL: test/symbols-renames.sh
+          run_verbose make -j1 check || true
+        else
+          run_verbose make -j1 check
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}/make-output.txt"
+    )
+
+    (
+      test_libxcrypt
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}/test-output.txt"
+
+    touch "${libxcrypt_stamp_file_path}"
+
+  else
+    echo "Library libxcrypt already installed."
+  fi
+
+  test_functions+=("test_libxcrypt")
+}
+
+function test_libxcrypt()
+{
+  (
+    xbb_activate
+
+    echo
+    echo "Checking the libxcrypt shared libraries..."
+
+    show_libs "$(realpath ${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypt.${SHLIB_EXT})"
+  )
+}
+
+# -----------------------------------------------------------------------------
