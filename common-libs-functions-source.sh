@@ -2115,7 +2115,9 @@ function build_libmpdec()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
             
-          config_options+=("--enable-cxx")
+          # C++ tests fail on Linux.
+          # config_options+=("--enable-cxx")
+          config_options+=("--disable-cxx")
 
           run_verbose bash ${DEBUG} "configure" \
             ${config_options[@]}
@@ -2135,7 +2137,7 @@ function build_libmpdec()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          if is_linux
+          if [ "${TARGET_PLATFORM}" == "linux" ]
           then
             # TODO
             # Fails shared on darwin
