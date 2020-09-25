@@ -1167,6 +1167,8 @@ function is_win_sys_dll()
   # Be sure all names are lower case!
   local sys_dlls=( \
     advapi32.dll \
+    bcrypt.dll \
+    cabinet.dll \
     cfgmgr32.dll \
     crypt32.dll \
     dnsapi.dll \
@@ -1176,7 +1178,10 @@ function is_win_sys_dll()
     iphlpapi.dll \
     iphlpapi.dll \
     kernel32.dll \
+    msi.dll \
     msvcr90.dll \
+    msvcrt.dll \
+    ole32.dll \
     oleaut32.dll \
     psapi.dll \
     rpcrt4.dll \
@@ -1191,20 +1196,19 @@ function is_win_sys_dll()
     winmm.dll \
     ws2_32.dll \
     \
-    msvcrt.dll \
-    ole32.dll \
-    api-ms-win-crt-runtime-l1-1-0.dll \
-    api-ms-win-crt-math-l1-1-0.dll \
+    api-ms-win-crt-conio-l1-1-0.dll \
+    api-ms-win-crt-convert-l1-1-0.dll \
+    api-ms-win-crt-environment-l1-1-0.dll \
+    api-ms-win-crt-filesystem-l1-1-0.dll \
+    api-ms-win-crt-heap-l1-1-0.dll \
     api-ms-win-crt-locale-l1-1-0.dll \
+    api-ms-win-crt-math-l1-1-0.dll \
+    api-ms-win-crt-process-l1-1-0.dll \
+    api-ms-win-crt-runtime-l1-1-0.dll \
     api-ms-win-crt-string-l1-1-0.dll \
     api-ms-win-crt-stdio-l1-1-0.dll \
-    api-ms-win-crt-convert-l1-1-0.dll \
     api-ms-win-crt-time-l1-1-0.dll \
-    api-ms-win-crt-environment-l1-1-0.dll \
-    api-ms-win-crt-process-l1-1-0.dll \
-    api-ms-win-crt-heap-l1-1-0.dll \
-    api-ms-win-crt-conio-l1-1-0.dll \
-    api-ms-win-crt-filesystem-l1-1-0.dll \
+    api-ms-win-crt-utility-l1-1-0.dll \
   )
 
   # The Python DLL were a permanent source of trouble.
