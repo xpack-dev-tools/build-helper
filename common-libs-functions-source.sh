@@ -2321,6 +2321,239 @@ function test_libxcrypt()
     echo "Checking the libxcrypt shared libraries..."
 
     show_libs "$(realpath ${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypt.${SHLIB_EXT})"
+# -----------------------------------------------------------------------------
+
+function build_openssl() 
+{
+  # https://www.openssl.org
+  # https://www.openssl.org/source/
+
+  # https://archlinuxarm.org/packages/aarch64/openssl/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-static
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-git
+  
+  # 2017-Nov-02 
+  # XBB_OPENSSL_VERSION="1.1.0g"
+  # The new version deprecated CRYPTO_set_locking_callback, and yum fails with
+  # /usr/lib64/python2.6/site-packages/pycurl.so: undefined symbol: CRYPTO_set_locking_callback
+
+  # 2017-Dec-07, "1.0.2n"
+  # 2019-Feb-26, "1.0.2r"
+  # 2019-Feb-26, "1.1.1b"
+  # 2019-Sep-10, "1.1.1d"
+  # 2019-Dec-20, "1.0.2u"
+  # 2020-Sep-22, "1.1.1h"
+
+  local openssl_version="$1"
+  # Numbers
+  local openssl_version_major=$(echo ${openssl_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\1|')
+  local openssl_version_minor=$(echo ${openssl_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\..*|\2|')
+
+  local openssl_src_folder_name="openssl-${openssl_version}"
+
+  local openssl_archive="${openssl_src_folder_name}.tar.gz"
+  local openssl_url="https://www.openssl.org/source/${openssl_archive}"
+
+  local openssl_folder_name="${openssl_src_folder_name}"
+
+  local openssl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${openssl_folder_name}-installed"
+  if [ ! -f "${openssl_stamp_file_path}" ]
+  then
+
+    # In-source build.
+
+    if [ ! -d "${BUILD_FOLDER_PATH}/${openssl_folder_name}" ]
+    then
+      cd "${BUILD_FOLDER_PATH}"
+
+      download_and_extract "${openssl_url}" "${openssl_archive}" \
+        "${openssl_src_folder_name}"
+
+      if [ "${openssl_src_folder_name}" != "${openssl_folder_name}" ]
+      then
+        mv -v "${openssl_src_folder_name}" "${openssl_folder_name}"
+      fi
+    fi
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${openssl_folder_name}"
+
+    (
+      cd "${BUILD_FOLDER_PATH}/${openssl_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      #  -Wno-unused-command-line-argument
+
+      # export CPPFLAGS="${XBB_CPPFLAGS} -I${BUILD_FOLDER_PATH}/${openssl_folder_name}/include"
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="${XBB_CFLAGS_NO_W}"
+      export CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      export LDFLAGS="${XBB_LDFLAGS_APP}"
+
+      env | sort
+
+      if [ ! -f config.stamp ]
+      then
+        (
+          echo
+          echo "Running openssl configure..."
+
+          echo
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+
+            # Older versions do not support the KERNEL_BITS trick and require
+            # the separate configurator.
+
+            if [ ${openssl_version_minor} -eq 0 ]
+            then
+
+              # This config does not use the standard GNU environment definitions.
+              # `Configure` is a Perl script.
+              "./Configure" --help || true
+
+              run_verbose "./Configure" "darwin64-x86_64-cc" \
+                --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+                \
+                --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
+                shared \
+                enable-md2 enable-rc5 enable-tls enable-tls1_3 enable-tls1_2 enable-tls1_1 \
+                "${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+
+              run_verbose make depend 
+
+            else
+
+              "./config" --help
+
+              export KERNEL_BITS=64
+              run_verbose "./config" \
+                --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+                \
+                --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
+                shared \
+                enable-md2 enable-rc5 enable-tls enable-tls1_3 enable-tls1_2 enable-tls1_1 \
+                "${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+
+            fi
+
+          else
+
+            config_options=()
+            if [ "${TARGET_ARCH}" == "x64" ]
+            then
+              config_options+=("enable-ec_nistp_64_gcc_128")
+            elif [ "${TARGET_ARCH}" == "arm64" ]
+            then
+              config_options+=("no-afalgeng")
+            fi
+
+            set +u
+
+            # undefined reference to EVP_md2
+            #  enable-md2 
+
+            # perl, do not start with bash.
+            run_verbose "./config" \
+              --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+              \
+              --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
+              shared \
+              enable-md2 \
+              enable-rc5 \
+              enable-tls \
+              enable-tls1_3 \
+              enable-tls1_2 \
+              enable-tls1_1 \
+              ${config_options[@]} \
+              "-Wa,--noexecstack ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+
+            set -u
+
+            if [ ${openssl_version_minor} -eq 0 ]
+            then
+              run_verbose make depend 
+            fi
+
+          fi
+
+          touch config.stamp
+
+          # cp "configure.log" "${LOGS_FOLDER_PATH}/configure-openssl-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running openssl make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        run_verbose make install_sw
+
+        mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+
+        if [ -f "${XBB_FOLDER_PATH}/openssl/cert.pem" ]
+        then
+          /usr/bin/install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/ca-bundle.crt" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          /usr/bin/install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+        elif [ -f "/private/etc/ssl/cert.pem" ]
+        then
+          /usr/bin/install -v -c -m 644 "/private/etc/ssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+        fi
+if false
+then
+        curl -L http://curl.haxx.se/ca/cacert.pem -o cacert.pem
+        /usr/bin/install -v -c -m 644 cacert.pem "${INSTALL_FOLDER_PATH}/openssl"
+
+        # ca-bundle.crt is used by curl.
+        if [ -f "/.dockerenv" ]
+        then
+          /usr/bin/install -v -c -m 644 "${helper_folder_path}/ca-bundle.crt" "${INSTALL_FOLDER_PATH}/openssl"
+        else
+          /usr/bin/install -v -c -m 644 "$(dirname "${script_folder_path}")/ca-bundle/ca-bundle.crt" "${INSTALL_FOLDER_PATH}/openssl"
+        fi
+fi
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 test
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/make-output.txt"
+
+      (
+        test_openssl
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/test-output.txt"
+    )
+
+    touch "${openssl_stamp_file_path}"
+
+  else
+    echo "Component openssl already installed."
+  fi
+}
+
+function test_openssl()
+{
+  (
+    xbb_activate_installed_bin
+
+    echo
+    echo "Testing if openssl binaries start properly..."
+
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl" version
+
+    echo
+    echo "Checking the openssl shared libraries..."
+
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl"
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libssl.${SHLIB_EXT}"
+  )
+}
+
   )
 }
 
