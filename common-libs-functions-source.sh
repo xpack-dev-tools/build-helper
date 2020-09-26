@@ -1216,6 +1216,11 @@ function build_libffi()
         # Build.
         run_verbose make -j ${JOBS}
 
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
         if [ "${WITH_STRIP}" == "y" ]
         then
           run_verbose make install-strip
