@@ -2629,6 +2629,7 @@ function build_sqlite()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
    
+          config_options+=("--enable-tcl=no")
           # Fails on macOS & Linux.
           # config_options+=("--disable-tcl")
           # Fail on macOS.
