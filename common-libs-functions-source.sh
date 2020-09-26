@@ -2554,6 +2554,124 @@ function test_openssl()
   )
 }
 
+# -----------------------------------------------------------------------------
+
+function build_sqlite()
+{
+  # https://www.sqlite.org/
+  # https://www.sqlite.org/2020/sqlite-src-3330000.zip
+  # https://www.sqlite.org/src/tarball/7ebdfa80/SQLite-7ebdfa80.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/sqlite/files/PKGBUILD
+
+  # 2020-06-18 "3.32.3" 7ebdfa80
+
+  local sqlite_version="$1"
+
+  local sqlite_commit
+  if [ "${sqlite_version}" == "3.32.3" ]
+  then
+    sqlite_commit="7ebdfa80"
+  fi
+
+  local sqlite_src_folder_name="sqlite-${sqlite_commit}"
+
+  local sqlite_archive="${sqlite_src_folder_name}.tar.gz"
+  local sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/SQLite-${sqlite_commit}.tar.gz"
+
+  local sqlite_folder_name="sqlite-${sqlite_version}"
+
+  local sqlite_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${sqlite_folder_name}-installed"
+  if [ ! -f "${sqlite_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${sqlite_url}" "${sqlite_archive}" \
+      "${sqlite_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${sqlite_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${sqlite_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${sqlite_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running sqlite configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${sqlite_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+   
+          # Fail on mac
+          # config_options+=("--disable-tcl")
+          # config_options+=("--disable-readline")
+          # config_options+=("--disable-amalgamation")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${sqlite_src_folder_name}/configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${sqlite_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${sqlite_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running sqlite make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make quicktest
+        fi
+
+        run_verbose make install
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${sqlite_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${sqlite_src_folder_name}" \
+        "${sqlite_folder_name}"
+
+    )
+
+    touch "${sqlite_stamp_file_path}"
+
+  else
+    echo "Library sqlite already installed."
+  fi
+}
+
   )
 }
 
