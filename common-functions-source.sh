@@ -1410,10 +1410,9 @@ function strip_binary()
   local strip
   set +u
   strip="${STRIP}"
-  set -u
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
-    if [ ! -v STRIP ]
+    if [ -z "${strip}" ]
     then
       strip="${CROSS_COMPILE_PREFIX}-strip"
     fi
@@ -1422,11 +1421,12 @@ function strip_binary()
       file_path="${file_path}.exe"
     fi
   else
-    if [ ! -v STRIP ]
+    if [ -z "${strip}" ]
     then
       strip="strip"
     fi
   fi
+  set -u
 
   if ! is_elf "${file_path}"
   then
