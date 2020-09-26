@@ -1314,13 +1314,15 @@ function is_darwin_allowed_sys_dylib()
 
   local sys_libs=(\
     /usr/lib/libgcc_s.1.dylib \
-    /
+    \
     /usr/lib/libc++.dylib \
     /usr/lib/libc++.1.dylib \
     /usr/lib/libc++abi.dylib \
-    /
+    \
     /usr/lib/libSystem.B.dylib \
     /usr/lib/libobjc.A.dylib \
+    \
+    /usr/lib/libutil.dylib \
   )
 
   if [[ ${lib_name} == /System/Library/Frameworks/* ]]
