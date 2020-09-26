@@ -2572,7 +2572,7 @@ function build_sqlite()
     sqlite_commit="7ebdfa80"
   fi
 
-  local sqlite_src_folder_name="sqlite-${sqlite_commit}"
+  local sqlite_src_folder_name="SQLite-${sqlite_commit}"
 
   local sqlite_archive="${sqlite_src_folder_name}.tar.gz"
   local sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/SQLite-${sqlite_commit}.tar.gz"
