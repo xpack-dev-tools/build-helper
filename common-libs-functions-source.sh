@@ -2792,3 +2792,98 @@ function test_readline()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_bzip2()
+{
+  # https://sourceware.org/bzip2/
+  # https://sourceware.org/pub/bzip2/
+  # https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/bzip2/files/PKGBUILD
+
+  # 2019-07-13 "1.0.8"
+
+  local bzip2_version="$1"
+
+  local bzip2_src_folder_name="bzip2-${bzip2_version}"
+
+  local bzip2_archive="${bzip2_src_folder_name}.tar.gz"
+  local bzip2_url="https://sourceware.org/pub/bzip2/${bzip2_archive}"
+
+  local bzip2_folder_name="${bzip2_src_folder_name}"
+
+  local bzip2_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${bzip2_folder_name}-installed"
+  if [ ! -f "${bzip2_stamp_file_path}" ]
+  then
+
+    # In-source build.
+
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${bzip2_folder_name}" ]
+    then
+      cd "${LIBS_BUILD_FOLDER_PATH}"
+
+      download_and_extract "${bzip2_url}" "${bzip2_archive}" \
+        "${bzip2_src_folder_name}"
+
+      if [ "${bzip2_src_folder_name}" != "${bzip2_folder_name}" ]
+      then
+        mv -v "${bzip2_src_folder_name}" "${bzip2_folder_name}"
+      fi
+    fi
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${bzip2_folder_name}"
+
+    (
+      cd "${LIBS_BUILD_FOLDER_PATH}/${bzip2_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      (
+        echo
+        echo "Running bzip2 make..."
+
+        # Build.
+        run_verbose make all -j ${JOBS} \
+          PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
+          CC=${CC} \
+          AR=${AR} \
+          RANLIB=${RANLIB} \
+          LDFLAGS=${LDFLAGS} \
+
+        run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+
+        # TODO: add support for creating macOS dylib.
+        
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${bzip2_folder_name}/make-output.txt"
+
+      copy_license \
+        "${LIBS_BUILD_FOLDER_PATH}/${bzip2_folder_name}" \
+        "${bzip2_folder_name}"
+
+    )
+
+    touch "${bzip2_stamp_file_path}"
+
+  else
+    echo "Library bzip2 already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
