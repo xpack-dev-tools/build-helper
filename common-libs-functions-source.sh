@@ -1777,7 +1777,7 @@ function build_gpm()
 
         xbb_activate
         
-        run_app bash ${DEBUG} "autogen.sh"
+        run_verbose bash ${DEBUG} "autogen.sh"
 
         touch "stamp-autogen"
       fi
