@@ -2872,7 +2872,30 @@ function build_bzip2()
         run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
 
         # TODO: add support for creating macOS dylib.
-        
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          run_verbose make clean
+
+          run_verbose make all -f Makefile-libbz2_so -j ${JOBS} \
+            PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
+            CC=${CC} \
+            AR=${AR} \
+            RANLIB=${RANLIB} \
+            LDFLAGS=${LDFLAGS} \
+
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+          install -v -c -m 644 "libbz2.so.${bzip2_version}" "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+
+          (
+            cd "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+
+            rm -rfv libbz2.so*
+            ln -sv "libbz2.so.${bzip2_version}" libbz2.so.1.0
+            ln -sv "libbz2.so.${bzip2_version}" libbz2.so.1
+            ln -sv "libbz2.so.${bzip2_version}" libbz2.so
+          )
+        fi
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${bzip2_folder_name}/make-output.txt"
 
       copy_license \
