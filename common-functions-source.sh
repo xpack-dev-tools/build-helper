@@ -1170,6 +1170,7 @@ function is_win_sys_dll()
     bcrypt.dll \
     cabinet.dll \
     cfgmgr32.dll \
+    comctl32.dll
     crypt32.dll \
     dnsapi.dll \
     gdi32.dll \
@@ -1179,6 +1180,8 @@ function is_win_sys_dll()
     iphlpapi.dll \
     kernel32.dll \
     msi.dll \
+    msvcr71.dll \
+    msvcr80.dll \
     msvcr90.dll \
     msvcrt.dll \
     ole32.dll \
