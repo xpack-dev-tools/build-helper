@@ -2320,7 +2320,10 @@ function test_libxcrypt()
     echo
     echo "Checking the libxcrypt shared libraries..."
 
-    show_libs "$(realpath ${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypt.${SHLIB_EXT})"
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypt.${SHLIB_EXT}"
+  )
+}
+
 # -----------------------------------------------------------------------------
 
 function build_openssl() 
