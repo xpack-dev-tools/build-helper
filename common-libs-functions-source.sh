@@ -2308,8 +2308,6 @@ function build_libxcrypt()
   else
     echo "Library libxcrypt already installed."
   fi
-
-  test_functions+=("test_libxcrypt")
 }
 
 function test_libxcrypt()
