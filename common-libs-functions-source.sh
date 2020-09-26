@@ -127,7 +127,7 @@ function build_zlib()
 
           if [ "${WITH_TESTS}" == "y" ]
           then
-            run_verbose make test
+            run_verbose make -j1 test
           fi
 
           run_verbose make install
@@ -260,7 +260,7 @@ function build_gmp()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
@@ -376,7 +376,7 @@ function build_mpfr()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
@@ -492,7 +492,7 @@ function build_mpc()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
@@ -618,9 +618,9 @@ function build_isl()
             # /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x32/build/libs/isl-0.22/.libs/lt-isl_test_cpp: relocation error: /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x32/build/libs/isl-0.22/.libs/lt-isl_test_cpp: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERjj, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
             # FAIL isl_test_cpp (exit status: 127)
 
-            run_verbose make check || true
+            run_verbose make -j1 check || true
           else
-            run_verbose make check
+            run_verbose make -j1 check
           fi
         fi
 
@@ -880,7 +880,7 @@ function build_libiconv()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
@@ -1357,7 +1357,7 @@ function build_gettext()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          make check # || true
+          make -j1 check # || true
         fi
 
         # Avoid strip here, it may interfere with patchelf.
@@ -1479,7 +1479,7 @@ function build_libelf()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         run_verbose make install
@@ -1593,7 +1593,7 @@ function build_expat()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         run_verbose make install
@@ -1704,7 +1704,7 @@ function build_xz()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
@@ -1845,7 +1845,7 @@ function build_gpm()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          run_verbose make -j1 check
         fi
 
         run_verbose make install
