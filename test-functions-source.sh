@@ -837,7 +837,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@next"
+            "xpm install --global ${npm_package}"
           ]
         },
         {
@@ -855,7 +855,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@next"
+            "xpm install --global ${npm_package}"
           ]
         },
         {
@@ -870,7 +870,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "xpm install --global @xpack-dev-tools/arm-none-eabi-gcc@next"
+            "xpm install --global ${npm_package}"
           ]
         }
       ],
