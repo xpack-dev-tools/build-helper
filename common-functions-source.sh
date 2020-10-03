@@ -917,9 +917,9 @@ function extract()
       else
         if [ ! -z "${DEBUG}" ]
         then
-          tar -x -v -f "${archive_name}"
+          tar -x -v -f "${archive_name}" --no-same-owner
         else
-          tar -x -f "${archive_name}"
+          tar -x -f "${archive_name}" --no-same-owner
         fi
       fi
 
