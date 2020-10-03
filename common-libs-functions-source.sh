@@ -42,7 +42,8 @@ function build_zlib()
   if [ ! -f "${zlib_stamp_file_path}" ]
   then
 
-    # In-source build.
+    echo
+    echo "zlib in-source building"
 
     if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
     then
@@ -1757,7 +1758,8 @@ function build_gpm()
   if [ ! -f "${gpm_stamp_file_path}" ]
   then
 
-    # In-source build.
+    echo
+    echo "gmp in-source building"
 
     cd "${LIBS_BUILD_FOLDER_PATH}"
 
@@ -2064,7 +2066,8 @@ function build_libmpdec()
   if [ ! -f "${libmpdec_stamp_file_path}" ]
   then
 
-    # In-source build
+    echo
+    echo "libmpdec in-source building"
 
     if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_folder_name}" ]
     then
@@ -2367,7 +2370,8 @@ function build_openssl()
   if [ ! -f "${openssl_stamp_file_path}" ]
   then
 
-    # In-source build.
+    echo
+    echo "openssl in-source building"
 
     if [ ! -d "${BUILD_FOLDER_PATH}/${openssl_folder_name}" ]
     then
@@ -2824,7 +2828,8 @@ function build_bzip2()
   if [ ! -f "${bzip2_stamp_file_path}" ]
   then
 
-    # In-source build.
+    echo
+    echo "bzip2 in-source building"
 
     if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${bzip2_folder_name}" ]
     then
