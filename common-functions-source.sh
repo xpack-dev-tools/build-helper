@@ -1646,8 +1646,17 @@ function patch_linux_elf_origin()
     then
       file "${file_path}"
     else
-      echo patchelf --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
-      patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+      if has_rpath "${file_path}"
+      then
+        echo patchelf --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
+        patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+      else
+        echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        if [ "${IS_DEVELOP}" != "y" ]
+        then
+          exit 1
+        fi
+      fi
     fi
   fi
 
