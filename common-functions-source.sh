@@ -1855,7 +1855,7 @@ function prepare_app_folder_libraries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+      binaries=$(find "${folder_path}" -name \* -type f)
       for bin_path in ${binaries} 
       do
         if is_elf_dynamic "${bin_path}"
@@ -2224,7 +2224,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
+      binaries=$(find "${folder_path}" -name \* -type f)
       for bin in ${binaries} 
       do
         if is_elf_dynamic "${bin}"
