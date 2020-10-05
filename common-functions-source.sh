@@ -1010,11 +1010,13 @@ function check_binary()
 
   if [ "${TARGET_PLATFORM}" != "win32" -a ! -x "${file_path}" ]
   then
+    echo "${file_path} not executable"
     return 0
   fi
 
   if file --mime "${file_path}" | grep -q text
   then
+    echo "${file_path} has no text"
     return 0
   fi
 
@@ -2211,6 +2213,11 @@ function check_binaries()
         if is_elf_dynamic "${bin}"
         then
           check_binary "${bin}"
+        else
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            echo "$(file "${bin}") (not dynamic elf)"
+          fi
         fi
       done
 
@@ -2223,6 +2230,11 @@ function check_binaries()
         if is_elf_dynamic "${bin}"
         then
           check_binary "${bin}"
+        else
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            echo "$(file "${bin}") (not dynamic elf)"
+          fi
         fi
       done
 
