@@ -1127,6 +1127,17 @@ function check_binary_for_libraries()
       readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)'
       readelf -d "${file_path}" | egrep -i '(NEEDED)'
 
+      if has_rpath_origin "${file_path}"
+      then 
+        :
+      else
+        echo "${file_path} has no DT_RPATH \$ORIGIN ?????????????????????????????????????????"
+        if [ "${IS_DEVELOP}" != "y" ]
+        then
+          exit 1
+        fi
+      fi
+
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
@@ -1363,6 +1374,49 @@ function has_origin()
     then
       return 0 # true
     fi
+  fi
+  return 1 # false
+}
+
+function has_rpath_origin()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "has_rpath_origin: Missing file argument"
+    exit 1
+  fi
+
+  local elf="$1"
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    local origin=$(readelf -d ${elf} | grep 'Library rpath: \[\$ORIGIN\]')
+    if [ ! -z "${origin}" ]
+    then
+      return 0 # true
+    fi
+  fi
+  return 1 # false
+}
+
+# DT_RPATH is searchd before LD_LIBRARY_PATH and DT_RUNPATH.
+function has_rpath()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "has_rpath: Missing file argument"
+    exit 1
+  fi
+
+  local elf="$1"
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    
+    local rpath=$(readelf -d ${elf} | egrep -i '(RUNPATH|RPATH)')
+    if [ ! -z "${rpath}" ]
+    then
+      return 0 # true
+    fi
+    
   fi
   return 1 # false
 }
