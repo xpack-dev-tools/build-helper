@@ -91,6 +91,10 @@ function build_zlib()
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
         LDFLAGS="${XBB_LDFLAGS_LIB}"
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        fi      
         if [ "${IS_DEVELOP}" == "y" ]
         then
           LDFLAGS+=" -v"
@@ -197,6 +201,10 @@ function build_gmp()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -331,6 +339,10 @@ function build_mpfr()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -449,6 +461,10 @@ function build_mpc()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -567,6 +583,10 @@ function build_isl()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -693,6 +713,10 @@ function build_zstd()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -837,6 +861,10 @@ function build_libiconv()
       CFLAGS="${XBB_CFLAGS_NO_W} -fgnu89-inline"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -968,6 +996,10 @@ function build_ncurses()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -1170,6 +1202,10 @@ function build_libffi()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -1288,6 +1324,10 @@ function build_gettext()
       CFLAGS="${XBB_CFLAGS_NO_W}"      
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -1434,6 +1474,10 @@ function build_libelf()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -1550,6 +1594,10 @@ function build_expat()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -1659,6 +1707,10 @@ function build_xz()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -1801,6 +1853,10 @@ function build_gpm()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -2094,6 +2150,10 @@ function build_libmpdec()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -2244,6 +2304,10 @@ function build_libxcrypt()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -2605,6 +2669,10 @@ function build_sqlite()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
@@ -2732,6 +2800,10 @@ function build_readline()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
 
       export CPPFLAGS
       export CFLAGS
@@ -2856,6 +2928,10 @@ function build_bzip2()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
       if [ "${IS_DEVELOP}" == "y" ]
       then
         LDFLAGS+=" -v"
