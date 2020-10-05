@@ -1474,6 +1474,26 @@ function is_elf()
   fi
 }
 
+function is_elf_dynamic()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_elf_dynamic: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+
+  if is_elf "${bin_path}"
+  then
+    # Return 0 (true) if found.
+    file ${bin_path} | egrep -q "dynamically"
+  else
+    return 1
+  fi
+
+}
+
 function is_ar()
 {
   if [ $# -lt 1 ]
@@ -1751,7 +1771,7 @@ function prepare_app_folder_libraries()
       binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
       for bin in ${binaries} 
       do
-        if is_elf "${bin}"
+        if is_elf_dynamic "${bin}"
         then
           echo
           echo "Preparing $(basename "${bin}") ${bin} libraries..."
@@ -1773,7 +1793,7 @@ function prepare_app_folder_libraries()
       binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
       for bin_path in ${binaries} 
       do
-        if is_elf "${bin_path}"
+        if is_elf_dynamic "${bin_path}"
         then
           echo
           echo "Preparing $(basename "${bin_path}") (${bin_path}) libraries..."
@@ -2125,7 +2145,7 @@ function check_binaries()
       binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
       for bin in ${binaries} 
       do
-        if is_elf "${bin}"
+        if is_elf_dynamic "${bin}"
         then
           check_binary "${bin}"
         fi
@@ -2137,7 +2157,7 @@ function check_binaries()
       binaries=$(find "${folder_path}" -name \* -perm /111 -and ! -type d)
       for bin in ${binaries} 
       do
-        if is_elf "${bin}"
+        if is_elf_dynamic "${bin}"
         then
           check_binary "${bin}"
         fi
