@@ -138,7 +138,7 @@ function xbb_activate_installed_dev()
     fi
   fi
 
-  # For just in case, apparently not used.
+  # Used by libffi, for example.
   if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
   then
     # For 64-bit systems, add XBB lib64 in front of paths.
