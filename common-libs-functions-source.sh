@@ -2453,9 +2453,9 @@ function build_openssl()
     echo
     echo "openssl in-source building"
 
-    if [ ! -d "${BUILD_FOLDER_PATH}/${openssl_folder_name}" ]
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${openssl_folder_name}" ]
     then
-      cd "${BUILD_FOLDER_PATH}"
+      cd "${LIBS_BUILD_FOLDER_PATH}"
 
       download_and_extract "${openssl_url}" "${openssl_archive}" \
         "${openssl_src_folder_name}"
@@ -2469,18 +2469,31 @@ function build_openssl()
     mkdir -pv "${LOGS_FOLDER_PATH}/${openssl_folder_name}"
 
     (
-      cd "${BUILD_FOLDER_PATH}/${openssl_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${openssl_folder_name}"
 
       xbb_activate
       xbb_activate_installed_dev
 
       #  -Wno-unused-command-line-argument
 
-      # export CPPFLAGS="${XBB_CPPFLAGS} -I${BUILD_FOLDER_PATH}/${openssl_folder_name}/include"
-      export CPPFLAGS="${XBB_CPPFLAGS}"
-      export CFLAGS="${XBB_CFLAGS_NO_W}"
-      export CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      export LDFLAGS="${XBB_LDFLAGS_APP}"
+      # export CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_BUILD_FOLDER_PATH}/${openssl_folder_name}/include"
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
 
       env | sort
 
@@ -2588,15 +2601,15 @@ function build_openssl()
 
         if [ -f "${XBB_FOLDER_PATH}/openssl/cert.pem" ]
         then
-          /usr/bin/install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/ca-bundle.crt" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
-          /usr/bin/install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/ca-bundle.crt" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
         elif [ -f "/private/etc/ssl/cert.pem" ]
         then
-          /usr/bin/install -v -c -m 644 "/private/etc/ssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          install -v -c -m 644 "/private/etc/ssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
         fi
 
         curl -L http://curl.haxx.se/ca/cacert.pem -o cacert.pem
-        /usr/bin/install -v -c -m 644 cacert.pem "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+        install -v -c -m 644 cacert.pem "${LIBS_INSTALL_FOLDER_PATH}/openssl"
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -2623,7 +2636,7 @@ function test_openssl()
     xbb_activate_installed_bin
 
     echo
-    echo "Testing if openssl binaries start properly..."
+    echo "Testing if the openssl binaries start properly..."
 
     run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl" version
 
