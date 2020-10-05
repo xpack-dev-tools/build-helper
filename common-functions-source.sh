@@ -1008,7 +1008,7 @@ function check_binary()
 {
   local file_path="$1"
 
-  if [ "${TARGET_PLATFORM}" != "win32" -a ! -x "${file_path}" ]
+  if false # [ "${TARGET_PLATFORM}" != "win32" -a ! -x "${file_path}" ]
   then
     echo "${file_path} not executable"
     return 0
