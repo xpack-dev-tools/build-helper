@@ -146,11 +146,27 @@ function build_zlib()
 
     )
 
+    (
+      test_zlib
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/test-output.txt"
+
     touch "${zlib_stamp_file_path}"
 
   else
     echo "Library zlib already installed."
   fi
+}
+
+function test_zlib()
+{
+  (
+    xbb_activate
+
+    echo
+    echo "Checking the zlib shared libraries..."
+
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libz.${SHLIB_EXT}"
+  )
 }
 
 # -----------------------------------------------------------------------------
