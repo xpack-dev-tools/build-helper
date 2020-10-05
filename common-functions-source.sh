@@ -1368,10 +1368,10 @@ function has_origin()
     exit 1
   fi
 
-  local bin="$1"
+  local elf="$1"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    local origin=$(readelf -d ${bin} | grep 'Library runpath: \[$ORIGIN\]')
+    local origin=$(readelf -d ${elf} | egrep 'Library (runpath|rpath): \[\$ORIGIN\]')
     if [ ! -z "${origin}" ]
     then
       return 0 # true
