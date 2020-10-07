@@ -2799,7 +2799,8 @@ function build_bzip2()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
+      # libbz2.a(bzlib.o): relocation R_X86_64_PC32 against symbol `BZ2_crc32Table' can not be used when making a shared object; recompile with -fPIC
+      CFLAGS="${XBB_CFLAGS_NO_W} -fPIC"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
