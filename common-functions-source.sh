@@ -871,9 +871,20 @@ function show_libs()
       otool -L "${app_path}"
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      echo
-      echo ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe
-      ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' 
+      if [ -f "${app_path}" ]
+      then
+        echo
+        echo "${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}"
+        ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' 
+      elif [ -f "${app_path}.exe" ]
+      then
+        echo
+        echo "${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe"
+        ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' 
+      else
+        echo
+        echo "${app_path} neither exe nor dll"
+      fi
     else
       echo "Oops! Unsupported ${TARGET_PLATFORM}."
       exit 1
