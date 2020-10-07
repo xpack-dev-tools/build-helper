@@ -1953,167 +1953,6 @@ function build_gpm()
 
 # -----------------------------------------------------------------------------
 
-# Download the Windows Python 2 libraries and headers.
-function download_python2_win() 
-{
-  # https://www.python.org/downloads/release/python-2714/
-  # https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
-  # https://www.python.org/ftp/python/2.7.14/python-2.7.14.amd64.msi
-
-  local python2_version="$1"
-
-  local python2_version_major=$(echo ${python2_version} | sed -e 's|\([0-9]\)\..*|\1|')
-  local python2_version_minor=$(echo ${python2_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
-
-  if [ "${TARGET_BITS}" == "32" ]
-  then
-    PYTHON2_SRC_FOLDER_NAME=python-"${python2_version}"
-  else
-    PYTHON2_SRC_FOLDER_NAME=python-"${python2_version}".amd64
-  fi
-
-  # Used to compute GNURM_PYTHON_WIN_DIR.
-  export PYTHON2_SRC_FOLDER_NAME
-
-  local python2_win_pack="${PYTHON2_SRC_FOLDER_NAME}.msi"
-  local python2_win_url="https://www.python.org/ftp/python/${python2_version}/${python2_win_pack}"
-
-  cd "${SOURCES_FOLDER_PATH}"
-
-  download "${python2_win_url}" "${python2_win_pack}"
-
-  (
-    xbb_activate
-
-    if [ ! -d "${PYTHON2_SRC_FOLDER_NAME}" ]
-    then
-      cd "${SOURCES_FOLDER_PATH}"
-
-      # Include only the headers and the python library and executable.
-      echo '*.h' >"/tmp/included"
-      echo 'python*.dll' >>"/tmp/included"
-      echo 'python*.lib' >>"/tmp/included"
-      7za x -o"${PYTHON2_SRC_FOLDER_NAME}" "${DOWNLOAD_FOLDER_PATH}/${python2_win_pack}" -i@"/tmp/included"
-
-      # Patch to disable the macro that renames hypot.
-      local patch_path="${BUILD_GIT_PATH}/patches/${PYTHON2_SRC_FOLDER_NAME}.patch"
-      if [ -f "${patch_path}" ]
-      then
-        (
-          cd "${PYTHON2_SRC_FOLDER_NAME}"
-          patch -p0 <"${patch_path}" 
-        )
-      fi
-    else
-      echo "Folder ${PYTHON2_SRC_FOLDER_NAME} already present."
-    fi
-
-    echo "Copying python${python2_version_major}${python2_version_minor}.dll..."
-    # From here it'll be copied as dependency.
-    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-    install -v -c -m 644 "${PYTHON2_SRC_FOLDER_NAME}/python${python2_version_major}${python2_version_minor}.dll" \
-      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-
-    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-    install -v -c -m 644 "${PYTHON2_SRC_FOLDER_NAME}/python${python2_version_major}${python2_version_minor}.lib" \
-      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-  )
-}
-
-# -----------------------------------------------------------------------------
-
-# Download the Windows Python 3 libraries and headers.
-function download_python3_win() 
-{
-  # https://www.python.org/downloads/windows/
-  # https://www.python.org/downloads/release/python-372/
-  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.post1-embed-win32.zip
-  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.post1-embed-amd64.zip
-  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.exe
-  # https://www.python.org/ftp/python/3.7.2/python-3.7.2-amd64.exe
-  # https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
-  # https://www.python.org/ftp/python/3.7.6/
-  # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-amd64.zip
-  # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-win32.zip
-
-  local python3_version="$1"
-
-  PYTHON3_VERSION_MAJOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
-  PYTHON3_VERSION_MINOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
-  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
-
-  # Version 3.7.2 uses a longer name, like python-3.7.2.post1-embed-amd64.zip.
-  if [ "${TARGET_BITS}" == "32" ]
-  then
-    PYTHON3_WIN_EMBED_FOLDER_NAME=python-"${python3_version}-embed-win32"
-  else
-    PYTHON3_WIN_EMBED_FOLDER_NAME=python-"${python3_version}-embed-amd64"
-  fi
-
-  # Used in python3-config.sh
-  export PYTHON3_WIN_EMBED_FOLDER_NAME
-  export PYTHON3_SRC_FOLDER_NAME="Python-${python3_version}"
-
-  local python3_win_embed_pack="${PYTHON3_WIN_EMBED_FOLDER_NAME}.zip"
-  local python3_win_embed_url="https://www.python.org/ftp/python/${python3_version}/${python3_win_embed_pack}"
-
-  (
-    xbb_activate
-
-    if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}" ]
-    then
-      mkdir -pv "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
-      cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
-
-      download_and_extract "${python3_win_embed_url}" "${python3_win_embed_pack}" "${PYTHON3_WIN_EMBED_FOLDER_NAME}"
-    else
-      echo "Folder ${PYTHON3_WIN_EMBED_FOLDER_NAME} already present."
-    fi
-      
-    cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_EMBED_FOLDER_NAME}"
-    echo "Copying python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll..."
-    # From here it'll be copied as dependency.
-    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-    install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}.dll" \
-      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-    install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll" \
-      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
-
-    if false
-    then
-      mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-      install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}.dll" \
-        "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-      install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll" \
-        "${LIBS_INSTALL_FOLDER_PATH}/lib/"
-    fi
-  )
-
-  local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
-  local python3_url="https://www.python.org/ftp/python/${python3_version}/${python3_archive}"
-
-  # local python3_folder_name="python-${python3_version}"
-
-  if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}" ]
-  then
-    cd "${SOURCES_FOLDER_PATH}"
-
-    download_and_extract "${python3_url}" "${python3_archive}" \
-      "${PYTHON3_SRC_FOLDER_NAME}"
-  fi
-
-  # The source archive includes only the pyconfig.h.in, which needs
-  # to be configured, which is not an easy task. Thus add the file copied 
-  # from a Windows install.
-  if [ -f "${BUILD_GIT_PATH}/patches/pyconfig-${python3_version}.h" ]
-  then
-    cp -v "${BUILD_GIT_PATH}/patches/pyconfig-${python3_version}.h" \
-      "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/Include/pyconfig.h"
-  fi
-}
-
-# -----------------------------------------------------------------------------
-
 function build_libmpdec()
 {
   # http://www.bytereef.org/mpdecimal/index.html
@@ -3031,6 +2870,287 @@ function build_bzip2()
   else
     echo "Library bzip2 already installed."
   fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_python2() 
+{
+  # https://www.python.org
+  # https://www.python.org/downloads/source/
+  # https://www.python.org/ftp/python/
+  # https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tar.xz
+  
+  # https://archlinuxarm.org/packages/aarch64/python/files/PKGBUILD
+  # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python
+  # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-pip
+
+  # 19-Apr-2020, "2.7.18"
+
+  local python2_version="$1"
+
+  export PYTHON2_VERSION_MAJOR=$(echo ${python2_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  export PYTHON2_VERSION_MINOR=$(echo ${python2_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  export PYTHON2_VERSION_MAJOR_MINOR=${PYTHON2_VERSION_MAJOR}${PYTHON2_VERSION_MINOR}
+
+  # Used in python27-config.sh.
+  export PYTHON2_SRC_FOLDER_NAME="Python-${python2_version}"
+
+  local python2_archive="${PYTHON2_SRC_FOLDER_NAME}.tar.xz"
+  local python2_url="https://www.python.org/ftp/python/${python2_version}/${python2_archive}"
+
+  local python2_folder_name="python-${python2_version}"
+
+  local python2_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${python2_folder_name}-installed"
+  if [ ! -f "${python2_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    (
+      xbb_activate
+
+      download_and_extract "${python2_url}" "${python2_archive}" \
+        "${PYTHON2_SRC_FOLDER_NAME}"
+    )
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${python2_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python2_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${python2_folder_name}"
+
+      xbb_activate
+      # To pick the new libraries
+      xbb_activate_installed_dev
+
+      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        # GCC fails with:
+        # error: variably modified 'bytes' at file scope
+        export CC=clang
+        export CXX=clang++
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
+
+      if [[ "${CC}" =~ gcc* ]]
+      then
+        # Inspired from Arch; not supported by clang.
+        CFLAGS+=" -fno-semantic-interposition"
+        CXXFLAGS+=" -fno-semantic-interposition"
+        LDFLAGS+=" -fno-semantic-interposition"
+      fi
+
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          echo
+          echo "Running python2 configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" --help
+
+          # Fail on macOS:
+          # --enable-universalsdk
+          # --with-lto
+
+          # "... you should not skip tests when using --enable-optimizations as 
+          # the data required for profiling is generated by running tests".
+
+          # --enable-optimizations takes too long
+
+          config_options=()
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--with-dbmliborder=gdbm:ndbm")
+
+          config_options+=("--without-ensurepip")
+          config_options+=("--without-lto")
+          
+          # Create the PythonX.Y.so.
+          config_options+=("--enable-shared")
+
+          config_options+=("--enable-unicode=ucs4")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" \
+            ${config_options[@]}
+             
+          cp "config.log" "${LOGS_FOLDER_PATH}/${python2_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python2_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running python2 make..."
+
+        # export LD_RUN_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
+
+        # Build.
+        run_verbose make -j ${JOBS} # build_all
+
+        # make install-strip
+        run_verbose make altinstall
+
+        # Hundreds of tests, take a lot of time.
+        # Many failures.
+        if false # [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 quicktest
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python2_folder_name}/make-output.txt"
+    )
+
+    (
+      test_python2
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python2_folder_name}/test-output.txt"
+
+    copy_license \
+      "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}" \
+      "${python2_folder_name}"
+
+    touch "${python2_stamp_file_path}"
+
+  else
+    echo "Component python2 already installed."
+  fi
+}
+
+
+function test_python2()
+{
+  (
+    # xbb_activate_installed_bin
+
+    echo
+    echo "Checking the python2 binary shared libraries..."
+
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/python2.${PYTHON2_VERSION_MINOR}"
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON2_VERSION_MAJOR}.${PYTHON2_VERSION_MINOR}.${SHLIB_EXT}"
+
+    echo
+    echo "Testing if the python2 binary starts properly..."
+
+    # export PYTHONHOME="${INSTALL_FOLDER_PATH}"
+    # export PYTHONPATH="${INSTALL_FOLDER_PATH}/lib/python2.8"
+    export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python2.${PYTHON2_VERSION_MINOR}" --version
+
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python2.${PYTHON2_VERSION_MINOR}" -c 'import sys; print(sys.path)'
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python2.${PYTHON2_VERSION_MINOR}" -c 'import sys; print(sys.prefix)'
+  )
+}
+
+
+# -----------------------------------------------------------------------------
+
+# Download the Windows Python 2 libraries and headers.
+function download_python2_win() 
+{
+  # https://www.python.org/downloads/release/python-2714/
+  # https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
+  # https://www.python.org/ftp/python/2.7.14/python-2.7.14.amd64.msi
+
+  local python2_win_version="$1"
+
+  export PYTHON2_VERSION_MAJOR=$(echo ${python2_win_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  export PYTHON2_VERSION_MINOR=$(echo ${python2_win_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  export PYTHON2_VERSION_MAJOR_MINOR=${PYTHON2_VERSION_MAJOR}${PYTHON2_VERSION_MINOR}
+
+  local python2_win_pack
+
+  if [ "${TARGET_BITS}" == "32" ]
+  then
+    PYTHON2_WIN_SRC_FOLDER_NAME="python-${python2_win_version}-embed-win32"
+    python2_win_pack="python-${python2_win_version}.msi"
+  else
+    PYTHON2_WIN_SRC_FOLDER_NAME="python-${python2_win_version}-embed-amd64"
+    python2_win_pack="python-${python2_win_version}.amd64.msi"
+  fi
+
+  # Used in python27-config.sh.
+  export PYTHON2_WIN_SRC_FOLDER_NAME
+
+  local python2_win_url="https://www.python.org/ftp/python/${python2_win_version}/${python2_win_pack}"
+
+  cd "${SOURCES_FOLDER_PATH}"
+
+  download "${python2_win_url}" "${python2_win_pack}"
+
+  (
+    xbb_activate
+
+    if [ ! -d "${PYTHON2_WIN_SRC_FOLDER_NAME}" ]
+    then
+      cd "${SOURCES_FOLDER_PATH}"
+
+      # Include only the headers and the python library and executable.
+      local tmp_path="/tmp/included$$"
+      echo '*.h' >"${tmp_path}"
+      echo 'python*.dll' >>"${tmp_path}"
+      echo 'python*.lib' >>"${tmp_path}"
+      7za x -o"${PYTHON2_WIN_SRC_FOLDER_NAME}" "${DOWNLOAD_FOLDER_PATH}/${python2_win_pack}" -i@"${tmp_path}"
+
+      # Patch to disable the macro that renames hypot.
+      local patch_path="${BUILD_GIT_PATH}/patches/${PYTHON2_WIN_SRC_FOLDER_NAME}.patch"
+      if [ -f "${patch_path}" ]
+      then
+        (
+          cd "${PYTHON2_WIN_SRC_FOLDER_NAME}"
+          patch -p0 <"${patch_path}" 
+        )
+      fi
+    else
+      echo "Folder ${PYTHON2_WIN_SRC_FOLDER_NAME} already present."
+    fi
+
+    echo "Copying python${PYTHON2_VERSION_MAJOR_MINOR}.dll..."
+    # From here it'll be copied as dependency.
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+    install -v -c -m 644 "${PYTHON2_WIN_SRC_FOLDER_NAME}/python${PYTHON2_VERSION_MAJOR_MINOR}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+    install -v -c -m 644 "${PYTHON2_WIN_SRC_FOLDER_NAME}/python${PYTHON2_VERSION_MAJOR_MINOR}.lib" \
+      "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+  )
+
+if false
+then
+  export PYTHON2_SRC_FOLDER_NAME="Python-${python2_win_version}"
+
+  local python2_archive="${PYTHON2_SRC_FOLDER_NAME}.tar.xz"
+  local python2_url="https://www.python.org/ftp/python/${python2_win_version}/${python2_archive}"
+
+  # The full source is needed for the headers.
+  if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}" ]
+  then
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${python2_url}" "${python2_archive}" \
+      "${PYTHON2_SRC_FOLDER_NAME}"
+  fi
+fi
 }
 
 # -----------------------------------------------------------------------------
