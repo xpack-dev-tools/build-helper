@@ -3180,17 +3180,7 @@ function build_python3()
   PYTHON3_VERSION_MINOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
   PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
 
-  # Version 3.7.2 uses a longer name, like python-3.7.2.post1-embed-amd64.zip.
-  if [ "${TARGET_BITS}" == "32" ]
-  then
-    PYTHON3_WIN_EMBED_FOLDER_NAME=python-"${python3_version}-embed-win32"
-  else
-    PYTHON3_WIN_EMBED_FOLDER_NAME=python-"${python3_version}-embed-amd64"
-  fi
-  # Used in python3-config.sh
-  export PYTHON3_WIN_EMBED_FOLDER_NAME
-
-  export PYTHON3_SRC_FOLDER_NAME="Python-${python3_version}"
+  PYTHON3_SRC_FOLDER_NAME="Python-${python3_version}"
 
   local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
   local python3_url="https://www.python.org/ftp/python/${python3_version}/${python3_archive}"
@@ -3291,21 +3281,11 @@ function build_python3()
           config_options+=("--without-ensurepip")
           config_options+=("--without-lto")
           
-          if false # [ "${TARGET_PLATFORM}" == "linux" ]
-          then
-            # Workaround, patchelf damages the python shared libraries.
-            config_options+=("--disable-shared")
-          else
-            config_options+=("--enable-shared")
-          fi
+          # Create the PythonX.Y.so.
+          config_options+=("--enable-shared")
 
           # config_options+=("--enable-loadable-sqlite-extensions")
           config_options+=("--disable-loadable-sqlite-extensions")
-
-          if [ "${TARGET_PLATFORM}" == "linux" ]
-          then
-            config_options+=("--disable-new-dtags")
-          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" \
             ${config_options[@]}
@@ -3324,7 +3304,7 @@ function build_python3()
         run_verbose make -j ${JOBS} # build_all
 
         # make install-strip
-        run_verbose make install
+        run_verbose make altinstall
 
         # Hundreds of tests, take a lot of time.
         # Many failures.
@@ -3359,7 +3339,7 @@ function test_python3()
     echo
     echo "Checking the python3 binary shared libraries..."
 
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/python3"
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}"
     show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}m.${SHLIB_EXT}"
 
     echo
@@ -3368,11 +3348,85 @@ function test_python3()
     # export PYTHONHOME="${INSTALL_FOLDER_PATH}"
     # export PYTHONPATH="${INSTALL_FOLDER_PATH}/lib/python3.8"
     export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3" --version
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" --version
 
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3" -c 'import sys; print(sys.path)'
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3" -c 'import sys; print(sys.prefix)'
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" -c 'import sys; print(sys.path)'
+    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" -c 'import sys; print(sys.prefix)'
   )
+}
+
+# -----------------------------------------------------------------------------
+
+# Download the Windows Python 3 libraries and headers.
+function download_python3_win() 
+{
+  # https://www.python.org/downloads/windows/
+  # https://www.python.org/downloads/release/python-372/
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.post1-embed-win32.zip
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.post1-embed-amd64.zip
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2.exe
+  # https://www.python.org/ftp/python/3.7.2/python-3.7.2-amd64.exe
+  # https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tar.xz
+  # https://www.python.org/ftp/python/3.7.6/
+  # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-amd64.zip
+  # https://www.python.org/ftp/python/3.7.6/python-3.7.6-embed-win32.zip
+
+  local python3_win_version="$1"
+
+  PYTHON3_VERSION_MAJOR=$(echo ${python3_win_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  PYTHON3_VERSION_MINOR=$(echo ${python3_win_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
+
+  # Version 3.7.2 uses a longer name, like python-3.7.2.post1-embed-amd64.zip.
+  if [ "${TARGET_BITS}" == "32" ]
+  then
+    PYTHON3_WIN_SRC_FOLDER_NAME="python-${python3_win_version}-embed-win32"
+  else
+    PYTHON3_WIN_SRC_FOLDER_NAME="python-${python3_win_version}-embed-amd64"
+  fi
+
+  # Used in python3-config.sh
+  export PYTHON3_WIN_SRC_FOLDER_NAME
+
+  local python3_win_embed_pack="${PYTHON3_WIN_SRC_FOLDER_NAME}.zip"
+  local python3_win_embed_url="https://www.python.org/ftp/python/${python3_win_version}/${python3_win_embed_pack}"
+
+  (
+    xbb_activate
+
+    if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}" ]
+    then
+      mkdir -pv "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
+      cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
+
+      download_and_extract "${python3_win_embed_url}" "${python3_win_embed_pack}" "${PYTHON3_WIN_SRC_FOLDER_NAME}"
+    else
+      echo "Folder ${PYTHON3_WIN_SRC_FOLDER_NAME} already present."
+    fi
+      
+    cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
+    echo "Copying python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll..."
+    # From here it'll be copied as dependency.
+    mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+    install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+    install -v -c -m 644 "python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll" \
+      "${LIBS_INSTALL_FOLDER_PATH}/bin/"
+  )
+
+  export PYTHON3_SRC_FOLDER_NAME="Python-${python3_win_version}"
+
+  local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
+  local python3_url="https://www.python.org/ftp/python/${python3_win_version}/${python3_archive}"
+
+  # The full source is needed for the headers.
+  if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}" ]
+  then
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${python3_url}" "${python3_archive}" \
+      "${PYTHON3_SRC_FOLDER_NAME}"
+  fi
 }
 
 # -----------------------------------------------------------------------------
