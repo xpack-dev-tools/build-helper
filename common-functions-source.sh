@@ -1423,6 +1423,66 @@ function has_rpath()
   return 1 # false
 }
 
+
+function strip_binaries()
+{
+  local folder_path="${APP_PREFIX}"
+  if [ $# -ge 1 ]
+  then
+    folder_path="$1"
+  fi
+
+  if [ "${WITH_STRIP}" == "y" ]
+  then
+    (
+      xbb_activate
+
+      echo
+      echo "Stripping binaries..."
+
+      # Otherwise `find` may fail.
+      cd "${WORK_FOLDER_PATH}"
+
+      local binaries
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+
+        binaries=$(find "${folder_path}" \( -name \*.exe -o -name '*.dll' \))
+        for bin in ${binaries} 
+        do
+          strip_binary "${bin}"
+        done
+
+      elif [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+
+        binaries=$(find "${folder_path}" -name \* -perm +111  -type f)
+        for bin in ${binaries} 
+        do
+          if is_elf "${bin}"
+          then
+            strip_binary "${bin}"
+          fi
+        done
+
+      elif [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+
+        binaries=$(find "${folder_path}" -name \* -type f)
+        for bin in ${binaries} 
+        do
+          if is_elf "${bin}"
+          then
+            strip_binary "${bin}"
+          fi
+        done
+
+      fi
+    )
+  fi
+}
+
+
 # Strip binary files as in "strip binary" form, for both native
 # (linux/mac) and mingw.
 function strip_binary2() 
