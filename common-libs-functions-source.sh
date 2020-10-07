@@ -2215,13 +2215,16 @@ function build_libxcrypt()
         # make install-strip
         run_verbose make install
 
-        if [ "${TARGET_PLATFORM}" == "darwin" ]
+        if [ "${WITH_TESTS}" == "y" ]
         then
-          # macOS FAIL: test/symbols-static.sh
-          # macOS FAIL: test/symbols-renames.sh
-          run_verbose make -j1 check || true
-        else
-          run_verbose make -j1 check
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+            # macOS FAIL: test/symbols-static.sh
+            # macOS FAIL: test/symbols-renames.sh
+            run_verbose make -j1 check || true
+          else
+            run_verbose make -j1 check
+          fi
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}/make-output.txt"
