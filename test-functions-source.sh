@@ -807,6 +807,124 @@ __EOF__
 
 }
 
+
+function create_quick_data_file()
+{
+  local message="$1"
+  local branch="$2"
+  local base_url="$3"
+  local data_file_path="$4"
+
+# Note: __EOF__ is NOT quoted to allow substitutions.
+cat <<__EOF__ > "${data_file_path}"
+{
+  "request": {
+    "message": "${message}",
+    "branch": "${branch}",
+    "config": {
+      "merge_mode": "replace",
+      "jobs": [
+        {
+          "name": "Debian 10 (Intel 64-bit)",
+          "os": "linux",
+          "arch": "amd64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh debian:buster ${base_url} "
+          ]
+        },
+        {
+          "name": "Debian 10 (Intel 32-bit)",
+          "os": "linux",
+          "arch": "amd64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 i386/debian:buster ${base_url} "
+          ]
+        },
+        {
+          "name": "Debian 10 (Arm 64-bit)",
+          "os": "linux",
+          "arch": "arm64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh debian:buster ${base_url} "
+          ]
+        },
+        {
+          "name": "Debian 10 (Arm 32-bit)",
+          "os": "linux",
+          "arch": "arm64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 arm32v7/debian:buster ${base_url} "
+          ]
+        },
+        {
+          "name": "macOS 10.15 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode11.5",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+          ]
+        },
+        {
+          "name": "Windows 10 (Intel 64-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url} " 
+          ]
+        },
+        {
+          "name": "Windows 10 (Intel 32-bit)",
+          "os": "windows",
+          "arch": "amd64",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh --32 ${base_url} " 
+          ]
+        }
+      ],
+      "notifications": {
+        "email": {
+          "on_success": "always",
+          "on_failure": "always"
+        }
+      }
+    }
+  }
+}
+__EOF__
+
+}
+
+
 function create_xpm_install_data_file()
 {
   local message="$1"
