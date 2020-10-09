@@ -2994,7 +2994,12 @@ function build_python2()
           # Create the PythonX.Y.so.
           config_options+=("--enable-shared")
 
-          config_options+=("--enable-unicode=ucs4")
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+            config_options+=("--enable-unicode=ucs2")
+          else
+            config_options+=("--enable-unicode=ucs4")
+          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" \
             ${config_options[@]}
