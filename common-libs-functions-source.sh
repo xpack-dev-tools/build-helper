@@ -2208,9 +2208,9 @@ function build_libxcrypt()
         run_verbose make -j ${JOBS}
 
         # install is not able to rewrite them.
-        rm -rfv "${INSTALL_FOLDER_PATH}"/lib*/libxcrypt.*
-        rm -rfv "${INSTALL_FOLDER_PATH}"/lib*/libowcrypt.*
-        rm -rfv "${INSTALL_FOLDER_PATH}"/lib/pkgconfig/libcrypt.pc
+        rm -rfv "${LIBS_INSTALL_FOLDER_PATH}"/lib*/libxcrypt.*
+        rm -rfv "${LIBS_INSTALL_FOLDER_PATH}"/lib*/libowcrypt.*
+        rm -rfv "${LIBS_INSTALL_FOLDER_PATH}"/lib/pkgconfig/libcrypt.pc
 
         # make install-strip
         run_verbose make install
