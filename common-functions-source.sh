@@ -1595,7 +1595,16 @@ function is_elf()
   if [ -f "${bin_path}" ]
   then
     # Return 0 (true) if found.
-    file ${bin_path} | egrep -q "( ELF )|( PE )|( PE32 )|( PE32\+ )|( Mach-O )"
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      file ${bin_path} | egrep -q "( ELF )"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      file ${bin_path} | egrep -q "( Mach-O )"
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      file ${bin_path} | egrep -q "( PE )|( PE32 )|( PE32\+ )"
+    fi
   else
     return 1
   fi
