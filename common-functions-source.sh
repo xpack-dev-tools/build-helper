@@ -1088,27 +1088,37 @@ function check_binary_for_libraries()
 
       # Skip the first line which is the binary itself.
       local libs
-      if [[ "${file_name}" == *\.dylib ]]
+      if is_darwin_dylib "${file_path}"
       then
         # Skip the second line too, which is the library again.
-        lib_names=$(otool -L "${file_path}" \
+        lib_paths=$(otool -L "${file_path}" \
               | sed '1d' \
               | sed '1d' \
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       else
-        lib_names=$(otool -L "${file_path}" \
+        lib_paths=$(otool -L "${file_path}" \
               | sed '1d' \
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       fi
-      for lib_name in ${lib_names}
+      local exec_prefix="@executable_path/"
+      for lib_path in ${lib_paths}
       do
-        if [ "${lib_name:0:1}" != "@" ]
+        if [ "${lib_path:0:1}" != "@" ]
         then
-          if ! is_darwin_allowed_sys_dylib "${lib_name}"
+          if is_darwin_allowed_sys_dylib "${lib_path}"
           then
-            echo ">>> \"${lib_name}\" is not expected here"
+            :
+          else
+            echo ">>> \"${lib_path}\" is not expected here"
+            exit 1
+          fi
+        elif [ "${lib_path:0:${#exec_prefix}}" == "${exec_prefix}" ]
+        then
+          if [ ! -f "${folder_path}/${lib_path:${#exec_prefix}}" ]
+          then
+            echo ">>> \"${lib_path:${#exec_prefix}}\" is expected in \"${folder_path}\""
             exit 1
           fi
         fi
@@ -1558,8 +1568,10 @@ function strip_binary()
   fi
   set -u
 
-  if ! is_elf "${file_path}"
+  if is_elf "${file_path}"
   then
+    :
+  else
     echo $(file "${file_path}")
     return
   fi  
@@ -1941,22 +1953,14 @@ function prepare_app_folder_libraries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+      binaries=$(find "${folder_path}" -name \* -perm +111 -type f)
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
         then
           echo
           echo "Preparing $(basename "${bin}") ${bin} libraries..."
-          if true
-          then
-            copy_dependencies_recursive "${bin}" \
-              "$(dirname "${bin}")"
-          else
-            # On macOS the dynamic libraries can be copied in the libexec folder.
-            copy_dependencies_recursive "${bin}" \
-              "$(dirname "${bin}")" "${libexec_folder_path}"
-          fi
+          copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
         fi
       done
 
@@ -2013,8 +2017,7 @@ function copy_dependencies_recursive()
     libexec_folder_path="${dest_folder_path}"
   fi
 
-  # The first step is to copy the file to libexec and link it.
-
+  # The first step is to copy the file to libexec/destination and link it.
 
   local source_file_name="$(basename "${source_file_path}")"
   local source_folder_path="$(dirname "${source_file_path}")"
@@ -2167,16 +2170,16 @@ function copy_dependencies_recursive()
   then
     echo
     otool -L "${dest_folder_path}/${source_file_name}"
-    local lib_names
-    if [[ "${source_file_name}" == *\.dylib ]]
+    local lib_paths
+    if is_darwin_dylib "${dest_folder_path}/${source_file_name}"
     then
-      lib_names=$(otool -L "${dest_folder_path}/${source_file_name}" \
+      lib_paths=$(otool -L "${dest_folder_path}/${source_file_name}" \
             | sed '1d' \
             | sed '1d' \
             | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
           )
     else
-      lib_names=$(otool -L "${dest_folder_path}/${source_file_name}" \
+      lib_paths=$(otool -L "${dest_folder_path}/${source_file_name}" \
             | sed '1d' \
             | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
           )
@@ -2184,53 +2187,78 @@ function copy_dependencies_recursive()
     local exec_prefix="@executable_path/"
     local loader_path="@loader_path/"
     local lib_name
-    for lib_name in ${lib_names}
+    for lib_path in ${lib_paths}
     do
-      local lib_link_base=""
-      if [ "${lib_name:0:1}" != "@" ]
+      local lib_link_base
+      if [ "${lib_path:0:1}" != "@" ]
       then
-        lib_link_base="$(basename $(readlink -f ${lib_name}))"
+        lib_link_name="$(basename $(readlink -f ${lib_path}))"
+        lib_name="$(basename "${lib_path}")"
+      else
+        lib_link_base=""
+        lib_name="${lib_path:${#exec_prefix}}"
       fi
 
-      if [ "${lib_name}" == "${exec_prefix}${source_file_name}" ]
+      if [ "${lib_path}" == "${exec_prefix}${source_file_name}" ]
       then
         :
-      elif [ "${lib_name}" == "${loader_path}${source_file_name}" ]
+      elif [ "${lib_path}" == "${loader_path}${source_file_name}" ]
       then
         :
-      elif [ "${lib_link_base}" == "${source_file_name}" ]
+      elif [ "${lib_link_name}" == "${source_file_name}" ]
       then
         : # Libraries return a line with their own name.
       else
-        if is_darwin_sys_dylib "${lib_name}"
+        if is_darwin_sys_dylib "${lib_path}"
         then
           : # System library, no need to copy it.
-          if ! is_darwin_allowed_sys_dylib "${lib_name}"
+          if is_darwin_allowed_sys_dylib "${lib_path}"
           then
-            echo "Oops! \"${lib_name}\" should not be there!"
+            continue # System library, no need to copy it.
+          else
+            echo "Oops! \"${lib_path}\" should not be there!"
+            exit 1
           fi
         else
-          # The libs can be relative to @executable_path or absolute.
-          if [ "${lib_name:0:${#exec_prefix}}" == "${exec_prefix}" ]
+          if [ -f "$(dirname "${actual_source_file_path}")/${lib_name}" ]
           then
-            : 
+            copy_dependencies_recursive "$(dirname "${actual_source_file_path}")/${lib_name}" \
+              "${actual_dest_folder_path}" "${libexec_folder_path}" 
+          elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
+          then
+            copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
+              "${actual_dest_folder_path}" "${libexec_folder_path}" 
+          elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" ]
+          then
+            copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" \
+              "${actual_dest_folder_path}" "${libexec_folder_path}"
           else
-            if [ -f "${lib_name}" ]
+            # Not a compiled dependency, perhas a compiler dependency.
+            local full_path=$(${CC} -print-file-name=${lib_name})
+            # -print-file-name outputs back the requested name if not found.
+            if [ "${full_path}" != "${lib_name}" ]
             then
-              copy_dependencies_recursive "${lib_name}" \
-                "${dest_folder_path}" "${libexec_folder_path}"
-            elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" ]
-            then
-              copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" \
-                "${dest_folder_path}" "${libexec_folder_path}"
+              copy_dependencies_recursive "${full_path}" \
+                "${actual_dest_folder_path}" "${libexec_folder_path}"
             else
-              echo "${lib_name} not found"
-              exit 1
+              # If no toolchain library either, last chance is the XBB libraries.
+              if [ -f "${XBB_FOLDER_PATH}/lib64/${lib_name}" ]
+              then
+                copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib64/${lib_name}" \
+                  "${actual_dest_folder_path}" "${libexec_folder_path}"
+              elif [ -f "${XBB_FOLDER_PATH}/lib/${lib_name}" ]
+              then
+                copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib_name}" \
+                  "${actual_dest_folder_path}" "${libexec_folder_path}"
+              else
+                echo "${lib_name} not found in the compiled or XBB libraries."
+                exit 1
+              fi
             fi
-            # Change library path to '@executable_path' inside the lib or app.
-            change_dylib "$(basename "${lib_name}")" \
-              "${dest_folder_path}/${source_file_name}"
           fi
+
+          # Change library path to '@executable_path' inside the lib or app.
+          change_dylib "${lib_name}" "${dest_folder_path}/${source_file_name}"
         fi
       fi
     done
@@ -2315,16 +2343,16 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
+      binaries=$(find "${folder_path}" -name \* -type f)
       for bin in ${binaries} 
       do
-        if is_elf_dynamic "${bin}"
+        if is_elf "${bin}"
         then
           check_binary "${bin}"
         else
           if [ "${IS_DEVELOP}" == "y" ]
           then
-            echo "$(file "${bin}") (not dynamic elf)"
+            echo "$(file "${bin}") (not elf)"
           fi
         fi
       done
