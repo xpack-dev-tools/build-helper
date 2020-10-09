@@ -1907,7 +1907,7 @@ function prepare_app_folder_libraries()
       binaries=$(find "${folder_path}" -name \* -perm +111 -and ! -type d)
       for bin in ${binaries} 
       do
-        if is_elf_dynamic "${bin}"
+        if is_elf "${bin}"
         then
           echo
           echo "Preparing $(basename "${bin}") ${bin} libraries..."
