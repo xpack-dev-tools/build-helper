@@ -1621,6 +1621,34 @@ function is_elf_dynamic()
 
 }
 
+function is_darwin_dylib()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_darwin_dylib: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+  local real_path
+
+  # Follow symlinks.
+  if [ -L "${bin_path}" ]
+  then
+    real_path="$(realpath "${bin_path}")"
+  else
+    real_path="${bin_path}"
+  fi
+
+  if [ -f "${real_path}" ]
+  then
+    # Return 0 (true) if found.
+    file ${real_path} | egrep -q "dynamically linked shared library"
+  else
+    return 1
+  fi
+}
+
 function is_ar()
 {
   if [ $# -lt 1 ]
