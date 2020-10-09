@@ -2732,6 +2732,7 @@ function copy_distro_files()
   (
     xbb_activate
 
+    echo
     mkdir -pv "${APP_PREFIX}/${DISTRO_INFO_NAME}"
 
     copy_build_files
@@ -2739,7 +2740,7 @@ function copy_distro_files()
     echo
     echo "Copying xPack files..."
 
-    cd "${WORK_FOLDER_PATH}/build.git"
+    cd "${BUILD_GIT_PATH}"
     README_OUT_FILE_NAME="${README_OUT_FILE_NAME:-README-OUT.md}"
     install -v -c -m 644 "scripts/${README_OUT_FILE_NAME}" \
       "${APP_PREFIX}/README.md"
