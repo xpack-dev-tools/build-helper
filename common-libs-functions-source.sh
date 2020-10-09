@@ -3060,8 +3060,6 @@ function test_python2()
     echo
     echo "Testing if the python2 binary starts properly..."
 
-    # export PYTHONHOME="${INSTALL_FOLDER_PATH}"
-    # export PYTHONPATH="${INSTALL_FOLDER_PATH}/lib/python2.8"
     export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
     run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python2.${PYTHON2_VERSION_MINOR}" --version
 
@@ -3354,8 +3352,6 @@ function test_python3()
     echo
     echo "Testing if the python3 binary starts properly..."
 
-    # export PYTHONHOME="${INSTALL_FOLDER_PATH}"
-    # export PYTHONPATH="${INSTALL_FOLDER_PATH}/lib/python3.8"
     export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
     run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" --version
 
