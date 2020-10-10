@@ -1066,9 +1066,6 @@ function check_binary_for_libraries()
           elif [ "${n}${HAS_WINPTHREAD}" == "libwinpthread-1.dlly" ]
           then
             :
-          elif [[ ${n} == python*.dll ]] && [[ ${file_name} == *-gdb-py.exe ]]
-          then
-            :
           else
             echo "Unexpected |${n}|"
             exit 1
