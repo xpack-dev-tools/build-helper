@@ -1154,6 +1154,20 @@ function install_archive()
 
 # -----------------------------------------------------------------------------
 
+function install_xpm()
+{
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+  
+  nvm install --lts node
+  nvm use --lts node
+
+  nvm install-latest-npm
+  
+  npm install --global xpm@latest
+}
+
+# -----------------------------------------------------------------------------
+
 # $1 = image name
 # $2 = base URL
 function docker_run_test() {
