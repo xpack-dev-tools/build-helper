@@ -941,6 +941,47 @@ cat <<__EOF__ > "${data_file_path}"
       "merge_mode": "replace",
       "jobs": [
         {
+          "name": "Ubuntu 18 (Intel 32-bit)",
+          "os": "linux",
+          "arch": "amd64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 i386/ubuntu:18.04 ${base_url} container-xpm-install-test.sh "
+          ]
+        },
+        {
+          "name": "Ubuntu 20 (Arm 64-bit)",
+          "os": "linux",
+          "arch": "arm64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:20.04 ${base_url} container-xpm-install-test.sh "
+          ]
+        },
+        {
+          "name": "Ubuntu 18 (Arm 32-bit)",
+          "os": "linux",
+          "arch": "arm64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 arm32v7/ubuntu:18.04 ${base_url} container-xpm-install-test.sh "
+          ]
+        }
+      ],
+      "_jobs": [
+        {
           "name": "Ubuntu 18 (Intel 64-bit)",
           "os": "linux",
           "arch": "amd64",
