@@ -1619,6 +1619,52 @@ function is_elf()
   fi
 }
 
+function is_target()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_target: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+
+  # Symlinks do not match.
+  if [ -L "${bin_path}" ]
+  then
+    return 1
+  fi
+
+  if [ -f "${bin_path}" ]
+  then
+    # Return 0 (true) if found.
+    if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "x64" ]
+    then
+      file ${bin_path} | egrep -q ", x86-64, "
+    elif [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "x32" ]
+    then
+      file ${bin_path} | egrep -q ", Intel 80386, "
+    elif [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "arm64" ]
+    then
+      file ${bin_path} | egrep -q ", ARM aarch64, "
+    elif [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "arm" ]
+    then
+      file ${bin_path} | egrep -q ", ARM, "
+    elif [ "${TARGET_PLATFORM}" == "darwin"-a "${TARGET_ARCH}" == "x64" ]
+    then
+      file ${bin_path} | egrep -q " x86_64"
+    elif [ "${TARGET_PLATFORM}" == "win32" -a "${TARGET_ARCH}" == "x64" ]
+    then
+      file ${bin_path} | egrep -q " x86-64 "
+    elif [ "${TARGET_PLATFORM}" == "win32" -a "${TARGET_ARCH}" == "x32" ]
+    then
+      file ${bin_path} | egrep -q " Intel 80386"
+    fi
+  else
+    return 1
+  fi
+}
+
 function is_elf_dynamic()
 {
   if [ $# -lt 1 ]
