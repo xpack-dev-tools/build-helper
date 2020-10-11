@@ -34,7 +34,10 @@
 # arm32v7/fedora:27 - Error: Failed to synchronize cache for repo 'fedora-modular'
 # arm32v7/fedora:25 - KeyError: 'armv8l'
 
-# Debian versions: 8 jessie, 9 stretch, 10 buster.
+# Debian versions: 
+# - 8 jessie
+# - 9 stretch
+# - 10 buster
 
 function create_stable_data_file()
 {
@@ -1204,7 +1207,7 @@ function install_xpm()
   nvm use --lts node
 
   nvm install-latest-npm
-  
+
   npm install --global xpm@latest
 }
 
