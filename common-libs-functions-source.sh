@@ -1138,7 +1138,7 @@ function build_ncurses()
 
         # The test-programs are interactive
 
-        # make install-strip
+        # Has no install-strip
         run_verbose make install
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/make-output.txt"
@@ -1541,7 +1541,12 @@ function build_libelf()
           run_verbose make -j1 check
         fi
 
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libelf_folder_name}/make-output.txt"
 
@@ -1659,6 +1664,7 @@ function build_expat()
           run_verbose make -j1 check
         fi
 
+        # Has no install-strip
         run_verbose make install
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${expat_folder_name}/make-output.txt"
@@ -1920,7 +1926,12 @@ function build_gpm()
           run_verbose make -j1 check
         fi
 
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
@@ -2055,7 +2066,12 @@ function build_libmpdec()
         # Build.
         run_verbose make -j ${JOBS}
 
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -2211,7 +2227,12 @@ function build_libxcrypt()
         rm -rfv "${LIBS_INSTALL_FOLDER_PATH}"/lib/pkgconfig/libcrypt.pc
 
         # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -2604,6 +2625,7 @@ function build_sqlite()
           )
         fi
 
+        # Has no install-strip
         run_verbose make install
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${sqlite_folder_name}/make-output.txt"
@@ -2715,7 +2737,7 @@ function build_readline()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
+        # Has no install-strip
         run_verbose make install
 
         if [ "${WITH_TESTS}" == "y" ]
@@ -3007,7 +3029,6 @@ function build_python2()
         # Build.
         run_verbose make -j ${JOBS} # build_all
 
-        # make install-strip
         run_verbose make altinstall
 
         # Hundreds of tests, take a lot of time.
@@ -3275,7 +3296,6 @@ function build_python3()
         # Build.
         run_verbose make -j ${JOBS} # build_all
 
-        # make install-strip
         run_verbose make altinstall
 
         # Hundreds of tests, take a lot of time.
