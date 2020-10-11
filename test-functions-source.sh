@@ -1005,6 +1005,7 @@ __EOF__
 
 }
 
+
 # data_file_path
 # github_org
 # github_repo
@@ -1177,6 +1178,15 @@ function docker_run_test() {
   local base_url="$1"
   shift
 
+  local script_name
+  if [ $# -gt 0 ]
+  then
+    script_name="$1"
+    shift
+  else
+    script_name="container-test.sh"
+  fi
+
   (
     prefix32="${prefix32:-""}"
 
@@ -1192,7 +1202,7 @@ function docker_run_test() {
       --volume "${work_folder_path}:${container_work_folder_path}" \
       --volume "${repo_folder_path}:${container_repo_folder_path}" \
       "${image_name}" \
-      ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/container-test.sh" \
+      ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/${script_name}" \
         "${image_name}" \
         "${base_url}" \
         "$@"
