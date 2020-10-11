@@ -957,19 +957,6 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "Ubuntu 20 (Arm 64-bit)",
-          "os": "linux",
-          "arch": "arm64",
-          "dist": "bionic",
-          "services": [ "docker" ],
-          "language": "minimal",
-          "script": [
-            "env | sort",
-            "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --script container-xpm-install-test.sh ubuntu:20.04 "
-          ]
-        },
-        {
           "name": "Ubuntu 18 (Arm 32-bit)",
           "os": "linux",
           "arch": "arm64",
@@ -1000,6 +987,19 @@ cat <<__EOF__ > "${data_file_path}"
             "env | sort",
             "pwd",
             "xpm install --global ${npm_package}"
+          ]
+        },
+        {
+          "name": "Ubuntu 18 (Arm 64-bit)",
+          "os": "linux",
+          "arch": "arm64",
+          "dist": "bionic",
+          "services": [ "docker" ],
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --script container-xpm-install-test.sh ubuntu:18.04 "
           ]
         },
         {
