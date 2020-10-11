@@ -942,7 +942,7 @@ cat <<__EOF__ > "${data_file_path}"
     "branch": "${branch}",
     "config": {
       "merge_mode": "replace",
-      "jobs": [
+      "_jobs": [
         {
           "name": "Ubuntu 18 (Intel 32-bit)",
           "os": "linux",
@@ -983,7 +983,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         }
       ],
-      "_jobs": [
+      "jobs": [
         {
           "name": "Ubuntu 18 (Intel 64-bit)",
           "os": "linux",
