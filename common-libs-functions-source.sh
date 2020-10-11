@@ -1417,9 +1417,7 @@ function build_gettext()
           make -j1 check # || true
         fi
 
-        # Avoid strip here, it may interfere with patchelf.
-        # make install-strip
-        if false # [ "${WITH_STRIP}" == "y" ]
+        if [ "${WITH_STRIP}" == "y" ]
         then
           run_verbose make install-strip
         else
