@@ -1479,7 +1479,15 @@ function strip_binaries()
         do
           if is_elf "${bin}"
           then
-            strip_binary "${bin}"
+            if is_target "${bin}"
+            then
+              strip_binary "${bin}"
+            else
+              if [ "${IS_DEVELOP}" == "y" ]
+              then
+                echo "$(file "${bin}") (not for target architecture)"
+              fi
+            fi
           fi
         done
 
@@ -1491,7 +1499,15 @@ function strip_binaries()
         do
           if is_elf "${bin}"
           then
-            strip_binary "${bin}"
+            if is_target "${bin}"
+            then
+              strip_binary "${bin}"
+            else
+              if [ "${IS_DEVELOP}" == "y" ]
+              then
+                echo "$(file "${bin}") (not for target architecture)"
+              fi
+            fi
           fi
         done
 
