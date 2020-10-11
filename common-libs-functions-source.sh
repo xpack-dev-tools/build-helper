@@ -2926,14 +2926,6 @@ function build_python2()
       # To pick the new libraries
       xbb_activate_installed_dev
 
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
-      then
-        # GCC fails with:
-        # error: variably modified 'bytes' at file scope
-        export CC=clang
-        export CXX=clang++
-      fi
-
       CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
@@ -3139,23 +3131,6 @@ function download_python2_win()
     install -v -c -m 644 "${PYTHON2_WIN_SRC_FOLDER_NAME}/python${PYTHON2_VERSION_MAJOR_MINOR}.lib" \
       "${LIBS_INSTALL_FOLDER_PATH}/lib/"
   )
-
-if false
-then
-  export PYTHON2_SRC_FOLDER_NAME="Python-${python2_win_version}"
-
-  local python2_archive="${PYTHON2_SRC_FOLDER_NAME}.tar.xz"
-  local python2_url="https://www.python.org/ftp/python/${python2_win_version}/${python2_archive}"
-
-  # The full source is needed for the headers.
-  if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}" ]
-  then
-    cd "${SOURCES_FOLDER_PATH}"
-
-    download_and_extract "${python2_url}" "${python2_archive}" \
-      "${PYTHON2_SRC_FOLDER_NAME}"
-  fi
-fi
 }
 
 # -----------------------------------------------------------------------------
@@ -3214,14 +3189,6 @@ function build_python3()
       xbb_activate
       # To pick the new libraries
       xbb_activate_installed_dev
-
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
-      then
-        # GCC fails with:
-        # error: variably modified 'bytes' at file scope
-        export CC=clang
-        export CXX=clang++
-      fi
 
       CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
       CFLAGS="${XBB_CFLAGS_NO_W}"
