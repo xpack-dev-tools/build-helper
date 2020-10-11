@@ -1639,6 +1639,25 @@ function is_elf_dynamic()
 
 }
 
+function is_dynamic()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_dynamic: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+
+  if [ -f "${bin_path}" ]
+  then
+    # Return 0 (true) if found.
+    file ${bin_path} | egrep -q "dynamically"
+  else
+    return 1
+  fi
+}
+
 function is_darwin_dylib()
 {
   if [ $# -lt 1 ]
