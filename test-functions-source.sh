@@ -953,7 +953,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 i386/ubuntu:18.04 ${base_url} container-xpm-install-test.sh "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 --script container-xpm-install-test.sh i386/ubuntu:18.04 "
           ]
         },
         {
@@ -966,7 +966,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:20.04 ${base_url} container-xpm-install-test.sh "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --script container-xpm-install-test.sh ubuntu:20.04 "
           ]
         },
         {
@@ -979,7 +979,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 arm32v7/ubuntu:18.04 ${base_url} container-xpm-install-test.sh "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 --script container-xpm-install-test.sh arm32v7/ubuntu:18.04 "
           ]
         }
       ],
