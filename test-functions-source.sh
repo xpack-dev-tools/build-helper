@@ -1216,20 +1216,19 @@ function install_xpm()
 # $1 = image name
 # $2 = base URL
 function docker_run_test() {
-  local image_name="$1"
-  shift
-
-  local base_url="$1"
-  shift
 
   local script_name
-  if [ $# -gt 0 ]
+  if [ $# -gt 0 -a "$1" == "--script" ]
   then
-    script_name="$1"
+    script_name="$2"
+    shift
     shift
   else
     script_name="container-test.sh"
   fi
+
+  local image_name="$1"
+  shift
 
   (
     prefix32="${prefix32:-""}"
@@ -1248,7 +1247,6 @@ function docker_run_test() {
       "${image_name}" \
       ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/${script_name}" \
         "${image_name}" \
-        "${base_url}" \
         "$@"
   )
 }
