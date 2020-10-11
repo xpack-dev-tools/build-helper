@@ -1019,12 +1019,6 @@ function check_binary()
 {
   local file_path="$1"
 
-  if false # [ "${TARGET_PLATFORM}" != "win32" -a ! -x "${file_path}" ]
-  then
-    echo "${file_path} not executable"
-    return 0
-  fi
-
   if file --mime "${file_path}" | grep -q text
   then
     echo "${file_path} has no text"
@@ -1152,10 +1146,7 @@ function check_binary_for_libraries()
         :
       else
         echo "${file_path} has no DT_RPATH \$ORIGIN ?????????????????????????????????????????"
-        if [ "${IS_DEVELOP}" != "y" ]
-        then
-          exit 1
-        fi
+        exit 1
       fi
 
       local so_names=$(readelf -d "${file_path}" \
@@ -1887,30 +1878,17 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
   cp "${file_path}" "${tmp_path}"
 
-  if false
+  if file "${tmp_path}" | grep statically
   then
-    local relative_path="$(realpath --relative-to="$(dirname ${file_path})" "${libexec_path}")"
-    if [ "${IS_DEVELOP}" == "y" ]
-    then
-      echo "\$ORIGIN/${relative_path}" "${file_path}"
-    fi
-    patchelf --force-rpath --set-rpath "\$ORIGIN/${relative_path}" "${tmp_path}"
+    file "${file_path}"
   else
-    if file "${tmp_path}" | grep statically
+    if has_rpath "${file_path}"
     then
-      file "${file_path}"
+      echo patchelf --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
+      patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
     else
-      if has_rpath "${file_path}"
-      then
-        echo patchelf --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
-        patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
-      else
-        echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        if [ "${IS_DEVELOP}" != "y" ]
-        then
-          exit 1
-        fi
-      fi
+      echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      exit 1
     fi
   fi
 
