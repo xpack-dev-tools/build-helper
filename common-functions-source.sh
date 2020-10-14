@@ -2386,6 +2386,7 @@ function copy_dependencies_recursive()
   fi
 }
 
+# Check all executables and shared libraries in the given folder.
 function check_binaries()
 {
   local folder_path="${APP_PREFIX}"
@@ -2710,6 +2711,7 @@ function create_archive()
 
 # -----------------------------------------------------------------------------
 
+# Deprecated, use check_binaries.
 # $1 = application name
 function check_application()
 {
