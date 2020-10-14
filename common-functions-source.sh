@@ -1876,6 +1876,16 @@ function patch_linux_elf_origin()
     libexec_path="$(dirname "${file_path}")"
   fi
 
+  local patchelf=${PATCHELF:-$(which patchelf)}
+  # run_verbose "${patchelf}" --version
+  # run_verbose "${patchelf}" --help
+
+  local patchelf_has_output=""
+  if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
+  then
+    patchelf_has_output="y"
+  fi
+
   local tmp_path=$(mktemp)
   rm -rf "${tmp_path}"
   cp "${file_path}" "${tmp_path}"
@@ -1886,15 +1896,20 @@ function patch_linux_elf_origin()
   else
     if has_rpath "${file_path}"
     then
-      echo patchelf --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
-      patchelf --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+      if [ "${patchelf_has_output}" == "y" ]
+      then
+       echo ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
+       ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
+      else
+        echo ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
+        ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+        cp "${tmp_path}" "${file_path}"
+      fi
     else
       echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
       exit 1
     fi
   fi
-
-  cp "${tmp_path}" "${file_path}"
   rm -rf "${tmp_path}"
 }
 
