@@ -926,11 +926,13 @@ function extract()
       then
         unzip "${archive_name}" 
       else
+        # On macOS Docker seems to have a problem and extracting symlinks
+        # fails, but a second atempt is successful.
         if [ ! -z "${DEBUG}" ]
         then
-          tar -x -v -f "${archive_name}" --no-same-owner
+          tar -x -v -f "${archive_name}" --no-same-owner || tar -x -v -f "${archive_name}" --no-same-owner
         else
-          tar -x -f "${archive_name}" --no-same-owner
+          tar -x -f "${archive_name}" --no-same-owner || tar -x -f "${archive_name}" --no-same-owner
         fi
       fi
 
