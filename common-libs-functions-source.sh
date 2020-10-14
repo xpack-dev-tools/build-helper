@@ -3852,10 +3852,10 @@ function build_glib()
       export CXXFLAGS
       export LDFLAGS
 
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ]
       then
-        # GNU GCC-7.4 fails with:
-        # error: variably modified 'bytes' at file scope
+        # GCC fails with
+        # error: unknown type name ‘dispatch_block_t
         export CC=clang
         export CXX=clang++
       fi
