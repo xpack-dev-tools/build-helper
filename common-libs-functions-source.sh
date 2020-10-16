@@ -2066,12 +2066,8 @@ function build_libmpdec()
         # Build.
         run_verbose make -j ${JOBS}
 
-        if [ "${WITH_STRIP}" == "y" ]
-        then
-          run_verbose make install-strip
-        else
-          run_verbose make install
-        fi
+        # Has no install-strip
+        run_verbose make install
 
         if [ "${WITH_TESTS}" == "y" ]
         then
