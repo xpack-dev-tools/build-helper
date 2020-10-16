@@ -3328,7 +3328,13 @@ function test_python3()
     echo "Checking the python3 binary shared libraries..."
 
     show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}"
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}m.${SHLIB_EXT}"
+    if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}m.${SHLIB_EXT}" ]
+    then
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}m.${SHLIB_EXT}"
+    elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}.${SHLIB_EXT}" ]
+    then
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}.${SHLIB_EXT}"
+    fi
 
     echo
     echo "Testing if the python3 binary starts properly..."
