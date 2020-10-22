@@ -397,9 +397,9 @@ function prepare_xbb_extras()
     XBB_CXXFLAGS+=" -g -O0"
     XBB_LDFLAGS+=" -g -O0"
   else
-    XBB_CFLAGS+=" -Ofast"
-    XBB_CXXFLAGS+=" -Ofast"
-    XBB_LDFLAGS+=" -Ofast"
+    XBB_CFLAGS+=" -O2"
+    XBB_CXXFLAGS+=" -O2"
+    XBB_LDFLAGS+=" -O2"
   fi
 
   if [ ! -z "$(xbb_activate; which "g++-xbb")" ]
