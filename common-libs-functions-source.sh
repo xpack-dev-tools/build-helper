@@ -217,7 +217,7 @@ function build_gmp()
       # Test fail with -Ofast, revert to -O2
       CFLAGS="$(echo ${XBB_CFLAGS_NO_W} | sed -e 's/-Ofast/-O2/g')" 
       CXXFLAGS="$(echo ${XBB_CXXFLAGS_NO_W} | sed -e 's/-Ofast/-O2/g')"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      LDFLAGS="$(echo ${XBB_LDFLAGS_LIB} | sed -e 's/-Ofast/-O2/g')"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
