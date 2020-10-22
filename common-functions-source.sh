@@ -363,6 +363,7 @@ function prepare_xbb_env()
   export PATH
   export LD_LIBRARY_PATH
 
+  export APP_PREFIX
   export SOURCES_FOLDER_PATH
 
   # libtool fails with the Ubuntu /bin/sh.
