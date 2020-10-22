@@ -1660,7 +1660,7 @@ function is_target()
     elif [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "arm" ]
     then
       file ${bin_path} | egrep -q ", ARM, "
-    elif [ "${TARGET_PLATFORM}" == "darwin"-a "${TARGET_ARCH}" == "x64" ]
+    elif [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "x64" ]
     then
       file ${bin_path} | egrep -q " x86_64"
     elif [ "${TARGET_PLATFORM}" == "win32" -a "${TARGET_ARCH}" == "x64" ]
