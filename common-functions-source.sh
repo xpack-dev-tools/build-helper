@@ -2263,13 +2263,13 @@ function copy_dependencies_recursive()
     local lib_name
     for lib_path in ${lib_paths}
     do
-      local lib_link_base
+      local lib_link_name
       if [ "${lib_path:0:1}" != "@" ]
       then
         lib_link_name="$(basename $(readlink -f ${lib_path}))"
         lib_name="$(basename "${lib_path}")"
       else
-        lib_link_base=""
+        lib_link_name=""
         lib_name="${lib_path:${#exec_prefix}}"
       fi
 
