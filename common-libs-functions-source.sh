@@ -3423,6 +3423,137 @@ function download_python3_win()
 
 # -----------------------------------------------------------------------------
 
+# Used by gdb-py3 on Windows. The default paths on Windows are different
+# from POSIX.
+function add_python3_win_syslibs()
+{
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    echo
+    echo "Copying .pyd & .dll files from the embedded Python distribution..."
+    mkdir -pv "${APP_PREFIX}/bin"
+    cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}/python37.zip"\
+      "${APP_PREFIX}/bin"
+
+    mkdir -pv "${APP_PREFIX}/bin/DLLs"
+    cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"/*.pyd \
+      "${APP_PREFIX}/bin/DLLs"
+    cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"/*.dll \
+      "${APP_PREFIX}/bin/DLLs"
+  fi
+}
+
+# Used by gdb-py3 on POSIX and by packages with full
+# control over path (like meson) on all platforms.
+function add_python3_syslibs()
+{
+  local python_with_version="python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}"
+  if [ ! -d "${APP_PREFIX}/lib/${python_with_version}/" ]
+  then
+    (
+      mkdir -pv "${APP_PREFIX}/lib/${python_with_version}/"
+
+      (
+        echo
+        echo "Copying .py files from the standard Python library..."
+
+        # Copy all .py from the original source package.
+        cp -r "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}"/Lib/* \
+          "${APP_PREFIX}/lib/${python_with_version}/"
+
+        echo "Compiling all python sources..."
+        if [ "${TARGET_PLATFORM}" == "win32" ]
+        then
+          run_verbose "${WORK_FOLDER_PATH}/${LINUX_INSTALL_RELATIVE_PATH}/libs/bin/python3.${PYTHON3_VERSION_MINOR}" \
+            -m compileall \
+            -j "${JOBS}" \
+            -f "${APP_PREFIX}/lib/${python_with_version}/" \
+            || true
+        else
+          # Compiling tests fails, ignore the errors.
+          run_verbose "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" \
+            -m compileall \
+            -j "${JOBS}" \
+            -f "${APP_PREFIX}/lib/${python_with_version}/" \
+            || true
+        fi
+
+        # For just in case.
+        find "${APP_PREFIX}/lib/${python_with_version}/" \
+          \( -name '*.opt-1.pyc' -o -name '*.opt-2.pyc' \) \
+          -exec rm -v {} \;
+      )
+
+      echo "Replacing .py files with .pyc files..."
+      move_pyc "${APP_PREFIX}/lib/${python_with_version}"
+
+      mkdir -pv "${APP_PREFIX}/lib/${python_with_version}/lib-dynload/"
+
+      echo
+      echo "Copying Python shared libraries..."
+
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        # Copy the Windows specific DLLs (.pyd) to the separate folder;
+        # they are dynamically loaded by Python.
+        cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"/*.pyd \
+          "${APP_PREFIX}/lib/${python_with_version}/lib-dynload/"
+        # Copy the usual DLLs too; the python*.dll are used, do not remove them.
+        cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"/*.dll \
+          "${APP_PREFIX}/lib/${python_with_version}/lib-dynload/"
+      else
+        # Copy dynamically loaded modules and rename folder.
+        cp -rv "${LIBS_INSTALL_FOLDER_PATH}/lib/python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}"/lib-dynload/* \
+          "${APP_PREFIX}/lib/${python_with_version}/lib-dynload/"
+      fi
+    )
+  fi
+}
+
+function process_pyc()
+{
+  local file_path="$1"
+
+  # echo bbb "${file_path}"
+
+  local file_full_name="$(basename "${file_path}")"
+  local file_name="$(echo "${file_full_name}" | sed -e 's|\.cpython-[0-9]*\.pyc||')"
+  local folder_path="$(dirname $(dirname "${file_path}"))"
+
+  # echo "${folder_path}" "${file_name}"
+
+  if [ -f "${folder_path}/${file_name}.py" ] 
+  then
+    mv "${file_path}" "${folder_path}/${file_name}.pyc"
+    rm "${folder_path}/${file_name}.py"
+  fi
+}
+
+export -f process_pyc
+
+function process_pycache()
+{
+  local folder_path="$1"
+
+  find ${folder_path} -name '*.pyc' -type f -print0 | xargs -0 -L 1 -I {} bash -c 'process_pyc "{}"'
+
+  if [ $(ls -1 "${folder_path}" | wc -l) -eq 0 ]
+  then
+    rm -rf "${folder_path}"
+  fi
+}
+
+export -f process_pycache
+
+function move_pyc()
+{
+  local folder_path="$1"
+
+  find ${folder_path} -name '__pycache__' -type d -print0 | xargs -0 -L 1 -I {} bash -c 'process_pycache "{}"'
+}
+
+# -----------------------------------------------------------------------------
+
 function build_libpng() 
 {
   # To ensure builds stability, use slightly older releases.
