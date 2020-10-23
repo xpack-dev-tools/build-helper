@@ -1361,7 +1361,9 @@ function good_bye()
   do_run uname -a
   if [ "${node_platform}" == "linux" ]
   then
-    do_run lsb_release -a
+    # On opensuse/tumbleweed:latest it fails:
+    # /usr/bin/lsb_release: line 122: getopt: command not found
+    do_run lsb_release -a || true
     do_run ldd --version
   elif [ "${node_platform}" == "darwin" ]
   then
