@@ -1074,7 +1074,7 @@ function trigger_travis()
 # Set the following variables:
 #
 # - node_platform={win32,linux,darwin}
-# - node_architecture={x64,x32,arm64,arm}
+# - node_architecture={x64,ia32,arm64,arm}
 # - bits={32,64}
 
 function detect_architecture()

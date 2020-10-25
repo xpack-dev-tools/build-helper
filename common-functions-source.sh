@@ -235,10 +235,10 @@ function prepare_xbb_env()
     WITH_TESTS="n"
 
     # For Windows targets, decide which cross toolchain to use.
-    if [ ${TARGET_ARCH} == "x32" ]
+    if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
     then
       CROSS_COMPILE_PREFIX="i686-w64-mingw32"
-    elif [ ${TARGET_ARCH} == "x64" ]
+    elif [ "${TARGET_ARCH}" == "x64" ]
     then
       CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
     else
@@ -383,7 +383,7 @@ function prepare_xbb_extras()
   XBB_CFLAGS="-ffunction-sections -fdata-sections -pipe"
   XBB_CXXFLAGS="-ffunction-sections -fdata-sections -pipe"
 
-  if [ "${TARGET_ARCH}" == "x64" -o "${TARGET_ARCH}" == "x32" ]
+  if [ "${TARGET_ARCH}" == "x64" -o "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
   then
     XBB_CFLAGS+=" -m${TARGET_BITS}"
     XBB_CXXFLAGS+=" -m${TARGET_BITS}"
@@ -599,6 +599,8 @@ function do_actions()
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
@@ -613,6 +615,8 @@ function do_actions()
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32/build/${APP_LC_NAME}"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
@@ -656,6 +660,9 @@ function do_actions()
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install"/stamp-*-installed
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32/install"/stamp-*-installed
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
@@ -672,6 +679,9 @@ function do_actions()
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install"/stamp-*-installed
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32/build/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32/install/libs"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32/install"/stamp-*-installed
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
@@ -1651,7 +1661,7 @@ function is_target()
     if [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "x64" ]
     then
       file ${bin_path} | egrep -q ", x86-64, "
-    elif [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "x32" ]
+    elif [ "${TARGET_PLATFORM}" == "linux" -a \( "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" \) ]
     then
       file ${bin_path} | egrep -q ", Intel 80386, "
     elif [ "${TARGET_PLATFORM}" == "linux" -a "${TARGET_ARCH}" == "arm64" ]
@@ -1666,7 +1676,7 @@ function is_target()
     elif [ "${TARGET_PLATFORM}" == "win32" -a "${TARGET_ARCH}" == "x64" ]
     then
       file ${bin_path} | egrep -q " x86-64 "
-    elif [ "${TARGET_PLATFORM}" == "win32" -a "${TARGET_ARCH}" == "x32" ]
+    elif [ "${TARGET_PLATFORM}" == "win32" -a \( "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" \) ]
     then
       file ${bin_path} | egrep -q " Intel 80386"
     fi
@@ -2052,7 +2062,7 @@ function prepare_app_folder_libraries()
           # and links be kept in the current folder, but not for 32-bit
           # Intel distros.
           # For consistency reasons, do the same on all platforms.
-          if true # [ "${TARGET_ARCH}" == "x32" ]
+          if true # [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
           then
             copy_dependencies_recursive "${bin_path}" \
               "$(dirname "${bin_path}")"
