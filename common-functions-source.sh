@@ -723,6 +723,7 @@ function do_actions()
         echo "Removing the win32-x32 folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32"
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
@@ -735,6 +736,7 @@ function do_actions()
         echo "Removing the linux-x32 folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32"
+        rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32"
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
