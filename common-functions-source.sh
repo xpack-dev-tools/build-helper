@@ -595,7 +595,7 @@ function do_actions()
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
-        echo "Removing the win32-x32 build and install ${APP_LC_NAME} folders..."
+        echo "Removing the win32 32-bit build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/${APP_LC_NAME}"
@@ -604,14 +604,14 @@ function do_actions()
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
-        echo "Removing the win32-x64 build and install ${APP_LC_NAME} folders..."
+        echo "Removing the win32 64-bit build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_LINUX32}" == "y" ]
       then
-        echo "Removing the linux-x32 build and install ${APP_LC_NAME} folders..."
+        echo "Removing the linux 32-bit build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/${APP_LC_NAME}"
@@ -620,14 +620,14 @@ function do_actions()
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
-        echo "Removing the linux-x64 build and install ${APP_LC_NAME} folders..."
+        echo "Removing the linux 64-bit build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/${APP_LC_NAME}"
       fi
       if [ "${DO_BUILD_OSX}" == "y" ]
       then
-        echo "Removing the darwin-x64 build and install ${APP_LC_NAME} folders..."
+        echo "Removing the darwin build and install ${APP_LC_NAME} folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/install/${APP_LC_NAME}"
@@ -655,7 +655,7 @@ function do_actions()
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
-        echo "Removing the win32-x32 build and install libs folders..."
+        echo "Removing the win32 32-bit build and install libs folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32/install/libs"
@@ -666,7 +666,7 @@ function do_actions()
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
-        echo "Removing the win32-x64 build and install libs folders..."
+        echo "Removing the win32 64-bit build and install libs folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64/install/libs"
@@ -674,7 +674,7 @@ function do_actions()
       fi
       if [ "${DO_BUILD_LINUX32}" == "y" ]
       then
-        echo "Removing the linux-x32 build and install libs folders..."
+        echo "Removing the linux 32-bit build and install libs folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32/install/libs"
@@ -685,7 +685,7 @@ function do_actions()
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
-        echo "Removing the linux-x64 build and install libs folders..."
+        echo "Removing the linux 64-bit build and install libs folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/libs"
@@ -693,7 +693,7 @@ function do_actions()
       fi
       if [ "${DO_BUILD_OSX}" == "y" ]
       then
-        echo "Removing the darwin-x64 build and install libs folders..."
+        echo "Removing the darwin build and install libs folders..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/build/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64/install/libs"
@@ -720,33 +720,33 @@ function do_actions()
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
-        echo "Removing the win32-x32 folder..."
+        echo "Removing the win32 32-bit folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x32"
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-ia32"
       fi
       if [ "${DO_BUILD_WIN64}" == "y" ]
       then
-        echo "Removing the win32-x64 folder..."
+        echo "Removing the win32 64-bit folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/win32-x64"
       fi
       if [ "${DO_BUILD_LINUX32}" == "y" ]
       then
-        echo "Removing the linux-x32 folder..."
+        echo "Removing the linux 32-bit folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x32"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-ia32"
       fi
       if [ "${DO_BUILD_LINUX64}" == "y" ]
       then
-        echo "Removing the linux-x64 folder..."
+        echo "Removing the linux 64-bit folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64"
       fi
       if [ "${DO_BUILD_OSX}" == "y" ]
       then
-        echo "Removing the darwin-x64 folder..."
+        echo "Removing the darwin folder..."
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/darwin-x64"
       fi

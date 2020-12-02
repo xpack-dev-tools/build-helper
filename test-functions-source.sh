@@ -1101,7 +1101,7 @@ function detect_architecture()
     bits="64"
   elif [ "${uname_machine}" == "i386" -o "${uname_machine}" == "i586" -o "${uname_machine}" == "i686" ]
   then
-    node_architecture="x32"
+    node_architecture="ia32"
     bits="32"
   elif [ "${uname_machine}" == "aarch64" ]
   then
@@ -1158,7 +1158,7 @@ function install_archive()
     archive_extension="zip"
     if [ "${force_32_bit}" == "y" ]
     then
-      archive_architecture="x32"
+      archive_architecture="ia32"
     fi
   else
     archive_extension="tar.gz"

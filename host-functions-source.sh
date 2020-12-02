@@ -69,7 +69,7 @@ function host_detect()
   HOST_DISTRO_NAME="?" # Linux distribution name (Ubuntu|CentOS|...)
   HOST_DISTRO_LC_NAME="?" # Same, in lower case.
 
-  HOST_NODE_ARCH="?" # Node.js process.arch (x32|x64|arm|arm64)
+  HOST_NODE_ARCH="?" # Node.js process.arch (ia32|x64|arm|arm64)
   HOST_NODE_PLATFORM="?" # Node.js process.platform (darwin|linux|win32)
 
   if [ "${HOST_UNAME}" == "Darwin" ]
@@ -99,7 +99,7 @@ function host_detect()
     elif [ "${HOST_MACHINE}" == "i386" -o "${HOST_MACHINE}" == "i686" ]
     then
       HOST_BITS="32"
-      HOST_NODE_ARCH="x32"
+      HOST_NODE_ARCH="ia32"
     elif [ "${HOST_MACHINE}" == "aarch64" ]
     then
       HOST_BITS="64"
@@ -1093,7 +1093,7 @@ function host_build_all() {
         --script "${CONTAINER_WORK_FOLDER_PATH}/${CONTAINER_BUILD_SCRIPT_REL_PATH}" \
         --env-file "${ENV_FILE}" \
         --target-platform "linux" \
-        --target-arch "x32" \
+        --target-arch "ia32" \
         --target-machine "i386" \
         --target-bits 32 \
         --docker-image "${docker_linux32_image}" \
@@ -1112,7 +1112,7 @@ function host_build_all() {
         --script "${CONTAINER_WORK_FOLDER_PATH}/${CONTAINER_BUILD_SCRIPT_REL_PATH}" \
         --env-file "${ENV_FILE}" \
         --target-platform "win32" \
-        --target-arch "x32" \
+        --target-arch "ia32" \
         --target-machine "i386" \
         --target-bits 32 \
         --docker-image "${docker_linux32_image}" \
