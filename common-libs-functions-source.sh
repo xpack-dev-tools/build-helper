@@ -957,8 +957,8 @@ function build_libiconv()
 function build_ncurses()
 {
   # https://invisible-island.net/ncurses/
-  # ftp://ftp.invisible-island.net/pub/ncurses
-  # ftp://ftp.invisible-island.net/pub/ncurses/ncurses-6.2.tar.gz
+  # https://invisible-mirror.net/archives/ncurses/
+  # https://invisible-mirror.net/archives/ncurses/ncurses-6.2.tar.gz
 
   # depends=(glibc gcc-libs)
   # https://archlinuxarm.org/packages/aarch64/ncurses/files/PKGBUILD
@@ -983,7 +983,7 @@ function build_ncurses()
   local ncurses_src_folder_name="ncurses-${ncurses_version}"
 
   local ncurses_archive="${ncurses_src_folder_name}.tar.gz"
-  local ncurses_url="ftp://ftp.invisible-island.net//pub/ncurses/${ncurses_archive}"
+  local ncurses_url="https://invisible-mirror.net/archives/ncurses/${ncurses_archive}"
 
   # The folder name  for build, licenses, etc.
   local ncurses_folder_name="${ncurses_src_folder_name}"
