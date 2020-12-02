@@ -1631,7 +1631,7 @@ function is_elf()
       file ${bin_path} | egrep -q "( ELF )"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      file ${bin_path} | egrep -q "( Mach-O )"
+      file ${bin_path} | egrep -q "Mach-O .*x86_64"
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
       file ${bin_path} | egrep -q "( PE )|( PE32 )|( PE32\+ )"
