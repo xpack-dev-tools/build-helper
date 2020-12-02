@@ -2149,7 +2149,8 @@ function copy_dependencies_recursive()
 
       else
         # Not a symlink and not an elf. Ignore it.
-        echo "!!!!!!!!!!!!!!"
+        file "${source_file_path}"
+        echo "!!!!!!!!!!!!!!" 
         return
       fi
     fi
