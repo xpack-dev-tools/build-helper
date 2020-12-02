@@ -2337,6 +2337,10 @@ function copy_dependencies_recursive()
               then
                 copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib_name}" \
                   "${actual_dest_folder_path}" "${libexec_folder_path}"
+              elif [ -f "${XBB_FOLDER_PATH}/usr/x86_64-apple-darwin14.5.0/lib/${lib_name}" ]
+              then
+                copy_dependencies_recursive "${XBB_FOLDER_PATH}/usr/x86_64-apple-darwin14.5.0/lib/${lib_name}" \
+                  "${actual_dest_folder_path}" "${libexec_folder_path}"
               else
                 echo "${lib_name} not found in the compiled or XBB libraries."
                 exit 1
