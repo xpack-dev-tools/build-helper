@@ -1481,7 +1481,7 @@ function strip_binaries()
       elif [ "${TARGET_PLATFORM}" == "darwin" ]
       then
 
-        binaries=$(find "${folder_path}" -name \* -perm +111  -type f)
+        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l)
         for bin in ${binaries} 
         do
           if is_elf "${bin}"
@@ -1501,7 +1501,7 @@ function strip_binaries()
       elif [ "${TARGET_PLATFORM}" == "linux" ]
       then
 
-        binaries=$(find "${folder_path}" -name \* -type f)
+        binaries=$(find "${folder_path}" -name \* -type f ! -type l)
         for bin in ${binaries} 
         do
           if is_elf "${bin}"
@@ -1581,6 +1581,11 @@ function strip_binary()
       file_path="${file_path}.exe"
     fi
   else
+    if [ -L "${file_path}" ]
+    then
+      echo "??? '${file_path}' should not strip links"
+      exit 1
+    fi
     if [ -z "${strip}" ]
     then
       strip="strip"
@@ -1837,6 +1842,12 @@ function change_dylib()
 {
   local dylib_name="$1"
   local file_path="$2"
+
+  if [ -L "${file_path}" ]
+  then
+    echo "??? '${file_path}' should not change links link!"
+    exit 1
+  fi
 
   local dylib_path="$(otool -L "${file_path}" | sed '1d' | sed -e 's|[[:space:]]*\(.*\)[[:space:]][(].*[)]|\1|' | grep "${dylib_name}")"
 
@@ -2176,12 +2187,12 @@ function copy_dependencies_recursive()
     actual_source_file_path="${source_file_path}"
   fi
 
-  if [ "${WITH_STRIP}" == "y" ]
+  if [ "${WITH_STRIP}" == "y" -a ! -L "${copied_file_path}" ]
   then
     strip_binary "${copied_file_path}"
   fi
 
-  if [ "${TARGET_PLATFORM}" == "linux" ]
+  if [ "${TARGET_PLATFORM}" == "linux" -a ! -L "${copied_file_path}" ]
   then
     patch_linux_elf_origin "${copied_file_path}"
   fi
@@ -2355,8 +2366,11 @@ function copy_dependencies_recursive()
             fi
           fi
 
-          # Change library path to '@executable_path' inside the lib or app.
-          change_dylib "${lib_name}" "${dest_folder_path}/${source_file_name}"
+          if [ ! -L "${copied_file_path}" ]
+          then
+            # Change library path to '@executable_path' inside the lib or app.
+            change_dylib "${lib_name}" "${copied_file_path}" # "${dest_folder_path}/${source_file_name}"
+          fi
         fi
       fi
     done
