@@ -1055,7 +1055,7 @@ function check_binary_for_libraries()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       echo
-      echo "${file_name} (${file_path})"
+      echo "${file_name}: (${file_path})"
       set +e
       ${CROSS_COMPILE_PREFIX}-objdump -x "${file_path}" | grep -i 'DLL Name'
 
@@ -1088,7 +1088,8 @@ function check_binary_for_libraries()
       (
         set +e
         cd ${folder_path}
-        otool -L "${file_name}"
+        echo "${file_name}: (${file_path})"
+        otool -L "${file_name}" | sed -e '1d'
         set -e
       )
 
@@ -1150,7 +1151,7 @@ function check_binary_for_libraries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
       echo
-      echo "${file_name} (${file_path})"
+      echo "${file_name}: (${file_path})"
       set +e
       readelf -d "${file_path}" | egrep -i '(SONAME)'
       readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)'
@@ -1462,7 +1463,7 @@ function strip_binaries()
       xbb_activate
 
       echo
-      echo "Stripping binaries..."
+      echo "# Stripping binaries..."
 
       # Otherwise `find` may fail.
       cd "${WORK_FOLDER_PATH}"
@@ -1603,7 +1604,7 @@ function strip_binary()
     return
   fi
 
-  echo "${strip} ${file_path}"
+  echo "[${strip} ${file_path}]"
   "${strip}" -S "${file_path}" || true
 }
 
@@ -1855,14 +1856,17 @@ function change_dylib()
   then
     local version="$(otool -L "${file_path}" | grep "${dylib_name}" | sed -e 's|.*current version \([0-9][0-9]*\.[0-9][0-9]*\).*|\1|')"
     dylib_name="libpython${version}.dylib"
-    rm -rf "$(dirname ${file_path})/Python"
+    rm -rfv "$(dirname ${file_path})/Python"
   fi
 
   chmod +w "${file_path}"
-  install_name_tool \
-    -change "${dylib_path}" \
-    "@executable_path/${dylib_name}" \
-    "${file_path}"
+  if [ "${dylib_path}" != "@executable_path/${dylib_name}" ]
+  then
+    run_verbose install_name_tool \
+      -change "${dylib_path}" \
+      "@executable_path/${dylib_name}" \
+      "${file_path}"
+  fi
 
   if [ ! -f "$(dirname ${file_path})/${dylib_name}" ]
   then
@@ -2018,7 +2022,7 @@ function prepare_app_folder_libraries()
     xbb_activate
 
     echo
-    echo "Preparing ${folder_path} libraries..."
+    echo "# Preparing ${folder_path} libraries..."
 
     # Otherwise `find` may fail.
     cd "${WORK_FOLDER_PATH}"
@@ -2031,7 +2035,7 @@ function prepare_app_folder_libraries()
       for bin in ${binaries} 
       do
         echo
-        echo "Preparing $(basename "${bin}") ${bin} libraries..."
+        echo "## Preparing $(basename "${bin}") ${bin} libraries..."
         # On Windows the DLLs are copied in the same folder.
         copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
       done
@@ -2045,7 +2049,7 @@ function prepare_app_folder_libraries()
         if is_elf "${bin}"
         then
           echo
-          echo "Preparing $(basename "${bin}") ${bin} libraries..."
+          echo "## Preparing $(basename "${bin}") ${bin} libraries..."
           copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
         fi
       done
@@ -2059,7 +2063,7 @@ function prepare_app_folder_libraries()
         if is_elf_dynamic "${bin_path}"
         then
           echo
-          echo "Preparing $(basename "${bin_path}") (${bin_path}) libraries..."
+          echo "## Preparing $(basename "${bin_path}") (${bin_path}) libraries..."
           # On Linux the shared libraries can be copied in the libexec folder,
           # and links be kept in the current folder, but not for 32-bit
           # Intel distros.
@@ -2103,6 +2107,8 @@ function copy_dependencies_recursive()
     libexec_folder_path="${dest_folder_path}"
   fi
 
+  # echo "copy_dependencies_recursive $@"
+
   # The first step is to copy the file to libexec/destination and link it.
 
   local source_file_name="$(basename "${source_file_path}")"
@@ -2132,6 +2138,7 @@ function copy_dependencies_recursive()
         #
         # Compute the final absolute path of the link, regardless
         # how many links there are on the way.
+        echo "process link ${source_file_path}"
         actual_source_file_path="$(readlink -f "${source_file_path}")"
         copied_file_path="${libexec_folder_path}/$(basename "${actual_source_file_path}")"
         
@@ -2141,7 +2148,7 @@ function copy_dependencies_recursive()
         if [ "${IS_DEVELOP}" == "y" ]
         then
           # The file is definitelly an elf, not a link.
-          echo "is_elf ${source_file_name}"
+          echo "[is_elf ${source_file_name}]"
         fi
 
         actual_source_file_path="${source_file_path}"
@@ -2163,7 +2170,7 @@ function copy_dependencies_recursive()
   then
     if [ ! -f "${copied_file_path}" ]
     then
-      install -v -c -m 644 "${actual_source_file_path}" "${copied_file_path}"
+      run_verbose install -c -m 644 "${actual_source_file_path}" "${copied_file_path}"
     fi
   else
     actual_source_file_path="${source_file_path}"
@@ -2186,7 +2193,7 @@ function copy_dependencies_recursive()
       cd "${dest_folder_path}"
 
       local link_relative_path="$(realpath --relative-to="${dest_folder_path}" "${copied_file_path}")"
-      ln -sv "${link_relative_path}" "${source_file_name}" 
+      run_verbose ln -s "${link_relative_path}" "${source_file_name}" 
     )
   fi
 
