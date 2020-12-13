@@ -415,7 +415,12 @@ function prepare_xbb_extras()
   then
     prepare_gcc_env "" "-7"
   else
-    prepare_gcc_env "" ""
+    if [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      prepare_clang_env "" ""
+    else
+      prepare_gcc_env "" ""
+    fi
   fi
 
   if [ "${TARGET_PLATFORM}" == "linux" ]
@@ -575,6 +580,37 @@ function unset_gcc_env()
   unset WINDRES
   unset WINDMC
   unset RC
+}
+
+function prepare_clang_env()
+{
+  local prefix="$1"
+
+  local suffix
+  if [ $# -ge 2 ]
+  then
+    suffix="$2"
+  else
+    suffix=""
+  fi
+
+  export CC="${prefix}clang${suffix}"
+  export CXX="${prefix}clang++${suffix}"
+
+  export AR="${prefix}ar"
+  export AS="${prefix}as"
+  # export DLLTOOL="${prefix}dlltool"
+  export LD="${prefix}ld"
+  export NM="${prefix}nm"
+  # export OBJCOPY="${prefix}objcopy"
+  export OBJDUMP="${prefix}objdump"
+  export RANLIB="${prefix}ranlib"
+  # export READELF="${prefix}readelf"
+  export SIZE="${prefix}size"
+  export STRIP="${prefix}strip"
+  # export WINDRES="${prefix}windres"
+  # export WINDMC="${prefix}windmc"
+  # export RC="${prefix}windres"
 }
 
 # -----------------------------------------------------------------------------
