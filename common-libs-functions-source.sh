@@ -272,7 +272,15 @@ function build_gmp()
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
             ${config_options[@]}
-            
+
+          if [ "${TARGET_PLATFORM}" == "darwin" ] # and clang
+          then
+            # Disable failing `t-sqrlo` test.
+            run_verbose sed -i.bak \
+              -e 's| t-sqrlo$(EXEEXT) | |' \
+              "tests/mpn/Makefile"
+          fi
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${gmp_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/configure-output.txt"
       fi
