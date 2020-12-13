@@ -201,7 +201,13 @@ function prepare_xbb_env()
   PATH="${PATH:-""}"
   LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-""}"
 
-  if [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
+  if [ -f "${HOME}/.local/xbb/xbb-source.sh" ]
+  then
+    XBB_FOLDER_PATH="${HOME}/.local/xbb"
+    echo
+    echo "Sourcing ${HOME}/.local/xbb/xbb-source.sh..."
+    source "${HOME}/.local/xbb/xbb-source.sh"
+  elif [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
   then
     XBB_FOLDER_PATH="${HOME}/opt/xbb"
     echo
