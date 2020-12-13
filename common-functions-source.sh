@@ -2435,7 +2435,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml")
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
@@ -2452,7 +2452,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml")
       for bin in ${binaries} 
       do
         if is_elf_dynamic "${bin}"
