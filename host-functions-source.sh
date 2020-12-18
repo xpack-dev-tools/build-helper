@@ -1106,7 +1106,7 @@ function host_build_all() {
     # Since the actual container is a 32-bit, use the debian32 binaries.
     if [ "${DO_BUILD_WIN32}" == "y" ]
     then
-      linux_install_relative_path="linux-x32/install"
+      linux_install_relative_path="linux-ia32/install"
 
       host_build_target "Creating the Windows 32-bit distribution..." \
         --script "${CONTAINER_WORK_FOLDER_PATH}/${CONTAINER_BUILD_SCRIPT_REL_PATH}" \
