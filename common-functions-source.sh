@@ -338,7 +338,7 @@ function prepare_xbb_env()
 
   # ---------------------------------------------------------------------------
 
-  SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/sources"}
+  SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/sources"}
   mkdir -pv "${SOURCES_FOLDER_PATH}"
 
   # Empty defaults.
