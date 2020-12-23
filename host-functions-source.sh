@@ -537,8 +537,6 @@ function host_common()
   fi
   CONTAINER_WORK_FOLDER_PATH="/Host${HOST_WORK_FOLDER_PATH}"
 
-  SOURCES_FOLDER_PATH="${SOURCES_FOLDER_PATH:-"${HOST_WORK_FOLDER_PATH}/sources"}"
-
   do_actions
 
   host_prepare_cache
@@ -549,7 +547,6 @@ function host_common()
   # ---------------------------------------------------------------------------
 
   mkdir -pv "${HOST_WORK_FOLDER_PATH}"
-  mkdir -pv "${SOURCES_FOLDER_PATH}"
 
   # ---------------------------------------------------------------------------
 
