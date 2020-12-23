@@ -968,7 +968,7 @@ function do_patch()
     local patch_path="${BUILD_GIT_PATH}/patches/${patch_file_name}"
     if [ -f "${patch_path}" ]
     then
-      echo "Patching..."
+      echo "Applying \"${patch_path}\"..."
       patch -p0 < "${patch_path}"
     fi
   fi
