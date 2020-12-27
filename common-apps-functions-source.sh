@@ -164,3 +164,125 @@ function test_patchelf()
     "${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf" --help
   )
 }
+
+# -----------------------------------------------------------------------------
+
+function build_automake() 
+{
+  # https://www.gnu.org/software/automake/
+  # https://ftp.gnu.org/gnu/automake/
+
+  # https://archlinuxarm.org/packages/any/automake/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=automake-git
+
+  # 2015-01-05, "1.15"
+  # 2018-02-25, "1.16"
+  # 2020-03-21, "1.16.2"
+  # 2020-11-18, "1.16.3"
+
+  local automake_version="$1"
+
+  local automake_src_folder_name="automake-${automake_version}"
+
+  local automake_archive="${automake_src_folder_name}.tar.xz"
+  local automake_url="https://ftp.gnu.org/gnu/automake/${automake_archive}"
+
+  local automake_folder_name="${automake_src_folder_name}"
+
+  # help2man: can't get `--help' info from automake-1.16
+  # Try `--no-discard-stderr' if option outputs to stderr
+
+  local automake_patch_file_path="${BUILD_GIT_PATH}/patches/${automake_folder_name}.patch"
+  local automake_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${automake_folder_name}-installed"
+  if [ ! -f "${automake_stamp_file_path}" -o ! -d "${BUILD_FOLDER_PATH}/${automake_folder_name}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${automake_url}" "${automake_archive}" \
+      "${automake_src_folder_name}" \
+      "${automake_patch_file_path}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${automake_folder_name}"
+
+    (
+      mkdir -pv "${BUILD_FOLDER_PATH}/${automake_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${automake_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      export CPPFLAGS="${XBB_CPPFLAGS}"
+      export CFLAGS="${XBB_CFLAGS_NO_W}"
+      export CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      export LDFLAGS="${XBB_LDFLAGS_APP}"
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          echo
+          echo "Running automake configure..."
+
+          bash "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" --help
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" \
+            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            \
+            --build="${BUILD}" \
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${automake_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running automake make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        run_verbose make install
+
+        # Takes too long and some tests fail.
+        # XFAIL: t/pm/Cond2.pl
+        # XFAIL: t/pm/Cond3.pl
+        # ...
+        if false # [ "${RUN_LONG_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/make-output.txt"
+    )
+
+    (
+      test_automake
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/test-output.txt"
+
+    hash -r
+
+    touch "${automake_stamp_file_path}"
+
+  else
+    echo "Component automake already installed."
+  fi
+
+  test_functions+=("test_automake")
+}
+
+function test_automake()
+{
+  (
+    xbb_activate_installed_bin
+
+    echo
+    echo "Testing if automake binaries start properly..."
+
+    run_verbose "${LIBS_INSTALL_FOLDER_PATH}/bin/automake" --version
+  )
+}
+
+# -----------------------------------------------------------------------------
