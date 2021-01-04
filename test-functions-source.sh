@@ -423,7 +423,8 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:latest ${base_url} "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:latest ${base_url} ",
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:rolling ${base_url} "
           ]
         },
         {
@@ -436,8 +437,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 i386/ubuntu:latest ${base_url} ",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 i386/ubuntu:rolling ${base_url} "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh --32 i386/ubuntu:latest ${base_url} "
           ]
         },
         {
