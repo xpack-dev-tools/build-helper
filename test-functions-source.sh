@@ -396,6 +396,7 @@ __EOF__
 
 }
 
+# --32 i386/ubuntu:rolling fails during update
 function create_latest_data_file()
 {
   local message="$1"
@@ -422,8 +423,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:latest ${base_url} ",
-            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:rolling ${base_url} "
+            "DEBUG=${DEBUG} bash tests/scripts/docker-test.sh ubuntu:latest ${base_url} "
           ]
         },
         {
