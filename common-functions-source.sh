@@ -442,9 +442,15 @@ function prepare_xbb_extras()
   then
     SHLIB_EXT="dylib"
 
+    export MACOSX_DEPLOYMENT_TARGET="10.10"
+
+    XBB_CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+    XBB_CXXFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+
     # Note: macOS linker ignores -static-libstdc++, so 
     # libstdc++.6.dylib should be handled.
-    XBB_LDFLAGS+=" -Wl,-macosx_version_min,10.10"
+    XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
+
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
