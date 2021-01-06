@@ -444,12 +444,15 @@ function prepare_xbb_extras()
 
     export MACOSX_DEPLOYMENT_TARGET="10.10"
 
-    XBB_CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
-    XBB_CXXFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+    if [[ "${CC}" =~ *clang* ]]
+    then
+      XBB_CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
+      XBB_CXXFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
 
-    # Note: macOS linker ignores -static-libstdc++, so 
-    # libstdc++.6.dylib should be handled.
-    XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
+      # Note: macOS linker ignores -static-libstdc++, so 
+      # libstdc++.6.dylib should be handled.
+      XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
+    fi
 
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
