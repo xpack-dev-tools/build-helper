@@ -573,7 +573,10 @@ function host_prepare_prerequisites()
     
     local must_install=""
 
-    if [ -d "${HOME}/opt/xbb" ]
+    if [ -d "${HOME}/.local/xbb" ]
+    then
+      xbb_folder_path="${HOME}/.local/xbb"
+    elif [ -d "${HOME}/opt/xbb" ]
     then
       xbb_folder_path="${HOME}/opt/xbb"
     elif [ -d "${HOME}/opt/homebrew/xbb" ]
