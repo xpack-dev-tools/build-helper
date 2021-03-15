@@ -1314,6 +1314,31 @@ function run_app()
   "${app_path}" "$@" 2>&1
 }
 
+function run_app_exit()
+{
+  local expected_exit_code=$1
+  local app_path=$2
+  shift
+  if [ "${node_platform}" == "win32" ]
+  then
+    app_path+='.exe'
+  fi
+  
+  (
+    set +e
+    echo
+    echo "${app_path} $@"
+    "${app_path}" "$@" 2>&1
+    local actual_exit_code=$?
+    echo "exit(${actual_exit_code})"
+    set -e
+    if [ ${actual_exit_code} -ne ${expected_exit_code} ]
+    then
+      exit ${actual_exit_code}
+    fi
+  )
+}
+
 function run_app_silent()
 {
   local app_path=$1
