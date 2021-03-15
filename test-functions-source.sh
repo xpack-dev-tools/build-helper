@@ -1317,7 +1317,8 @@ function run_app()
 function run_app_exit()
 {
   local expected_exit_code=$1
-  local app_path=$2
+  shift
+  local app_path=$1
   shift
   if [ "${node_platform}" == "win32" ]
   then
