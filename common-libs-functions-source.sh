@@ -182,6 +182,7 @@ function build_gmp()
   # 01-Nov-2015 "6.1.0"
   # 16-Dec-2016 "6.1.2"
   # 17-Jan-2020 "6.2.0"
+  # 14-Nov-2020, "6.2.1"
 
   local gmp_version="$1"
 
@@ -330,6 +331,7 @@ function build_mpfr()
   # 6 March 2016 "3.1.4"
   # 7 September 2017 "3.1.6"
   # 31 January 2019 "4.0.2"
+  # 10 July 2020 "4.1.0"
 
   local mpfr_version="$1"
 
@@ -448,6 +450,8 @@ function build_mpc()
 
   # 20 Feb 2015 "1.0.3"
   # 2018-01-11 "1.1.0"
+  # 2020-08 "1.2.0"
+  # 2020-10 "1.2.1"
 
   local mpc_version="$1"
 
@@ -569,6 +573,8 @@ function build_isl()
   # 2016-12-20 "0.18"
   # 2019-03-26 "0.21"
   # 2020-01-16 "0.22"
+  # 2020-11-11 "0.23"
+  # 2021-05-01, "0.24"
 
   local isl_version="$1"
 
@@ -700,6 +706,7 @@ function build_zstd()
   # https://archlinuxarm.org/packages/aarch64/zstd/files/PKGBUILD
 
   # 5 Nov 2019 "1.4.4"
+  # 3 Mar 2021 "1.4.9"
 
   local zstd_version="$1"
 
@@ -986,6 +993,8 @@ function build_ncurses()
   # 12 Feb 2020, "6.2"
 
   local ncurses_version="$1"
+  local ncurses_version_major="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
+  local ncurses_version_minor="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\2|')"
 
   # The folder name as resulted after being extracted from the archive.
   local ncurses_src_folder_name="ncurses-${ncurses_version}"
@@ -995,9 +1004,6 @@ function build_ncurses()
 
   # The folder name  for build, licenses, etc.
   local ncurses_folder_name="${ncurses_src_folder_name}"
-
-  # local ncurses_version_major="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
-  # local ncurses_version_minor="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\2|')"
 
   local ncurses_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${ncurses_folder_name}-installed"
   if [ ! -f "${ncurses_stamp_file_path}" ]
@@ -1316,8 +1322,10 @@ function build_gettext()
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gettext-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-gettext
 
-  # gettext_version="0.19.5.1"
-  # gettext_version="0.19.8.1" # 2016-06-11
+  # 2015-07-14 "0.19.5.1"
+  # 2016-06-11 "0.19.8.1"
+  # 2020-04-14 "0.20.2"
+  # 2020-07-26 "0.21"
 
   local gettext_version="$1"
 
@@ -1452,9 +1460,8 @@ function build_gettext()
 
 function build_libelf()
 {
-  # http://www.mr511.de/ (?Deprecated?)
-  # http://www.mr511.de/software/
   # https://sourceware.org/elfutils/
+  # ftp://sourceware.org/pub/elfutils/
   # ftp://sourceware.org/pub/elfutils//0.178/elfutils-0.178.tar.bz2
 
   # https://archlinuxarm.org/packages/aarch64/libelf/files/PKGBUILD
@@ -1465,6 +1472,8 @@ function build_libelf()
   # 2020-06-11, 0.180
   # 2020-09-08, 0.181
   # 2020-10-31, 0.182
+  # 2021-02-07, "0.183"
+  # 2021-05-10, "0.184"
 
   local libelf_version="$1"
 
@@ -1587,6 +1596,8 @@ function build_expat()
   # Oct 21, 2017 "2.1.1"
   # Nov 1, 2017 "2.2.5"
   # 26 Sep 2019 "2.2.9"
+  # 3 Oct 2020, "2.2.10"
+  # 25 Mar 2021 "2.3.0"
 
   local expat_version="$1"
 
@@ -1983,6 +1994,7 @@ function build_libmpdec()
 
   # 2016-02-28, "2.4.2"
   # 2020-06-28, "2.5.0"
+  # 2021-01-28, "2.5.1"
 
   local libmpdec_version="$1"
 
@@ -2121,6 +2133,7 @@ function build_libxcrypt()
   # m4/ax_valgrind_check.m4:80: warning: macro `AM_EXTRA_RECURSIVE_TARGETS' not found in library
   # Feb 25 2020, "4.4.15"
   # 23 Aug 2020, "4.4.17"
+  # 1 May 2021, "4.4.20"
 
   local libxcrypt_version="$1"
 
@@ -2301,6 +2314,7 @@ function build_openssl()
   # 2019-Sep-10, "1.1.1d"
   # 2019-Dec-20, "1.0.2u"
   # 2020-Sep-22, "1.1.1h"
+  # 2021-Mar-25, "1.1.1k"
 
   local openssl_version="$1"
   # Numbers
@@ -2528,6 +2542,7 @@ function build_sqlite()
   # https://archlinuxarm.org/packages/aarch64/sqlite/files/PKGBUILD
 
   # 2020-06-18 "3.32.3" 7ebdfa80
+  # 2021-04-19 "3.35.5"
 
   local sqlite_version="$1"
 
@@ -2662,6 +2677,7 @@ function build_readline()
   # https://archlinuxarm.org/packages/aarch64/readline/files/PKGBUILD
 
   # 2019-01-07, "8.0"
+  # 2020-12-06, "8.1"
 
   local readline_version="$1"
   local readline_version_major="$(echo ${readline_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
@@ -3181,6 +3197,8 @@ function build_python3()
   # Dec. 18, 2019, "3.8.1"
   # 17-Aug-2020, "3.7.9"
   # 23-Sep-2020, "3.8.6"
+  # May 3, 2021 "3.8.10"
+  # May 3, 2021 "3.9.5"
 
   local python3_version="$1"
 
@@ -3579,6 +3597,7 @@ function build_libpng()
   # libpng_version="1.6.17"
   # libpng_version="1.6.23" # 2016-06-09
   # libpng_version="1.6.36" # 2018-12-01
+  # 2019-04-15, "1.6.37"
   # libpng_SFOLDER="libpng12"
   # libpng_SFOLDER="libpng16"
 
@@ -3697,8 +3716,10 @@ function build_jpeg()
 
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libjpeg9
 
-  # jpeg_version="9a"
-  # jpeg_version="9b" # 2016-01-17
+  # Jan 19 10:26 2014 "9a"
+  # Jan 17 10:46 2016 "9b"
+  # Jan 14 10:10 2018 "9c"
+  # Jan 12 10:07 2020 "9d"
 
   local jpeg_version="$1"
 
@@ -3813,6 +3834,8 @@ function build_pixman()
   # pixman_version="0.32.6"
   # pixman_version="0.34.0" # 2016-01-31
   # pixman_version="0.38.0" # 2019-02-11
+  # 2019-04-10, "0.38.4"
+  # 2020-04-19, "0.40.0"
 
   local pixman_version="$1"
 
@@ -3949,6 +3972,7 @@ function build_glib()
   # glib_MVERSION="2.56" 
   # glib_version="${glib_MVERSION}.3" # 2018-12-18
   # 2.60
+  # 2021-May-11, "2.68"
 
   local glib_version="$1"
 
@@ -4099,8 +4123,10 @@ function build_libxml2()
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libxml2-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libxml2
 
-  # 2018-03-05
-  # libxml2_version="2.9.8"
+  # Mar 05 2018, "2.9.8"
+  # Jan 03 2019, "2.9.9"
+  # Oct 30 2019, "2.9.10"
+  # May 13 2021, "2.9.11"
 
   local libxml2_version="$1"
 
