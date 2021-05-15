@@ -2521,7 +2521,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/")
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
@@ -2538,7 +2538,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/")
       for bin in ${binaries} 
       do
         if is_elf_dynamic "${bin}"
@@ -2930,7 +2930,7 @@ function copy_distro_files()
 
 function tests_initialize()
 {
-  test_functions=()
+  test_functions=("")
 }
 
 function tests_add()
@@ -2945,10 +2945,13 @@ function tests_run()
 
   for test_function in ${test_functions[@]}
   do
-    echo
-    local func=$(echo ${test_function} | sed -e 's|-|_|g')
-    echo "Running ${func}..."
-    ${func}
+    if [ "${test_function}" != "" ]
+    then
+      echo
+      local func=$(echo ${test_function} | sed -e 's|-|_|g')
+      echo "Running ${func}..."
+      ${func}
+    fi
   done
 }
 
