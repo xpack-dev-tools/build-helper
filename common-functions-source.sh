@@ -1546,7 +1546,7 @@ function strip_binaries()
       elif [ "${TARGET_PLATFORM}" == "darwin" ]
       then
 
-        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l)
+        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l | grep -v 'MacOSX.*\.sdk' )
         for bin in ${binaries} 
         do
           if is_elf "${bin}"
@@ -2119,7 +2119,7 @@ function prepare_app_folder_libraries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -perm +111 -type f)
+      binaries=$(find "${folder_path}" -name \* -perm +111 -type f | grep -v 'MacOSX.*\.sdk')
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
@@ -2521,7 +2521,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v 'MacOSX.*\.sdk')
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
