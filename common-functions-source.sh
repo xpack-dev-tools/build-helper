@@ -232,6 +232,8 @@ function prepare_xbb_env()
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
 
+  DOTEXE=""
+
   # Compute the BUILD/HOST/TARGET for configure.
   CROSS_COMPILE_PREFIX=""
   if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -253,6 +255,8 @@ function prepare_xbb_env()
     fi
 
     do_config_guess
+
+    DOTEXE=".exe"
 
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET="${HOST}"
@@ -371,6 +375,7 @@ function prepare_xbb_env()
 
   export APP_PREFIX
   export SOURCES_FOLDER_PATH
+  export DOTEXE
 
   # libtool fails with the Ubuntu /bin/sh.
   export SHELL="/bin/bash"
@@ -2107,7 +2112,7 @@ function prepare_app_folder_libraries()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
-      binaries=$(find "${folder_path}" -name \*.exe)
+      binaries=$(find "${folder_path}" \( -name \*.exe -o -name \*.dll \))
       for bin in ${binaries} 
       do
         echo
@@ -2456,6 +2461,11 @@ function copy_dependencies_recursive()
         then
           # The first source is the install/libs/bin.
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
+            "${dest_folder_path}"
+        elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
+        then
+          # GCC leaves some .dlls in lib.
+          copy_dependencies_recursive "${APP_PREFIX}/lib/${lib_name}" \
             "${dest_folder_path}"
         elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
         then
