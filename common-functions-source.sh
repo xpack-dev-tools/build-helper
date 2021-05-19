@@ -232,6 +232,8 @@ function prepare_xbb_env()
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
 
+  DOTEXE=""
+
   # Compute the BUILD/HOST/TARGET for configure.
   CROSS_COMPILE_PREFIX=""
   if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -253,6 +255,8 @@ function prepare_xbb_env()
     fi
 
     do_config_guess
+
+    DOTEXE=".exe"
 
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET="${HOST}"
@@ -371,6 +375,7 @@ function prepare_xbb_env()
 
   export APP_PREFIX
   export SOURCES_FOLDER_PATH
+  export DOTEXE
 
   # libtool fails with the Ubuntu /bin/sh.
   export SHELL="/bin/bash"
@@ -1546,7 +1551,7 @@ function strip_binaries()
       elif [ "${TARGET_PLATFORM}" == "darwin" ]
       then
 
-        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l)
+        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l | grep -v 'MacOSX.*\.sdk' )
         for bin in ${binaries} 
         do
           if is_elf "${bin}"
@@ -2107,7 +2112,7 @@ function prepare_app_folder_libraries()
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
-      binaries=$(find "${folder_path}" -name \*.exe)
+      binaries=$(find "${folder_path}" \( -name \*.exe -o -name \*.dll \))
       for bin in ${binaries} 
       do
         echo
@@ -2119,7 +2124,7 @@ function prepare_app_folder_libraries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -perm +111 -type f)
+      binaries=$(find "${folder_path}" -name \* -perm +111 -type f | grep -v 'MacOSX.*\.sdk')
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
@@ -2457,6 +2462,11 @@ function copy_dependencies_recursive()
           # The first source is the install/libs/bin.
           copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
             "${dest_folder_path}"
+        elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
+        then
+          # GCC leaves some .dlls in lib.
+          copy_dependencies_recursive "${APP_PREFIX}/lib/${lib_name}" \
+            "${dest_folder_path}"
         elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
         then
           copy_dependencies_recursive "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" \
@@ -2521,7 +2531,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v 'MacOSX.*\.sdk')
       for bin in ${binaries} 
       do
         if is_elf "${bin}"
@@ -2538,7 +2548,7 @@ function check_binaries()
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml")
+      binaries=$(find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/")
       for bin in ${binaries} 
       do
         if is_elf_dynamic "${bin}"
@@ -2930,7 +2940,7 @@ function copy_distro_files()
 
 function tests_initialize()
 {
-  test_functions=()
+  test_functions=("")
 }
 
 function tests_add()
@@ -2945,10 +2955,13 @@ function tests_run()
 
   for test_function in ${test_functions[@]}
   do
-    echo
-    local func=$(echo ${test_function} | sed -e 's|-|_|g')
-    echo "Running ${func}..."
-    ${func}
+    if [ "${test_function}" != "" ]
+    then
+      echo
+      local func=$(echo ${test_function} | sed -e 's|-|_|g')
+      echo "Running ${func}..."
+      ${func}
+    fi
   done
 }
 

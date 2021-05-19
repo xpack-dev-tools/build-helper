@@ -1375,6 +1375,8 @@ function do_expect()
   then
     echo "Test ${app_name} ok"
   else
+    echo "expected: ${expected}"
+    echo "got: ${output}"
     exit 1
   fi
 }
