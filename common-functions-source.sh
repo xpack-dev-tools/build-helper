@@ -1434,6 +1434,8 @@ function is_darwin_allowed_sys_dylib()
     /usr/lib/libobjc.A.dylib \
     \
     /usr/lib/libutil.dylib \
+    \
+    /usr/lib/libz.1.dylib \
   )
 
   if [[ ${lib_name} == /System/Library/Frameworks/* ]]
