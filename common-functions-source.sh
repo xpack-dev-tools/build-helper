@@ -2940,6 +2940,77 @@ function copy_distro_files()
 
 # -----------------------------------------------------------------------------
 
+# Possibly set these before calling.
+# FIX_LTO_PLUGIN
+# LTO_PLUGIN_ORIGINAL_NAME
+# LTO_PLUGIN_BFD_PATH
+
+function fix_lto_plugin()
+{
+  # Redefine to "" to disable it.
+  FIX_LTO_PLUGIN=${FIX_LTO_PLUGIN:-"y"}
+
+  if [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    LTO_PLUGIN_ORIGINAL_NAME=${LTO_PLUGIN_ORIGINAL_NAME:-"liblto_plugin.0.so"}
+    LTO_PLUGIN_BFD_PATH=${LTO_PLUGIN_BFD_PATH:-"lib/bfd-plugins/liblto_plugin.so"}
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    LTO_PLUGIN_ORIGINAL_NAME=${LTO_PLUGIN_ORIGINAL_NAME:-"liblto_plugin.so.0.0.0"}
+    LTO_PLUGIN_BFD_PATH=${LTO_PLUGIN_BFD_PATH:-"lib/bfd-plugins/liblto_plugin.so"}
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    LTO_PLUGIN_ORIGINAL_NAME=${LTO_PLUGIN_ORIGINAL_NAME:-"liblto_plugin-0.dll"}
+    LTO_PLUGIN_BFD_PATH=${LTO_PLUGIN_BFD_PATH:-"lib/bfd-plugins/liblto_plugin-0.dll"}
+  fi
+
+  # Create the missing LTO plugin links.
+  # For `ar` to work with LTO objects, it needs the plugin in lib/bfd-plugins,
+  # but the build leaves it where `ld` needs it. On POSIX, make a soft link.
+  (
+    cd "${APP_PREFIX}"
+
+    echo
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo "Copying ${LTO_PLUGIN_ORIGINAL_NAME}..."
+
+      mkdir -pv "$(dirname ${LTO_PLUGIN_BFD_PATH})"
+
+      if [ ! -f "${LTO_PLUGIN_BFD_PATH}" ]
+      then
+        local plugin_path="$(find * -type f -name ${LTO_PLUGIN_ORIGINAL_NAME})"
+        if [ ! -z "${plugin_path}" ]
+        then
+          cp -v "${plugin_path}" "${LTO_PLUGIN_BFD_PATH}"
+        else
+          echo "${LTO_PLUGIN_ORIGINAL_NAME} not found."
+          exit 1
+        fi
+      fi
+    else
+      echo
+      echo "Creating ${LTO_PLUGIN_ORIGINAL_NAME} link..."
+
+      mkdir -pv "$(dirname ${LTO_PLUGIN_BFD_PATH})"
+      if [ ! -f "${LTO_PLUGIN_BFD_PATH}" ]
+      then
+        local plugin_path="$(find * -type f -name ${LTO_PLUGIN_ORIGINAL_NAME})"
+        if [ ! -z "${plugin_path}" ]
+        then
+          ln -s -v "../../${plugin_path}" "${LTO_PLUGIN_BFD_PATH}"
+        else
+          echo "${LTO_PLUGIN_ORIGINAL_NAME} not found."
+          exit 1
+        fi
+      fi
+    fi
+  )
+}
+
+# -----------------------------------------------------------------------------
+
 function tests_initialize()
 {
   test_functions=("")
