@@ -926,6 +926,43 @@ function run_app()
   fi
 }
 
+function run_app_silent()
+{
+  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+
+  if [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    "${app_path}" "$@" 2>&1
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    "${app_path}" "$@" 2>&1
+  elif [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    local wsl_path=$(which wsl.exe)
+    if [ ! -z "${wsl_path}" ]
+    then
+      "${app_path}.exe" "$@" 2>&1
+    else 
+      (
+        xbb_activate
+        
+        local wine_path=$(which wine)
+        if [ ! -z "${wine_path}" ]
+        then
+          wine "${app_path}.exe" "$@" 2>&1
+        else
+          echo "Install wine if you want to run the .exe binaries on Linux."
+        fi
+      )
+    fi
+  else
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    exit 1
+  fi
+}
+
 function show_libs()
 {
   # Does not include the .exe extension.
@@ -3036,6 +3073,25 @@ function tests_run()
       ${func}
     fi
   done
+}
+
+function test_expect()
+{
+  local app_name="$1"
+  local expected="$2"
+
+  show_libs "${app_name}"
+
+  local output="$(run_app_silent "./${app_name}" "$@")"
+
+  if [ "x${output}x" == "x${expected}x" ]
+  then
+    echo "Test ${app_name} ok"
+  else
+    echo "expected: ${expected}"
+    echo "got: ${output}"
+    exit 1
+  fi
 }
 
 # -----------------------------------------------------------------------------
