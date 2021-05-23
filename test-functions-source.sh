@@ -1115,6 +1115,9 @@ function detect_architecture()
     echo "${uname_machine} not supported"
     exit 1
   fi
+
+  export TARGET_PLATFORM="${node_platform}"
+  export TARGET_ARCH="${node_architecture}"
 }
 
 function prepare_env() 
@@ -1144,6 +1147,94 @@ function prepare_env()
 
   # Always in the user home, even when inside a container.
   test_folder_path="${HOME}/tmp/test-${app_lc_name}"
+
+  # Defaults, to ensure the variables are defined.
+  PATH="${PATH:-""}"
+  LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-""}"
+
+  if [ -f "${HOME}/.local/xbb/xbb-source.sh" ]
+  then
+    XBB_FOLDER_PATH="${HOME}/.local/xbb"
+    echo
+    echo "Sourcing ${HOME}/.local/xbb/xbb-source.sh..."
+    source "${HOME}/.local/xbb/xbb-source.sh"
+  elif [ -f "${HOME}/opt/xbb/xbb-source.sh" ]
+  then
+    XBB_FOLDER_PATH="${HOME}/opt/xbb"
+    echo
+    echo "Sourcing ${HOME}/opt/xbb/xbb-source.sh..."
+    source "${HOME}/opt/xbb/xbb-source.sh"
+  elif [ -f "${HOME}/opt/homebrew/xbb/xbb-source.sh" ]
+  then
+    XBB_FOLDER_PATH="${HOME}/opt/homebrew/xbb"
+    # Deprecated, on macOS it was moved to HOME/opt/xbb
+    echo
+    echo "Sourcing ${HOME}/opt/homebrew/xbb/xbb-source.sh..."
+    source "${HOME}/opt/homebrew/xbb/xbb-source.sh"
+  elif [ -f "/opt/xbb/xbb-source.sh" ]
+  then
+    XBB_FOLDER_PATH="/opt/xbb"
+    echo
+    echo "Sourcing /opt/xbb/xbb-source.sh..."
+    source "/opt/xbb/xbb-source.sh"
+  else
+    XBB_FOLDER_PATH=""
+  fi
+
+  TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
+
+  DOTEXE=""
+
+  # Compute the BUILD/HOST/TARGET for configure.
+  CROSS_COMPILE_PREFIX=""
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+
+    # Disable test when cross compiling for Windows.
+    WITH_TESTS="n"
+
+    # For Windows targets, decide which cross toolchain to use.
+    if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
+    then
+      CROSS_COMPILE_PREFIX="i686-w64-mingw32"
+    elif [ "${TARGET_ARCH}" == "x64" ]
+    then
+      CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
+    else
+      echo "Oops! Unsupported ${TARGET_ARCH}."
+      exit 1
+    fi
+
+    do_config_guess
+
+    DOTEXE=".exe"
+
+    HOST="${CROSS_COMPILE_PREFIX}"
+    TARGET="${HOST}"
+
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+
+    do_config_guess
+
+    HOST="${BUILD}"
+    TARGET="${HOST}"
+
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+
+    do_config_guess
+
+    HOST="${BUILD}"
+    TARGET="${HOST}"
+
+  else
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    exit 1
+  fi
+
+  RELEASE_VERSION=${RELEASE_VERSION:-"$(cat "${script_folder_path}/../../scripts/VERSION")"}
+  IS_DEVELOP=${IS_DEVELOP:-""}
 }
 
 # -----------------------------------------------------------------------------
@@ -1179,7 +1270,7 @@ function install_archive()
 
   app_folder_path="${test_folder_path}/${archive_folder_name}"
 
-  rm -rf "${app_folder_path}"
+#  rm -rf "${app_folder_path}"
 
   mkdir -pv "${test_folder_path}"
   cd "${test_folder_path}"
@@ -1190,11 +1281,13 @@ function install_archive()
   then
     unzip -q "${cache_folder_path}/${archive_name}"
   else 
-    tar xf "${cache_folder_path}/${archive_name}"
+: #    tar xf "${cache_folder_path}/${archive_name}"
   fi
 
   echo ls -lL "${app_folder_path}"
   ls -lL "${app_folder_path}"
+
+  export APP_PREFIX="${app_folder_path}"
 }
 
 # -----------------------------------------------------------------------------
@@ -1265,7 +1358,7 @@ function docker_run_test_32() {
 
 # -----------------------------------------------------------------------------
 
-function show_libs()
+function _show_libs()
 {
   # Does not include the .exe extension.
   local app_path=$1
@@ -1293,14 +1386,14 @@ function show_libs()
   fi
 }
 
-function run_verbose()
+function _run_verbose()
 {
   echo
   echo "$@"
   "$@" 2>&1
 }
 
-function run_app()
+function _run_app()
 {
   local app_path=$1
   shift
@@ -1314,7 +1407,7 @@ function run_app()
   "${app_path}" "$@" 2>&1
 }
 
-function run_app_exit()
+function _run_app_exit()
 {
   local expected_exit_code=$1
   shift
@@ -1340,7 +1433,7 @@ function run_app_exit()
   )
 }
 
-function run_app_silent()
+function _run_app_silent()
 {
   local app_path=$1
   shift
@@ -1352,7 +1445,7 @@ function run_app_silent()
   "${app_path}" "$@" 2>&1
 }
 
-function do_run()
+function _do_run()
 {
   local app_path=$1
   shift
@@ -1362,7 +1455,7 @@ function do_run()
   "${app_path}" "$@" 2>&1
 }
 
-function do_expect()
+function _do_expect()
 {
   local app_name="$1"
   local expected="$2"
@@ -1386,16 +1479,16 @@ function good_bye()
   echo
   echo "All tests completed successfully."
 
-  do_run uname -a
+  run_verbose uname -a
   if [ "${node_platform}" == "linux" ]
   then
     # On opensuse/tumbleweed:latest it fails:
     # /usr/bin/lsb_release: line 122: getopt: command not found
-    do_run lsb_release -a || true
-    do_run ldd --version
+    run_verbose lsb_release -a || true
+    run_verbose ldd --version
   elif [ "${node_platform}" == "darwin" ]
   then
-    do_run sw_vers
+    run_verbose sw_vers
   fi
 }
 

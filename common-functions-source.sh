@@ -963,6 +963,53 @@ function run_app_silent()
   fi
 }
 
+function run_app_exit()
+{
+  local expected_exit_code=$1
+  shift
+  local app_path=$1
+  shift
+  if [ "${node_platform}" == "win32" ]
+  then
+    app_path+='.exe'
+  fi
+  
+  (
+    set +e
+    echo
+    echo "${app_path} $@"
+    "${app_path}" "$@" 2>&1
+    local actual_exit_code=$?
+    echo "exit(${actual_exit_code})"
+    set -e
+    if [ ${actual_exit_code} -ne ${expected_exit_code} ]
+    then
+      exit ${actual_exit_code}
+    fi
+  )
+}
+
+function test_expect()
+{
+  local app_name="$1"
+  local expected="$2"
+
+  show_libs "${app_name}"
+
+  local output="$(run_app_silent "./${app_name}" "$@")"
+
+  if [ "x${output}x" == "x${expected}x" ]
+  then
+    echo "Test ${app_name} ok"
+  else
+    echo "expected: ${expected}"
+    echo "got: ${output}"
+    exit 1
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 function show_libs()
 {
   # Does not include the .exe extension.
@@ -3073,25 +3120,6 @@ function tests_run()
       ${func}
     fi
   done
-}
-
-function test_expect()
-{
-  local app_name="$1"
-  local expected="$2"
-
-  show_libs "${app_name}"
-
-  local output="$(run_app_silent "./${app_name}" "$@")"
-
-  if [ "x${output}x" == "x${expected}x" ]
-  then
-    echo "Test ${app_name} ok"
-  else
-    echo "expected: ${expected}"
-    echo "got: ${output}"
-    exit 1
-  fi
 }
 
 # -----------------------------------------------------------------------------
