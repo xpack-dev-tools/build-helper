@@ -190,8 +190,7 @@ function do_config_guess()
   then
     BUILD="$(/usr/share/misc/config.guess)"
   else
-    echo "Could not find config.guess."
-    exit 1
+    BUILD="$(gcc -dumpmachine)"
   fi
 }
 
