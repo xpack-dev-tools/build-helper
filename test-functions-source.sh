@@ -1270,7 +1270,7 @@ function install_archive()
 
   app_folder_path="${test_folder_path}/${archive_folder_name}"
 
-#  rm -rf "${app_folder_path}"
+  rm -rf "${app_folder_path}"
 
   mkdir -pv "${test_folder_path}"
   cd "${test_folder_path}"
@@ -1281,7 +1281,7 @@ function install_archive()
   then
     unzip -q "${cache_folder_path}/${archive_name}"
   else 
-: #    tar xf "${cache_folder_path}/${archive_name}"
+    tar xf "${cache_folder_path}/${archive_name}"
   fi
 
   echo ls -lL "${app_folder_path}"
