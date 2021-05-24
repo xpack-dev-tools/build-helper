@@ -1205,7 +1205,7 @@ function prepare_env()
       exit 1
     fi
 
-    do_config_guess
+    # do_config_guess
 
     DOTEXE=".exe"
 
@@ -1358,7 +1358,7 @@ function docker_run_test_32() {
 
 # -----------------------------------------------------------------------------
 
-function _show_libs()
+function show_libs()
 {
   # Does not include the .exe extension.
   local app_path=$1
@@ -1393,7 +1393,7 @@ function _run_verbose()
   "$@" 2>&1
 }
 
-function _run_app()
+function run_app()
 {
   local app_path=$1
   shift
@@ -1433,7 +1433,7 @@ function _run_app_exit()
   )
 }
 
-function _run_app_silent()
+function run_app_silent()
 {
   local app_path=$1
   shift
