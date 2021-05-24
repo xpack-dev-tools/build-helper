@@ -995,14 +995,16 @@ function test_expect()
 
   show_libs "${app_name}"
 
-  local output="$(run_app_silent "./${app_name}" "$@")"
+  # Remove the trailing CR present on Windows.
+  local output="$(run_app_silent "./${app_name}" "$@" | sed 's/\r$//')"
 
   if [ "x${output}x" == "x${expected}x" ]
   then
     echo "Test ${app_name} ok"
   else
-    echo "expected: ${expected}"
-    echo "got: ${output}"
+    echo "expected ${#expected}: \"${expected}\""
+    echo "got ${#output}: \"${output}\""
+    echo
     exit 1
   fi
 }
