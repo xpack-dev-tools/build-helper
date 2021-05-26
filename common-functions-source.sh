@@ -180,18 +180,7 @@ function xbb_activate_tex()
 
 function do_config_guess() 
 {
-  if [ -f "${XBB_FOLDER_PATH}/share/libtool/build-aux/config.guess" ]
-  then
-    BUILD="$(${XBB_FOLDER_PATH}/share/libtool/build-aux/config.guess)"
-  elif [ -f "/usr/share/libtool/build-aux/config.guess" ]
-  then
-    BUILD="$(/usr/share/libtool/build-aux/config.guess)"
-  elif [ -f "/usr/share/misc/config.guess" ]
-  then
-    BUILD="$(/usr/share/misc/config.guess)"
-  else
-    BUILD="$(gcc -dumpmachine)"
-  fi
+  BUILD="$(bash ${helper_folder_path}/config.guess)"
 }
 
 function prepare_xbb_env() 
