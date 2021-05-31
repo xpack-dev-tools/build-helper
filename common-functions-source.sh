@@ -2504,6 +2504,18 @@ function copy_dependencies_recursive()
               copy_dependencies_recursive "${full_path}" \
                 "${actual_dest_folder_path}" "${libexec_folder_path}"
             else
+              local triple
+              if [[ ${CC} == clang* ]]
+              then
+                triple="$(${CC} -print-effective-triple)"
+              elif [[ ${CC} == gcc* ]]
+              then
+                triple=$(${CC} -dumpmachine)
+              else
+                echo "Unsupported compiler ${CC}"
+                exit 1
+              fi
+
               # If no toolchain library either, last chance is the XBB libraries.
               if [ -f "${XBB_FOLDER_PATH}/lib64/${lib_name}" ]
               then
@@ -2513,9 +2525,9 @@ function copy_dependencies_recursive()
               then
                 copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib_name}" \
                   "${actual_dest_folder_path}" "${libexec_folder_path}"
-              elif [ -f "${XBB_FOLDER_PATH}/usr/x86_64-apple-darwin14.5.0/lib/${lib_name}" ]
+              elif [ -f "${XBB_FOLDER_PATH}/usr/${triple}/lib/${lib_name}" ]
               then
-                copy_dependencies_recursive "${XBB_FOLDER_PATH}/usr/x86_64-apple-darwin14.5.0/lib/${lib_name}" \
+                copy_dependencies_recursive "${XBB_FOLDER_PATH}/usr/${triple}/lib/${lib_name}" \
                   "${actual_dest_folder_path}" "${libexec_folder_path}"
               else
                 echo "${lib_name} not found in the compiled or XBB libraries."
