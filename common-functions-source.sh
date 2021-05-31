@@ -1511,6 +1511,7 @@ function is_darwin_allowed_sys_dylib()
     /usr/lib/libobjc.A.dylib \
     \
     /usr/lib/libutil.dylib \
+    /usr/lib/libcompression.dylib \
     \
   )
 
@@ -3136,7 +3137,7 @@ function set_macos_sdk_path()
     exit 1
   fi
 
-  echo "MACOS_SDK_PATH=${MACOS_SDK_PATH}"
+  echo "copy_macos_sdk=${MACOS_SDK_PATH}"
 }
 
 function copy_macos_sdk()
@@ -3146,7 +3147,7 @@ function copy_macos_sdk()
   # Copy the SDK in the distribution, to have a standalone package.
   local sdk_name="$(basename ${sdk_path})"
   run_verbose rm -rf "${APP_PREFIX}/${sdk_name}/"
-  run_verbose cp -R "${sdk_path}" "${APP_PREFIX}/${sdk_name}"
+  run_verbose cp -pRH "${sdk_path}" "${APP_PREFIX}/${sdk_name}"
   # Remove the manuals and save about 225 MB.
   run_verbose rm -rf "${APP_PREFIX}/${sdk_name}/usr/share/man/"
 }
