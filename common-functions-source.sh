@@ -2487,6 +2487,10 @@ function copy_dependencies_recursive()
           then
             copy_dependencies_recursive "$(dirname "${actual_source_file_path}")/${lib_name}" \
               "${actual_dest_folder_path}" "${libexec_folder_path}" 
+          elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
+          then
+            copy_dependencies_recursive "${APP_PREFIX}/lib/${lib_name}" \
+              "${actual_dest_folder_path}" "${libexec_folder_path}" 
           elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
           then
             copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
