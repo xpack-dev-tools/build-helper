@@ -2448,7 +2448,18 @@ function copy_dependencies_recursive()
         lib_name="$(basename "${lib_path}")"
       else
         lib_link_name=""
+        if [ "${lib_path:0:${#executable_prefix}}" == "${executable_prefix}" ]
+        then
           lib_name="${lib_path:${#executable_prefix}}"
+        elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
+        then
+          lib_name="${lib_path:${#rpath_prefix}}"
+        elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
+        then
+          lib_name="${lib_path:${#loader_prefix}}"
+        else
+          lib_name="$(basename "${lib_path}")"
+        fi
       fi
 
       if [ "${lib_path}" == "${executable_prefix}${source_file_name}" ]
