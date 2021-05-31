@@ -4282,3 +4282,122 @@ function build_libxml2()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_libedit()
+{
+  # https://www.thrysoee.dk/editline/
+  # https://www.thrysoee.dk/editline/libedit-20210522-3.1.tar.gz
+
+  # https://archlinuxarm.org/packages/aarch64/libedit/files/PKGBUILD
+
+  # 2021-05-22, "20210522-3.1"
+
+  local libedit_version="$1"
+  local libedit_version_short="$(echo ${libedit_version} | sed -e 's|[0-9]*-||')"
+
+  local libedit_src_folder_name="libedit-${libedit_version}"
+  local libedit_archive="${libedit_src_folder_name}.tar.gz"
+
+  local libedit_url="https://www.thrysoee.dk/editline/${libedit_archive}"
+
+  local libedit_folder_name="libedit-${libedit_version_short}"
+
+  local libedit_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libedit_folder_name}-installed"
+  if [ ! -f "${libedit_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libedit_url}" "${libedit_archive}" \
+      "${libedit_src_folder_name}"
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${libedit_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libedit_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libedit_folder_name}"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -f "config.status" ]
+      then 
+        (
+          echo
+          echo "Running libedit configure..."
+
+          run_verbose bash "${SOURCES_FOLDER_PATH}/${libedit_src_folder_name}/configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          # config_options+=("--disable-nls")
+          # config_options+=("--disable-shared")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libedit_src_folder_name}/configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libedit_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libedit_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running libedit make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libedit_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libedit_src_folder_name}" \
+        "${libedit_folder_name}"
+
+    )
+
+    touch "${libedit_stamp_file_path}"
+
+  else
+    echo "Library libedit already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
