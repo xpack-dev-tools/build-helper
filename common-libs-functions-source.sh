@@ -4401,3 +4401,141 @@ function build_libedit()
 }
 
 # -----------------------------------------------------------------------------
+
+# Not yet functional.
+function build_xar() 
+{
+  # https://github.com/mackyle/xar
+  # https://github.com/mackyle/xar/archive/refs/tags/xar-1.6.1.tar.gz
+
+  # 18 Sep 2012, "1.6.1"
+
+  local xar_version="$1"
+
+  local xar_src_folder_name="xar-xar-${xar_version}"
+
+  local xar_archive="xar-${xar_version}.tar.gz"
+  # GitHub release archive.
+  local xar_url="https://github.com/mackyle/xar/archive/refs/tags/${xar_archive}"
+
+  local xar_folder_name="xar-${xar_version}"
+
+  local xar_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${xar_folder_name}-installed"
+  if [ ! -f "${xar_stamp_file_path}" ]
+  then
+
+    echo
+    echo "xar in-source building"
+
+    cd "${LIBS_BUILD_FOLDER_PATH}"
+
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${xar_folder_name}" ]
+    then
+      cd "${LIBS_BUILD_FOLDER_PATH}"
+
+      download_and_extract "${xar_url}" "${xar_archive}" \
+        "${xar_src_folder_name}"
+
+      if [ "${xar_src_folder_name}" != "${xar_folder_name}" ]
+      then
+        mv -v "${xar_src_folder_name}" "${xar_folder_name}"
+      fi
+    fi
+
+    mkdir -pv "${LOGS_FOLDER_PATH}/${xar_folder_name}"
+
+    (
+      cd "${LIBS_BUILD_FOLDER_PATH}/${xar_folder_name}/xar/"
+
+      xbb_activate
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        LDFLAGS+=" -v"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      env | sort
+
+      if [ ! -x "configure" ]
+      then
+
+        echo
+        echo "Running xar autogen..."
+        run_verbose bash ${DEBUG} "autogen.sh"
+
+      fi
+
+      if [ ! -f "config.status" ]
+      then 
+
+        (
+          echo
+          echo "Running xar configure..."
+
+          bash "./configure" --help
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          run_verbose bash ${DEBUG} "./configure" \
+            ${config_options[@]}
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${xar_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xar_folder_name}/configure-output.txt"
+
+      fi
+
+      (
+        echo
+        echo "Running xar make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xar_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${xar_src_folder_name}" \
+        "${xar_folder_name}"
+
+    )
+
+    touch "${xar_stamp_file_path}"
+
+  else
+    echo "Library xar already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
