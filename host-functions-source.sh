@@ -513,7 +513,7 @@ function host_common()
 
   # -----------------------------------------------------------------------------
 
-  common_helper_functions_script_path="${script_folder_path}/helper/common-functions-source.sh"
+  common_helper_functions_script_path="${helper_folder_path}/common-functions-source.sh"
   echo "Common helper functions source script: \"${common_helper_functions_script_path}\"."
   source "${common_helper_functions_script_path}"
 
