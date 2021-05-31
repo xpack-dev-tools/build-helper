@@ -4148,7 +4148,6 @@ function build_glib()
 
 # -----------------------------------------------------------------------------
 
-
 function build_libxml2() 
 {
   # http://www.xmlsoft.org
