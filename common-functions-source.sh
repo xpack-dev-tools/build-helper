@@ -3085,6 +3085,44 @@ function fix_lto_plugin()
 
 # -----------------------------------------------------------------------------
 
+# Return the value via MACOS_SDK_PATH.
+function set_macos_sdk_path()
+{
+  local print_path="$(xcode-select -print-path)"
+  if [ -d "${print_path}/SDKs/MacOSX.sdk" ]
+  then
+    # Without Xcode, use the SDK that comes with the CLT.
+    MACOS_SDK_PATH="${print_path}/SDKs/MacOSX.sdk"
+  elif [ -d "${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" ]
+  then
+    # With Xcode, chose the SDK from the macOS platform.
+    MACOS_SDK_PATH="${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+  elif [ -d "${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk" ]
+  then
+    # With Xcode, chose the SDK from the macOS platform.
+    MACOS_SDK_PATH="${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk"
+  else
+    echo "Cannot find SDK in ${print_path}."
+    exit 1
+  fi
+
+  echo "MACOS_SDK_PATH=${MACOS_SDK_PATH}"
+}
+
+function copy_macos_sdk()
+{
+  local sdk_path="$1"
+
+  # Copy the SDK in the distribution, to have a standalone package.
+  local sdk_name="$(basename ${sdk_path})"
+  run_verbose rm -rf "${APP_PREFIX}/${sdk_name}/"
+  run_verbose cp -R "${sdk_path}" "${APP_PREFIX}/${sdk_name}"
+  # Remove the manuals and save about 225 MB.
+  run_verbose rm -rf "${APP_PREFIX}/${sdk_name}/usr/share/man/"
+}
+
+# -----------------------------------------------------------------------------
+
 function tests_initialize()
 {
   test_functions=("")
