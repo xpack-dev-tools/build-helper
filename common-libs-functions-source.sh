@@ -1156,6 +1156,41 @@ function build_ncurses()
         # Has no install-strip
         run_verbose make install
 
+        # Expose the library to pkg_config also as `curses`.
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/ncurses.pc" ]
+        then
+          cat "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/ncurses.pc" | \
+            sed -e 's|Name: ncurses|Name: curses|' \
+            > "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/curses.pc"
+        fi
+
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/ncurses++.pc" ]
+        then
+          cat "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/ncurses++.pc" | \
+            sed -e 's|Name: ncurses++|Name: curses++|' \
+            > "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/curses++.pc"
+        fi
+
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libncurses.${SHLIB_EXT}" ]
+        then
+          ln -sfv libncurses.${SHLIB_EXT} "${LIBS_INSTALL_FOLDER_PATH}/lib/libcurses.${SHLIB_EXT}"
+        fi
+
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libncurses.a" ]
+        then
+          ln -sfv libncurses.a "${LIBS_INSTALL_FOLDER_PATH}/lib/libcurses.a"
+        fi
+
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libncurses++.${SHLIB_EXT}" ]
+        then
+          ln -sfv libncurses++.${SHLIB_EXT} "${LIBS_INSTALL_FOLDER_PATH}/lib/libcurses++.${SHLIB_EXT}"
+        fi
+
+        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libncurses++.a" ]
+        then
+          ln -sfv libncurses++.a "${LIBS_INSTALL_FOLDER_PATH}/lib/libcurses++.a"
+        fi
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/make-output.txt"
 
       copy_license \
