@@ -1253,7 +1253,7 @@ function check_binary_for_libraries()
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       fi
-      local exec_prefix="@executable_path/"
+      local executable_prefix="@executable_path/"
       for lib_path in ${lib_paths}
       do
         if [ "${lib_path:0:1}" != "@" ]
@@ -1265,11 +1265,11 @@ function check_binary_for_libraries()
             echo ">>> \"${lib_path}\" is not expected here"
             exit 1
           fi
-        elif [ "${lib_path:0:${#exec_prefix}}" == "${exec_prefix}" ]
+        elif [ "${lib_path:0:${#executable_prefix}}" == "${executable_prefix}" ]
         then
-          if [ ! -f "${folder_path}/${lib_path:${#exec_prefix}}" ]
+          if [ ! -f "${folder_path}/${lib_path:${#executable_prefix}}" ]
           then
-            echo ">>> \"${lib_path:${#exec_prefix}}\" is expected in \"${folder_path}\""
+            echo ">>> \"${lib_path:${#executable_prefix}}\" is expected in \"${folder_path}\""
             exit 1
           fi
         fi
@@ -2435,8 +2435,9 @@ function copy_dependencies_recursive()
             | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
           )
     fi
-    local exec_prefix="@executable_path/"
-    local loader_path="@loader_path/"
+    local executable_prefix="@executable_path/"
+    local loader_prefix="@loader_path/"
+    local rpath_prefix="@rpath_path/"
     local lib_name
     for lib_path in ${lib_paths}
     do
@@ -2447,13 +2448,13 @@ function copy_dependencies_recursive()
         lib_name="$(basename "${lib_path}")"
       else
         lib_link_name=""
-        lib_name="${lib_path:${#exec_prefix}}"
+          lib_name="${lib_path:${#executable_prefix}}"
       fi
 
-      if [ "${lib_path}" == "${exec_prefix}${source_file_name}" ]
+      if [ "${lib_path}" == "${executable_prefix}${source_file_name}" ]
       then
         :
-      elif [ "${lib_path}" == "${loader_path}${source_file_name}" ]
+      elif [ "${lib_path}" == "${loader_prefix}${source_file_name}" ]
       then
         :
       elif [ "${lib_link_name}" == "${source_file_name}" ]
