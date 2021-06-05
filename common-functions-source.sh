@@ -2970,7 +2970,7 @@ function create_archive()
 
 # Deprecated, use check_binaries.
 # $1 = application name
-function check_application()
+function _check_application()
 {
   local app_name=$1
 
