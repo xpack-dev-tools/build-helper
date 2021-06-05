@@ -2023,6 +2023,11 @@ function copy_win_libwinpthread_dll()
 
 # -----------------------------------------------------------------------------
 
+# https://wincent.com/wiki/%40executable_path%2C_%40load_path_and_%40rpath
+# @loader_path = the path of the elf refering it (like $ORIGIN) (since 10.4)
+# @rpath = one of the LC_RPATH array stored in the elf (since 10.5)
+# @executable_path = the path of the application loading the shared library
+
 function change_dylib()
 {
   local dylib_name="$1"
@@ -2030,7 +2035,7 @@ function change_dylib()
 
   if [ -L "${file_path}" ]
   then
-    echo "??? '${file_path}' should not change links link!"
+    echo "Oops! change_dylib should not change links! (${file_path})" 
     exit 1
   fi
 
@@ -2038,12 +2043,12 @@ function change_dylib()
 
   if [ -z "${dylib_path}" ]
   then
-    echo "Dylib ${dylib_name} may not used in binary ${file_path}..."
+    echo "Oops! dylib ${dylib_name} not refered by ${file_path}..."
     # for example libftdi1.2.4.0.dylib has the name libftdi1.2.dylib.
-    # exit 1
+    exit 1
   elif [ $(printf "${dylib_path}" | wc -l) -gt 1 ]
   then
-    echo "${file_path} has multiple ${dylib_name} libraries..."
+    echo "Oops! ${file_path} has multiple ${dylib_name} libraries..."
     exit 1
   fi
 
@@ -2055,13 +2060,45 @@ function change_dylib()
     rm -rfv "$(dirname ${file_path})/Python"
   fi
 
-  chmod +w "${file_path}"
-  if [ "${dylib_path}" != "@executable_path/${dylib_name}" ]
+  # Compute the first rpath, if present.
+  local lc_rpath_first=$(otool -l "${file_path}" | grep LC_RPATH -A2 | grep '(offset ' | sed -e 's|.*path \(.*\) (offset.*)|\1|' | sed -n -e'1p')
+
+  if [ ! -z "${lc_rpath_first}" ]
   then
-    run_verbose install_name_tool \
-      -change "${dylib_path}" \
-      "@executable_path/${dylib_name}" \
-      "${file_path}"
+    if [[ ${lc_rpath_first} =~ @loader_path/* ]]
+    then
+      if [ "${dylib_path}" != "@rpath/${dylib_name}" ]
+      then
+        
+        chmod +w "${file_path}"
+        run_verbose install_name_tool \
+          -change "${dylib_path}" \
+          "@rpath/${dylib_name}" \
+          "${file_path}"
+      else
+        echo "Cannot set \"${dylib_path}\" over \"@rpath/${dylib_name}\""
+        exit 1
+      fi
+    else
+      echo "LC_RPATH ${lc_rpath_first} not supported"
+      exit 1
+    fi
+  else
+    if [ "${dylib_path}" != "@loader_path/${dylib_name}" ]
+    then
+      local dest="$(dirname ${file_path})/${dylib_name}"
+      if [ ! -f "${dest}" ]
+      then
+        echo "change dylib to missing ${dest}"
+        exit 1
+      fi
+
+      chmod +w "${file_path}"
+      run_verbose install_name_tool \
+        -change "${dylib_path}" \
+        "@loader_path/${dylib_name}" \
+        "${file_path}"
+    fi
   fi
 }
 
