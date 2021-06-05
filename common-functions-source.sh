@@ -1200,6 +1200,16 @@ function find_binaries()
   fi
 }
 
+# Output the result of a filtered otool.
+function get_darwin_lc_rpaths()
+{
+  local file_path="$1"
+
+  otool -l "${file_path}" | grep LC_RPATH -A2 | grep '(offset ' | sed -e 's|.*path \(.*\) (offset.*)|\1|'
+}
+
+# -----------------------------------------------------------------------------
+
 function check_binary()
 {
   local file_path="$1"
