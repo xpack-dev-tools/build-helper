@@ -1546,6 +1546,7 @@ function is_linux_sys_so()
   return 1 # False
 }
 
+# Links are automatically followed.
 function is_darwin_sys_dylib() 
 {
   local lib_name="$1"
@@ -2850,6 +2851,8 @@ function copy_dependencies_recursive()
 }
 
 # Check all executables and shared libraries in the given folder.
+
+# $1 = folder path (default ${APP_PREFIX})
 function check_binaries()
 {
   local folder_path="${APP_PREFIX}"
