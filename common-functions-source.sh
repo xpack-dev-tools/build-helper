@@ -1264,11 +1264,20 @@ function check_binary_for_libraries()
       set -e
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
+      local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
+
       echo
       (
         set +e
         cd ${folder_path}
-        echo "${file_name}: (${file_path})"
+        local lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+        if [ ! -z "${lc_rpaths_line}" ]
+        then
+          echo "${file_name}: (${file_path}, LC_RPATH=${lc_rpaths_line})"
+        else
+          echo "${file_name}: (${file_path})"
+        fi
+
         otool -L "${file_name}" | sed -e '1d'
         set -e
       )
@@ -1289,45 +1298,91 @@ function check_binary_for_libraries()
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       fi
-      local executable_prefix="@executable_path/"
+
+      # For debug, use DYLD_PRINT_LIBRARIES=1 
+      # https://medium.com/@donblas/fun-with-rpath-otool-and-install-name-tool-e3e41ae86172
+
       for lib_path in ${lib_paths}
       do
-        if [ "${lib_path:0:1}" != "@" ]
+        if [ "${lib_path:0:1}" == "/" ]
         then
+          # If an absolute path, it must be in the system.
           if is_darwin_allowed_sys_dylib "${lib_path}"
           then
             :
           else
-            echo ">>> \"${lib_path}\" is not expected here"
+            echo ">>> absolute \"${lib_path}\" not one of the allowed libs"
             exit 1
           fi
-        elif [ "${lib_path:0:${#executable_prefix}}" == "${executable_prefix}" ]
+
+        elif [ "${lib_path:0:1}" == "@" ]
         then
-          if [ ! -f "${folder_path}/${lib_path:${#executable_prefix}}" ]
+
+          local executable_prefix="@executable_path/"
+          local loader_prefix="@loader_path/"
+          local rpath_prefix="@rpath/"
+
+          if [ "${lib_path:0:${#executable_prefix}}" == "${executable_prefix}" ]
           then
-            echo ">>> \"${lib_path:${#executable_prefix}}\" is expected in \"${folder_path}\""
+            echo ">>> \"${lib_path}\" is relative to unknown executable"
+            exit 1
+          elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
+          then
+            if [ ! -f "${folder_path}/${lib_path:${#loader_prefix}}" ]
+            then
+              echo ">>> \"${lib_path:${#loader_prefix}}\" is expected in \"${folder_path}\""
+              exit 1
+            fi
+          elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
+          then
+            local file_relative_path="${lib_path:${#rpath_prefix}}"
+            local actual_folder_path
+            for lc_rpath in ${lc_rpaths}
+            do
+              if [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+              then
+                actual_folder_path=${folder_path}/${lc_rpath:${#loader_prefix}}
+                if [ ! -f "${actual_folder_path}/${lib_path:${#rpath_prefix}}" ]
+                then
+                  echo ">>> \"${lib_path:${#rpath_prefix}}\" is expected in \"${actual_folder_path}\""
+                  exit 1
+                fi
+              else
+                echo ">>> LC_RPATH=${lc_rpath} syntax not supported"
+                exit 1
+              fi
+            done
+
+          else
+            echo ">>> special relative \"${lib_path}\" not supported"
             exit 1
           fi
+
+        else
+          echo ">>> \"${lib_path}\" with unsupported syntax"
+          exit 1
         fi
       done
 
-      # More or less deprecated by the above.
-      set +e
-      local unxp
-      if [[ "${file_name}" == *\.dylib ]]
-      then
-        unxp=$(otool -L "${file_path}" | sed '1d' | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
-      else
-        unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
-      fi
-      set -e
+      (
+        # More or less deprecated by the above, but kept for just in case.
+        set +e
+        local unxp
+        if [[ "${file_name}" == *\.dylib ]]
+        then
+          unxp=$(otool -L "${file_path}" | sed '1d' | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+        else
+          unxp=$(otool -L "${file_path}" | sed '1d' | grep -v "${file_name}" | egrep -e "(macports|homebrew|opt|install)/")
+        fi
 
-      # echo "|${unxp}|"
-      if [ ! -z "$unxp" ]
-      then
-        echo "Unexpected |${unxp}|"
-        exit 1
-      fi
+        # echo "|${unxp}|"
+        if [ ! -z "$unxp" ]
+        then
+          echo "Unexpected |${unxp}|"
+          exit 1
+        fi
+        set -e
+      )
     elif [ "${TARGET_PLATFORM}" == "linux" ]
     then
       echo
