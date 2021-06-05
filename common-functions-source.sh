@@ -2063,11 +2063,30 @@ function change_dylib()
       "@executable_path/${dylib_name}" \
       "${file_path}"
   fi
+}
 
-  if [ ! -f "$(dirname ${file_path})/${dylib_name}" ]
+# Remove non relative LC_RPATH entries.
+
+# $1 = file path
+function clean_lc_rpaths()
+{
+  local file_path="$1"
+
+  local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
+  if [ -z "${lc_rpaths}" ]
   then
-    install -v -c -m 644 "${dylib_path}" "$(dirname ${file_path})/${dylib_name}"
+    return
   fi
+
+  for rpath in ${lc_rpaths}
+  do
+    if [ "${rpath:0:1}" != "@" ]
+    then
+      run_verbose install_name_tool \
+        -delete_rpath "${rpath}" \
+        "${file_path}"
+    fi
+  done
 }
 
 # Workaround to Docker error on 32-bit image:
