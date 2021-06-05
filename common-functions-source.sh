@@ -2126,10 +2126,11 @@ function patch_linux_elf_origin()
   rm -rf "${tmp_path}"
 }
 
+# Prepare libraries for a single elf
+# (otherwise use prepare_app_folder_libraries)
+# Note: Does not use libexec.
+
 # $1 - absolute path to executable
-# Note: must pass libexec path
-# For single apps, otherwise use prepare_app_folder_libraries
-# Does not use libexec.
 function prepare_app_libraries()
 {
   local app_path="$1"
@@ -2195,23 +2196,15 @@ function prepare_app_libraries()
   )
 }
 
-# Process all executables and shared libraries.
+# Process all elf files in a folder (executables and shared libraries).
+
+# $1 = folder path (default ${APP_PREFIX})
 function prepare_app_folder_libraries()
 {
-  local folder_path
+  local folder_path="${APP_PREFIX}"
   if [ $# -ge 1 ]
   then
     folder_path="$1"
-  else
-    folder_path="${APP_PREFIX}"
-  fi
-
-  local libexec_folder_path
-  if [ $# -ge 2 ]
-  then
-    libexec_folder_path="$2"
-  else
-    libexec_folder_path="${APP_PREFIX}/libexec"
   fi
 
   (
@@ -2260,19 +2253,9 @@ function prepare_app_folder_libraries()
         then
           echo
           echo "## Preparing $(basename "${bin_path}") (${bin_path}) libraries..."
-          # On Linux the shared libraries can be copied in the libexec folder,
-          # and links be kept in the current folder, but not for 32-bit
-          # Intel distros.
-          # For consistency reasons, do the same on all platforms.
-          if true # [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
-          then
-            copy_dependencies_recursive "${bin_path}" \
-              "$(dirname "${bin_path}")"
-          else
-            copy_dependencies_recursive "${bin_path}" \
-              "$(dirname "${bin_path}")" "${libexec_folder_path}"
-          fi
-
+          copy_dependencies_recursive "${bin_path}" \
+            "$(dirname "${bin_path}")"
+ 
           # echo $(basename "${bin_path}") $(readelf -d "${bin_path}" | egrep -i '(RUNPATH|RPATH)')
         fi
       done
@@ -2284,6 +2267,20 @@ function prepare_app_folder_libraries()
   )
 }
 
+# The initial call uses the binary path (app or library, no links)
+# and its folder path,
+# so there is nothing to copy, only to process the dependencies.
+#
+# Subsequent calls may copy dependencies from other folders
+# (like the installed/libs, or the compiler folders).
+#
+# On macOS, the destination may also be changed by existing LC_RPATH.
+#
+# Another complication is that the sources may be links, which must
+# be preserved, but also the destinations must be copied.
+
+# $1 = source file path
+# $2 = destination folder path
 function copy_dependencies_recursive()
 {
   if [ $# -lt 2 ]
@@ -2292,286 +2289,156 @@ function copy_dependencies_recursive()
     exit 1
   fi
 
-  local source_file_path="$1"
-  local dest_folder_path="$2"
+  (
+    local source_file_path="$1"
+    local destination_folder_path="$2"
 
-  local libexec_folder_path
-  if [ $# -ge 3 ]
-  then 
-    libexec_folder_path="$3"
-  else
-    libexec_folder_path="${dest_folder_path}"
-  fi
+    local source_file_name="$(basename "${source_file_path}")"
+    local source_folder_path="$(dirname "${source_file_path}")"
 
-  # echo "copy_dependencies_recursive $@"
+    local destination_file_path="${destination_folder_path}/${source_file_name}"
 
-  # The first step is to copy the file to libexec/destination and link it.
-
-  local source_file_name="$(basename "${source_file_path}")"
-  local source_folder_path="$(dirname "${source_file_path}")"
-
-  local actual_source_file_path=""
-  local copied_file_path="${dest_folder_path}/${source_file_name}"
-
-  # echo "I. Processing ${source_file_path} itself..."
-
-  if [ ! -f "${dest_folder_path}/${source_file_name}" ]
-  then
-
-    if [ "${TARGET_PLATFORM}" == "win32" ]
+    if [ "${IS_DEVELOP}" == "y" ]
     then
-      # On Windows don't bother with sym links, simply copy the file
-      # to the destination.
-
-      actual_source_file_path="$(readlink -f "${source_file_path}")"
-      copied_file_path="${dest_folder_path}/${source_file_name}"
-
-    else
-      # On POSIX copy to libexec and place a symlink at destination.
-      
-      if [ -L "${source_file_path}" ]
-      then
-        #
-        # Compute the final absolute path of the link, regardless
-        # how many links there are on the way.
-        echo "process link ${source_file_path}"
-        actual_source_file_path="$(readlink -f "${source_file_path}")"
-        copied_file_path="${libexec_folder_path}/$(basename "${actual_source_file_path}")"
-        
-      elif is_elf "${source_file_path}"
-      then
-
-        if [ "${IS_DEVELOP}" == "y" ]
-        then
-          # The file is definitelly an elf, not a link.
-          echo "[is_elf ${source_file_name}]"
-        fi
-
-        actual_source_file_path="${source_file_path}"
-        copied_file_path="${libexec_folder_path}/${source_file_name}"
-
-      else
-        # Not a symlink and not an elf. Ignore it.
-        file "${source_file_path}"
-        echo "!!!!!!!!!!!!!!" 
-        return
-      fi
+      echo "copy_dependencies_recursive $@"
     fi
 
-  else
-    : #echo "${dest_folder_path}/${source_file_name} already there"
-  fi
-
-  if [ ! -z "${actual_source_file_path}" ]
-  then
-    if [ ! -f "${copied_file_path}" ]
+    if [ "${TARGET_PLATFORM}" == "linux" ]
     then
-      run_verbose install -c -m 644 "${actual_source_file_path}" "${copied_file_path}"
-    fi
-  else
-    actual_source_file_path="${source_file_path}"
-  fi
 
-  if [ "${WITH_STRIP}" == "y" -a ! -L "${copied_file_path}" ]
-  then
-    strip_binary "${copied_file_path}"
-  fi
+      local source_file_name="$(basename "${source_file_path}")"
+      local source_folder_path="$(dirname "${source_file_path}")"
 
-  if [ "${TARGET_PLATFORM}" == "linux" -a ! -L "${copied_file_path}" ]
-  then
-    patch_linux_elf_origin "${copied_file_path}"
-  fi
-  
-  # If libexec is the destination, there is no need to link.
-  if [ ! -f "${dest_folder_path}/${source_file_name}" ]
-  then
-    (
-      cd "${dest_folder_path}"
+      # The first step is to copy the file to the destination.
 
-      local link_relative_path="$(realpath --relative-to="${dest_folder_path}" "${copied_file_path}")"
-      run_verbose ln -s "${link_relative_path}" "${source_file_name}" 
-    )
-  fi
+      local actual_source_file_path=""
+      local copied_file_path="${destination_folder_path}/${source_file_name}"
 
-  local actual_dest_file_path="$(realpath "${dest_folder_path}/${source_file_name}")"
-  local actual_dest_folder_path="$(dirname "${actual_dest_file_path}")"
+      # echo "I. Processing ${source_file_path} itself..."
 
-  # echo "II. Processing ${source_file_path} dependencies..."
-  if [ "${TARGET_PLATFORM}" == "linux" ]
-  then
-    # The file must be an elf. Get its shared libraries.
-    local lib_names=$(readelf -d "${dest_folder_path}/${source_file_name}" \
-          | grep -i 'Shared library' \
-          | sed -e 's/.*Shared library: \[\(.*\)\]/\1/')
-    local lib_name
-    for lib_name in ${lib_names}
-    do
-      if is_linux_sys_so "${lib_name}"
+      if [ ! -f "${destination_folder_path}/${source_file_name}" ]
       then
-        continue # System library, no need to copy it.
-      else
+
+        # On POSIX copy to libexec and place a symlink at destination.
         
-        if [ -f "$(dirname "${actual_source_file_path}")/${lib_name}" ]
+        if [ -L "${source_file_path}" ]
         then
-          copy_dependencies_recursive "$(dirname "${actual_source_file_path}")/${lib_name}" \
-            "${actual_dest_folder_path}" "${libexec_folder_path}" 
-        elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
+          #
+          # Compute the final absolute path of the link, regardless
+          # how many links there are on the way.
+          echo "process link ${source_file_path}"
+          actual_source_file_path="$(readlink -f "${source_file_path}")"
+          copied_file_path="${destination_folder_path}/$(basename "${actual_source_file_path}")"
+          
+        elif is_elf "${source_file_path}"
         then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
-            "${actual_dest_folder_path}" "${libexec_folder_path}" 
-        elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" ]
-        then
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" \
-            "${actual_dest_folder_path}" "${libexec_folder_path}"
-        else
-          # Not a compiled dependency, perhas a compiler dependency.
-          local full_path=$(${CC} -print-file-name=${lib_name})
-          # -print-file-name outputs back the requested name if not found.
-          if [ "${full_path}" != "${lib_name}" ]
+
+          if [ "${IS_DEVELOP}" == "y" ]
           then
-            copy_dependencies_recursive "${full_path}" \
-              "${actual_dest_folder_path}" "${libexec_folder_path}"
-          else
-            # If no toolchain library either, last chance is the XBB libraries.
-            if [ -f "${XBB_FOLDER_PATH}/lib64/${lib_name}" ]
-            then
-              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib64/${lib_name}" \
-                "${actual_dest_folder_path}" "${libexec_folder_path}"
-            elif [ -f "${XBB_FOLDER_PATH}/lib/${lib_name}" ]
-            then
-              copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib_name}" \
-                "${actual_dest_folder_path}" "${libexec_folder_path}"
-            else
-              echo "${lib_name} not found in the compiled or XBB libraries."
-              exit 1
-            fi
+            # The file is definitelly an elf, not a link.
+            echo "[is_elf ${source_file_name}]"
           fi
-        fi
 
-        if [ ! -f "${actual_dest_folder_path}/${lib_name}" ]
-        then
-          echo "Oops! Dependency ${actual_dest_folder_path}/${lib_name} of ${source_file_name} not found"
+          actual_source_file_path="${source_file_path}"
+          copied_file_path="${destination_folder_path}/${source_file_name}"
+
+        else
+          file "${source_file_path}"
+          echo "Oops! ${source_file_path} not a symlink and not an elf"
           exit 1
         fi
-      fi
-    done
-    # echo "iterate ${dest_folder_path}/${source_file_name} done"
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-    echo
-    otool -L "${dest_folder_path}/${source_file_name}"
-    local lib_paths
-    if is_darwin_dylib "${dest_folder_path}/${source_file_name}"
-    then
-      lib_paths=$(otool -L "${dest_folder_path}/${source_file_name}" \
-            | sed '1d' \
-            | sed '1d' \
-            | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
-          )
-    else
-      lib_paths=$(otool -L "${dest_folder_path}/${source_file_name}" \
-            | sed '1d' \
-            | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
-          )
-    fi
-    local executable_prefix="@executable_path/"
-    local loader_prefix="@loader_path/"
-    local rpath_prefix="@rpath_path/"
-    local lib_name
-    for lib_path in ${lib_paths}
-    do
-      local lib_link_name
-      if [ "${lib_path:0:1}" != "@" ]
-      then
-        lib_link_name="$(basename $(readlink -f ${lib_path}))"
-        lib_name="$(basename "${lib_path}")"
+
       else
-        lib_link_name=""
-        if [ "${lib_path:0:${#executable_prefix}}" == "${executable_prefix}" ]
+        if [ "${IS_DEVELOP}" == "y" ]
         then
-          lib_name="${lib_path:${#executable_prefix}}"
-        elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
-        then
-          lib_name="${lib_path:${#rpath_prefix}}"
-        elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
-        then
-          lib_name="${lib_path:${#loader_prefix}}"
-        else
-          lib_name="$(basename "${lib_path}")"
+          echo "${destination_folder_path}/${source_file_name} already there"
         fi
       fi
 
-      if [ "${lib_path}" == "${executable_prefix}${source_file_name}" ]
+      if [ ! -z "${actual_source_file_path}" ]
       then
-        :
-      elif [ "${lib_path}" == "${loader_prefix}${source_file_name}" ]
-      then
-        :
-      elif [ "${lib_link_name}" == "${source_file_name}" ]
-      then
-        : # Libraries return a line with their own name.
-      else
-        if is_darwin_sys_dylib "${lib_path}"
+        if [ ! -f "${copied_file_path}" ]
         then
-          : # System library, no need to copy it.
-          if is_darwin_allowed_sys_dylib "${lib_path}"
-          then
-            continue # System library, no need to copy it.
-          else
-            echo "Oops! \"${lib_path}\" should not be there!"
-            exit 1
-          fi
+          run_verbose install -c -m 755 "${actual_source_file_path}" "${copied_file_path}"
+        fi
+      else
+        actual_source_file_path="${source_file_path}"
+      fi
+
+      if [ "${WITH_STRIP}" == "y" -a ! -L "${copied_file_path}" ]
+      then
+        strip_binary "${copied_file_path}"
+      fi
+
+      if [ "${TARGET_PLATFORM}" == "linux" -a ! -L "${copied_file_path}" ]
+      then
+        patch_linux_elf_origin "${copied_file_path}"
+      fi
+      
+      # If libexec is the destination, there is no need to link.
+      if [ ! -f "${destination_folder_path}/${source_file_name}" ]
+      then
+        (
+          cd "${destination_folder_path}"
+
+          local link_relative_path="$(realpath --relative-to="${destination_folder_path}" "${copied_file_path}")"
+          run_verbose ln -s "${link_relative_path}" "${source_file_name}" 
+        )
+      fi
+
+      local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
+      local actual_destination_folder_path="$(dirname "${actual_destination_file_path}")"
+
+      # echo "II. Processing ${source_file_path} dependencies..."
+
+      # The file must be an elf. Get its shared libraries.
+      local lib_names=$(readelf -d "${destination_folder_path}/${source_file_name}" \
+            | grep -i 'Shared library' \
+            | sed -e 's/.*Shared library: \[\(.*\)\]/\1/')
+      local lib_name
+      for lib_name in ${lib_names}
+      do
+        if is_linux_sys_so "${lib_name}"
+        then
+          continue # System library, no need to copy it.
         else
+          
           if [ -f "$(dirname "${actual_source_file_path}")/${lib_name}" ]
           then
-            copy_dependencies_recursive "$(dirname "${actual_source_file_path}")/${lib_name}" \
-              "${actual_dest_folder_path}" "${libexec_folder_path}" 
-          elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
-          then
-            copy_dependencies_recursive "${APP_PREFIX}/lib/${lib_name}" \
-              "${actual_dest_folder_path}" "${libexec_folder_path}" 
+            copy_dependencies_recursive \
+              "$(dirname "${actual_source_file_path}")/${lib_name}" \
+              "${actual_destination_folder_path}" 
           elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
           then
-            copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
-              "${actual_dest_folder_path}" "${libexec_folder_path}" 
+            copy_dependencies_recursive \
+              "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
+              "${actual_destination_folder_path}" 
           elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" ]
           then
-            copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" \
-              "${actual_dest_folder_path}" "${libexec_folder_path}"
+            copy_dependencies_recursive \
+              "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" \
+              "${actual_destination_folder_path}" 
           else
             # Not a compiled dependency, perhas a compiler dependency.
             local full_path=$(${CC} -print-file-name=${lib_name})
             # -print-file-name outputs back the requested name if not found.
             if [ "${full_path}" != "${lib_name}" ]
             then
-              copy_dependencies_recursive "${full_path}" \
-                "${actual_dest_folder_path}" "${libexec_folder_path}"
+              copy_dependencies_recursive \
+                "${full_path}" \
+                "${actual_destination_folder_path}" 
             else
-              local triple
-              if [[ ${CC} == clang* ]]
-              then
-                triple="$(${CC} -print-effective-triple)"
-              elif [[ ${CC} == gcc* ]]
-              then
-                triple=$(${CC} -dumpmachine)
-              else
-                echo "Unsupported compiler ${CC}"
-                exit 1
-              fi
-
               # If no toolchain library either, last chance is the XBB libraries.
               if [ -f "${XBB_FOLDER_PATH}/lib64/${lib_name}" ]
               then
-                copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib64/${lib_name}" \
-                  "${actual_dest_folder_path}" "${libexec_folder_path}"
+                copy_dependencies_recursive \
+                  "${XBB_FOLDER_PATH}/lib64/${lib_name}" \
+                  "${actual_destination_folder_path}" 
               elif [ -f "${XBB_FOLDER_PATH}/lib/${lib_name}" ]
               then
-                copy_dependencies_recursive "${XBB_FOLDER_PATH}/lib/${lib_name}" \
-                  "${actual_dest_folder_path}" "${libexec_folder_path}"
-              elif [ -f "${XBB_FOLDER_PATH}/usr/${triple}/lib/${lib_name}" ]
-              then
-                copy_dependencies_recursive "${XBB_FOLDER_PATH}/usr/${triple}/lib/${lib_name}" \
-                  "${actual_dest_folder_path}" "${libexec_folder_path}"
+                copy_dependencies_recursive \
+                  "${XBB_FOLDER_PATH}/lib/${lib_name}" \
+                  "${actual_destination_folder_path}" 
               else
                 echo "${lib_name} not found in the compiled or XBB libraries."
                 exit 1
@@ -2579,68 +2446,296 @@ function copy_dependencies_recursive()
             fi
           fi
 
-          if [ ! -L "${copied_file_path}" ]
+          if [ ! -f "${actual_destination_folder_path}/${lib_name}" ]
           then
-            # Change library path to '@executable_path' inside the lib or app.
-            change_dylib "${lib_name}" "${copied_file_path}" # "${dest_folder_path}/${source_file_name}"
-          fi
-        fi
-      fi
-    done
-  elif [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${dest_folder_path}/${source_file_name}" \
-          | grep -i 'DLL Name' \
-          | sed -e 's/.*DLL Name: \(.*\)/\1/' \
-        )
-    local lib_name
-    for lib_name in ${libs}
-    do
-      if is_win_sys_dll "${lib_name}"
-      then
-        : # System DLL, no need to copy it.
-      else
-        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" ]
-        then
-          # The first source is the install/libs/bin.
-          copy_dependencies_recursive "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
-            "${dest_folder_path}"
-        elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
-        then
-          # GCC leaves some .dlls in lib.
-          copy_dependencies_recursive "${APP_PREFIX}/lib/${lib_name}" \
-            "${dest_folder_path}"
-        elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
-        then
-          copy_dependencies_recursive "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" \
-            "${dest_folder_path}"
-        elif [ -f "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" ]
-        then
-          # Mainly to get libwinpthread-1.dll.
-          copy_dependencies_recursive "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" \
-            "${dest_folder_path}"
-        else
-          local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib_name})
-          # -print-file-name outputs back the requested name if not found.
-          if [ "${full_path}" != "${lib_name}" ]
-          then
-            copy_dependencies_recursive "${full_path}" "${dest_folder_path}"
-          else
-            echo "${lib_name} required by ${source_file_name}, not found"
+            echo "Oops! Dependency ${actual_destination_folder_path}/${lib_name} of ${source_file_name} not found"
             exit 1
           fi
         fi
-      fi
-    done
-  else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
-    exit 1
-  fi
+      done
+      # echo "iterate ${destination_folder_path}/${source_file_name} done"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
 
-  if [ "${IS_DEVELOP}" == "y" ]
-  then
-    echo "dependency ${source_file_path} done"
-  fi
+      # The first step is to copy the file to the destination,
+      # if not already there.
+
+      # Assume a regular file. Later changed if link.
+      local actual_source_file_path="${source_file_path}"
+      local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
+
+      # echo "I. Processing ${source_file_path} itself..."
+
+      if [ ! -f "${destination_file_path}" ]
+      then
+
+        if [ -L "${source_file_path}" ]
+        then
+
+          # Compute the final absolute path of the link, regardless
+          # how many links there are on the way.
+          echo "process link ${source_file_path}"
+
+          actual_source_file_path="$(readlink -f "${source_file_path}")"
+          actual_source_file_name="$(basename "${actual_source_file_path}")"
+
+          actual_destination_file_path="$(realpath "${destination_folder_path}/${actual_source_file_name}")"
+          
+          if [ ! -f "${actual_destination_file_path}" ]
+          then
+            run_verbose install -c -m 755 "${actual_source_file_path}" "${actual_destination_file_path}"
+          fi
+
+          (
+            cd "${destination_folder_path}"
+            run_verbose ln -s "${actual_source_file_name}" "${source_file_name}" 
+          )
+
+        elif is_elf "${source_file_path}"
+        then
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            # The file is definitelly an elf, not a link.
+            echo "is_elf ${source_file_name}"
+          fi
+
+          if [ ! -f "${destination_file_path}" ]
+          then
+            run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
+          fi
+
+        else
+          file "${source_file_path}"
+          echo "Oops! ${source_file_path} not a symlink and not an elf"
+          exit 1
+        fi
+
+      else
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          echo "already there ${destination_file_path}"
+        fi
+      fi
+
+      if [ "${WITH_STRIP}" == "y" -a ! -L "${actual_destination_file_path}" ]
+      then
+        strip_binary "${actual_destination_file_path}"
+      fi
+
+      local actual_destination_folder_path="$(dirname "${actual_destination_file_path}")"
+
+      # echo "II. Processing ${source_file_path} dependencies..."
+
+      local lc_rpaths=$(get_darwin_lc_rpaths "${actual_destination_file_path}")
+      local lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+
+      echo
+      if [ ! -z "${lc_rpaths_line}" ]
+      then
+        otool -L "${actual_destination_file_path}" | sed -e "1s|:|: (LC_RPATH=${lc_rpaths_line})|"
+      else
+        otool -L "${actual_destination_file_path}"
+      fi
+
+      local lib_paths
+      if is_darwin_dylib "${actual_destination_file_path}"
+      then
+        # Skip the extra line with the library name.
+        lib_paths=$(otool -L "${actual_destination_file_path}" \
+              | sed '1d' \
+              | sed '1d' \
+              | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+            )
+      else
+        lib_paths=$(otool -L "${actual_destination_file_path}" \
+              | sed '1d' \
+              | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+            )
+      fi
+      local executable_prefix="@executable_path/"
+      local loader_prefix="@loader_path/"
+      local rpath_prefix="@rpath/"
+      local lib_name
+
+      for lib_path in ${lib_paths}
+      do
+        # The path may be regular (absolute or relative), but may also be
+        # relative to a special prefix (executable, loaser, rpath).
+        # The name usually is a link to more strictly versioned file.
+        # local lib_link_name
+        if [ "${lib_path:0:1}" == "@" ]
+        then
+          # If special prefix, someone else took care to place the
+          # dependencies in the correct location.
+          continue
+        fi
+
+        if [ "${lib_path:0:1}" == "/" ]
+        then
+          # Regular absolute path, possibly a link.
+          # lib_link_name="$(basename $(readlink -f ${lib_path}))"
+          lib_name="$(basename "${lib_path}")"
+
+          if is_darwin_sys_dylib "${lib_path}"
+          then
+            if is_darwin_allowed_sys_dylib "${lib_path}"
+            then
+              # Allowed system library, no need to copy it.
+              continue 
+            else
+              echo "Oops! absolute \"${lib_path}\" not one of the allowed libs"
+              exit 1
+            fi
+          fi
+        else
+          # Relative paths are tricky, hopefully it'll not be needed.
+          # This implies trying several locations, like on Linux.
+          echo "Relative paths like ${lib_path} not yet supported"
+          exit 1
+        fi
+
+        # Copy to the same folder as the source
+        # and use @loader_path.
+
+        # Not optimised, since the library might already be in one
+        # of the LC_RPATH folders.
+
+        # TODO: add libexec to LC_RPATH and copy the libraries there.
+
+        copy_dependencies_recursive \
+          "${lib_path}" \
+          "${actual_destination_folder_path}" 
+
+        # chmod +w "${file_path}"
+        run_verbose install_name_tool \
+          -change "${lib_path}" \
+          "@loader_path/${lib_name}" \
+          "${actual_destination_file_path}"
+
+      done
+
+      clean_lc_rpaths "${actual_destination_file_path}"
+
+    elif [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+
+      local source_file_name="$(basename "${source_file_path}")"
+      local source_folder_path="$(dirname "${source_file_path}")"
+
+      # The first step is to copy the file to the destination.
+
+      local actual_source_file_path=""
+      local copied_file_path="${destination_folder_path}/${source_file_name}"
+
+      # echo "I. Processing ${source_file_path} itself..."
+
+      if [ ! -f "${destination_folder_path}/${source_file_name}" ]
+      then
+
+        # On Windows don't bother with sym links, simply copy the file
+        # to the destination.
+
+        actual_source_file_path="$(readlink -f "${source_file_path}")"
+        copied_file_path="${destination_folder_path}/${source_file_name}"
+
+      else
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          echo "${destination_folder_path}/${source_file_name} already there"
+        fi
+      fi
+
+      if [ ! -z "${actual_source_file_path}" ]
+      then
+        if [ ! -f "${copied_file_path}" ]
+        then
+          run_verbose install -c -m 755 "${actual_source_file_path}" "${copied_file_path}"
+        fi
+      else
+        actual_source_file_path="${source_file_path}"
+      fi
+
+      if [ "${WITH_STRIP}" == "y" -a ! -L "${copied_file_path}" ]
+      then
+        strip_binary "${copied_file_path}"
+      fi
+
+      # If libexec is the destination, there is no need to link.
+      if [ ! -f "${destination_folder_path}/${source_file_name}" ]
+      then
+        (
+          cd "${destination_folder_path}"
+
+          local link_relative_path="$(realpath --relative-to="${destination_folder_path}" "${copied_file_path}")"
+          run_verbose ln -s "${link_relative_path}" "${source_file_name}" 
+        )
+      fi
+
+      local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
+      local actual_destination_folder_path="$(dirname "${actual_destination_file_path}")"
+
+      # echo "II. Processing ${source_file_path} dependencies..."
+
+      local libs=$(${CROSS_COMPILE_PREFIX}-objdump -x "${destination_folder_path}/${source_file_name}" \
+            | grep -i 'DLL Name' \
+            | sed -e 's/.*DLL Name: \(.*\)/\1/' \
+          )
+      local lib_name
+      for lib_name in ${libs}
+      do
+        if is_win_sys_dll "${lib_name}"
+        then
+          : # System DLL, no need to copy it.
+        else
+          if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" ]
+          then
+            # The first source is the install/libs/bin.
+            copy_dependencies_recursive \
+              "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
+              "${destination_folder_path}"
+          elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
+          then
+            # GCC leaves some .dlls in lib.
+            copy_dependencies_recursive \
+              "${APP_PREFIX}/lib/${lib_name}" \
+              "${destination_folder_path}"
+          elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
+          then
+            copy_dependencies_recursive \
+              "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" \
+              "${destination_folder_path}"
+          elif [ -f "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" ]
+          then
+            # Mainly to get libwinpthread-1.dll.
+            copy_dependencies_recursive \
+              "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" \
+              "${destination_folder_path}"
+          else
+            local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib_name})
+            # -print-file-name outputs back the requested name if not found.
+            if [ "${full_path}" != "${lib_name}" ]
+            then
+              copy_dependencies_recursive \
+                "${full_path}" \
+                "${destination_folder_path}"
+            else
+              echo "${lib_name} required by ${source_file_name}, not found"
+              exit 1
+            fi
+          fi
+        fi
+      done
+    else
+      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      exit 1
+    fi
+
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      echo "done with ${source_file_path}"
+    fi
+  )
 }
 
 # Check all executables and shared libraries in the given folder.
