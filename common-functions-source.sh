@@ -1174,6 +1174,32 @@ function copy_build_git()
 
 # -----------------------------------------------------------------------------
 
+# Output the result of an elaborate find.
+function find_binaries()
+{
+  local folder_path
+  if [ $# -ge 1 ]
+  then
+    folder_path="$1"
+  else
+    folder_path="${APP_PREFIX}"
+  fi
+
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    find "${folder_path}" \( -name \*.exe -o -name \*.dll -o -name \*.pyd \)
+  elif [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v 'MacOSX.*\.sdk' | grep -v "/distro-info/"
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+    find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v "/distro-info/"
+  else
+    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    exit 1
+  fi
+}
+
 function check_binary()
 {
   local file_path="$1"
