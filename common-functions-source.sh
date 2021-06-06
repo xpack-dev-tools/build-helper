@@ -1190,7 +1190,7 @@ function find_binaries()
     find "${folder_path}" \( -name \*.exe -o -name \*.dll -o -name \*.pyd \)
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v 'MacOSX.*\.sdk' | grep -v "/distro-info/"
+    find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v 'MacOSX.*\.sdk' | grep -v 'macOS.*\.sdk' | grep -v "/distro-info/"
   elif [ "${TARGET_PLATFORM}" == "linux" ]
   then
     find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v "/distro-info/"
@@ -1722,7 +1722,7 @@ function strip_binaries()
       elif [ "${TARGET_PLATFORM}" == "darwin" ]
       then
 
-        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l | grep -v 'MacOSX.*\.sdk' )
+        binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l | grep -v 'MacOSX.*\.sdk' | grep -v 'macOS.*\.sdk' )
         for bin in ${binaries} 
         do
           if is_elf "${bin}"
@@ -3362,39 +3362,40 @@ function fix_lto_plugin()
 # -----------------------------------------------------------------------------
 
 # Return the value via MACOS_SDK_PATH.
-function set_macos_sdk_path()
+function get_macos_sdk_path()
 {
+  local macos_sdk_path
   local print_path="$(xcode-select -print-path)"
   if [ -d "${print_path}/SDKs/MacOSX.sdk" ]
   then
     # Without Xcode, use the SDK that comes with the CLT.
-    MACOS_SDK_PATH="${print_path}/SDKs/MacOSX.sdk"
+    macos_sdk_path="${print_path}/SDKs/MacOSX.sdk"
   elif [ -d "${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk" ]
   then
     # With Xcode, chose the SDK from the macOS platform.
-    MACOS_SDK_PATH="${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+    macos_sdk_path="${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
   elif [ -d "${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk" ]
   then
     # With Xcode, chose the SDK from the macOS platform.
-    MACOS_SDK_PATH="${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk"
+    macos_sdk_path="${print_path}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${MACOSX_DEPLOYMENT_TARGET}.sdk"
   else
     echo "Cannot find SDK in ${print_path}."
     exit 1
   fi
 
-  echo "copy_macos_sdk=${MACOS_SDK_PATH}"
+  echo "${macos_sdk_path}"
 }
 
 function copy_macos_sdk()
 {
   local sdk_path="$1"
+  local sdk_dest_path="$2"
 
   # Copy the SDK in the distribution, to have a standalone package.
-  local sdk_name="$(basename ${sdk_path})"
-  run_verbose rm -rf "${APP_PREFIX}/${sdk_name}/"
-  run_verbose cp -pRH "${sdk_path}" "${APP_PREFIX}/${sdk_name}"
+  run_verbose rm -rf "${sdk_dest_path}/"
+  run_verbose cp -pRH "${sdk_path}" "${sdk_dest_path}"
   # Remove the manuals and save about 225 MB.
-  run_verbose rm -rf "${APP_PREFIX}/${sdk_name}/usr/share/man/"
+  run_verbose rm -rf "${sdk_dest_path}/usr/share/man/"
 }
 
 # -----------------------------------------------------------------------------
