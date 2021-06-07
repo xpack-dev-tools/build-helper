@@ -1201,7 +1201,7 @@ function prepare_env()
     then
       CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
     else
-      echo "Oops! Unsupported ${TARGET_ARCH}."
+      echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
       exit 1
     fi
 
@@ -1229,7 +1229,7 @@ function prepare_env()
     TARGET="${HOST}"
 
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 

@@ -238,7 +238,7 @@ function prepare_xbb_env()
     then
       CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
     else
-      echo "Oops! Unsupported ${TARGET_ARCH}."
+      echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
       exit 1
     fi
 
@@ -266,7 +266,7 @@ function prepare_xbb_env()
     TARGET="${HOST}"
 
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 
@@ -469,7 +469,7 @@ function prepare_xbb_extras()
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 
@@ -909,7 +909,7 @@ function run_app()
       )
     fi
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 }
@@ -946,7 +946,7 @@ function run_app_silent()
       )
     fi
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 }
@@ -1043,7 +1043,7 @@ function show_libs()
         echo "${app_path} neither exe nor dll"
       fi
     else
-      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
   )
@@ -1195,7 +1195,7 @@ function find_binaries()
   then
     find "${folder_path}" -name \* -type f ! -iname "*.cmake" ! -iname "*.txt" ! -iname "*.rst" ! -iname "*.html" ! -iname "*.json" ! -iname "*.py" ! -iname "*.pyc" ! -iname "*.h" ! -iname "*.xml" ! -iname "*.a" ! -iname "*.la" ! -iname "*.spec" | grep -v "/ldscripts/" | grep -v "/doc/" | grep -v "/locale/" | grep -v "/include/" | grep -v "/distro-info/"
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 }
@@ -1426,7 +1426,7 @@ function check_binary_for_libraries()
       done
       set -e
     else
-      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
   )
@@ -2302,7 +2302,7 @@ function prepare_app_libraries()
       echo "Preparing libraries..."
       copy_dependencies_recursive "${app_path}.exe" "${app_folder_path}"
     else
-      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
   )
@@ -2373,7 +2373,7 @@ function prepare_app_folder_libraries()
       done
 
     else
-      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
   )
@@ -2839,7 +2839,7 @@ function copy_dependencies_recursive()
         fi
       done
     else
-      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
 
@@ -2915,7 +2915,7 @@ function check_binaries()
       done
 
     else
-      echo "Oops! Unsupported ${TARGET_PLATFORM}."
+      echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
   )
@@ -3076,7 +3076,7 @@ function create_archive()
       then
         target_folder_name="${CONTAINER_DISTRO_LC_NAME}${TARGET_BITS}"
       else
-        echo "Oops! Unsupported ${TARGET_PLATFORM}."
+        echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
         exit 1
       fi
     fi
@@ -3229,7 +3229,7 @@ function _check_application()
     done
 
   else
-    echo "Oops! Unsupported ${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
   fi
 
