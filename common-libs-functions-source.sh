@@ -4325,6 +4325,7 @@ function build_libedit()
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
+        CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi      
       if [ "${IS_DEVELOP}" == "y" ]
