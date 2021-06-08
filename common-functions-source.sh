@@ -2730,7 +2730,7 @@ function copy_dependencies_recursive()
         then
           for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
           do
-            echo $rpath
+            develop_echo "rpath ${rpath}"
 
             if [ "${rpath:0:1}" == "/" ]
             then
