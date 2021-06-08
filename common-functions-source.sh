@@ -853,6 +853,16 @@ function do_actions()
 
 # -----------------------------------------------------------------------------
 
+function develop_echo()
+{
+  if [ "${IS_DEVELOP}" == "y" ]
+  then
+    echo "$@"
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 function run_verbose()
 {
   # Does not include the .exe extension.
