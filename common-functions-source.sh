@@ -2643,10 +2643,15 @@ function copy_dependencies_recursive()
         actual_source_file_path="$(readlink -f "${source_file_path}")"
         actual_source_file_name="$(basename "${actual_source_file_path}")"
 
-        actual_destination_file_path="$(realpath "${destination_folder_path}/${actual_source_file_name}")"
-        
+        actual_destination_file_path="${destination_folder_path}/${actual_source_file_name}"
+        if [ -f "${actual_destination_file_path}" ]
+        then
+          actual_destination_file_path="$(realpath "${actual_destination_file_path}")"
+        fi
+
         if [ ! -f "${actual_destination_file_path}" ]
         then
+          run_verbose install -d -m 755 "$(dirname "${actual_destination_file_path}")"
           run_verbose install -c -m 755 "${actual_source_file_path}" "${actual_destination_file_path}"
         fi
 
