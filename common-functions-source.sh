@@ -1218,6 +1218,16 @@ function get_darwin_lc_rpaths()
   otool -l "${file_path}" | grep LC_RPATH -A2 | grep '(offset ' | sed -e 's|.*path \(.*\) (offset.*)|\1|'
 }
 
+function get_linux_rpaths_line()
+{
+  local file_path="$1"
+
+  readelf -d "${file_path}" \
+    | egrep -i '(RUNPATH|RPATH)' \
+    | sed -e 's|.*\[\(.*\)\]|\1|' 
+  
+}
+
 # -----------------------------------------------------------------------------
 
 function check_binary()
