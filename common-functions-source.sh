@@ -1355,6 +1355,7 @@ function check_binary_for_libraries()
             fi
           elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
           then
+            # ???
             local file_relative_path="${lib_path:${#rpath_prefix}}"
             local actual_folder_path
             for lc_rpath in ${lc_rpaths}
@@ -1412,34 +1413,46 @@ function check_binary_for_libraries()
       readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)'
       readelf -d "${file_path}" | egrep -i '(NEEDED)'
 
-      if has_rpath_origin "${file_path}"
-      then 
-        :
-      else
-        echo "${file_path} has no DT_RPATH \$ORIGIN ?????????????????????????????????????????"
-        exit 1
-      fi
-
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
       )
 
-      local relative_path=$(readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)' | sed -e 's/.*\[\$ORIGIN//' | sed -e 's/\].*//')
+      # local relative_path=$(readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)' | sed -e 's/.*\[\$ORIGIN//' | sed -e 's/\].*//')
       # echo $relative_path
+      local linux_rpaths_line=$(get_linux_rpaths_line "${file_path}")
+      local origin_prefix="\$ORIGIN"
 
       for so_name in ${so_names}
       do
-        if [ ! -f "${folder_path}${relative_path}/${so_name}" ] 
+        if is_linux_allowed_sys_so "${so_name}"
         then
-          if is_linux_sys_so "${so_name}"
+          continue
+        elif [[ ${so_name} == libpython* ]] && [[ ${file_name} == *-gdb-py ]]
+        then
+          continue
+        else
+          local found=""
+          for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
+          do
+            if  [ "${rpath:0:${#origin_prefix}}" == "${origin_prefix}" ]
+            then
+              # Looks like "", "/../lib"
+              local folder_relative_path="${rpath:${#origin_prefix}}"
+
+              if [ -f "${folder_path}${folder_relative_path}/${so_name}" ] 
+              then
+                found="y"
+                break
+              fi
+            else
+              echo ">>> DT_RPATH \"${rpath}\" not supported"
+            fi
+          done
+
+          if [ "${found}" != "y" ]
           then
-            :
-          elif [[ ${so_name} == libpython* ]] && [[ ${file_name} == *-gdb-py ]]
-          then
-            :
-          else
-            echo "Unexpected |${so_name}|"
+            echo ">>> Library \"${so_name}\" not found in DT_RPATH"
             exit 1
           fi
         fi
@@ -1525,7 +1538,7 @@ function is_win_sys_dll()
   return 1 # False
 }
 
-function is_linux_sys_so() 
+function is_linux_allowed_sys_so() 
 {
   local lib_name="$1"
 
@@ -1677,7 +1690,7 @@ function has_rpath_origin()
   local elf="$1"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    local origin=$(readelf -d ${elf} | grep 'Library rpath: \[\$ORIGIN\]')
+    local origin=$(readelf -d ${elf} | grep 'Library rpath: \[' | grep '\$ORIGIN')
     if [ ! -z "${origin}" ]
     then
       return 0 # true
@@ -2181,25 +2194,62 @@ function change_dylib()
 # Remove non relative LC_RPATH entries.
 
 # $1 = file path
-function clean_lc_rpaths()
+function clean_rpaths()
 {
   local file_path="$1"
 
-  local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
-  if [ -z "${lc_rpaths}" ]
+  if [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    return
-  fi
 
-  for rpath in ${lc_rpaths}
-  do
-    if [ "${rpath:0:1}" != "@" ]
+    local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
+    if [ -z "${lc_rpaths}" ]
     then
-      run_verbose install_name_tool \
-        -delete_rpath "${rpath}" \
-        "${file_path}"
+      return
     fi
-  done
+
+    for rpath in ${lc_rpaths}
+    do
+      if [ "${rpath:0:1}" != "@" ]
+      then
+        run_verbose install_name_tool \
+          -delete_rpath "${rpath}" \
+          "${file_path}"
+      fi
+    done
+
+  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  then
+
+      local origin_prefix="\$ORIGIN"
+      local new_rpath=""
+
+      local linux_rpaths_line=$(get_linux_rpaths_line "${file_path}")
+
+      for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
+      do
+        if [ "${rpath:0:${#origin_prefix}}" == "${origin_prefix}" ]
+        then
+          if [ ! -z "${new_rpath}" ]
+          then
+            new_rpath+=":"
+          fi
+          new_rpath+="${rpath}"
+        fi
+      done
+
+      if [ -z "${new_rpath}" ]
+      then
+        new_rpath="${origin_prefix}"
+      fi
+
+      patch_linux_elf_set_rpath \
+        "${file_path}" \
+        "${new_rpath}"
+
+  else
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
+    exit 1
+  fi
 }
 
 # Workaround to Docker error on 32-bit image:
@@ -2243,10 +2293,10 @@ function patch_linux_elf_origin()
     then
       if [ "${patchelf_has_output}" == "y" ]
       then
-       echo ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
+       echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" --output \"${file_path}\" \"${tmp_path}\"]" 
        ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
       else
-        echo ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${file_path}"
+        echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" \"${file_path}\"]"
         ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
         cp "${tmp_path}" "${file_path}"
       fi
@@ -2257,6 +2307,142 @@ function patch_linux_elf_origin()
   fi
   rm -rf "${tmp_path}"
 }
+
+function patch_linux_elf_set_rpath()
+{
+  if [ $# -lt 2 ]
+  then 
+    echo "patch_linux_elf_set_rpath requires 2 args." 
+    exit 1
+  fi
+
+  local file_path="$1"
+  local new_rpath="$2"
+
+  if file "${file_path}" | grep statically
+  then
+    file "${file_path}"
+  else
+    local patchelf=${PATCHELF:-$(which patchelf)}
+    # run_verbose "${patchelf}" --version
+    # run_verbose "${patchelf}" --help
+
+    local patchelf_has_output=""
+    if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
+    then
+      patchelf_has_output="y"
+    fi
+
+    local tmp_path=$(mktemp)
+    rm -rf "${tmp_path}"
+    cp "${file_path}" "${tmp_path}"
+
+    if has_rpath "${file_path}"
+    then
+      
+      if [ "${patchelf_has_output}" == "y" ]
+      then
+       echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]" 
+       ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}" 
+      else
+        echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
+        ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
+        cp "${tmp_path}" "${file_path}"
+      fi
+    else
+      echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      exit 1
+    fi
+
+    rm -rf "${tmp_path}"
+  fi
+}
+
+function patch_linux_elf_add_rpath()
+{
+  if [ $# -lt 2 ]
+  then 
+    echo "patch_linux_elf_add_rpath requires 2 args." 
+    exit 1
+  fi
+
+  local file_path="$1"
+  local new_rpath="$2"
+
+  if file "${file_path}" | grep statically
+  then
+    file "${file_path}"
+  else
+    if [ -z "${new_rpath}" ]
+    then
+      echo "patch_linux_elf_add_rpath new path cannot be empty." 
+      exit 1
+    fi
+
+    local linux_rpaths_line=$(get_linux_rpaths_line "${file_path}")
+
+    if [ -z "${linux_rpaths_line}" ]
+    then
+      echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+      exit 1
+    fi
+
+    for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
+    do
+      if [ "${rpath}" == "${new_rpath}" ]
+      then
+        # Already there.
+        return
+      fi
+    done
+
+    new_rpath="${linux_rpaths_line}:${new_rpath}"
+
+    local patchelf=${PATCHELF:-$(which patchelf)}
+    # run_verbose "${patchelf}" --version
+    # run_verbose "${patchelf}" --help
+
+    local patchelf_has_output=""
+    if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
+    then
+      patchelf_has_output="y"
+    fi
+
+    local tmp_path=$(mktemp)
+    rm -rf "${tmp_path}"
+    cp "${file_path}" "${tmp_path}"
+
+    if [ "${patchelf_has_output}" == "y" ]
+    then
+      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]" 
+      ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}" 
+    else
+      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
+      ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
+      cp "${tmp_path}" "${file_path}"
+    fi
+    
+    rm -rf "${tmp_path}"
+  fi
+}
+
+# Compute the $ORIGIN from the given folder path to libexec.
+function compute_origin_relative_to_libexec()
+{
+  if [ $# -lt 1 ]
+  then 
+    echo "compute_origin_relative_to_libexec requires 1 arg." 
+    exit 1
+  fi
+
+  local folder_path="$1"
+
+  local relative_path="$(realpath --relative-to="${folder_path}" "${APP_PREFIX}/libexec")"
+
+  echo "\$ORIGIN/${relative_path}"
+}
+
+# -----------------------------------------------------------------------------
 
 # Prepare libraries for a single elf
 # (otherwise use prepare_app_folder_libraries)
@@ -2435,227 +2621,184 @@ function copy_dependencies_recursive()
       echo "copy_dependencies_recursive $@"
     fi
 
+    # The first step is to copy the file to the destination,
+    # if not already there.
+
+    # Assume a regular file. Later changed if link.
+    local actual_source_file_path="${source_file_path}"
+    local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
+
+    # echo "I. Processing ${source_file_path} itself..."
+
+    if [ ! -f "${destination_file_path}" ]
+    then
+
+      if [ -L "${source_file_path}" ]
+      then
+
+        # Compute the final absolute path of the link, regardless
+        # how many links there are on the way.
+        echo "process link ${source_file_path}"
+
+        actual_source_file_path="$(readlink -f "${source_file_path}")"
+        actual_source_file_name="$(basename "${actual_source_file_path}")"
+
+        actual_destination_file_path="$(realpath "${destination_folder_path}/${actual_source_file_name}")"
+        
+        if [ ! -f "${actual_destination_file_path}" ]
+        then
+          run_verbose install -c -m 755 "${actual_source_file_path}" "${actual_destination_file_path}"
+        fi
+
+        (
+          cd "${destination_folder_path}"
+          run_verbose ln -s "${actual_source_file_name}" "${source_file_name}" 
+        )
+
+      elif is_elf "${source_file_path}"
+      then
+
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          # The file is definitelly an elf, not a link.
+          echo "is_elf ${source_file_name}"
+        fi
+
+        if [ ! -f "${destination_file_path}" ]
+        then
+          run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
+        fi
+
+      else
+        file "${source_file_path}"
+        echo "Oops! ${source_file_path} not a symlink and not an elf"
+        exit 1
+      fi
+
+    else
+      develop_echo "already there ${destination_file_path}"
+    fi
+
+    if [ "${WITH_STRIP}" == "y" -a ! -L "${actual_destination_file_path}" ]
+    then
+      strip_binary "${actual_destination_file_path}"
+    fi
+
+    local actual_destination_folder_path="$(dirname "${actual_destination_file_path}")"
+
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
 
-      local source_file_name="$(basename "${source_file_path}")"
-      local source_folder_path="$(dirname "${source_file_path}")"
+      echo
+      echo "${actual_destination_file_path}:"
+      readelf -d "${actual_destination_file_path}" | egrep -i '(SONAME)' || true
+      readelf -d "${actual_destination_file_path}" | egrep -i '(RUNPATH|RPATH)' || true
+      readelf -d "${actual_destination_file_path}" | egrep -i '(NEEDED)' || true
 
-      # The first step is to copy the file to the destination.
-
-      local actual_source_file_path=""
-      local copied_file_path="${destination_folder_path}/${source_file_name}"
-
-      # echo "I. Processing ${source_file_path} itself..."
-
-      if [ ! -f "${destination_folder_path}/${source_file_name}" ]
-      then
-
-        # On POSIX copy to libexec and place a symlink at destination.
-        
-        if [ -L "${source_file_path}" ]
-        then
-          #
-          # Compute the final absolute path of the link, regardless
-          # how many links there are on the way.
-          echo "process link ${source_file_path}"
-          actual_source_file_path="$(readlink -f "${source_file_path}")"
-          copied_file_path="${destination_folder_path}/$(basename "${actual_source_file_path}")"
-          
-        elif is_elf "${source_file_path}"
-        then
-
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            # The file is definitelly an elf, not a link.
-            echo "[is_elf ${source_file_name}]"
-          fi
-
-          actual_source_file_path="${source_file_path}"
-          copied_file_path="${destination_folder_path}/${source_file_name}"
-
-        else
-          file "${source_file_path}"
-          echo "Oops! ${source_file_path} not a symlink and not an elf"
-          exit 1
-        fi
-
-      else
-        if [ "${IS_DEVELOP}" == "y" ]
-        then
-          echo "${destination_folder_path}/${source_file_name} already there"
-        fi
-      fi
-
-      if [ ! -z "${actual_source_file_path}" ]
-      then
-        if [ ! -f "${copied_file_path}" ]
-        then
-          run_verbose install -c -m 755 "${actual_source_file_path}" "${copied_file_path}"
-        fi
-      else
-        actual_source_file_path="${source_file_path}"
-      fi
-
-      if [ "${WITH_STRIP}" == "y" -a ! -L "${copied_file_path}" ]
-      then
-        strip_binary "${copied_file_path}"
-      fi
-
-      if [ "${TARGET_PLATFORM}" == "linux" -a ! -L "${copied_file_path}" ]
-      then
-        patch_linux_elf_origin "${copied_file_path}"
-      fi
+      # patch_linux_elf_origin "${actual_destination_file_path}"
       
-      # If libexec is the destination, there is no need to link.
-      if [ ! -f "${destination_folder_path}/${source_file_name}" ]
-      then
-        (
-          cd "${destination_folder_path}"
-
-          local link_relative_path="$(realpath --relative-to="${destination_folder_path}" "${copied_file_path}")"
-          run_verbose ln -s "${link_relative_path}" "${source_file_name}" 
-        )
-      fi
-
-      local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
-      local actual_destination_folder_path="$(dirname "${actual_destination_file_path}")"
-
       # echo "II. Processing ${source_file_path} dependencies..."
 
       # The file must be an elf. Get its shared libraries.
-      local lib_names=$(readelf -d "${destination_folder_path}/${source_file_name}" \
+      local lib_names=$(readelf -d "${actual_destination_file_path}" \
             | grep -i 'Shared library' \
             | sed -e 's/.*Shared library: \[\(.*\)\]/\1/')
       local lib_name
+
+      local linux_rpaths_line=$(get_linux_rpaths_line "${actual_destination_file_path}")
+
+      # On Linux the references are library names.
       for lib_name in ${lib_names}
       do
-        if is_linux_sys_so "${lib_name}"
+        develop_echo "processing ${lib_name} of ${actual_destination_file_path}"
+        if is_linux_allowed_sys_so "${lib_name}"
         then
+          develop_echo "${lib_name} is allowed sys so"
           continue # System library, no need to copy it.
-        else
-          
-          if [ -f "$(dirname "${actual_source_file_path}")/${lib_name}" ]
-          then
-            copy_dependencies_recursive \
-              "$(dirname "${actual_source_file_path}")/${lib_name}" \
-              "${actual_destination_folder_path}" 
-          elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" ]
-          then
-            copy_dependencies_recursive \
-              "${LIBS_INSTALL_FOLDER_PATH}/lib64/${lib_name}" \
-              "${actual_destination_folder_path}" 
-          elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" ]
-          then
-            copy_dependencies_recursive \
-              "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_name}" \
-              "${actual_destination_folder_path}" 
-          else
-            # Not a compiled dependency, perhas a compiler dependency.
-            local full_path=$(${CC} -print-file-name=${lib_name})
-            # -print-file-name outputs back the requested name if not found.
-            if [ "${full_path}" != "${lib_name}" ]
-            then
-              copy_dependencies_recursive \
-                "${full_path}" \
-                "${actual_destination_folder_path}" 
-            else
-              # If no toolchain library either, last chance is the XBB libraries.
-              if [ -f "${XBB_FOLDER_PATH}/lib64/${lib_name}" ]
-              then
-                copy_dependencies_recursive \
-                  "${XBB_FOLDER_PATH}/lib64/${lib_name}" \
-                  "${actual_destination_folder_path}" 
-              elif [ -f "${XBB_FOLDER_PATH}/lib/${lib_name}" ]
-              then
-                copy_dependencies_recursive \
-                  "${XBB_FOLDER_PATH}/lib/${lib_name}" \
-                  "${actual_destination_folder_path}" 
-              else
-                echo "${lib_name} not found in the compiled or XBB libraries."
-                exit 1
-              fi
-            fi
-          fi
+        fi
 
-          if [ ! -f "${actual_destination_folder_path}/${lib_name}" ]
+        local origin_prefix="\$ORIGIN"
+        local must_add_origin=""
+        local was_processed=""
+
+        if [ ! -z "${linux_rpaths_line}" ]
+        then
+          for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
+          do
+            echo $rpath
+
+            if [ "${rpath:0:1}" == "/" ]
+            then
+              # Absolute path.
+              if [ -f "${rpath}/${lib_name}" ]
+              then
+                develop_echo "${lib_name} found in ${rpath}"
+                # Library present in the absolute path
+                copy_dependencies_recursive \
+                  "${rpath}/${lib_name}" \
+                  "${APP_PREFIX}/libexec/"
+
+                must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
+                was_processed="y"
+                break
+              fi
+
+            elif [ "${rpath:0:${#origin_prefix}}" == "${origin_prefix}" ]
+            then
+              # Looks like "", "/../lib"
+              local file_relative_path="${rpath:${#origin_prefix}}"
+              if [ -f "${actual_destination_folder_path}/${file_relative_path}/${lib_name}" ]
+              then
+                # Library present in the $ORIGIN path
+                develop_echo "${lib_name} found in ${rpath}"
+                was_processed="y"
+                break
+              fi
+            else
+              echo ">>> \"${rpath}\" with unsupported syntax"
+              exit 1
+            fi
+          done
+        else 
+          echo ">>> \"${actual_destination_file_path}\" has no rpath"
+        fi
+
+        if [ "${was_processed}" != "y" ]
+        then
+          # Perhas a compiler dependency.
+          local full_path=$(${CC} -print-file-name=${lib_name})
+          # -print-file-name outputs back the requested name if not found.
+
+          if [ -f "$(dirname "${actual_source_file_path}")/${lib_name}"  ]
           then
-            echo "Oops! Dependency ${actual_destination_folder_path}/${lib_name} of ${source_file_name} not found"
+            must_add_origin="\$ORIGIN"
+          elif [ "${full_path}" != "${lib_name}" ]
+          then
+            develop_echo "${lib_name} found as compiler file \"${full_path}\""
+            copy_dependencies_recursive \
+              "${full_path}" \
+              "${APP_PREFIX}/libexec/"
+
+            must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
+          else
+            echo ">>> \"${lib_name}\" of \"${actual_destination_file_path}\" not yet processed"
             exit 1
           fi
         fi
+
+        if [ ! -z "${must_add_origin}" ]
+        then
+          patch_linux_elf_add_rpath \
+            "${actual_destination_file_path}" \
+            "${must_add_origin}"
+        fi
       done
+
+      clean_rpaths "${actual_destination_file_path}"
+
       # echo "iterate ${destination_folder_path}/${source_file_name} done"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-
-      # The first step is to copy the file to the destination,
-      # if not already there.
-
-      # Assume a regular file. Later changed if link.
-      local actual_source_file_path="${source_file_path}"
-      local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
-
-      # echo "I. Processing ${source_file_path} itself..."
-
-      if [ ! -f "${destination_file_path}" ]
-      then
-
-        if [ -L "${source_file_path}" ]
-        then
-
-          # Compute the final absolute path of the link, regardless
-          # how many links there are on the way.
-          echo "process link ${source_file_path}"
-
-          actual_source_file_path="$(readlink -f "${source_file_path}")"
-          actual_source_file_name="$(basename "${actual_source_file_path}")"
-
-          actual_destination_file_path="$(realpath "${destination_folder_path}/${actual_source_file_name}")"
-          
-          if [ ! -f "${actual_destination_file_path}" ]
-          then
-            run_verbose install -c -m 755 "${actual_source_file_path}" "${actual_destination_file_path}"
-          fi
-
-          (
-            cd "${destination_folder_path}"
-            run_verbose ln -s "${actual_source_file_name}" "${source_file_name}" 
-          )
-
-        elif is_elf "${source_file_path}"
-        then
-
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            # The file is definitelly an elf, not a link.
-            echo "is_elf ${source_file_name}"
-          fi
-
-          if [ ! -f "${destination_file_path}" ]
-          then
-            run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
-          fi
-
-        else
-          file "${source_file_path}"
-          echo "Oops! ${source_file_path} not a symlink and not an elf"
-          exit 1
-        fi
-
-      else
-        if [ "${IS_DEVELOP}" == "y" ]
-        then
-          echo "already there ${destination_file_path}"
-        fi
-      fi
-
-      if [ "${WITH_STRIP}" == "y" -a ! -L "${actual_destination_file_path}" ]
-      then
-        strip_binary "${actual_destination_file_path}"
-      fi
-
-      local actual_destination_folder_path="$(dirname "${actual_destination_file_path}")"
 
       # echo "II. Processing ${source_file_path} dependencies..."
 
@@ -2690,10 +2833,11 @@ function copy_dependencies_recursive()
       local rpath_prefix="@rpath/"
       local lib_name
 
+      # On macOS the references to dynamic libraries use full paths.
       for lib_path in ${lib_paths}
       do
         # The path may be regular (absolute or relative), but may also be
-        # relative to a special prefix (executable, loaser, rpath).
+        # relative to a special prefix (executable, loader, rpath).
         # The name usually is a link to more strictly versioned file.
         # local lib_link_name
         if [ "${lib_path:0:1}" == "@" ]
@@ -2747,7 +2891,7 @@ function copy_dependencies_recursive()
 
       done
 
-      clean_lc_rpaths "${actual_destination_file_path}"
+      clean_rpaths "${actual_destination_file_path}"
 
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
