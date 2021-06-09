@@ -2437,9 +2437,9 @@ function compute_origin_relative_to_libexec()
 
   local folder_path="$1"
 
-  local relative_path="$(realpath --relative-to="${folder_path}" "${APP_PREFIX}/libexec")"
+  local relative_folder_path="$(realpath --relative-to="${folder_path}" "${APP_PREFIX}/libexec")"
 
-  echo "\$ORIGIN/${relative_path}"
+  echo "\$ORIGIN/${relative_folder_path}"
 }
 
 # -----------------------------------------------------------------------------
@@ -2716,6 +2716,7 @@ function copy_dependencies_recursive()
       for lib_name in ${lib_names}
       do
         develop_echo "processing ${lib_name} of ${actual_destination_file_path}"
+
         if is_linux_allowed_sys_so "${lib_name}"
         then
           develop_echo "${lib_name} is allowed sys so"
@@ -2833,10 +2834,10 @@ function copy_dependencies_recursive()
               | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
             )
       fi
+
       local executable_prefix="@executable_path/"
       local loader_prefix="@loader_path/"
       local rpath_prefix="@rpath/"
-      local lib_name
 
       # On macOS the references to dynamic libraries use full paths.
       for lib_path in ${lib_paths}
@@ -2844,40 +2845,40 @@ function copy_dependencies_recursive()
         # The path may be regular (absolute or relative), but may also be
         # relative to a special prefix (executable, loader, rpath).
         # The name usually is a link to more strictly versioned file.
-        # local lib_link_name
+        
+        develop_echo "processing ${lib_path} of ${actual_destination_file_path}"
+
         if [ "${lib_path:0:1}" == "@" ]
         then
           # If special prefix, someone else took care to place the
           # dependencies in the correct location.
+          develop_echo "${lib_path} was already processed"
           continue
         fi
 
         if [ "${lib_path:0:1}" == "/" ]
         then
           # Regular absolute path, possibly a link.
-          # lib_link_name="$(basename $(readlink -f ${lib_path}))"
-          lib_name="$(basename "${lib_path}")"
-
           if is_darwin_sys_dylib "${lib_path}"
           then
             if is_darwin_allowed_sys_dylib "${lib_path}"
             then
               # Allowed system library, no need to copy it.
+              develop_echo "${lib_path} is allowed sys dylib"
               continue 
             else
-              echo "Oops! absolute \"${lib_path}\" not one of the allowed libs"
+              echo ">>> absolute \"${lib_path}\" not one of the allowed libs"
               exit 1
             fi
           fi
         else
-          # Relative paths are tricky, hopefully it'll not be needed.
+          # Relative paths are tricky, hopefully they'll never be needed.
           # This implies trying several locations, like on Linux.
-          echo "Relative paths like ${lib_path} not yet supported"
+          echo ">>> Relative paths like ${lib_path} not yet supported"
           exit 1
         fi
 
-        # Copy to the same folder as the source
-        # and use @loader_path.
+        # Copy to libexec and use @loader_path.
 
         # Not optimised, since the library might already be in one
         # of the LC_RPATH folders.
@@ -2886,12 +2887,15 @@ function copy_dependencies_recursive()
 
         copy_dependencies_recursive \
           "${lib_path}" \
-          "${actual_destination_folder_path}" 
+          "${APP_PREFIX}/libexec/" 
+
+        local lib_name="$(basename "${lib_path}")"
+        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
 
         # chmod +w "${file_path}"
         run_verbose install_name_tool \
           -change "${lib_path}" \
-          "@loader_path/${lib_name}" \
+          "@loader_path/${relative_folder_path}/${lib_name}" \
           "${actual_destination_file_path}"
 
       done
