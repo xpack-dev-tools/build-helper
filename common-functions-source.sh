@@ -892,7 +892,7 @@ function run_app()
   shift
 
   echo
-  echo "${app_path} $@"
+  echo "[${app_path} $@]"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
     "${app_path}" "$@"
@@ -992,6 +992,13 @@ function test_expect()
   local app_name="$1"
   local expected="$2"
 
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    run_verbose ls -l "${app_name}.exe"
+  else
+    run_verbose ls -l "${app_name}"
+  fi
+
   show_libs "${app_name}"
 
   # Remove the trailing CR present on Windows.
@@ -999,7 +1006,7 @@ function test_expect()
 
   if [ "x${output}x" == "x${expected}x" ]
   then
-    echo "Test ${app_name} ok"
+    echo "Test \"${app_name}\" ok"
   else
     echo "expected ${#expected}: \"${expected}\""
     echo "got ${#output}: \"${output}\""
@@ -1022,31 +1029,32 @@ function show_libs()
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       echo
-      echo "readelf -d ${app_path} | egrep -i ..."
+      echo "[readelf -d ${app_path} | egrep -i ...]"
       # Ignore errors in case it is not using shared libraries.
       set +e 
       readelf -d "${app_path}" | egrep -i '(SONAME)' || true
       readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
       readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
-      echo "ldd -v ${app_path}"
+      echo
+      echo "[ldd -v ${app_path}]"
       ldd -v "${app_path}" || true
       set -e
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
       echo
-      echo "otool -L ${app_path}"
+      echo "[otool -L ${app_path}]"
       otool -L "${app_path}"
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
       if [ -f "${app_path}" ]
       then
         echo
-        echo "${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}"
+        echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}]"
         ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' 
       elif [ -f "${app_path}.exe" ]
       then
         echo
-        echo "${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe"
+        echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe]"
         ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' 
       else
         echo

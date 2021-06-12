@@ -1371,106 +1371,18 @@ function show_libs()
   if [ "${node_platform}" == "linux" ]
   then
     echo
-    echo "readelf -d ${app_path} | egrep -i ..."
+    echo "[readelf -d ${app_path} | egrep -i ...]"
     readelf -d "${app_path}" | egrep -i '(SONAME)' || true
     readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
     readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
     echo
-    echo "ldd -v ${app_path}"
+    echo "[ldd -v ${app_path}]"
     ldd -v "${app_path}" 2>&1 || true
   elif [ "${node_platform}" == "darwin" ]
   then
     echo
-    echo "otool -L ${app_path}"
+    echo "[otool -L ${app_path}]"
     otool -L "${app_path}"
-  fi
-}
-
-function _run_verbose()
-{
-  echo
-  echo "$@"
-  "$@" 2>&1
-}
-
-function run_app()
-{
-  local app_path=$1
-  shift
-  if [ "${node_platform}" == "win32" ]
-  then
-    app_path+='.exe'
-  fi
-
-  echo
-  echo "${app_path} $@"
-  "${app_path}" "$@" 2>&1
-}
-
-function _run_app_exit()
-{
-  local expected_exit_code=$1
-  shift
-  local app_path=$1
-  shift
-  if [ "${node_platform}" == "win32" ]
-  then
-    app_path+='.exe'
-  fi
-  
-  (
-    set +e
-    echo
-    echo "${app_path} $@"
-    "${app_path}" "$@" 2>&1
-    local actual_exit_code=$?
-    echo "exit(${actual_exit_code})"
-    set -e
-    if [ ${actual_exit_code} -ne ${expected_exit_code} ]
-    then
-      exit ${actual_exit_code}
-    fi
-  )
-}
-
-function run_app_silent()
-{
-  local app_path=$1
-  shift
-  if [ "${node_platform}" == "win32" ]
-  then
-    app_path+='.exe'
-  fi
-
-  "${app_path}" "$@" 2>&1
-}
-
-function _do_run()
-{
-  local app_path=$1
-  shift
-
-  echo
-  echo "${app_path} $@"
-  "${app_path}" "$@" 2>&1
-}
-
-function _do_expect()
-{
-  local app_name="$1"
-  local expected="$2"
-
-  show_libs "${app_name}"
-
-  local output="$(run_app_silent "./${app_name}")"
-
-  if [ "x${output}x" == "x${expected}x" ]
-  then
-    echo "Test ${app_name} ok"
-  else
-    echo "expected: ${expected}"
-    echo "got: ${output}"
-    exit 1
   fi
 }
 
