@@ -1006,7 +1006,8 @@ function test_expect()
 
   if [ "x${output}x" == "x${expected}x" ]
   then
-    echo "Test \"${app_name}\" ok"
+    echo
+    echo "Test \"${app_name}\" passed :-)"
   else
     echo "expected ${#expected}: \"${expected}\""
     echo "got ${#output}: \"${output}\""
