@@ -568,9 +568,8 @@ function host_prepare_prerequisites()
 {
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
-    local xbb_folder_path
 
-    
+    local xbb_folder_path
     local must_install=""
 
     if [ -d "${HOME}/.local/xbb" ]
@@ -610,18 +609,24 @@ function host_prepare_prerequisites()
 
     fi
 
-    if true
-    then
-
-      local tl_folder="$HOME/opt/texlive"
-
       must_install=""
-      # Check local TeX Live.
-      if [ ! -d "${tl_folder}" ]
-      then
-        must_install="y"
-      else
+      local tl_folder=""
 
+      if [ -d "$HOME/.local/texlive" ]
+      then
+        tl_folder="$HOME/.local/texlive"
+      elif [ -d "$HOME/opt/texlive" ]
+      then
+        tl_folder="$HOME/opt/texlive"
+      else
+        must_install="y"
+      fi
+
+      # Check local TeX Live.
+      if [ -n "${tl_folder}" ]
+      then
+
+        # TODO: update for Apple Silicon
         PATH="${tl_folder}/bin/x86_64-darwin:${PATH}"
         export PATH
 
@@ -644,11 +649,11 @@ function host_prepare_prerequisites()
         echo "Please install TeX Live and rerun."
         echo "https://github.com/xpack/xpack-build-box/blob/master/macos/README.md#install-tex"
 
+        # Comment this out if TeX is temporarily not available and use --without-pdf
         exit 1
 
       fi
 
-    fi # -z "${no_pdf}"
   fi # "${HOST_UNAME}" == "Darwin"
 
   host_prepare_cache
