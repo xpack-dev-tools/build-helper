@@ -642,7 +642,6 @@ function host_prepare_prerequisites()
 
         echo
         echo "Please install TeX Live and rerun."
-        echo "Alternatively restart the build script using '--without-pdf'."
         echo "https://github.com/xpack/xpack-build-box/blob/master/macos/README.md#install-tex"
 
         exit 1
