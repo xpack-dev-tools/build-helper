@@ -218,6 +218,8 @@ function prepare_xbb_env()
     XBB_FOLDER_PATH=""
   fi
 
+  HOST_MACHINE="$(uname -m)"
+
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
 
   DOTEXE=""
