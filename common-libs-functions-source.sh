@@ -272,7 +272,7 @@ function build_gmp()
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           if [ "${TARGET_PLATFORM}" == "darwin" ] # and clang
           then
@@ -401,7 +401,7 @@ function build_mpfr()
           config_options+=("--disable-warnings")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
              
           cp "config.log" "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/configure-output.txt"
@@ -523,7 +523,7 @@ function build_mpc()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${mpc_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/configure-output.txt"
@@ -647,7 +647,7 @@ function build_isl()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${isl_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/configure-output.txt"
@@ -789,7 +789,7 @@ function build_zstd()
           fi
 
           run_verbose cmake \
-            ${config_options[@]} \
+            "${config_options[@]}" \
             \
             "${SOURCES_FOLDER_PATH}/${zstd_src_folder_name}/build/cmake"
             
@@ -926,7 +926,7 @@ function build_libiconv()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/configure-output.txt"
@@ -1138,7 +1138,7 @@ function build_ncurses()
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${ncurses_folder_name}/configure-output.txt"
@@ -1305,7 +1305,7 @@ function build_libffi()
 
           # --enable-pax_emutramp is inspired by AUR
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libffi_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libffi_folder_name}/configure-output.txt"
@@ -1450,7 +1450,7 @@ function build_gettext()
 
           #  --enable-nls needed to include libintl
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${gettext_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gettext_folder_name}/configure-output.txt"
@@ -1578,7 +1578,7 @@ function build_libelf()
           # config_options+=("--disable-nls")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libelf_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libelf_folder_name}/configure-output.txt"
@@ -1703,7 +1703,7 @@ function build_expat()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${expat_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${expat_folder_name}/configure-output.txt"
@@ -1819,7 +1819,7 @@ function build_xz()
           # config_options+=("--disable-nls")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${xz_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xz_folder_name}/configure-output.txt"
@@ -1965,7 +1965,7 @@ function build_gpm()
           # config_options+=("--with-pic")
 
           run_verbose bash ${DEBUG} "configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
             
           cp "config.log" "${LOGS_FOLDER_PATH}/${gpm_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gpm_folder_name}/configure-output.txt"
@@ -2111,7 +2111,7 @@ function build_libmpdec()
           config_options+=("--disable-cxx")
 
           run_verbose bash ${DEBUG} "configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/configure-output.txt"
@@ -2261,7 +2261,7 @@ function build_libxcrypt()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           # patch_all_libtool_rpath
 
@@ -2487,7 +2487,7 @@ function build_openssl()
               enable-tls1_3 \
               enable-tls1_2 \
               enable-tls1_1 \
-              ${config_options[@]} \
+              "${config_options[@]}" \
               "-Wa,--noexecstack ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
             set -u
@@ -2656,7 +2656,7 @@ function build_sqlite()
           # config_options+=("--disable-amalgamation")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${sqlite_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${sqlite_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${sqlite_folder_name}/configure-output.txt"
@@ -2782,7 +2782,7 @@ function build_readline()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${readline_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${readline_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${readline_folder_name}/configure-output.txt"
@@ -3072,7 +3072,7 @@ function build_python2()
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
              
           cp "config.log" "${LOGS_FOLDER_PATH}/${python2_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python2_folder_name}/configure-output.txt"
@@ -3341,7 +3341,7 @@ function build_python3()
           config_options+=("--disable-loadable-sqlite-extensions")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
              
           cp "config.log" "${LOGS_FOLDER_PATH}/${python3_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python3_folder_name}/configure-output.txt"
@@ -3705,7 +3705,7 @@ function build_libpng()
           config_options+=("--enable-arm-neon=no")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libpng_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libpng_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libpng_folder_name}/configure-output.txt"
@@ -3821,7 +3821,7 @@ function build_jpeg()
 
           # --enable-shared needed by sdl2_image on CentOS 64-bit and Ubuntu.
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${jpeg_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${jpeg_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${jpeg_folder_name}/configure-output.txt"
@@ -3955,7 +3955,7 @@ function build_pixman()
           config_options+=("--disable-gtk")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${pixman_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${pixman_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${pixman_folder_name}/configure-output.txt"
@@ -4101,7 +4101,7 @@ function build_glib()
           config_options+=("--disable-always-build-tests")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           # Disable SPLICE, it fails on CentOS.
           local gsed_path=$(which gsed)
@@ -4244,7 +4244,7 @@ function build_libxml2()
           config_options+=("--without-python")
 
           run_verbose bash ${DEBUG} "configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libxml2_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxml2_folder_name}/configure-output.txt"
@@ -4360,7 +4360,7 @@ function build_libedit()
           # config_options+=("--disable-shared")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libedit_src_folder_name}/configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libedit_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libedit_folder_name}/configure-output.txt"
@@ -4497,7 +4497,7 @@ function build_xar()
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "./configure" \
-            ${config_options[@]}
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${xar_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xar_folder_name}/configure-output.txt"
