@@ -2929,6 +2929,11 @@ function copy_dependencies_recursive()
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
 
+      echo
+      echo "${actual_destination_file_path}:"
+      ${CROSS_COMPILE_PREFIX}-objdump -x "${source_file_path}" \
+            | grep -i 'DLL Name'
+
       local source_file_name="$(basename "${source_file_path}")"
       local source_folder_path="$(dirname "${source_file_path}")"
 
@@ -2993,21 +2998,24 @@ function copy_dependencies_recursive()
       local lib_name
       for lib_name in ${libs}
       do
-        if is_win_sys_dll "${lib_name}"
+        if [ -f "${destination_folder_path}/${lib_name}" ]
+        then
+          : # Already present in the same folder as the source.
+        elif is_win_sys_dll "${lib_name}"
         then
           : # System DLL, no need to copy it.
         else
-          if [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" ]
-          then
-            # The first source is the install/libs/bin.
-            copy_dependencies_recursive \
-              "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
-              "${destination_folder_path}"
-          elif [ -f "${APP_PREFIX}/lib/${lib_name}" ]
+          if [ -f "${APP_PREFIX}/lib/${lib_name}" ]
           then
             # GCC leaves some .dlls in lib.
             copy_dependencies_recursive \
               "${APP_PREFIX}/lib/${lib_name}" \
+              "${destination_folder_path}"
+          elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" ]
+          then
+            # The first source is the install/libs/bin.
+            copy_dependencies_recursive \
+              "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
               "${destination_folder_path}"
           elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
           then
