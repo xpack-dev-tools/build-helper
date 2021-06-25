@@ -1499,6 +1499,7 @@ function is_win_sys_dll()
     cfgmgr32.dll \
     comctl32.dll
     crypt32.dll \
+    dbghelp.dll \
     dnsapi.dll \
     gdi32.dll \
     imm32.dll \
@@ -1533,6 +1534,8 @@ function is_win_sys_dll()
     api-ms-win-crt-heap-l1-1-0.dll \
     api-ms-win-crt-locale-l1-1-0.dll \
     api-ms-win-crt-math-l1-1-0.dll \
+    api-ms-win-crt-multibyte-l1-1-0.dll \
+    api-ms-win-crt-private-l1-1-0.dll \
     api-ms-win-crt-process-l1-1-0.dll \
     api-ms-win-crt-runtime-l1-1-0.dll \
     api-ms-win-crt-string-l1-1-0.dll \
