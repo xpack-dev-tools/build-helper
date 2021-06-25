@@ -4242,6 +4242,11 @@ function build_libxml2()
           config_options+=("--target=${TARGET}")
 
           config_options+=("--without-python")
+          # Not functional on Windows anyway
+          if [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+            config_options+=("--without-catalog")
+          fi
 
           run_verbose bash ${DEBUG} "configure" \
             "${config_options[@]}"
