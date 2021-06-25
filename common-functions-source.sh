@@ -893,20 +893,18 @@ function run_app()
   local app_path=$1
   shift
 
-  echo
-  echo "[${app_path} $@]"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    "${app_path}" "$@"
+    run_verbose "${app_path}" "$@"
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-    "${app_path}" "$@"
+    run_verbose "${app_path}" "$@"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     local wsl_path=$(which wsl.exe)
     if [ ! -z "${wsl_path}" ]
     then
-      "${app_path}.exe" "$@"
+      run_verbose "${app_path}.exe" "$@"
     else 
       (
         xbb_activate
@@ -914,7 +912,13 @@ function run_app()
         local wine_path=$(which wine)
         if [ ! -z "${wine_path}" ]
         then
-          wine "${app_path}.exe" "$@"
+          if [ -f "${app_path}.exe" ]
+          then
+            run_verbose wine "${app_path}.exe" "$@"
+          else
+            echo "${app_path}.exe not found"
+            exit 1
+          fi
         else
           echo "Install wine if you want to run the .exe binaries on Linux."
         fi
@@ -951,7 +955,13 @@ function run_app_silent()
         local wine_path=$(which wine)
         if [ ! -z "${wine_path}" ]
         then
-          wine "${app_path}.exe" "$@" 2>&1
+          if [ -f "${app_path}.exe" ]
+          then
+            wine "${app_path}.exe" "$@" 2>&1
+          else
+            echo "${app_path}.exe not found"
+            exit 1
+          fi
         else
           echo "Install wine if you want to run the .exe binaries on Linux."
         fi
