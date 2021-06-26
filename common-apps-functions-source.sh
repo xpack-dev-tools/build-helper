@@ -320,7 +320,8 @@ function prepare_config_options_common()
   config_options_common+=("--enable-warnings=0")
 }
 
-function build_mingw() 
+# headers & crt
+function build_mingw_core() 
 {
   # http://mingw-w64.org/doku.php/start
   # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -405,22 +406,8 @@ function build_mingw()
   download_and_extract "${mingw_url}" "${mingw_archive}" \
     "${MINGW_SRC_FOLDER_NAME}"
 
-if false
-then
-  (
-    cd "${APP_PREFIX}"
-    mkdir -p "${TARGET}"
-    # Add a mingw link, as instructed in the mingw-w64 docs.
-    if [ -L "mingw" ]
-    then
-      rm "mingw"
-    fi
-    ln -sv "${TARGET}" "mingw"
-
-    # The lib32/lib64 folders are specific to multiplip configurations,
-    # Not used here.
-  )
-fi
+  # The docs recommend to add several links, but for non-multilib
+  # configurations there are no target or lib32/lib64 specific folders.
 
   # ---------------------------------------------------------------------------
 
@@ -452,7 +439,7 @@ fi
           config_options+=("--enable-sdk=all")
 
           config_options+=("--enable-idl")
-          config_options+=("--without-widl")
+          # config_options+=("--without-widl")
 
           # From Arch
           config_options+=("--enable-secure-api")
@@ -593,14 +580,11 @@ fi
   else
     echo "Component mingw-w64-crt already installed."
   fi
-
-  # ---------------------------------------------------------------------------
-
 }
 
-function build_mingw_libraries() 
-{
 
+function build_mingw_winpthreads() 
+{
   local mingw_winpthreads_folder_name="mingw-${MINGW_VERSION}-winpthreads"
 
   local mingw_winpthreads_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winpthreads_folder_name}-installed"
@@ -670,9 +654,10 @@ function build_mingw_libraries()
   else
     echo "Component mingw-w64-winpthreads already installed."
   fi
+}
 
-  # ---------------------------------------------------------------------------
-
+function build_mingw_winstorecompat() 
+{
   local mingw_winstorecompat_folder_name="mingw-${MINGW_VERSION}-winstorecompat"
 
   local mingw_winstorecompat_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winstorecompat_folder_name}-installed"
@@ -738,9 +723,10 @@ function build_mingw_libraries()
   else
     echo "Component mingw-w64-winstorecompat already installed."
   fi
+}
 
-  # ---------------------------------------------------------------------------
-
+function build_mingw_libmangle() 
+{
   local mingw_libmangle_folder_name="mingw-${MINGW_VERSION}-libmangle"
 
   local mingw_libmangle_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_libmangle_folder_name}-installed"
@@ -806,13 +792,12 @@ function build_mingw_libraries()
   else
     echo "Component mingw-w64-libmangle already installed."
   fi
-
-  run_verbose ls -l "${APP_PREFIX}/lib"
 }
 
-function build_mingw_tools()
+
+function build_mingw_gendef()
 {
-    local mingw_gendef_folder_name="mingw-${MINGW_VERSION}-gendef"
+  local mingw_gendef_folder_name="mingw-${MINGW_VERSION}-gendef"
 
   local mingw_gendef_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_gendef_folder_name}-installed"
   if [ ! -f "${mingw_gendef_stamp_file_path}" ]
@@ -879,9 +864,11 @@ function build_mingw_tools()
   else
     echo "Component mingw-w64-gendef already installed."
   fi
+}
 
-  # ---------------------------------------------------------------------------
 
+function build_mingw_widl()
+{
   local mingw_widl_folder_name="mingw-${MINGW_VERSION}-widl"
 
   local mingw_widl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_widl_folder_name}-installed"
@@ -924,6 +911,7 @@ function build_mingw_tools()
           config_options=("${config_options_common[@]}")
 
           config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
+          # To prevent any target specific prefix and leave only widl.exe.
           config_options+=("--program-prefix=")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" \
