@@ -465,8 +465,6 @@ function build_mingw_core()
         # rm -fv "${APP_PREFIX}/include/pthread_time.h"
         # rm -fv "${APP_PREFIX}/include/pthread_unistd.h"
 
-        run_verbose ls -l "${APP_PREFIX}/include" 
-
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-headers-output.txt"
 
       # No need to do it again.
