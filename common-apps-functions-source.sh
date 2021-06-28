@@ -287,7 +287,10 @@ function test_automake()
 
 # -----------------------------------------------------------------------------
 
-function prepare_config_options_common()
+# Used to initialise options in all mingw builds:
+# `config_options=("${config_options_common[@]}")`
+
+function prepare_mingw_config_options_common()
 {
   # ---------------------------------------------------------------------------
   # Used in multiple configurations.
@@ -430,7 +433,7 @@ function build_mingw_core()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" --help
 
-          prepare_config_options_common
+          prepare_mingw_config_options_common
           config_options=("${config_options_common[@]}")
 
           config_options+=("--with-tune=generic")
@@ -536,7 +539,7 @@ function build_mingw_core()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" --help
 
-          prepare_config_options_common
+          prepare_mingw_config_options_common
           config_options=("${config_options_common[@]}")
 
           if [ "${TARGET_ARCH}" == "x64" ]
@@ -621,7 +624,7 @@ function build_mingw_winpthreads()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" --help
 
-          prepare_config_options_common
+          prepare_mingw_config_options_common
           config_options=("${config_options_common[@]}")
 
           config_options+=("--enable-static")
@@ -694,7 +697,7 @@ function build_mingw_winstorecompat()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" --help
 
-          prepare_config_options_common
+          prepare_mingw_config_options_common
           config_options=("${config_options_common[@]}")
 
           config_options+=("--disable-shared")
@@ -765,7 +768,7 @@ function build_mingw_libmangle()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" --help
 
-          prepare_config_options_common "${LIBS_INSTALL_FOLDER_PATH}"
+          prepare_mingw_config_options_common "${LIBS_INSTALL_FOLDER_PATH}"
           config_options=("${config_options_common[@]}")
 
           # config_options+=("--disable-shared")
@@ -837,7 +840,7 @@ function build_mingw_gendef()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" --help
 
-          prepare_config_options_common
+          prepare_mingw_config_options_common
           config_options=("${config_options_common[@]}")
 
           config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
@@ -909,7 +912,7 @@ function build_mingw_widl()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" --help
 
-          prepare_config_options_common
+          prepare_mingw_config_options_common
           config_options=("${config_options_common[@]}")
 
           config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
