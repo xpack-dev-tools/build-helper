@@ -1080,6 +1080,29 @@ function show_libs()
   )
 }
 
+function show_native_libs()
+{
+  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+
+  (
+    xbb_activate
+
+    echo
+    echo "[readelf -d ${app_path} | egrep -i ...]"
+    # Ignore errors in case it is not using shared libraries.
+    set +e 
+    readelf -d "${app_path}" | egrep -i '(SONAME)' || true
+    readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
+    readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
+    echo
+    echo "[ldd -v ${app_path}]"
+    ldd -v "${app_path}" || true
+    set -e
+  )
+}
+
 # -----------------------------------------------------------------------------
 
 function do_patch()
