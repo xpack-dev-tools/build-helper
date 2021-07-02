@@ -303,7 +303,6 @@ function prepare_mingw_config_options_common()
     config_options_common+=("--prefix=$1")
   else
     config_options_common+=("--prefix=${APP_PREFIX}")
-    config_options_common+=("--with-sysroot=${APP_PREFIX}")
   fi
                 
   config_options_common+=("--build=${BUILD}")
@@ -352,15 +351,16 @@ function build_mingw_core()
   # 2021-05-09, "8.0.2"
 
   export MINGW_VERSION="$1"
+  local native_suffix=${2-''}
 
   # Number
   export MINGW_VERSION_MAJOR=$(echo ${MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
 
   # The original SourceForge location.
   export MINGW_SRC_FOLDER_NAME="mingw-w64-v${MINGW_VERSION}"
-  export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}"
+  export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}${native_suffix}"
 
-  local mingw_archive="${MINGW_FOLDER_NAME}.tar.bz2"
+  local mingw_archive="${MINGW_SRC_FOLDER_NAME}.tar.bz2"
   local mingw_url="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/${mingw_archive}"
   
   # If SourceForge is down, there is also a GitHub mirror.
@@ -402,7 +402,7 @@ function build_mingw_core()
 
   # The 'headers' step creates the 'include' folder.
 
-  local mingw_headers_folder_name="mingw-${MINGW_VERSION}-headers"
+  local mingw_headers_folder_name="mingw-${MINGW_VERSION}-headers${native_suffix}"
 
   cd "${SOURCES_FOLDER_PATH}"
 
@@ -429,11 +429,18 @@ function build_mingw_core()
       then
         (
           echo
-          echo "Running mingw-w64-headers configure..."
+          echo "Running mingw-w64-headers${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" --help
 
-          prepare_mingw_config_options_common
+          if [ -n "${native_suffix}" ]
+          then
+            prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
+          else
+            prepare_mingw_config_options_common "${APP_PREFIX}"
+            config_options_common+=("--with-sysroot=${APP_PREFIX}")
+          fi
+
           config_options=("${config_options_common[@]}")
 
           config_options+=("--with-tune=generic")
@@ -456,7 +463,7 @@ function build_mingw_core()
 
       (
         echo
-        echo "Running mingw-w64-headers make..."
+        echo "Running mingw-w64-headers${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -470,24 +477,27 @@ function build_mingw_core()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-headers-output.txt"
 
-      # No need to do it again.
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}" \
-        "${MINGW_FOLDER_NAME}"
+      # No need to do it again for each component.
+      if [ -z "${native_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}" \
+          "${MINGW_FOLDER_NAME}"
+      fi
 
     )
 
     touch "${mingw_headers_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-headers already installed."
+    echo "Component mingw-w64-headers${native_suffix} already installed."
   fi
 
   # ---------------------------------------------------------------------------
 
   # The 'crt' step creates the C run-time in the 'lib' folder.
 
-  local mingw_crt_folder_name="mingw-${MINGW_VERSION}-crt"
+  local mingw_crt_folder_name="mingw-${MINGW_VERSION}-crt${native_suffix}"
 
   local mingw_crt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_crt_folder_name}-installed"
   if [ ! -f "${mingw_crt_stamp_file_path}" ]
@@ -535,11 +545,17 @@ function build_mingw_core()
       then
         (
           echo
-          echo "Running mingw-w64-crt configure..."
+          echo "Running mingw-w64-crt${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" --help
 
-          prepare_mingw_config_options_common
+          if [ -n "${native_suffix}" ]
+          then
+            prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
+          else
+            prepare_mingw_config_options_common "${APP_PREFIX}"
+            config_options_common+=("--with-sysroot=${APP_PREFIX}")
+          fi
           config_options=("${config_options_common[@]}")
 
           if [ "${TARGET_ARCH}" == "x64" ]
@@ -564,14 +580,14 @@ function build_mingw_core()
 
       (
         echo
-        echo "Running mingw-w64-crt make..."
+        echo "Running mingw-w64-crt${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
 
         run_verbose make install-strip
 
-        run_verbose ls -l "${APP_PREFIX}/lib" 
+        run_verbose ls -l "${APP_PREFIX}${native_suffix}/lib" 
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-crt-output.txt"
     )
@@ -579,14 +595,16 @@ function build_mingw_core()
     touch "${mingw_crt_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-crt already installed."
+    echo "Component mingw-w64-crt${native_suffix} already installed."
   fi
 }
 
 
 function build_mingw_winpthreads() 
 {
-  local mingw_winpthreads_folder_name="mingw-${MINGW_VERSION}-winpthreads"
+  local native_suffix=${1-''}
+
+  local mingw_winpthreads_folder_name="mingw-${MINGW_VERSION}-winpthreads${native_suffix}"
 
   local mingw_winpthreads_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winpthreads_folder_name}-installed"
   if [ ! -f "${mingw_winpthreads_stamp_file_path}" ]
@@ -620,11 +638,18 @@ function build_mingw_winpthreads()
       then
         (
           echo
-          echo "Running mingw-w64-winpthreads configure..."
+          echo "Running mingw-w64-winpthreads${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" --help
 
-          prepare_mingw_config_options_common
+          if [ -n "${native_suffix}" ]
+          then
+            prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
+            config_options_common+=("--libdir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib")
+          else
+            prepare_mingw_config_options_common "${APP_PREFIX}"
+            config_options_common+=("--with-sysroot=${APP_PREFIX}")
+          fi
           config_options=("${config_options_common[@]}")
 
           config_options+=("--enable-static")
@@ -640,7 +665,7 @@ function build_mingw_winpthreads()
       
       (
         echo
-        echo "Running mingw-w64-winpthreads make..."
+        echo "Running mingw-w64-winpthreads${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -653,13 +678,15 @@ function build_mingw_winpthreads()
     touch "${mingw_winpthreads_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-winpthreads already installed."
+    echo "Component mingw-w64-winpthreads${native_suffix} already installed."
   fi
 }
 
 function build_mingw_winstorecompat() 
 {
-  local mingw_winstorecompat_folder_name="mingw-${MINGW_VERSION}-winstorecompat"
+  local native_suffix=${1-''}
+
+  local mingw_winstorecompat_folder_name="mingw-${MINGW_VERSION}-winstorecompat${native_suffix}"
 
   local mingw_winstorecompat_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winstorecompat_folder_name}-installed"
   if [ ! -f "${mingw_winstorecompat_stamp_file_path}" ]
@@ -693,11 +720,18 @@ function build_mingw_winstorecompat()
       then
         (
           echo
-          echo "Running mingw-w64-winstorecompat configure..."
+          echo "Running mingw-w64-winstorecompat${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" --help
 
-          prepare_mingw_config_options_common
+          if [ -n "${native_suffix}" ]
+          then
+            prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
+            config_options_common+=("--libdir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib")
+          else
+            prepare_mingw_config_options_common "${APP_PREFIX}"
+            config_options_common+=("--with-sysroot=${APP_PREFIX}")
+          fi
           config_options=("${config_options_common[@]}")
 
           config_options+=("--disable-shared")
@@ -711,7 +745,7 @@ function build_mingw_winstorecompat()
       
       (
         echo
-        echo "Running mingw-w64-winstorecompat make..."
+        echo "Running mingw-w64-winstorecompat${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -724,13 +758,15 @@ function build_mingw_winstorecompat()
     touch "${mingw_winstorecompat_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-winstorecompat already installed."
+    echo "Component mingw-w64-winstorecompat${native_suffix} already installed."
   fi
 }
 
 function build_mingw_libmangle() 
 {
-  local mingw_libmangle_folder_name="mingw-${MINGW_VERSION}-libmangle"
+  local native_suffix=${1-''}
+
+  local mingw_libmangle_folder_name="mingw-${MINGW_VERSION}-libmangle${native_suffix}"
 
   local mingw_libmangle_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_libmangle_folder_name}-installed"
   if [ ! -f "${mingw_libmangle_stamp_file_path}" ]
@@ -741,12 +777,13 @@ function build_mingw_libmangle()
       cd "${BUILD_FOLDER_PATH}/${mingw_libmangle_folder_name}"
 
       xbb_activate
-      xbb_activate_installed_bin
+      # xbb_activate_installed_bin
 
-      CPPFLAGS=""
-      CFLAGS="-O2 -pipe -w"
-      CXXFLAGS="-O2 -pipe -w"
-      LDFLAGS=""
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS}" 
 
       if [ "${IS_DEVELOP}" == "y" ]
       then
@@ -764,14 +801,22 @@ function build_mingw_libmangle()
       then
         (
           echo
-          echo "Running mingw-w64-libmangle configure..."
+          echo "Running mingw-w64-libmangle${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" --help
 
-          prepare_mingw_config_options_common "${LIBS_INSTALL_FOLDER_PATH}"
-          config_options=("${config_options_common[@]}")
-
-          # config_options+=("--disable-shared")
+          if [ -n "${native_suffix}" ]
+          then
+            config_options=()
+            config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
+            
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+          else
+            prepare_mingw_config_options_common "${LIBS_INSTALL_FOLDER_PATH}"
+            config_options=("${config_options_common[@]}")
+          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" \
             "${config_options[@]}"
@@ -782,7 +827,7 @@ function build_mingw_libmangle()
       
       (
         echo
-        echo "Running mingw-w64-libmangle make..."
+        echo "Running mingw-w64-libmangle${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -795,14 +840,16 @@ function build_mingw_libmangle()
     touch "${mingw_libmangle_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-libmangle already installed."
+    echo "Component mingw-w64-libmangle${native_suffix} already installed."
   fi
 }
 
 
 function build_mingw_gendef()
 {
-  local mingw_gendef_folder_name="mingw-${MINGW_VERSION}-gendef"
+  local native_suffix=${1-''}
+
+  local mingw_gendef_folder_name="mingw-${MINGW_VERSION}-gendef${native_suffix}"
 
   local mingw_gendef_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_gendef_folder_name}-installed"
   if [ ! -f "${mingw_gendef_stamp_file_path}" ]
@@ -813,12 +860,12 @@ function build_mingw_gendef()
       cd "${BUILD_FOLDER_PATH}/${mingw_gendef_folder_name}"
 
       xbb_activate
-      xbb_activate_installed_bin
+      # xbb_activate_installed_bin
 
-      CPPFLAGS=""
-      CFLAGS="-O2 -pipe -w"
-      CXXFLAGS="-O2 -pipe -w"
-      LDFLAGS=""
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       if [ "${IS_DEVELOP}" == "y" ]
       then
@@ -836,14 +883,28 @@ function build_mingw_gendef()
       then
         (
           echo
-          echo "Running mingw-w64-gendef configure..."
+          echo "Running mingw-w64-gendef${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" --help
 
-          prepare_mingw_config_options_common
-          config_options=("${config_options_common[@]}")
+          if [ -n "${native_suffix}" ]
+          then
+            config_options=()
+            config_options+=("--prefix=${APP_PREFIX}${native_suffix}")
 
-          config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+
+            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
+          else
+            prepare_mingw_config_options_common "${APP_PREFIX}"
+            config_options=("${config_options_common[@]}")
+
+            config_options+=("--with-sysroot=${APP_PREFIX}")
+            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
+          fi
+
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" \
             "${config_options[@]}"
@@ -854,7 +915,7 @@ function build_mingw_gendef()
       
       (
         echo
-        echo "Running mingw-w64-gendef make..."
+        echo "Running mingw-w64-gendef${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -867,14 +928,16 @@ function build_mingw_gendef()
     touch "${mingw_gendef_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-gendef already installed."
+    echo "Component mingw-w64-gendef${native_suffix} already installed."
   fi
 }
 
 
 function build_mingw_widl()
 {
-  local mingw_widl_folder_name="mingw-${MINGW_VERSION}-widl"
+  local native_suffix=${1-''}
+
+  local mingw_widl_folder_name="mingw-${MINGW_VERSION}-widl${native_suffix}"
 
   local mingw_widl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_widl_folder_name}-installed"
   if [ ! -f "${mingw_widl_stamp_file_path}" ]
@@ -885,12 +948,12 @@ function build_mingw_widl()
       cd "${BUILD_FOLDER_PATH}/${mingw_widl_folder_name}"
 
       xbb_activate
-      xbb_activate_installed_bin
+      # xbb_activate_installed_bin
 
-      CPPFLAGS=""
-      CFLAGS="-O2 -pipe -w"
-      CXXFLAGS="-O2 -pipe -w"
-      LDFLAGS=""
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       if [ "${IS_DEVELOP}" == "y" ]
       then
@@ -908,16 +971,30 @@ function build_mingw_widl()
       then
         (
           echo
-          echo "Running mingw-w64-widl configure..."
+          echo "Running mingw-w64-widl${native_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" --help
 
-          prepare_mingw_config_options_common
-          config_options=("${config_options_common[@]}")
+          if [ -n "${native_suffix}" ]
+          then
+            config_options=()
+            config_options+=("--prefix=${APP_PREFIX}${native_suffix}")
+            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${TARGET}")
 
-          config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
-          # To prevent any target specific prefix and leave only widl.exe.
-          config_options+=("--program-prefix=")
+            config_options+=("--with-widl-includedir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/include")
+          else
+            prepare_mingw_config_options_common "${APP_PREFIX}"
+            config_options=("${config_options_common[@]}")
+
+            config_options+=("--with-sysroot=${APP_PREFIX}")
+            config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
+            # To prevent any target specific prefix and leave only widl.exe.
+            config_options+=("--program-prefix=")
+          fi
+
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" \
             "${config_options[@]}"
@@ -928,7 +1005,7 @@ function build_mingw_widl()
       
       (
         echo
-        echo "Running mingw-w64-widl make..."
+        echo "Running mingw-w64-widl${native_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -941,7 +1018,7 @@ function build_mingw_widl()
     touch "${mingw_widl_stamp_file_path}"
 
   else
-    echo "Component mingw-w64-widl already installed."
+    echo "Component mingw-w64-widl${native_suffix} already installed."
   fi
 }
 
