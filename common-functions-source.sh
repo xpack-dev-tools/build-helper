@@ -901,28 +901,34 @@ function run_app()
     run_verbose "${app_path}" "$@"
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
-    local wsl_path=$(which wsl.exe)
-    if [ ! -z "${wsl_path}" ]
+    if [ -x "${app_path}" ]
     then
-      run_verbose "${app_path}.exe" "$@"
-    else 
-      (
-        xbb_activate
-        
-        local wine_path=$(which wine)
-        if [ ! -z "${wine_path}" ]
-        then
-          if [ -f "${app_path}.exe" ]
+      # When testing native variants, like llvm.
+      run_verbose "${app_path}" "$@"
+    else
+      local wsl_path=$(which wsl.exe)
+      if [ ! -z "${wsl_path}" ]
+      then
+        run_verbose "${app_path}.exe" "$@"
+      else 
+        (
+          xbb_activate
+          
+          local wine_path=$(which wine)
+          if [ ! -z "${wine_path}" ]
           then
-            run_verbose wine "${app_path}.exe" "$@"
+            if [ -f "${app_path}.exe" ]
+            then
+              run_verbose wine "${app_path}.exe" "$@"
+            else
+              echo "${app_path}.exe not found"
+              exit 1
+            fi
           else
-            echo "${app_path}.exe not found"
-            exit 1
+            echo "Install wine if you want to run the .exe binaries on Linux."
           fi
-        else
-          echo "Install wine if you want to run the .exe binaries on Linux."
-        fi
-      )
+        )
+      fi
     fi
   else
     echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
@@ -1006,7 +1012,13 @@ function test_expect()
 
   if [ "${TARGET_PLATFORM}" == "win32" ]
   then
-    run_verbose ls -l "${app_name}.exe"
+    if [ -x "${app_name}" ]
+    then
+      # For native variants.
+      run_verbose ls -l "${app_name}"
+    else
+      run_verbose ls -l "${app_name}.exe"
+    fi
   else
     run_verbose ls -l "${app_name}"
   fi
@@ -1059,19 +1071,34 @@ function show_libs()
       otool -L "${app_path}"
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
-      if [ -f "${app_path}" ]
+      if is_elf "${app_path}"
       then
         echo
-        echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}]"
-        ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' 
-      elif [ -f "${app_path}.exe" ]
-      then
+        echo "[readelf -d ${app_path} | egrep -i ...]"
+        # Ignore errors in case it is not using shared libraries.
+        set +e 
+        readelf -d "${app_path}" | egrep -i '(SONAME)' || true
+        readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
+        readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
         echo
-        echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe]"
-        ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' 
+        echo "[ldd -v ${app_path}]"
+        ldd -v "${app_path}" || true
+        set -e
       else
-        echo
-        echo "${app_path} neither exe nor dll"
+        if [ -f "${app_path}" ]
+        then
+          echo
+          echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}]"
+          ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' || true
+        elif [ -f "${app_path}.exe" ]
+        then
+          echo
+          echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe]"
+          ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' || true
+        else
+          echo
+          echo "${app_path} "
+        fi
       fi
     else
       echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
@@ -2294,7 +2321,7 @@ function clean_rpaths()
         "${new_rpath}"
 
   else
-    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
+    echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM} in clean_rpaths."
     exit 1
   fi
 }
