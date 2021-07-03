@@ -215,6 +215,7 @@ function build_automake()
       export CPPFLAGS="${XBB_CPPFLAGS}"
       export CFLAGS="${XBB_CFLAGS_NO_W}"
       export CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
       export LDFLAGS="${XBB_LDFLAGS_APP}"
 
       env | sort
@@ -860,11 +861,13 @@ function build_mingw_gendef()
       cd "${BUILD_FOLDER_PATH}/${mingw_gendef_folder_name}"
 
       xbb_activate
+      # No need to add xbb_activate_installed_bin, explicit --with-mangle
       # xbb_activate_installed_bin
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -904,7 +907,6 @@ function build_mingw_gendef()
             config_options+=("--with-sysroot=${APP_PREFIX}")
             config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
           fi
-
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" \
             "${config_options[@]}"
@@ -953,6 +955,7 @@ function build_mingw_widl()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -991,10 +994,10 @@ function build_mingw_widl()
 
             config_options+=("--with-sysroot=${APP_PREFIX}")
             config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
+
             # To prevent any target specific prefix and leave only widl.exe.
             config_options+=("--program-prefix=")
           fi
-
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" \
             "${config_options[@]}"
