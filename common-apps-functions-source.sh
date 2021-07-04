@@ -992,17 +992,20 @@ function build_mingw_widl()
           then
             config_options=()
             config_options+=("--prefix=${APP_PREFIX}${native_suffix}")
-            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
+
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${BUILD}")
             config_options+=("--target=${TARGET}")
 
+            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
             config_options+=("--with-widl-includedir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/include")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options=("${config_options_common[@]}")
 
             config_options+=("--with-sysroot=${APP_PREFIX}")
+
+            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
             config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
 
             # To prevent any target specific prefix and leave only widl.exe.
