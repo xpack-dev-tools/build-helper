@@ -450,10 +450,7 @@ function build_mingw_core()
           config_options+=("--enable-sdk=all")
 
           config_options+=("--enable-idl")
-          # config_options+=("--without-widl")
-
-          # From Arch
-          config_options+=("--enable-secure-api")
+          config_options+=("--without-widl")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" \
             "${config_options[@]}"
