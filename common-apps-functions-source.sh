@@ -516,9 +516,12 @@ function build_mingw_core()
       # {standard input}:7150: Error: can't resolve `.text' {.text section} - `.LFB5156' {.text$WinMainCRTStartup section}
       # {standard input}:8937: Error: can't resolve `.text' {.text section} - `.LFB5156' {.text$WinMainCRTStartup section}
 
+      # -ffunction-sections -fdata-sections fail with:
+      # Error: .seh_endproc used in segment '.text' instead of expected '.text$WinMainCRTStartup'
       CPPFLAGS=""
       CFLAGS="-O2 -pipe -w"
       CXXFLAGS="-O2 -pipe -w"
+
       LDFLAGS=""
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -615,9 +618,12 @@ function build_mingw_winpthreads()
       xbb_activate
       # xbb_activate_installed_bin
 
+      # -ffunction-sections -fdata-sections fail with:
+      # Error: .seh_endproc used in segment '.text' instead of expected '.text$WinMainCRTStartup'
       CPPFLAGS=""
       CFLAGS="-O2 -pipe -w"
       CXXFLAGS="-O2 -pipe -w"
+
       LDFLAGS=""
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -700,6 +706,7 @@ function build_mingw_winstorecompat()
       CPPFLAGS=""
       CFLAGS="-O2 -pipe -w"
       CXXFLAGS="-O2 -pipe -w"
+
       LDFLAGS=""
 
       if [ "${IS_DEVELOP}" == "y" ]
