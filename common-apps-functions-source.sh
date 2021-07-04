@@ -437,6 +437,7 @@ function build_mingw_core()
           if [ -n "${native_suffix}" ]
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
+            config_options_common+=("--with-sysroot=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options_common+=("--with-sysroot=${APP_PREFIX}")
@@ -553,10 +554,12 @@ function build_mingw_core()
           if [ -n "${native_suffix}" ]
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
+            config_options_common+=("--with-sysroot=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options_common+=("--with-sysroot=${APP_PREFIX}")
           fi
+
           config_options=("${config_options_common[@]}")
 
           if [ "${TARGET_ARCH}" == "x64" ]
@@ -650,10 +653,12 @@ function build_mingw_winpthreads()
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
             config_options_common+=("--libdir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib")
+            config_options_common+=("--with-sysroot=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options_common+=("--with-sysroot=${APP_PREFIX}")
           fi
+          
           config_options=("${config_options_common[@]}")
 
           config_options+=("--enable-static")
@@ -733,6 +738,7 @@ function build_mingw_winstorecompat()
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}"
             config_options_common+=("--libdir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/lib")
+            config_options_common+=("--with-sysroot=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options_common+=("--with-sysroot=${APP_PREFIX}")
