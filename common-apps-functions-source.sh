@@ -818,18 +818,8 @@ function build_mingw_libmangle()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" --help
 
-          if [ -n "${native_suffix}" ]
-          then
-            config_options=()
-            config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
-            
-            config_options+=("--build=${BUILD}")
-            config_options+=("--host=${BUILD}")
-            config_options+=("--target=${BUILD}")
-          else
-            prepare_mingw_config_options_common "${LIBS_INSTALL_FOLDER_PATH}"
-            config_options=("${config_options_common[@]}")
-          fi
+          prepare_mingw_config_options_common "${LIBS_INSTALL_FOLDER_PATH}${native_suffix}"
+          config_options=("${config_options_common[@]}")
 
           config_options+=("--enable-static")
           # Avoid a reference to 'DLL Name: libmangle-1.dll'
@@ -906,23 +896,11 @@ function build_mingw_gendef()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" --help
 
-          if [ -n "${native_suffix}" ]
-          then
-            config_options=()
-            config_options+=("--prefix=${APP_PREFIX}${native_suffix}")
+          prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}"
+          config_options=("${config_options_common[@]}")
 
-            config_options+=("--build=${BUILD}")
-            config_options+=("--host=${BUILD}")
-            config_options+=("--target=${BUILD}")
-
-            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
-          else
-            prepare_mingw_config_options_common "${APP_PREFIX}"
-            config_options=("${config_options_common[@]}")
-
-            config_options+=("--with-sysroot=${APP_PREFIX}")
-            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
-          fi
+          config_options+=("--with-sysroot=${APP_PREFIX}${native_suffix}")
+          config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" \
             "${config_options[@]}"
@@ -994,24 +972,17 @@ function build_mingw_widl()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" --help
 
+          prepare_mingw_config_options_common "${APP_PREFIX}${native_suffix}"
+          config_options=("${config_options_common[@]}")
+
+          config_options+=("--with-sysroot=${APP_PREFIX}${native_suffix}")
+
+          config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
+
           if [ -n "${native_suffix}" ]
           then
-            config_options=()
-            config_options+=("--prefix=${APP_PREFIX}${native_suffix}")
-
-            config_options+=("--build=${BUILD}")
-            config_options+=("--host=${BUILD}")
-            config_options+=("--target=${TARGET}")
-
-            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}${native_suffix}")
             config_options+=("--with-widl-includedir=${APP_PREFIX}${native_suffix}/${CROSS_COMPILE_PREFIX}/include")
           else
-            prepare_mingw_config_options_common "${APP_PREFIX}"
-            config_options=("${config_options_common[@]}")
-
-            config_options+=("--with-sysroot=${APP_PREFIX}")
-
-            config_options+=("--with-mangle=${LIBS_INSTALL_FOLDER_PATH}")
             config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
 
             # To prevent any target specific prefix and leave only widl.exe.
