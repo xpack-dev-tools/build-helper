@@ -1183,7 +1183,7 @@ function prepare_env()
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
 
-  DOTEXE=""
+  DOT_EXE=""
 
   # Compute the BUILD/HOST/TARGET for configure.
   CROSS_COMPILE_PREFIX=""
@@ -1207,7 +1207,7 @@ function prepare_env()
 
     # do_config_guess
 
-    DOTEXE=".exe"
+    DOT_EXE=".exe"
 
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET="${HOST}"

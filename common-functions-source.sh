@@ -222,7 +222,7 @@ function prepare_xbb_env()
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
 
-  DOTEXE=""
+  DOT_EXE=""
 
   # Compute the BUILD/HOST/TARGET for configure.
   CROSS_COMPILE_PREFIX=""
@@ -246,7 +246,7 @@ function prepare_xbb_env()
 
     do_config_guess
 
-    DOTEXE=".exe"
+    DOT_EXE=".exe"
 
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET="${HOST}"
@@ -369,7 +369,7 @@ function prepare_xbb_env()
 
   export APP_PREFIX
   export SOURCES_FOLDER_PATH
-  export DOTEXE
+  export DOT_EXE
 
   # libtool fails with the Ubuntu /bin/sh.
   export SHELL="/bin/bash"
