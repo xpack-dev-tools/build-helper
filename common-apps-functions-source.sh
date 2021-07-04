@@ -739,6 +739,8 @@ function build_mingw_winstorecompat()
           fi
           config_options=("${config_options_common[@]}")
 
+          config_options+=("--enable-static")
+          # Avoid a reference to 'DLL Name: libwinstorecompat-1.dll'
           config_options+=("--disable-shared")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" \
@@ -822,6 +824,10 @@ function build_mingw_libmangle()
             prepare_mingw_config_options_common "${LIBS_INSTALL_FOLDER_PATH}"
             config_options=("${config_options_common[@]}")
           fi
+
+          config_options+=("--enable-static")
+          # Avoid a reference to 'DLL Name: libmangle-1.dll'
+          config_options+=("--disable-shared")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" \
             "${config_options[@]}"
