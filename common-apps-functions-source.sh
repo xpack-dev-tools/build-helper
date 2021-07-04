@@ -613,7 +613,7 @@ function build_mingw_winpthreads()
       cd "${BUILD_FOLDER_PATH}/${mingw_winpthreads_folder_name}"
 
       xbb_activate
-      xbb_activate_installed_bin
+      # xbb_activate_installed_bin
 
       CPPFLAGS=""
       CFLAGS="-O2 -pipe -w"
@@ -695,7 +695,7 @@ function build_mingw_winstorecompat()
       cd "${BUILD_FOLDER_PATH}/${mingw_winstorecompat_folder_name}"
 
       xbb_activate
-      xbb_activate_installed_bin
+      # xbb_activate_installed_bin
 
       CPPFLAGS=""
       CFLAGS="-O2 -pipe -w"
