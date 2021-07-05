@@ -1208,12 +1208,15 @@ function prepare_env()
     # do_config_guess
 
     DOT_EXE=".exe"
+    SHLIB_EXT="dll"
 
     HOST="${CROSS_COMPILE_PREFIX}"
     TARGET="${HOST}"
 
   elif [ "${TARGET_PLATFORM}" == "darwin" ]
   then
+
+    SHLIB_EXT="dylib"
 
     do_config_guess
 
@@ -1222,6 +1225,8 @@ function prepare_env()
 
   elif [ "${TARGET_PLATFORM}" == "linux" ]
   then
+
+    SHLIB_EXT="so"
 
     do_config_guess
 
