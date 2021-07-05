@@ -1127,15 +1127,15 @@ function prepare_env()
 
   if [ -f "/.dockerenv" -a -d "${container_work_folder_path}" ]
   then
-    work_folder_path="${container_work_folder_path}"
+    WORK_FOLDER_PATH="${container_work_folder_path}"
     repo_folder_path="${container_repo_folder_path}"
   else
-    work_folder_path="${HOME}/Work"
+    WORK_FOLDER_PATH="${HOME}/Work"
     # On the host, it must be called using the script folder path.
     repo_folder_path="$1"
   fi
 
-  cache_folder_path="${work_folder_path}/cache"
+  cache_folder_path="${WORK_FOLDER_PATH}/cache"
 
   # Extract only the first line
   version="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')"
@@ -1344,7 +1344,7 @@ function docker_run_test() {
       --hostname "docker" \
       --workdir="/root" \
       --env DEBUG=${DEBUG} \
-      --volume "${work_folder_path}:${container_work_folder_path}" \
+      --volume "${WORK_FOLDER_PATH}:${container_work_folder_path}" \
       --volume "${repo_folder_path}:${container_repo_folder_path}" \
       "${image_name}" \
       ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/${script_name}" \
