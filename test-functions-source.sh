@@ -1407,6 +1407,11 @@ function good_bye()
   then
     run_verbose sw_vers
   fi
+
+  echo
+  echo "Remove the temporary folders:"
+  echo "rm -rf ${test_folder_path}"
+  echo "rm -rf ${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
 }
 
 # -----------------------------------------------------------------------------
