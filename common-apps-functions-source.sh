@@ -73,7 +73,9 @@ function build_patchelf()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -658,7 +660,7 @@ function build_mingw_winpthreads()
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options_common+=("--with-sysroot=${APP_PREFIX}")
           fi
-          
+
           config_options=("${config_options_common[@]}")
 
           config_options+=("--enable-static")
@@ -874,7 +876,7 @@ function build_mingw_gendef()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
 
       if [ "${IS_DEVELOP}" == "y" ]
       then
@@ -950,7 +952,7 @@ function build_mingw_widl()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
 
       if [ "${IS_DEVELOP}" == "y" ]
       then
