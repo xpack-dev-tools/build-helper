@@ -970,7 +970,7 @@ function run_app_silent()
     fi
 
     local wsl_path=$(which wsl.exe 2>/dev/null)
-    if true # [ ! -z "${wsl_path}" ]
+    if [ ! -z "${wsl_path}" ]
     then
       "${app_path}.exe" "$@" 2>&1
       return
