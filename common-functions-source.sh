@@ -909,31 +909,40 @@ function run_app()
     then
       # When testing native variants, like llvm.
       run_verbose "${app_path}" "$@"
-    else
-      local wsl_path=$(which wsl.exe)
-      if [ ! -z "${wsl_path}" ]
-      then
-        run_verbose "${app_path}.exe" "$@"
-      else 
-        (
-          xbb_activate
-          
-          local wine_path=$(which wine)
-          if [ ! -z "${wine_path}" ]
-          then
-            if [ -f "${app_path}.exe" ]
-            then
-              run_verbose wine "${app_path}.exe" "$@"
-            else
-              echo "${app_path}.exe not found"
-              exit 1
-            fi
-          else
-            echo "Install wine if you want to run the .exe binaries on Linux."
-          fi
-        )
-      fi
+      return
     fi
+
+    if [ "$(uname -o)" == "Msys" ]
+    then
+      run_verbose "${app_path}.exe" "$@"
+      return
+    fi
+
+    local wsl_path=$(which wsl.exe 2>/dev/null)
+    if [ ! -z "${wsl_path}" ]
+    then
+      run_verbose "${app_path}.exe" "$@"
+      return
+    fi
+
+    (
+      xbb_activate
+      
+      local wine_path=$(which wine 2>/dev/null)
+      if [ ! -z "${wine_path}" ]
+      then
+        if [ -f "${app_path}.exe" ]
+        then
+          run_verbose wine "${app_path}.exe" "$@"
+        else
+          echo "${app_path}.exe not found"
+          exit 1
+        fi
+      else
+        echo "Install wine if you want to run the .exe binaries on Linux."
+      fi
+    )
+
   else
     echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
@@ -954,29 +963,36 @@ function run_app_silent()
     "${app_path}" "$@" 2>&1
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
-    local wsl_path=$(which wsl.exe)
-    if [ ! -z "${wsl_path}" ]
+    if [ "$(uname -o)" == "Msys" ]
+    then
+      "${app_path}.exe" "$@"
+      return
+    fi
+
+    local wsl_path=$(which wsl.exe 2>/dev/null)
+    if true # [ ! -z "${wsl_path}" ]
     then
       "${app_path}.exe" "$@" 2>&1
-    else 
-      (
-        xbb_activate
-        
-        local wine_path=$(which wine)
-        if [ ! -z "${wine_path}" ]
-        then
-          if [ -f "${app_path}.exe" ]
-          then
-            wine "${app_path}.exe" "$@" 2>&1
-          else
-            echo "${app_path}.exe not found"
-            exit 1
-          fi
-        else
-          echo "Install wine if you want to run the .exe binaries on Linux."
-        fi
-      )
+      return
     fi
+    (
+      xbb_activate
+
+      local wine_path=$(which wine 2>/dev/null)
+      if [ ! -z "${wine_path}" ]
+      then
+        if [ -f "${app_path}.exe" ]
+        then
+          wine "${app_path}.exe" "$@" 2>&1
+        else
+          echo "${app_path}.exe not found"
+          exit 1
+        fi
+      else
+        echo "Install wine if you want to run the .exe binaries on Linux."
+      fi
+    )
+
   else
     echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
     exit 1
