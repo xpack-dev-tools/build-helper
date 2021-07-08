@@ -3687,19 +3687,21 @@ function tests_add()
 
 function tests_run()
 {
-  echo
-  echo "Runnng final tests..."
+  (
+    echo
+    echo "Runnng final tests..."
 
-  for test_function in ${test_functions[@]}
-  do
-    if [ "${test_function}" != "" ]
-    then
-      echo
-      local func=$(echo ${test_function} | sed -e 's|-|_|g')
-      echo "Running ${func}..."
-      ${func}
-    fi
-  done
+    for test_function in ${test_functions[@]}
+    do
+      if [ "${test_function}" != "" ]
+      then
+        echo
+        local func=$(echo ${test_function} | sed -e 's|-|_|g')
+        echo "Running ${func}..."
+        ${func}
+      fi
+    done
+  ) 2>&1 | tee "${LOGS_FOLDER_PATH}/tests-output-$(date -u +%Y%m%d-%H%M).txt"
 }
 
 # -----------------------------------------------------------------------------
