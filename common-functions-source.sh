@@ -1961,7 +1961,7 @@ function strip_binary()
   fi
   set -u
 
-  if is_elf "${file_path}"
+  if is_elf "${file_path}" || is_pe "${file_path}"
   then
     :
   else
@@ -1981,7 +1981,8 @@ function strip_binary()
   "${strip}" -S "${file_path}" || true
 }
 
-function is_elf()
+# Windows binaries?!
+function _is_elf()
 {
   if [ $# -lt 1 ]
   then
@@ -2009,6 +2010,70 @@ function is_elf()
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
       file ${bin_path} | egrep -q "( PE )|( PE32 )|( PE32\+ )"
+    else
+      return 1
+    fi
+  else
+    return 1
+  fi
+}
+
+function is_pe()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_pe: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+
+  # Symlinks do not match.
+  if [ -L "${bin_path}" ]
+  then
+    return 1
+  fi
+
+  if [ -f "${bin_path}" ]
+  then
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      file ${bin_path} | egrep -q "( PE )|( PE32 )|( PE32\+ )"
+    else
+      return 1
+    fi
+  else
+    return 1
+  fi
+}
+
+function is_elf()
+{
+  if [ $# -lt 1 ]
+  then
+    warning "is_elf: Missing arguments"
+    exit 1
+  fi
+
+  local bin_path="$1"
+
+  # Symlinks do not match.
+  if [ -L "${bin_path}" ]
+  then
+    return 1
+  fi
+
+  if [ -f "${bin_path}" ]
+  then
+    # Return 0 (true) if found.
+    if [ "${TARGET_PLATFORM}" == "linux" ]
+    then
+      file ${bin_path} | egrep -q "( ELF )"
+    elif [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      file ${bin_path} | egrep -q "Mach-O .*x86_64"
+    else
+      return 1
     fi
   else
     return 1
@@ -2055,6 +2120,8 @@ function is_target()
     elif [ "${TARGET_PLATFORM}" == "win32" -a \( "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" \) ]
     then
       file ${bin_path} | egrep -q " Intel 80386"
+    else
+      return 1
     fi
   else
     return 1
@@ -2754,7 +2821,7 @@ function copy_dependencies_recursive()
           run_verbose ln -s "${actual_source_file_name}" "${source_file_name}" 
         )
 
-      elif is_elf "${source_file_path}"
+      elif is_elf "${source_file_path}" || is_pe "${source_file_path}"
       then
 
         if [ "${IS_DEVELOP}" == "y" ]
