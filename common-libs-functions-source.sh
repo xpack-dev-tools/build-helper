@@ -2832,6 +2832,7 @@ function test_readline()
 
 # -----------------------------------------------------------------------------
 
+# TODO: add support for dylib
 function build_bzip2()
 {
   # https://sourceware.org/bzip2/
