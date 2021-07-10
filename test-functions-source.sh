@@ -1135,8 +1135,6 @@ function prepare_env()
     repo_folder_path="$1"
   fi
 
-  cache_folder_path="${WORK_FOLDER_PATH}/cache"
-
   # Extract only the first line
   version="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')"
   if [ -z "${version}" ]
@@ -1144,9 +1142,6 @@ function prepare_env()
     echo "Check the version, it cannot be empty."
     exit 1
   fi
-
-  # Always in the user home, even when inside a container.
-  test_folder_path="${HOME}/tmp/test-${app_lc_name}"
 
   # Defaults, to ensure the variables are defined.
   PATH="${PATH:-""}"
@@ -1182,6 +1177,10 @@ function prepare_env()
   fi
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
+
+  # Always in the user home, even when inside a container.
+  test_xpacks_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
+  cache_folder_path="${test_xpacks_folder_path}"
 
   DOT_EXE=""
 
@@ -1273,12 +1272,12 @@ function install_archive()
     echo
   fi
 
-  app_folder_path="${test_folder_path}/${archive_folder_name}"
+  app_folder_path="${test_xpacks_folder_path}/${archive_folder_name}"
 
   rm -rf "${app_folder_path}"
 
-  mkdir -pv "${test_folder_path}"
-  cd "${test_folder_path}"
+  mkdir -pv "${test_xpacks_folder_path}"
+  cd "${test_xpacks_folder_path}"
 
   echo
   echo "Extracting ${archive_name}..."
@@ -1409,9 +1408,8 @@ function good_bye()
   fi
 
   echo
-  echo "Remove the temporary folders:"
-  echo "rm -rf ${test_folder_path}"
-  echo "rm -rf ${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
+  echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
+  echo "This test also leaves a folder in ~/Downloads."
 }
 
 # -----------------------------------------------------------------------------
