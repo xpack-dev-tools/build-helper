@@ -1180,7 +1180,7 @@ function prepare_env()
 
   # Always in the user home, even when inside a container.
   test_xpacks_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
-  cache_folder_path="${test_xpacks_folder_path}"
+  cache_folder_path="${WORK_FOLDER_PATH}/cache"
 
   DOT_EXE=""
 
@@ -1409,7 +1409,7 @@ function good_bye()
 
   echo
   echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
-  echo "This test also leaves a folder in ~/Downloads."
+  echo "This test also leaves a folder in ~/Downloads and an archive in ${cache_folder_path}."
 }
 
 # -----------------------------------------------------------------------------
