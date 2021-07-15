@@ -34,7 +34,7 @@ int fibonacci(int val) {
     return fibonacci(val - 1) + fibonacci(val - 2);
 }
 
-double check_d, check_cos;
+double static_sin, static_cos;
 
 int main(int argc, char* argv[]) {
     int val = 10, ret;
@@ -43,17 +43,20 @@ int main(int argc, char* argv[]) {
         val = atoi(argv[1]);
     if (argc > 2)
         val2 = atof(argv[2]);
-    double d = sin(val2);
-    printf("d = %f\n", d);
+    double local_sin = sin(val2);
+    printf("sin = %f\n", local_sin);
     printf("cos = %f\n", cos(val2));
     printf("size = %d, %p\n", (int) sizeof(jmp), jmp);
-    check_d = d;
-    check_cos = cos(val2);
+    static_sin = local_sin;
+    static_cos = cos(val2);
     if ((ret = setjmp(jmp)) != 0) {
         printf("setjmp returned %d\n", ret);
-        printf("d = %f\n", d);
+        printf("sin = %f\n", local_sin);
         printf("cos = %f\n", cos(val2));
-        if (d != check_d || cos(val2) != check_cos) {
+        double epsilon = 0.000001;
+        if (fabs(static_sin - local_sin) > epsilon || fabs(static_cos - cos(val2)) > epsilon) {
+            printf("check d = %f delta = %f\n", static_sin, static_sin - local_sin);
+            printf("check cos = %f delta = %f\n", static_cos, static_cos - cos(val2));
             printf("local variables were clobbered\n");
             return 1;
         }
