@@ -2903,7 +2903,7 @@ function copy_dependencies_recursive()
                 # Library present in the absolute path
                 copy_dependencies_recursive \
                   "${rpath}/${lib_name}" \
-                  "${APP_PREFIX}/libexec/"
+                  "${APP_PREFIX}/libexec"
 
                 must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
                 was_processed="y"
@@ -2944,7 +2944,7 @@ function copy_dependencies_recursive()
             develop_echo "${lib_name} found as compiler file \"${full_path}\""
             copy_dependencies_recursive \
               "${full_path}" \
-              "${APP_PREFIX}/libexec/"
+              "${APP_PREFIX}/libexec"
 
             must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
           else
@@ -3048,7 +3048,7 @@ function copy_dependencies_recursive()
 
         copy_dependencies_recursive \
           "${lib_path}" \
-          "${APP_PREFIX}/libexec/" 
+          "${APP_PREFIX}/libexec" 
 
         local lib_name="$(basename "${lib_path}")"
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
