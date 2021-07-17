@@ -2757,6 +2757,8 @@ function prepare_app_folder_libraries()
 #
 # Another complication is that the sources may be links, which must
 # be preserved, but also the destinations must be copied.
+#
+# If needed, set PATCHELF to a custom 0.12.
 
 # $1 = source file path
 # $2 = destination folder path
