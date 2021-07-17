@@ -315,7 +315,8 @@ function prepare_mingw_config_options_common()
   # Windows 7
   config_options_common+=("--with-default-win32-winnt=0x601")
   # https://support.microsoft.com/en-us/topic/update-for-universal-c-runtime-in-windows-c0514201-7fe6-95a3-b0a5-287930f3560c
-  config_options_common+=("--with-default-msvcrt=ucrt")
+  # ucrt fails in GCC 8.5 with missing _setjmp.
+  config_options_common+=("--with-default-msvcrt=${MINGW_MSVCRT:-msvcrt-os}")
 
   config_options_common+=("--enable-wildcard")
   config_options_common+=("--enable-warnings=0")
@@ -333,6 +334,31 @@ function prepare_mingw_env()
   export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}${MINGW_NAME_SUFFIX}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}"
+}
+
+function build_mingw() 
+{
+  export MINGW_VERSION="$1"
+  export MINGW_VERSION_MAJOR=$(echo ${MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
+
+  (
+    xbb_activate
+
+    # Recommended by mingw docs, to prefer the newly installed binutils.
+    xbb_activate_installed_bin
+
+    prepare_mingw_env "${MINGW_VERSION}"
+
+    build_mingw_core
+
+    build_mingw_winpthreads
+    # Fails witn 9.0.0
+    # build_mingw_winstorecompat
+
+    build_mingw_libmangle
+    build_mingw_gendef
+    build_mingw_widl # Refers to mingw headers.
+  )
 }
 
 # headers & crt
@@ -362,6 +388,7 @@ function build_mingw_core()
   # 2019-11-11, "7.0.0"
   # 2020-09-18, "8.0.0"
   # 2021-05-09, "8.0.2"
+  # 2021-05-22, "9.0.0"
 
   local mingw_archive="${MINGW_SRC_FOLDER_NAME}.tar.bz2"
   local mingw_url="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/${mingw_archive}"
