@@ -3650,7 +3650,12 @@ function fix_lto_plugin()
     LTO_PLUGIN_BFD_PATH=${LTO_PLUGIN_BFD_PATH:-"lib/bfd-plugins/liblto_plugin.so"}
   elif [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    LTO_PLUGIN_ORIGINAL_NAME=${LTO_PLUGIN_ORIGINAL_NAME:-"liblto_plugin.so.0.0.0"}
+    if [ ${GCC_VERSION_MAJOR} -ge 11 ]
+    then
+      LTO_PLUGIN_ORIGINAL_NAME=${LTO_PLUGIN_ORIGINAL_NAME:-"liblto_plugin.so"}
+    else # Up to GCC 10.
+      LTO_PLUGIN_ORIGINAL_NAME=${LTO_PLUGIN_ORIGINAL_NAME:-"liblto_plugin.so.0.0.0"}
+    fi
     LTO_PLUGIN_BFD_PATH=${LTO_PLUGIN_BFD_PATH:-"lib/bfd-plugins/liblto_plugin.so"}
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
