@@ -3749,14 +3749,18 @@ function copy_macos_sdk()
 
 # -----------------------------------------------------------------------------
 
+# Use a file, to allow sub-shells to add functions.
+
 function tests_initialize()
 {
-  test_functions=("")
+  export TEST_FUNCTION_NAMES_FILE_PATH="${INSTALL_FOLDER_PATH}/test-function-names"
+  rm -rf "${TEST_FUNCTION_NAMES_FILE_PATH}"
+  touch "${TEST_FUNCTION_NAMES_FILE_PATH}"
 }
 
 function tests_add()
 {
-  test_functions+=("$1")
+  echo "$1" >> "${TEST_FUNCTION_NAMES_FILE_PATH}"
 }
 
 function tests_run()
@@ -3765,7 +3769,7 @@ function tests_run()
     echo
     echo "Runnng final tests..."
 
-    for test_function in ${test_functions[@]}
+    for test_function in $(cat ${TEST_FUNCTION_NAMES_FILE_PATH})
     do
       if [ "${test_function}" != "" ]
       then
