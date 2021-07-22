@@ -593,6 +593,7 @@ function build_mingw_crt()
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
             config_options=("${config_options_common[@]}")
+            config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
 
             config_options+=("--build=${BUILD}")
             # The bootstrap binaries will run on the build machine.
@@ -693,6 +694,7 @@ function build_mingw_winpthreads()
           if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
             config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}")
+            config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
 
             config_options+=("--libdir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/lib")
           else
