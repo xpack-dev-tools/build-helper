@@ -347,7 +347,8 @@ function build_mingw()
 
     prepare_mingw_env "${MINGW_VERSION}"
 
-    build_mingw_core
+    build_mingw_headers
+    build_mingw_crt
 
     build_mingw_winpthreads
     # Fails witn 9.0.0
@@ -360,7 +361,7 @@ function build_mingw()
 }
 
 # headers & crt
-function build_mingw_core() 
+function build_mingw_headers() 
 {
   # http://mingw-w64.org/doku.php/start
   # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -520,7 +521,10 @@ function build_mingw_core()
   else
     echo "Component mingw-w64-headers${MINGW_NAME_SUFFIX} already installed."
   fi
+}
 
+function build_mingw_crt() 
+{
   # ---------------------------------------------------------------------------
 
   # The 'crt' step creates the C run-time in the 'lib' folder.
