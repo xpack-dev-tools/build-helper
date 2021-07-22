@@ -90,11 +90,11 @@ function build_patchelf()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running patchelf configure..."
 
@@ -220,11 +220,11 @@ function build_automake()
 
       export LDFLAGS="${XBB_LDFLAGS_APP}"
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running automake configure..."
 
@@ -560,11 +560,11 @@ function build_mingw_core()
       # (https://github.com/henry0312/build_gcc/issues/1)
       # export CC=""
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running mingw-w64-crt${MINGW_NAME_SUFFIX} configure..."
 
@@ -660,11 +660,11 @@ function build_mingw_winpthreads()
       export CXXFLAGS
       export LDFLAGS
       
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running mingw-w64-winpthreads${MINGW_NAME_SUFFIX} configure..."
 
@@ -747,11 +747,11 @@ function build_mingw_winstorecompat()
       export CXXFLAGS
       export LDFLAGS
       
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running mingw-w64-winstorecompat${MINGW_NAME_SUFFIX} configure..."
 
@@ -831,11 +831,11 @@ function build_mingw_libmangle()
       export CXXFLAGS
       export LDFLAGS
       
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running mingw-w64-libmangle${MINGW_NAME_SUFFIX} configure..."
 
@@ -909,11 +909,11 @@ function build_mingw_gendef()
       export CXXFLAGS
       export LDFLAGS
       
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running mingw-w64-gendef${MINGW_NAME_SUFFIX} configure..."
 
@@ -989,11 +989,11 @@ function build_mingw_widl()
       export CXXFLAGS
       export LDFLAGS
       
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running mingw-w64-widl${MINGW_NAME_SUFFIX} configure..."
 
@@ -1141,11 +1141,11 @@ function build_binutils()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running binutils configure..."
       
