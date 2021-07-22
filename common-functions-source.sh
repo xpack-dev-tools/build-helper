@@ -466,7 +466,8 @@ function prepare_xbb_extras()
     export NATIVE_CC=${CC}
     export NATIVE_CXX=${CXX}
     
-    prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
+    # Note: use this explcitly in the application.
+    # prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
 
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
