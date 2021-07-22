@@ -1306,7 +1306,12 @@ function build_binutils()
     echo "Component binutils already installed."
   fi
 
-  tests_add "test_binutils"
+  if [ -n "${name_suffix}" ]
+  then
+    :
+  else
+    tests_add "test_binutils"
+  fi
 }
 
 function test_binutils()
