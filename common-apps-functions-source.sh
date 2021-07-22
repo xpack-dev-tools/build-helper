@@ -1091,16 +1091,17 @@ function build_binutils()
   # 2021-02-06, "2.36.1"
 
   local binutils_version="$1"
+  local name_suffix=${2-''}
 
   local binutils_src_folder_name="binutils-${binutils_version}"
-  local binutils_folder_name="${binutils_src_folder_name}"
+  local binutils_folder_name="${binutils_src_folder_name}${name_suffix}"
 
   local binutils_archive="${binutils_src_folder_name}.tar.xz"
   local binutils_url="https://ftp.gnu.org/gnu/binutils/${binutils_archive}"
 
   local binutils_patch_file_name="binutils-${binutils_version}.patch"
 
-  local binutils_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-binutils-${binutils_version}-installed"
+  local binutils_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${binutils_folder_name}-installed"
   if [ ! -f "${binutils_stamp_file_path}" ]
   then
 
@@ -1115,29 +1116,44 @@ function build_binutils()
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
 
-      xbb_activate
-      # To access the newly compiled libraries.
-      xbb_activate_installed_dev
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-      LDFLAGS="${XBB_LDFLAGS_APP}" 
-
-      if [ "${TARGET_PLATFORM}" == "win32" ]
+      # xbb_activate
+      if [ -n "${name_suffix}" ]
       then
-        if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
+
+        # Use XBB libs in native-llvm
+        xbb_activate_dev
+        xbb_activate_libs
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC} -Wl,-rpath,${XBB_FOLDER_PATH}/lib"
+
+      else
+        # To access the newly compiled libraries.
+        xbb_activate_installed_dev
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_APP}" 
+
+        if [ "${TARGET_PLATFORM}" == "win32" ]
         then
-          # From MSYS2 MINGW
-          LDFLAGS+=" -Wl,--large-address-aware"
-        fi
+          if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
+          then
+            # From MSYS2 MINGW
+            LDFLAGS+=" -Wl,--large-address-aware"
+          fi
 
-        # Used to enable wildcard; inspired from arm-none-eabi-gcc.
-        LDFLAGS+=" -Wl,${XBB_FOLDER_PATH}/usr/${CROSS_COMPILE_PREFIX}/lib/CRT_glob.o"
-      elif [ "${TARGET_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+          # Used to enable wildcard; inspired from arm-none-eabi-gcc.
+          LDFLAGS+=" -Wl,${XBB_FOLDER_PATH}/usr/${CROSS_COMPILE_PREFIX}/lib/CRT_glob.o"
+        elif [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        fi
       fi
 
       if [ "${IS_DEVELOP}" == "y" ]
@@ -1168,84 +1184,114 @@ function build_binutils()
           # ? --without-python --without-curses, --with-expat
           config_options=()
 
-          config_options+=("--prefix=${APP_PREFIX}")
+          if [ -n "${name_suffix}" ]
+          then
 
-          config_options+=("--infodir=${APP_PREFIX_DOC}/info")
-          config_options+=("--mandir=${APP_PREFIX_DOC}/man")
-          config_options+=("--htmldir=${APP_PREFIX_DOC}/html")
-          config_options+=("--pdfdir=${APP_PREFIX_DOC}/pdf")
+            config_options+=("--prefix=${APP_PREFIX}${name_suffix}")
             config_options+=("--with-sysroot=${APP_PREFIX}${name_suffix}")
 
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
+            config_options+=("--build=${BUILD}")
+            # The bootstrap binaries will run on the build machine.
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${TARGET}")
 
-          config_options+=("--program-suffix=")
-          config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
+            config_options+=("--with-pkgversion=${GCC_BOOTSTRAP_BRANDING}")
 
-          # config_options+=("--with-lib-path=/usr/lib:/usr/local/lib")
+            # Use the internal XBB libs.
+            config_options+=("--with-gmp=${XBB_FOLDER_PATH}")
+            config_options+=("--with-mpfr=${XBB_FOLDER_PATH}")
+            config_options+=("--with-mpc=${XBB_FOLDER_PATH}")
+            config_options+=("--with-isl=${XBB_FOLDER_PATH}")
 
-          config_options+=("--without-system-zlib")
-          
-          config_options+=("--with-pic")
+            config_options+=("--disable-multilib")
+            config_options+=("--disable-werror")
+            config_options+=("--disable-shared")
+            config_options+=("--disable-gdb")
 
-          # error: debuginfod is missing or unusable
-          config_options+=("--without-debuginfod")
+            config_options+=("--enable-static")
+            config_options+=("--enable-build-warnings=no")
 
-          if [ "${TARGET_PLATFORM}" == "win32" ]
-          then
+          else
 
-            config_options+=("--enable-ld")
+            config_options+=("--prefix=${APP_PREFIX}")
+            config_options+=("--with-sysroot=${APP_PREFIX}")
+            # config_options+=("--with-lib-path=/usr/lib:/usr/local/lib")
 
-            if [ "${TARGET_ARCH}" == "x64" ]
+            config_options+=("--infodir=${APP_PREFIX_DOC}/info")
+            config_options+=("--mandir=${APP_PREFIX_DOC}/man")
+            config_options+=("--htmldir=${APP_PREFIX_DOC}/html")
+            config_options+=("--pdfdir=${APP_PREFIX_DOC}/pdf")
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
+
+            config_options+=("--program-suffix=")
+            config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
+
+            config_options+=("--without-system-zlib")
+            
+            config_options+=("--with-pic")
+
+            # error: debuginfod is missing or unusable
+            config_options+=("--without-debuginfod")
+
+            if [ "${TARGET_PLATFORM}" == "win32" ]
             then
-              # From MSYS2 MINGW
-              config_options+=("--enable-64-bit-bfd")
+
+              config_options+=("--enable-ld")
+
+              if [ "${TARGET_ARCH}" == "x64" ]
+              then
+                # From MSYS2 MINGW
+                config_options+=("--enable-64-bit-bfd")
+              fi
+
+              config_options+=("--enable-shared")
+              config_options+=("--enable-shared-libgcc")
+
+            elif [ "${TARGET_PLATFORM}" == "linux" ]
+            then
+
+              config_options+=("--enable-ld")
+
+              config_options+=("--disable-shared")
+              config_options+=("--disable-shared-libgcc")
+
+            elif [ "${TARGET_PLATFORM}" == "darwin" ]
+            then
+              echo
+              echo "binutils not supported on macOS"
+              exit 1
+            else
+              echo "Oops! Unsupported ${TARGET_PLATFORM}."
+              exit 1
             fi
 
-            config_options+=("--enable-shared")
-            config_options+=("--enable-shared-libgcc")
+            config_options+=("--enable-static")
 
-          elif [ "${TARGET_PLATFORM}" == "linux" ]
-          then
+            config_options+=("--enable-gold")
+            config_options+=("--enable-lto")
+            config_options+=("--enable-libssp")
+            config_options+=("--enable-relro")
+            config_options+=("--enable-threads")
+            config_options+=("--enable-interwork")
+            config_options+=("--enable-plugins")
+            config_options+=("--enable-build-warnings=no")
+            config_options+=("--enable-deterministic-archives")
+            
+            # TODO
+            # config_options+=("--enable-nls")
+            config_options+=("--disable-nls")
 
-            config_options+=("--enable-ld")
+            config_options+=("--disable-new-dtags")
 
-            config_options+=("--disable-shared")
-            config_options+=("--disable-shared-libgcc")
+            config_options+=("--disable-multilib")
+            config_options+=("--disable-werror")
+            config_options+=("--disable-sim")
+            config_options+=("--disable-gdb")
 
-          elif [ "${TARGET_PLATFORM}" == "darwin" ]
-          then
-            echo
-            echo "binutils not supported on macOS"
-            exit 1
-          else
-            echo "Oops! Unsupported ${TARGET_PLATFORM}."
-            exit 1
           fi
-
-          config_options+=("--enable-static")
-
-          config_options+=("--enable-gold")
-          config_options+=("--enable-lto")
-          config_options+=("--enable-libssp")
-          config_options+=("--enable-relro")
-          config_options+=("--enable-threads")
-          config_options+=("--enable-interwork")
-          config_options+=("--enable-plugins")
-          config_options+=("--enable-build-warnings=no")
-          config_options+=("--enable-deterministic-archives")
-          
-          # TODO
-          # config_options+=("--enable-nls")
-          config_options+=("--disable-nls")
-
-          config_options+=("--disable-new-dtags")
-
-          config_options+=("--disable-multilib")
-          config_options+=("--disable-werror")
-          config_options+=("--disable-sim")
-          config_options+=("--disable-gdb")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
             ${config_options[@]}
@@ -1270,37 +1316,55 @@ function build_binutils()
         # make install-strip
         run_verbose make install
 
-        if [ "${TARGET_PLATFORM}" == "darwin" ]
+        if [ -n "${name_suffix}" ]
         then
-          : # rm -rv "${APP_PREFIX}/bin/strip"
+          
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-ar"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-as"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-ld"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-strip"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-nm"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-objcopy"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-objdump"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-ranlib"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-size"
+          show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-strings"
+
+        else
+
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+            : # rm -rv "${APP_PREFIX}/bin/strip"
+          fi
+
+          (
+            xbb_activate_tex
+
+            if [ "${WITH_PDF}" == "y" ]
+            then
+              run_verbose make pdf
+              run_verbose make install-pdf
+            fi
+
+            if [ "${WITH_HTML}" == "y" ]
+            then
+              run_verbose make html
+              run_verbose make install-html
+            fi
+          )
+
+          show_libs "${APP_PREFIX}/bin/ar"
+          show_libs "${APP_PREFIX}/bin/as"
+          show_libs "${APP_PREFIX}/bin/ld"
+          show_libs "${APP_PREFIX}/bin/strip"
+          show_libs "${APP_PREFIX}/bin/nm"
+          show_libs "${APP_PREFIX}/bin/objcopy"
+          show_libs "${APP_PREFIX}/bin/objdump"
+          show_libs "${APP_PREFIX}/bin/ranlib"
+          show_libs "${APP_PREFIX}/bin/size"
+          show_libs "${APP_PREFIX}/bin/strings"
+
         fi
-
-        (
-          xbb_activate_tex
-
-          if [ "${WITH_PDF}" == "y" ]
-          then
-            run_verbose make pdf
-            run_verbose make install-pdf
-          fi
-
-          if [ "${WITH_HTML}" == "y" ]
-          then
-            run_verbose make html
-            run_verbose make install-html
-          fi
-        )
-
-        show_libs "${APP_PREFIX}/bin/ar"
-        show_libs "${APP_PREFIX}/bin/as"
-        show_libs "${APP_PREFIX}/bin/ld"
-        show_libs "${APP_PREFIX}/bin/strip"
-        show_libs "${APP_PREFIX}/bin/nm"
-        show_libs "${APP_PREFIX}/bin/objcopy"
-        show_libs "${APP_PREFIX}/bin/objdump"
-        show_libs "${APP_PREFIX}/bin/ranlib"
-        show_libs "${APP_PREFIX}/bin/size"
-        show_libs "${APP_PREFIX}/bin/strings"
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output.txt"
 
