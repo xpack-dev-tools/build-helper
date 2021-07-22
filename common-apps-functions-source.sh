@@ -464,6 +464,14 @@ function build_mingw_headers()
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
             config_options=("${config_options_common[@]}")
+
+            config_options+=("--build=${BUILD}")
+            # The bootstrap binaries will run on the build machine.
+            config_options+=("--host=${TARGET}")
+            config_options+=("--target=${TARGET}")
+
+            # From Arch, but not recognised.
+            # config_options+=("--enable-secure-api")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options=("${config_options_common[@]}")
@@ -585,18 +593,19 @@ function build_mingw_crt()
             prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
             config_options=("${config_options_common[@]}")
 
+            config_options+=("--build=${BUILD}")
+            # The bootstrap binaries will run on the build machine.
+            config_options+=("--host=${TARGET}")
+            config_options+=("--target=${TARGET}")
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options=("${config_options_common[@]}")
-
             config_options+=("--with-sysroot=${APP_PREFIX}")
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
           fi
-
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-
-          # x86_64-w64-mingw32,i686-w64-mingw32
-          config_options+=("--target=${TARGET}")
 
           if [ "${TARGET_ARCH}" == "x64" ]
           then
@@ -689,7 +698,6 @@ function build_mingw_winpthreads()
             config_options+=("--libdir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/lib")
           else
             config_options+=("--prefix=${APP_PREFIX}")
-
             config_options+=("--with-sysroot=${APP_PREFIX}")
           fi
 
@@ -849,8 +857,12 @@ function build_mingw_libmangle()
           # Note: native library.
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${MINGW_NAME_SUFFIX}")
 
-          if [ ! -n "${MINGW_NAME_SUFFIX}" ]
+          if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+          else
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
@@ -923,8 +935,12 @@ function build_mingw_gendef()
 
           config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
 
-          if [ ! -n "${MINGW_NAME_SUFFIX}" ]
+          if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+          else
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
