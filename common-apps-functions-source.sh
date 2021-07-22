@@ -469,8 +469,6 @@ function build_mingw_core()
 
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
-
-            # x86_64-w64-mingw32,i686-w64-mingw32
             config_options+=("--target=${TARGET}")
 
             config_options+=("--with-sysroot=${APP_PREFIX}")
@@ -685,8 +683,6 @@ function build_mingw_winpthreads()
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
-
-          # x86_64-w64-mingw32,i686-w64-mingw32
           config_options+=("--target=${TARGET}")
 
           config_options+=("--enable-static")
@@ -773,8 +769,6 @@ function build_mingw_winstorecompat()
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
-
-          # x86_64-w64-mingw32,i686-w64-mingw32
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" \
@@ -849,8 +843,6 @@ function build_mingw_libmangle()
           then
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
-
-            # x86_64-w64-mingw32,i686-w64-mingw32
             config_options+=("--target=${TARGET}")
           fi
 
@@ -925,8 +917,6 @@ function build_mingw_gendef()
           then
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
-
-            # x86_64-w64-mingw32,i686-w64-mingw32
             config_options+=("--target=${TARGET}")
 
             config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
@@ -1006,16 +996,12 @@ function build_mingw_widl()
           then
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${BUILD}") # Native!
-            
-            # x86_64-w64-mingw32,i686-w64-mingw32
             config_options+=("--target=${TARGET}")
 
             config_options+=("--with-widl-includedir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/include")
           else
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
-
-            # x86_64-w64-mingw32,i686-w64-mingw32
             config_options+=("--target=${TARGET}")
 
             config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
