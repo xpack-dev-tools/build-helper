@@ -467,12 +467,11 @@ function build_mingw_headers()
           else
             prepare_mingw_config_options_common "${APP_PREFIX}"
             config_options=("${config_options_common[@]}")
+            config_options+=("--with-sysroot=${APP_PREFIX}")
 
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
-
-            config_options+=("--with-sysroot=${APP_PREFIX}")
           fi
 
           config_options+=("--with-tune=generic")
@@ -1155,6 +1154,7 @@ function build_binutils()
           config_options+=("--mandir=${APP_PREFIX_DOC}/man")
           config_options+=("--htmldir=${APP_PREFIX_DOC}/html")
           config_options+=("--pdfdir=${APP_PREFIX_DOC}/pdf")
+            config_options+=("--with-sysroot=${APP_PREFIX}${name_suffix}")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1164,7 +1164,6 @@ function build_binutils()
           config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
 
           # config_options+=("--with-lib-path=/usr/lib:/usr/local/lib")
-          config_options+=("--with-sysroot=${APP_PREFIX}")
 
           config_options+=("--without-system-zlib")
           
