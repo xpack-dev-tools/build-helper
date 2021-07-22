@@ -213,7 +213,7 @@ function build_gmp()
       xbb_activate
       xbb_activate_installed_dev
 
-      # Exceptions used by Arm GCC script.
+      # Exceptions used by Arm GCC script and by mingw-w64.
       CPPFLAGS="${XBB_CPPFLAGS} -fexceptions"
       # Test fail with -Ofast, revert to -O2
       CFLAGS="${XBB_CFLAGS_NO_W}" 
