@@ -637,8 +637,6 @@ function build_mingw_crt()
 
         run_verbose make install-strip
 
-        run_verbose ls -l "${APP_PREFIX}${MINGW_NAME_SUFFIX}/lib" 
-
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-crt-output.txt"
     )
 
