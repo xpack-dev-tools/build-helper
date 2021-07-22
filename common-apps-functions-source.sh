@@ -332,8 +332,6 @@ function prepare_mingw_env()
   # The original SourceForge location.
   export MINGW_SRC_FOLDER_NAME="mingw-w64-v${MINGW_VERSION}"
   export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}${MINGW_NAME_SUFFIX}"
-
-  mkdir -pv "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}"
 }
 
 function build_mingw() 
@@ -441,6 +439,8 @@ function build_mingw_core()
 
   # The docs recommend to add several links, but for non-multilib
   # configurations there are no target or lib32/lib64 specific folders.
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}"
 
   # ---------------------------------------------------------------------------
 
