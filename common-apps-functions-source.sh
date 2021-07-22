@@ -502,6 +502,16 @@ function build_mingw_headers()
         # rm -fv "${APP_PREFIX}/include/pthread_time.h"
         # rm -fv "${APP_PREFIX}/include/pthread_unistd.h"
 
+      if [ -n "${MINGW_NAME_SUFFIX}" ]
+      then
+        # mkdir -pv "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
+        rm -rf "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
+        ( 
+          cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
+          ln -sv "${CROSS_COMPILE_PREFIX}" "mingw"
+        )
+      fi
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-headers-output.txt"
 
       # No need to do it again for each component.
