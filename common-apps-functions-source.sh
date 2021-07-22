@@ -1336,7 +1336,11 @@ function test_binutils()
     run_app "${APP_PREFIX}/bin/elfedit" --version
     run_app "${APP_PREFIX}/bin/gprof" --version
     run_app "${APP_PREFIX}/bin/ld" --version
-    run_app "${APP_PREFIX}/bin/ld.gold" --version
+    if [ -f  "${APP_PREFIX}/bin/ld.gold${DOT_EXE}" ]
+    then
+      # No ld.gold on Windows.
+      run_app "${APP_PREFIX}/bin/ld.gold" --version
+    fi
     run_app "${APP_PREFIX}/bin/strip" --version
     run_app "${APP_PREFIX}/bin/nm" --version
     run_app "${APP_PREFIX}/bin/objcopy" --version
