@@ -226,6 +226,11 @@ function build_gmp()
         LDFLAGS+=" -v"
       fi
 
+      if [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        export CC_FOR_BUILD="${NATIVE_CC}"
+      fi
+
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
