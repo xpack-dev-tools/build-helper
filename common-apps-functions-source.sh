@@ -1180,6 +1180,7 @@ function build_binutils()
             config_options+=("--disable-werror")
             config_options+=("--disable-shared")
             config_options+=("--disable-gdb")
+            config_options+=("--disable-nls")
 
             config_options+=("--enable-static")
             config_options+=("--enable-build-warnings=no")
