@@ -416,6 +416,8 @@ function host_native_options()
   IS_DEBUG=""
   IS_DEVELOP=""
   WITH_STRIP="y"
+  WITH_PDF="y"
+  WITH_HTML="n"
   WITH_TESTS="y"
   IS_NATIVE="y"
 
@@ -461,6 +463,16 @@ function host_native_options()
 
       --disable-tests)
         WITH_TESTS="n"
+        shift
+        ;;
+
+      --without-pdf)
+        WITH_PDF="n"
+        shift
+        ;;
+
+      --with-pdf)
+        WITH_PDF="y"
         shift
         ;;
 
