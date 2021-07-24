@@ -323,6 +323,7 @@ function build_gmp()
   fi
 }
 
+# Depends on gmp.
 function build_mpfr()
 {
   # http://www.mpfr.org
@@ -400,8 +401,10 @@ function build_mpfr()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--disable-warnings")
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
 
+          config_options+=("--disable-warnings")
+          
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
             "${config_options[@]}"
              
