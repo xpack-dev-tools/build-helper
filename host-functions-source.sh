@@ -824,7 +824,7 @@ function host_build_target()
     host_run_docker_script \
       --script "${container_script_path}" \
       --docker-image "${docker_image}" \
-      --docker-container-name "${APP_LC_NAME}-${target_platform}-${target_arch}-build" \
+      --docker-container-name "${APP_LC_NAME}-${RELEASE_VERSION}-${target_platform}-${target_arch}-build" \
       --env-file "${env_file}" \
       --host-uname "${HOST_UNAME}" \
       -- \
