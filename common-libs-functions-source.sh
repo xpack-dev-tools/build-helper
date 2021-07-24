@@ -104,12 +104,12 @@ function build_zlib()
         export CXXFLAGS
         export LDFLAGS
 
-        env | sort
-
         # No config.status left, use the library.
         if [ ! -f "libz.a" ]
         then
           (
+            env | sort
+
             echo
             echo "Running zlib configure..."
 
@@ -238,11 +238,11 @@ function build_gmp()
         export ABI="${TARGET_BITS}"
       fi
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running gmp configure..."
 
@@ -377,11 +377,11 @@ function build_mpfr()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running mpfr configure..."
 
@@ -500,11 +500,11 @@ function build_mpc()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running mpc configure..."
         
@@ -623,11 +623,11 @@ function build_isl()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running isl configure..."
 
@@ -761,11 +761,11 @@ function build_zstd()
         build_type=Release
       fi
 
-      env | sort
-
       if [ ! -f "CMakeCache.txt" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running zstd cmake..."
         
@@ -900,11 +900,11 @@ function build_libiconv()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running libiconv configure..."
 
@@ -1033,11 +1033,11 @@ function build_ncurses()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running ncurses configure..."
 
@@ -1272,12 +1272,11 @@ function build_libffi()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running libffi configure..."
 
@@ -1299,7 +1298,6 @@ function build_libffi()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libffi_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libffi_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -1395,12 +1393,11 @@ function build_gettext()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running gettext configure..."
 
@@ -1443,7 +1440,6 @@ function build_gettext()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${gettext_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gettext_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -1545,11 +1541,11 @@ function build_libelf()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running libelf configure..."
 
@@ -1671,11 +1667,11 @@ function build_expat()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running expat configure..."
 
@@ -1784,11 +1780,11 @@ function build_xz()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running xz configure..."
 
@@ -1927,11 +1923,11 @@ function build_gpm()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running gpm configure..."
 
@@ -2070,11 +2066,11 @@ function build_libmpdec()
       export LDFLAGS
       export LD
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running libmpdec configure..."
 
@@ -2222,11 +2218,11 @@ function build_libxcrypt()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running libxcrypt configure..."
 
@@ -2391,11 +2387,11 @@ function build_openssl()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f config.stamp ]
       then
         (
+          env | sort
+
           echo
           echo "Running openssl configure..."
 
@@ -2608,11 +2604,11 @@ function build_sqlite()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running sqlite configure..."
 
@@ -2740,11 +2736,11 @@ function build_readline()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running readline configure..."
 
@@ -2875,9 +2871,9 @@ function build_bzip2()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       (
+        env | sort
+
         echo
         echo "Running bzip2 make..."
 
@@ -2915,7 +2911,6 @@ function build_bzip2()
             ln -sv "libbz2.so.${bzip2_version}" libbz2.so
           )
         fi
-
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${bzip2_folder_name}/make-output.txt"
 
       copy_license \
@@ -3006,11 +3001,11 @@ function build_python2()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running python2 configure..."
 
@@ -3264,11 +3259,11 @@ function build_python3()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then
         (
+          env | sort
+
           echo
           echo "Running python3 configure..."
 
@@ -3644,12 +3639,11 @@ function build_libpng()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running libpng configure..."
 
@@ -3671,7 +3665,6 @@ function build_libpng()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libpng_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libpng_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -3761,12 +3754,11 @@ function build_jpeg()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running jpeg configure..."
 
@@ -3786,7 +3778,6 @@ function build_jpeg()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${jpeg_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${jpeg_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -3879,12 +3870,11 @@ function build_pixman()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running pixman configure..."
 
@@ -3919,7 +3909,6 @@ function build_pixman()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${pixman_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${pixman_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -4022,12 +4011,11 @@ function build_glib()
         export CXX=clang++
       fi
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running glib configure..."
 
@@ -4073,7 +4061,6 @@ function build_glib()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${glib_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -4180,12 +4167,11 @@ function build_libxml2()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running libxml2 configure..."
 
@@ -4211,7 +4197,6 @@ function build_libxml2()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libxml2_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libxml2_folder_name}/configure-output.txt"
-
       fi
 
       (
@@ -4300,11 +4285,11 @@ function build_libedit()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -f "config.status" ]
       then 
         (
+          env | sort
+
           echo
           echo "Running libedit configure..."
 
@@ -4429,8 +4414,6 @@ function build_xar()
       export CXXFLAGS
       export LDFLAGS
 
-      env | sort
-
       if [ ! -x "configure" ]
       then
 
@@ -4442,8 +4425,9 @@ function build_xar()
 
       if [ ! -f "config.status" ]
       then 
-
         (
+          env | sort
+
           echo
           echo "Running xar configure..."
 
@@ -4462,7 +4446,6 @@ function build_xar()
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${xar_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${xar_folder_name}/configure-output.txt"
-
       fi
 
       (
