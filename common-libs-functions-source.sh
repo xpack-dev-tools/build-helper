@@ -570,6 +570,7 @@ function build_mpc()
   fi
 }
 
+# Depends on gmp.
 function build_isl()
 {
   # http://isl.gforge.inria.fr
@@ -652,6 +653,8 @@ function build_isl()
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
             "${config_options[@]}"
