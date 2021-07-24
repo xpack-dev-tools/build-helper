@@ -416,6 +416,8 @@ function build_mingw_headers()
 
   # ---------------------------------------------------------------------------
 
+  # https://github.com/archlinux/svntogit-community/blob/packages/mingw-w64-headers/trunk/PKGBUILD
+
   local mingw_headers_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_headers_folder_name}-installed"
   if [ ! -f "${mingw_headers_stamp_file_path}" ]
   then
@@ -515,6 +517,8 @@ function build_mingw_crt()
   # ---------------------------------------------------------------------------
 
   # The 'crt' step creates the C run-time in the 'lib' folder.
+
+  # https://github.com/archlinux/svntogit-community/blob/packages/mingw-w64-crt/trunk/PKGBUILD
 
   local mingw_crt_folder_name="mingw-${MINGW_VERSION}-crt${MINGW_NAME_SUFFIX}"
 
@@ -624,6 +628,8 @@ function build_mingw_crt()
 
 function build_mingw_winpthreads() 
 {
+  # https://github.com/archlinux/svntogit-community/blob/packages/mingw-w64-winpthreads/trunk/PKGBUILD
+
   local mingw_winpthreads_folder_name="mingw-${MINGW_VERSION}-winpthreads${MINGW_NAME_SUFFIX}"
 
   local mingw_winpthreads_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winpthreads_folder_name}-installed"
@@ -1049,6 +1055,9 @@ function build_binutils()
 
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-binutils
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-binutils/PKGBUILD
+
+  # mingw-w64
+  # https://github.com/archlinux/svntogit-community/blob/packages/mingw-w64-binutils/trunk/PKGBUILD
 
 
   # 2017-07-24, "2.29"
