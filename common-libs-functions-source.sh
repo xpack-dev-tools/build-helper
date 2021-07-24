@@ -445,6 +445,7 @@ function build_mpfr()
   fi
 }
 
+# Depends on gmp, mpfr.
 function build_mpc()
 {
   # http://www.multiprecision.org/
@@ -525,6 +526,9 @@ function build_mpc()
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--with-mpfr=${LIBS_INSTALL_FOLDER_PATH}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" \
             "${config_options[@]}"
