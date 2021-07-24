@@ -55,7 +55,6 @@ function build_patchelf()
 
         cd "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}"
         
-        xbb_activate
         xbb_activate_installed_dev
 
         run_verbose bash ${DEBUG} "bootstrap.sh"
@@ -67,7 +66,6 @@ function build_patchelf()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${patchelf_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${patchelf_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -211,7 +209,6 @@ function build_automake()
       mkdir -pv "${BUILD_FOLDER_PATH}/${automake_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${automake_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       export CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1116,7 +1113,6 @@ function build_binutils()
 
       mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
 
-      # xbb_activate
       if [ -n "${name_suffix}" ]
       then
 

@@ -63,7 +63,6 @@ function build_zlib()
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -210,7 +209,6 @@ function build_gmp()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       # Exceptions used by Arm GCC script and by mingw-w64.
@@ -359,7 +357,6 @@ function build_mpfr()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -483,7 +480,6 @@ function build_mpc()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -607,7 +603,6 @@ function build_isl()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -738,7 +733,6 @@ function build_zstd()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -884,7 +878,6 @@ function build_libiconv()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1020,7 +1013,6 @@ function build_ncurses()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1249,7 +1241,6 @@ function build_libffi()
 
         cd "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}"
         
-        xbb_activate
         xbb_activate_installed_dev
 
         run_verbose bash ${DEBUG} "autogen.sh"
@@ -1261,7 +1252,6 @@ function build_libffi()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libffi_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libffi_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1385,7 +1375,6 @@ function build_gettext()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gettext_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${gettext_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1536,7 +1525,6 @@ function build_libelf()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1663,7 +1651,6 @@ function build_expat()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1777,7 +1764,6 @@ function build_xz()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -1912,8 +1898,6 @@ function build_gpm()
       if [ ! -f "stamp-autogen" ]
       then
 
-        xbb_activate
-        
         run_verbose bash ${DEBUG} "autogen.sh"
 
         touch "stamp-autogen"
@@ -1923,7 +1907,6 @@ function build_gpm()
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}/src/headers"
@@ -2065,7 +2048,6 @@ function build_libmpdec()
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_src_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -2199,7 +2181,6 @@ function build_libxcrypt()
       (
         cd "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}"
 
-        xbb_activate
         xbb_activate_installed_dev
 
         if [ -f "autogen.sh" ]
@@ -2221,7 +2202,6 @@ function build_libxcrypt()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libxcrypt_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libxcrypt_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -2388,7 +2368,6 @@ function build_openssl()
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${openssl_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       #  -Wno-unused-command-line-argument
@@ -2609,7 +2588,6 @@ function build_sqlite()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${sqlite_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${sqlite_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -2742,7 +2720,6 @@ function build_readline()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${readline_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${readline_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -2877,7 +2854,6 @@ function build_bzip2()
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${bzip2_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -2990,12 +2966,8 @@ function build_python2()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    (
-      xbb_activate
-
-      download_and_extract "${python2_url}" "${python2_archive}" \
-        "${PYTHON2_SRC_FOLDER_NAME}"
-    )
+    download_and_extract "${python2_url}" "${python2_archive}" \
+      "${PYTHON2_SRC_FOLDER_NAME}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${python2_folder_name}"
 
@@ -3003,7 +2975,6 @@ function build_python2()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python2_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${python2_folder_name}"
 
-      xbb_activate
       # To pick the new libraries
       xbb_activate_installed_dev
 
@@ -3175,8 +3146,6 @@ function download_python2_win()
   download "${python2_win_url}" "${python2_win_pack}"
 
   (
-    xbb_activate
-
     if [ ! -d "${PYTHON2_WIN_SRC_FOLDER_NAME}" ]
     then
       cd "${SOURCES_FOLDER_PATH}"
@@ -3255,12 +3224,8 @@ function build_python3()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    (
-      xbb_activate
-
-      download_and_extract "${python3_url}" "${python3_archive}" \
-        "${PYTHON3_SRC_FOLDER_NAME}"
-    )
+    download_and_extract "${python3_url}" "${python3_archive}" \
+      "${PYTHON3_SRC_FOLDER_NAME}"
 
     mkdir -pv "${LOGS_FOLDER_PATH}/${python3_folder_name}"
 
@@ -3268,7 +3233,6 @@ function build_python3()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
 
-      xbb_activate
       # To pick the new libraries
       xbb_activate_installed_dev
 
@@ -3449,8 +3413,6 @@ function download_python3_win()
   local python3_win_embed_url="https://www.python.org/ftp/python/${python3_win_version}/${python3_win_embed_pack}"
 
   (
-    xbb_activate
-
     if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}" ]
     then
       mkdir -pv "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
@@ -3662,7 +3624,6 @@ function build_libpng()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libpng_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libpng_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -3780,7 +3741,6 @@ function build_jpeg()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${jpeg_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${jpeg_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -3899,7 +3859,6 @@ function build_pixman()
       # Windows libtool chaks for it.
       mkdir -pv test/lib
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -4035,7 +3994,6 @@ function build_glib()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"/gio/lib
       cd "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -4190,7 +4148,7 @@ function build_libxml2()
           "${LIBS_BUILD_FOLDER_PATH}/${libxml2_folder_name}"
 
         cd "${LIBS_BUILD_FOLDER_PATH}/${libxml2_folder_name}"
-        xbb_activate
+
         xbb_activate_installed_dev
 
         autoreconf -vfi
@@ -4202,7 +4160,6 @@ function build_libxml2()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libxml2_folder_name}/lib"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libxml2_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -4322,7 +4279,6 @@ function build_libedit()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libedit_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libedit_folder_name}"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -4453,7 +4409,6 @@ function build_xar()
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${xar_folder_name}/xar/"
 
-      xbb_activate
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
