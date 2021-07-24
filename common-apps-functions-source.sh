@@ -1184,6 +1184,10 @@ function build_binutils()
 
             config_options+=("--enable-static")
             config_options+=("--enable-build-warnings=no")
+            config_options+=("--enable-lto")
+            config_options+=("--enable-plugins")
+            config_options+=("--enable-deterministic-archives")
+            config_options+=("--enable-libssp")
 
           else
 
