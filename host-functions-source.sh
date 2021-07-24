@@ -523,7 +523,7 @@ function host_common()
   echo
   echo "Preparing release ${RELEASE_VERSION}..."
 
-  # -----------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
 
   common_helper_functions_script_path="${helper_folder_path}/common-functions-source.sh"
   echo "Common helper functions source script: \"${common_helper_functions_script_path}\"."
@@ -536,6 +536,26 @@ function host_common()
     echo "Common functions source script: \"${common_functions_script_path}\"."
     source "${common_functions_script_path}"
   fi
+
+  common_helper_libs_functions_script_path="${helper_folder_path}/common-libs-functions-source.sh"
+  echo "Common helper libs functions source script: \"${common_helper_libs_functions_script_path}\"."
+  source "${common_helper_libs_functions_script_path}"
+
+  common_helper_apps_functions_script_path="${helper_folder_path}/common-apps-functions-source.sh"
+  echo "Common helper apps functions source script: \"${common_helper_apps_functions_script_path}\"."
+  source "${common_helper_apps_functions_script_path}"
+
+  common_versions_script_path="${script_folder_path}/common-versions-source.sh"
+  echo "Common versions source script: \"${common_versions_script_path}\"."
+  source "${common_versions_script_path}"
+
+  common_libs_functions_script_path="${script_folder_path}/${COMMON_LIBS_FUNCTIONS_SCRIPT_NAME}"
+  echo "Common libs functions source script: \"${common_libs_functions_script_path}\"."
+  source "${common_libs_functions_script_path}"
+
+  common_apps_functions_script_path="${script_folder_path}/${COMMON_APPS_FUNCTIONS_SCRIPT_NAME}"
+  echo "Common app functions source script: \"${common_apps_functions_script_path}\"."
+  source "${common_apps_functions_script_path}"
 
   # ---------------------------------------------------------------------------
 
