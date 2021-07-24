@@ -331,32 +331,6 @@ function prepare_mingw_env()
   export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}${MINGW_NAME_SUFFIX}"
 }
 
-function build_mingw() 
-{
-  export MINGW_VERSION="$1"
-  export MINGW_VERSION_MAJOR=$(echo ${MINGW_VERSION} | sed -e 's|\([0-9][0-9]*\)\..*|\1|')
-
-  (
-    xbb_activate
-
-    # Recommended by mingw docs, to prefer the newly installed binutils.
-    xbb_activate_installed_bin
-
-    prepare_mingw_env "${MINGW_VERSION}"
-
-    build_mingw_headers
-    build_mingw_crt
-
-    build_mingw_winpthreads
-    # Fails witn 9.0.0
-    # build_mingw_winstorecompat
-
-    build_mingw_libmangle
-    build_mingw_gendef
-    build_mingw_widl # Refers to mingw headers.
-  )
-}
-
 # headers & crt
 function build_mingw_headers() 
 {
