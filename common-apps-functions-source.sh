@@ -593,6 +593,8 @@ function build_mingw_crt()
             exit 1
           fi
 
+          config_options+=("--enable-wildcard")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" \
             "${config_options[@]}"
 
