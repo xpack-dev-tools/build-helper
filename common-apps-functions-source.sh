@@ -433,22 +433,16 @@ function build_mingw_headers()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" --help
 
+          prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
+          config_options=("${config_options_common[@]}")
+
           if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
-            prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
-            config_options=("${config_options_common[@]}")
-
             config_options+=("--build=${BUILD}")
             # The bootstrap binaries will run on the build machine.
             config_options+=("--host=${TARGET}")
             config_options+=("--target=${TARGET}")
-
-            # From Arch, but not recognised.
-            # config_options+=("--enable-secure-api")
           else
-            prepare_mingw_config_options_common "${APP_PREFIX}"
-            config_options=("${config_options_common[@]}")
-
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
@@ -456,11 +450,12 @@ function build_mingw_headers()
 
           config_options+=("--with-tune=generic")
 
-          # From mingw-w64-headers
           config_options+=("--enable-sdk=all")
-
           config_options+=("--enable-idl")
           config_options+=("--without-widl")
+
+          # From Arch, but not recognised.
+          # config_options+=("--enable-secure-api")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" \
             "${config_options[@]}"
@@ -478,20 +473,16 @@ function build_mingw_headers()
 
         run_verbose make install-strip
 
-        # mingw-w64 and Arch do this.
-        # rm -fv "${APP_PREFIX}/include/pthread_signal.h"
-        # rm -fv "${APP_PREFIX}/include/pthread_time.h"
-        # rm -fv "${APP_PREFIX}/include/pthread_unistd.h"
-
-      if [ -n "${MINGW_NAME_SUFFIX}" ]
-      then
-        # mkdir -pv "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
-        rm -rf "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
-        ( 
-          cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
-          ln -sv "${CROSS_COMPILE_PREFIX}" "mingw"
-        )
-      fi
+        # ? Is this needed?
+        if [ -n "${MINGW_NAME_SUFFIX}" ]
+        then
+          # mkdir -pv "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
+          rm -rf "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
+          ( 
+            cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
+            ln -sv "${CROSS_COMPILE_PREFIX}" "mingw"
+          )
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-headers-output.txt"
 
@@ -564,21 +555,17 @@ function build_mingw_crt()
 
           bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" --help
 
+          prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
+          config_options=("${config_options_common[@]}")
+          config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
+
           if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
-            prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
-            config_options=("${config_options_common[@]}")
-            config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
-
             config_options+=("--build=${BUILD}")
             # The bootstrap binaries will run on the build machine.
             config_options+=("--host=${TARGET}")
             config_options+=("--target=${TARGET}")
           else
-            prepare_mingw_config_options_common "${APP_PREFIX}"
-            config_options=("${config_options_common[@]}")
-            config_options+=("--with-sysroot=${APP_PREFIX}")
-
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
@@ -635,7 +622,6 @@ function build_mingw_winpthreads()
   local mingw_winpthreads_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mingw_winpthreads_folder_name}-installed"
   if [ ! -f "${mingw_winpthreads_stamp_file_path}" ]
   then
-
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${mingw_winpthreads_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${mingw_winpthreads_folder_name}"
@@ -670,16 +656,10 @@ function build_mingw_winpthreads()
 
           config_options=()
 
-          if [ -n "${MINGW_NAME_SUFFIX}" ]
-          then
-            config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}")
-            config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
+          config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}")
+          config_options+=("--with-sysroot=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
 
-            config_options+=("--libdir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/lib")
-          else
-            config_options+=("--prefix=${APP_PREFIX}")
-            config_options+=("--with-sysroot=${APP_PREFIX}")
-          fi
+          config_options+=("--libdir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/lib")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -756,14 +736,8 @@ function build_mingw_winstorecompat()
           config_options=()
           # Note: native library.
 
-          if [ -n "${MINGW_NAME_SUFFIX}" ]
-          then
-            config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}")
-
-            config_options+=("--libdir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/lib")
-          else
-            config_options+=("--prefix=${APP_PREFIX}")
-          fi
+          config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}")
+          config_options+=("--libdir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/lib")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1002,17 +976,16 @@ function build_mingw_widl()
             config_options+=("--host=${BUILD}") # Native!
             config_options+=("--target=${TARGET}")
 
-            config_options+=("--with-widl-includedir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/include")
           else
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
 
-            config_options+=("--with-widl-includedir=${APP_PREFIX}/include")
-
-            # To prevent any target specific prefix and leave only widl.exe.
+            # To remove any target specific prefix and leave only widl.exe.
             config_options+=("--program-prefix=")
           fi
+
+          config_options+=("--with-widl-includedir=${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}/include")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" \
             "${config_options[@]}"
@@ -1203,6 +1176,7 @@ function build_binutils()
             config_options+=("--prefix=${APP_PREFIX}")
             config_options+=("--with-sysroot=${APP_PREFIX}")
             # config_options+=("--with-lib-path=/usr/lib:/usr/local/lib")
+            config_options+=("--program-suffix=")
 
             config_options+=("--infodir=${APP_PREFIX_DOC}/info")
             config_options+=("--mandir=${APP_PREFIX_DOC}/man")
@@ -1213,7 +1187,6 @@ function build_binutils()
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
 
-            config_options+=("--program-suffix=")
             config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
 
             config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
