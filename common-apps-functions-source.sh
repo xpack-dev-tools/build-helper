@@ -1174,6 +1174,7 @@ function build_binutils()
             config_options+=("--with-mpfr=${XBB_FOLDER_PATH}")
             config_options+=("--with-mpc=${XBB_FOLDER_PATH}")
             config_options+=("--with-isl=${XBB_FOLDER_PATH}")
+            config_options+=("--with-libiconv-prefix=${XBB_FOLDER_PATH}")
 
             config_options+=("--disable-multilib")
             config_options+=("--disable-werror")
@@ -1200,6 +1201,15 @@ function build_binutils()
 
             config_options+=("--program-suffix=")
             config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
+
+            config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--with-mpfr=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--with-mpc=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--with-isl=${LIBS_INSTALL_FOLDER_PATH}")
+            if [ "${TARGET_PLATFORM}" != "linux" ]
+            then
+              config_options+=("--with-libiconv-prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            fi
 
             config_options+=("--without-system-zlib")
             
