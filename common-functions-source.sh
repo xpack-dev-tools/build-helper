@@ -1162,7 +1162,14 @@ function do_patch()
     if [ -f "${patch_path}" ]
     then
       echo "Applying \"${patch_path}\"..."
-      patch -p0 < "${patch_path}"
+      if [[ ${patch_path} == *.patch.diff ]]
+      then
+        # Sourcetree creates patch.diff files, which require -p1.
+        patch -p1 < "${patch_path}"
+      else
+        # Manually created patches.
+        patch -p0 < "${patch_path}"
+      fi
     fi
   fi
 }
