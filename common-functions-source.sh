@@ -2440,6 +2440,8 @@ function patch_linux_elf_origin()
     libexec_path="$(dirname "${file_path}")"
   fi
 
+  local require_rpath="${REQUIRE_RPATH:-"y"}"
+
   local patchelf=${PATCHELF:-$(which patchelf)}
   # run_verbose "${patchelf}" --version
   # run_verbose "${patchelf}" --help
@@ -2458,20 +2460,23 @@ function patch_linux_elf_origin()
   then
     file "${file_path}"
   else
-    if has_rpath "${file_path}"
+    if ! has_rpath "${file_path}"
     then
-      if [ "${patchelf_has_output}" == "y" ]
+      echo "patch_linux_elf_origin: ${file_path} has no rpath!"
+      if [ "${require_rpath}" == "y" ]
       then
-       echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" --output \"${file_path}\" \"${tmp_path}\"]" 
-       ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
-      else
-        echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" \"${file_path}\"]"
-        ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
-        cp "${tmp_path}" "${file_path}"
+        exit 1
       fi
+    fi
+
+    if [ "${patchelf_has_output}" == "y" ]
+    then
+      echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" --output \"${file_path}\" \"${tmp_path}\"]" 
+      ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
     else
-      echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      exit 1
+      echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" \"${file_path}\"]"
+      ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
+      cp "${tmp_path}" "${file_path}"
     fi
   fi
   rm -rf "${tmp_path}"
@@ -2487,6 +2492,8 @@ function patch_linux_elf_set_rpath()
 
   local file_path="$1"
   local new_rpath="$2"
+
+  local require_rpath="${REQUIRE_RPATH:-"y"}"
 
   if file "${file_path}" | grep statically
   then
@@ -2506,21 +2513,23 @@ function patch_linux_elf_set_rpath()
     rm -rf "${tmp_path}"
     cp "${file_path}" "${tmp_path}"
 
-    if has_rpath "${file_path}"
+    if ! has_rpath "${file_path}"
     then
-      
-      if [ "${patchelf_has_output}" == "y" ]
+      echo "patch_linux_elf_set_rpath: ${file_path} has no rpath!"
+      if [ "${require_rpath}" == "y" ]
       then
-       echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]" 
-       ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}" 
-      else
-        echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
-        ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
-        cp "${tmp_path}" "${file_path}"
+        exit 1
       fi
+    fi
+
+    if [ "${patchelf_has_output}" == "y" ]
+    then
+      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]" 
+      ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}" 
     else
-      echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      exit 1
+      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
+      ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
+      cp "${tmp_path}" "${file_path}"
     fi
 
     rm -rf "${tmp_path}"
@@ -2538,6 +2547,8 @@ function patch_linux_elf_add_rpath()
   local file_path="$1"
   local new_rpath="$2"
 
+  local require_rpath="${REQUIRE_RPATH:-"y"}"
+
   if file "${file_path}" | grep statically
   then
     file "${file_path}"
@@ -2552,20 +2563,23 @@ function patch_linux_elf_add_rpath()
 
     if [ -z "${linux_rpaths_line}" ]
     then
-      echo "${file_path} has no rpath!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-      exit 1
-    fi
-
-    for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
-    do
-      if [ "${rpath}" == "${new_rpath}" ]
+      echo "patch_linux_elf_add_rpath: ${file_path} has no rpath!"
+      if [ "${require_rpath}" == "y" ]
       then
-        # Already there.
-        return
+        exit 1
       fi
-    done
+    else
+      for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
+      do
+        if [ "${rpath}" == "${new_rpath}" ]
+        then
+          # Already there.
+          return
+        fi
+      done
 
-    new_rpath="${linux_rpaths_line}:${new_rpath}"
+      new_rpath="${linux_rpaths_line}:${new_rpath}"
+    fi
 
     local patchelf=${PATCHELF:-$(which patchelf)}
     # run_verbose "${patchelf}" --version
@@ -2898,8 +2912,10 @@ function copy_dependencies_recursive()
         local must_add_origin=""
         local was_processed=""
 
-        if [ ! -z "${linux_rpaths_line}" ]
+        if [ -z "${linux_rpaths_line}" ]
         then
+          echo ">>> \"${actual_destination_file_path}\" has no rpath"
+        else
           for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
           do
             develop_echo "rpath ${rpath}"
@@ -2936,8 +2952,6 @@ function copy_dependencies_recursive()
               exit 1
             fi
           done
-        else 
-          echo ">>> \"${actual_destination_file_path}\" has no rpath"
         fi
 
         if [ "${was_processed}" != "y" ]
