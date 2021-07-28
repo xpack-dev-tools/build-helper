@@ -2915,44 +2915,45 @@ function copy_dependencies_recursive()
         if [ -z "${linux_rpaths_line}" ]
         then
           echo ">>> \"${actual_destination_file_path}\" has no rpath"
-        else
-          for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
-          do
-            develop_echo "rpath ${rpath}"
-
-            if [ "${rpath:0:1}" == "/" ]
-            then
-              # Absolute path.
-              if [ -f "${rpath}/${lib_name}" ]
-              then
-                develop_echo "${lib_name} found in ${rpath}"
-                # Library present in the absolute path
-                copy_dependencies_recursive \
-                  "${rpath}/${lib_name}" \
-                  "${APP_PREFIX}/libexec"
-
-                must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
-                was_processed="y"
-                break
-              fi
-
-            elif [ "${rpath:0:${#origin_prefix}}" == "${origin_prefix}" ]
-            then
-              # Looks like "", "/../lib"
-              local file_relative_path="${rpath:${#origin_prefix}}"
-              if [ -f "${actual_destination_folder_path}/${file_relative_path}/${lib_name}" ]
-              then
-                # Library present in the $ORIGIN path
-                develop_echo "${lib_name} found in ${rpath}"
-                was_processed="y"
-                break
-              fi
-            else
-              echo ">>> \"${rpath}\" with unsupported syntax"
-              exit 1
-            fi
-          done
+          linux_rpaths_line="${LIBS_INSTALL_FOLDER_PATH}/lib"
         fi
+
+        for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
+        do
+          develop_echo "rpath ${rpath}"
+
+          if [ "${rpath:0:1}" == "/" ]
+          then
+            # Absolute path.
+            if [ -f "${rpath}/${lib_name}" ]
+            then
+              develop_echo "${lib_name} found in ${rpath}"
+              # Library present in the absolute path
+              copy_dependencies_recursive \
+                "${rpath}/${lib_name}" \
+                "${APP_PREFIX}/libexec"
+
+              must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
+              was_processed="y"
+              break
+            fi
+
+          elif [ "${rpath:0:${#origin_prefix}}" == "${origin_prefix}" ]
+          then
+            # Looks like "", "/../lib"
+            local file_relative_path="${rpath:${#origin_prefix}}"
+            if [ -f "${actual_destination_folder_path}/${file_relative_path}/${lib_name}" ]
+            then
+              # Library present in the $ORIGIN path
+              develop_echo "${lib_name} found in ${rpath}"
+              was_processed="y"
+              break
+            fi
+          else
+            echo ">>> \"${rpath}\" with unsupported syntax"
+            exit 1
+          fi
+        done
 
         if [ "${was_processed}" != "y" ]
         then
