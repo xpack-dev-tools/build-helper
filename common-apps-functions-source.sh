@@ -473,10 +473,13 @@ function build_mingw_headers()
 
         run_verbose make install-strip
 
-        # ? Is this needed?
+
         if [ -n "${MINGW_NAME_SUFFIX}" ]
         then
-          # mkdir -pv "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
+          # This is this needed by the bootstrap; otherwise:
+          # The directory that should contain system headers does not exist:
+          # /Host/home/ilg/Work/gcc-11.1.0-1/win32-x64/install/gcc-bootstrap/mingw/include
+
           rm -rf "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
           ( 
             cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
@@ -664,10 +667,6 @@ function build_mingw_winpthreads()
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
-
-          config_options+=("--enable-static")
-          # Avoid a reference to 'DLL Name: libwinpthread-1.dll'
-          config_options+=("--disable-shared")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" \
             "${config_options[@]}"
