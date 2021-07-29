@@ -3285,7 +3285,7 @@ function check_binaries()
       echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
-  )
+  ) 2>&1 | tee "${LOGS_FOLDER_PATH}/check-binaries-output-$(date -u +%Y%m%d-%H%M).txt"
 }
 
 # -----------------------------------------------------------------------------
