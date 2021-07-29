@@ -2796,6 +2796,9 @@ function copy_dependencies_recursive()
     local source_file_path="$1"
     local destination_folder_path="$2"
 
+    DO_COPY_XBB_LIBS=${DO_COPY_XBB_LIBS:-'n'}
+    DO_COPY_GCC_LIBS=${DO_COPY_GCC_LIBS:-'n'}
+
     local source_file_name="$(basename "${source_file_path}")"
     local source_folder_path="$(dirname "${source_file_path}")"
 
@@ -3167,41 +3170,40 @@ function copy_dependencies_recursive()
         then
           : # System DLL, no need to copy it.
         else
-          if [ -f "${APP_PREFIX}/lib/${lib_name}" ]
+          local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib_name})
+
+          if [ -f "${APP_PREFIX}/bin/${lib_name}" ]
           then
-            # GCC leaves some .dlls in lib.
+            # GCC leaves some .DLLs in bin.
             copy_dependencies_recursive \
-              "${APP_PREFIX}/lib/${lib_name}" \
+              "${APP_PREFIX}/bin/${lib_name}" \
+              "${destination_folder_path}"
+          elif [ -f "${APP_PREFIX}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
+          then
+            # ... or in x86_64-w64-mingw32/bin
+            copy_dependencies_recursive \
+              "${APP_PREFIX}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" \
               "${destination_folder_path}"
           elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" ]
           then
-            # The first source is the install/libs/bin.
+            # These scripts leave libraries in install/libs/bin.
             copy_dependencies_recursive \
               "${LIBS_INSTALL_FOLDER_PATH}/bin/${lib_name}" \
               "${destination_folder_path}"
-          elif [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
+          elif [ "${DO_COPY_XBB_LIBS}" == "y" -a -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" ]
           then
             copy_dependencies_recursive \
               "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/${lib_name}" \
               "${destination_folder_path}"
-          elif [ -f "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" ]
+          elif [ "${DO_COPY_GCC_LIBS}" == "y" -a "${full_path}" != "${lib_name}" ]
           then
-            # Mainly to get libwinpthread-1.dll.
+            # -print-file-name outputs back the requested name if not found.
             copy_dependencies_recursive \
-              "${XBB_FOLDER_PATH}/mingw/bin/${lib_name}" \
+              "${full_path}" \
               "${destination_folder_path}"
           else
-            local full_path=$(${CROSS_COMPILE_PREFIX}-gcc -print-file-name=${lib_name})
-            # -print-file-name outputs back the requested name if not found.
-            if [ "${full_path}" != "${lib_name}" ]
-            then
-              copy_dependencies_recursive \
-                "${full_path}" \
-                "${destination_folder_path}"
-            else
-              echo "${lib_name} required by ${source_file_name}, not found"
-              exit 1
-            fi
+            echo "${lib_name} required by ${source_file_name}, not found"
+            exit 1
           fi
         fi
       done
