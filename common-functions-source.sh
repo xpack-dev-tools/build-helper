@@ -2765,7 +2765,7 @@ function prepare_app_folder_libraries()
       echo "Oops! Unsupported TARGET_PLATFORM=${TARGET_PLATFORM}."
       exit 1
     fi
-  )
+  ) 2>&1 | tee "${LOGS_FOLDER_PATH}/prepare-app-folder-libraries-output-$(date -u +%Y%m%d-%H%M).txt"
 }
 
 # The initial call uses the binary path (app or library, no links)
