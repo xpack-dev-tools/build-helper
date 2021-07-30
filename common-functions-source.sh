@@ -2394,6 +2394,11 @@ function clean_rpaths()
 
       local linux_rpaths_line=$(get_linux_rpaths_line "${file_path}")
 
+      if [ -z "${linux_rpaths_line}" ]
+      then
+        return
+      fi
+
       for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
       do
         if [ "${rpath:0:${#origin_prefix}}" == "${origin_prefix}" ]
