@@ -2440,7 +2440,7 @@ function patch_linux_elf_origin()
     libexec_path="$(dirname "${file_path}")"
   fi
 
-  local require_rpath="${REQUIRE_RPATH:-"y"}"
+  local do_require_rpath="${DO_REQUIRE_RPATH:-"y"}"
 
   local patchelf=${PATCHELF:-$(which patchelf)}
   # run_verbose "${patchelf}" --version
@@ -2463,7 +2463,7 @@ function patch_linux_elf_origin()
     if ! has_rpath "${file_path}"
     then
       echo "patch_linux_elf_origin: ${file_path} has no rpath!"
-      if [ "${require_rpath}" == "y" ]
+      if [ "${do_require_rpath}" == "y" ]
       then
         exit 1
       fi
@@ -2493,7 +2493,7 @@ function patch_linux_elf_set_rpath()
   local file_path="$1"
   local new_rpath="$2"
 
-  local require_rpath="${REQUIRE_RPATH:-"y"}"
+  local do_require_rpath="${DO_REQUIRE_RPATH:-"y"}"
 
   if file "${file_path}" | grep statically
   then
@@ -2516,7 +2516,7 @@ function patch_linux_elf_set_rpath()
     if ! has_rpath "${file_path}"
     then
       echo "patch_linux_elf_set_rpath: ${file_path} has no rpath!"
-      if [ "${require_rpath}" == "y" ]
+      if [ "${do_require_rpath}" == "y" ]
       then
         exit 1
       fi
@@ -2547,7 +2547,7 @@ function patch_linux_elf_add_rpath()
   local file_path="$1"
   local new_rpath="$2"
 
-  local require_rpath="${REQUIRE_RPATH:-"y"}"
+  local do_require_rpath="${DO_REQUIRE_RPATH:-"y"}"
 
   if file "${file_path}" | grep statically
   then
@@ -2564,7 +2564,7 @@ function patch_linux_elf_add_rpath()
     if [ -z "${linux_rpaths_line}" ]
     then
       echo "patch_linux_elf_add_rpath: ${file_path} has no rpath!"
-      if [ "${require_rpath}" == "y" ]
+      if [ "${do_require_rpath}" == "y" ]
       then
         exit 1
       fi
