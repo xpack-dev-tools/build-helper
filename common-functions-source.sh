@@ -407,6 +407,11 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -O2"
   fi
 
+  if [ "${IS_DEVELOP}" == "y" ]
+  then
+    XBB_LDFLAGS+=" -v"
+  fi
+
   if [ ! -z "$(xbb_activate; which "clang++-xbb")" ]
   then
     prepare_clang_env "" "-xbb"

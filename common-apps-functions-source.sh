@@ -78,10 +78,6 @@ function build_patchelf()
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi      
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -786,11 +782,6 @@ function build_mingw_libmangle()
 
       LDFLAGS="${XBB_LDFLAGS}" 
 
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
@@ -866,11 +857,6 @@ function build_mingw_gendef()
 
       LDFLAGS="${XBB_LDFLAGS_APP}"
 
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
-
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
@@ -945,11 +931,6 @@ function build_mingw_widl()
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_APP}"
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
-      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1107,11 +1088,6 @@ function build_binutils()
         then
           LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
         fi
-      fi
-
-      if [ "${IS_DEVELOP}" == "y" ]
-      then
-        LDFLAGS+=" -v"
       fi
 
       export CPPFLAGS
