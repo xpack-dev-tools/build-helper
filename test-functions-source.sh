@@ -1136,8 +1136,8 @@ function prepare_env()
   fi
 
   # Extract only the first line
-  version="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')"
-  if [ -z "${version}" ]
+  RELEASE_VERSION="${RELEASE_VERSION:-$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')}"
+  if [ -z "${RELEASE_VERSION}" ]
   then
     echo "Check the version, it cannot be empty."
     exit 1
@@ -1237,7 +1237,6 @@ function prepare_env()
     exit 1
   fi
 
-  RELEASE_VERSION=${RELEASE_VERSION:-"$(cat "${script_folder_path}/../../scripts/VERSION")"}
   IS_DEVELOP=${IS_DEVELOP:-""}
 }
 
@@ -1258,8 +1257,8 @@ function install_archive()
   else
     archive_extension="tar.gz"
   fi
-  archive_name="xpack-${app_lc_name}-${version}-${node_platform}-${archive_architecture}.${archive_extension}"
-  archive_folder_name="xpack-${app_lc_name}-${version}"
+  archive_name="xpack-${app_lc_name}-${RELEASE_VERSION}-${node_platform}-${archive_architecture}.${archive_extension}"
+  archive_folder_name="xpack-${app_lc_name}-${RELEASE_VERSION}"
 
   mkdir -pv "${cache_folder_path}"
 
@@ -1393,7 +1392,7 @@ function show_libs()
 function good_bye()
 {
   echo
-  echo "All tests completed successfully."
+  echo "All ${app_lc_name} ${RELEASE_VERSION} tests completed successfully."
 
   run_verbose uname -a
   if [ "${node_platform}" == "linux" ]
