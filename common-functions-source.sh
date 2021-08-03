@@ -111,7 +111,7 @@ function xbb_activate_installed_bin()
   export PATH
 }
 
-# Add the freshly built headrs and libraries.
+# Add the freshly built headers and libraries.
 function xbb_activate_installed_dev()
 {
   # Add XBB include in front of XBB_CPPFLAGS.
