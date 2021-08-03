@@ -469,7 +469,6 @@ function build_mingw_headers()
 
         run_verbose make install-strip
 
-
         if [ -n "${MINGW_NAME_SUFFIX}" ]
         then
           # This is this needed by the bootstrap; otherwise:
