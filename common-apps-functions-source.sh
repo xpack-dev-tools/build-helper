@@ -1044,18 +1044,33 @@ function build_binutils()
     download_and_extract "${binutils_url}" "${binutils_archive}" \
       "${binutils_src_folder_name}" "${binutils_patch_file_name}"
 
+    mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
+
+    local binutils_prerequisites_download_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${binutils_folder_name}-prerequisites-downloaded"
+    if [ ! -f "${binutils_prerequisites_download_stamp_file_path}" ]
+    then
+      (
+        cd "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}"
+
+        # Fool the script to think it is in the gcc folder.
+        mkdir -p gcc
+        touch gcc/BASE-VER
+
+        run_verbose bash "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}/contrib/download_prerequisites"  --no-verify
+
+        rm -rf gcc
+
+        touch "${binutils_prerequisites_download_stamp_file_path}"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/prerequisites-download-output.txt"
+    fi
+
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
 
-      mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
 
       if [ -n "${name_suffix}" ]
       then
-
-        # Use XBB libs in native-llvm
-        xbb_activate_dev
-        xbb_activate_libs
 
         CPPFLAGS="${XBB_CPPFLAGS}"
         CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -1125,11 +1140,6 @@ function build_binutils()
 
             config_options+=("--with-pkgversion=${GCC_BOOTSTRAP_BRANDING}")
 
-            # Use the internal XBB libs.
-            config_options+=("--with-gmp=${XBB_FOLDER_PATH}")
-            config_options+=("--with-mpfr=${XBB_FOLDER_PATH}")
-            config_options+=("--with-mpc=${XBB_FOLDER_PATH}")
-            config_options+=("--with-isl=${XBB_FOLDER_PATH}")
             config_options+=("--with-libiconv-prefix=${XBB_FOLDER_PATH}")
 
             config_options+=("--disable-multilib")
@@ -1163,10 +1173,6 @@ function build_binutils()
 
             config_options+=("--with-pkgversion=${BINUTILS_BRANDING}")
 
-            config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
-            config_options+=("--with-mpfr=${LIBS_INSTALL_FOLDER_PATH}")
-            config_options+=("--with-mpc=${LIBS_INSTALL_FOLDER_PATH}")
-            config_options+=("--with-isl=${LIBS_INSTALL_FOLDER_PATH}")
             if [ "${TARGET_PLATFORM}" != "linux" ]
             then
               config_options+=("--with-libiconv-prefix=${LIBS_INSTALL_FOLDER_PATH}")
