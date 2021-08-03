@@ -854,7 +854,7 @@ function build_mingw_gendef()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       export CPPFLAGS
       export CFLAGS
@@ -929,7 +929,7 @@ function build_mingw_widl()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP}"
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       export CPPFLAGS
       export CFLAGS
