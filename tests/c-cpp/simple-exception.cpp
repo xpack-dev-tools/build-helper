@@ -19,6 +19,7 @@ struct MyException : public std::exception {
 void
 func(void)
 {
+  // Do not use new, so the exception will be a local object, not a pointer.
   throw MyException();
 }
 
