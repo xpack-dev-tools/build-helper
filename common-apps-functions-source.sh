@@ -211,7 +211,7 @@ function build_automake()
       export CFLAGS="${XBB_CFLAGS_NO_W}"
       export CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      export LDFLAGS="${XBB_LDFLAGS_APP}"
+      export LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
       if [ ! -f "config.status" ]
       then
