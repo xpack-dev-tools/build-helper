@@ -1086,7 +1086,7 @@ function build_binutils()
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-        LDFLAGS="${XBB_LDFLAGS_APP}" 
+        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}" 
 
         if [ "${TARGET_PLATFORM}" == "win32" ]
         then
@@ -1100,7 +1100,7 @@ function build_binutils()
           LDFLAGS+=" -Wl,${XBB_FOLDER_PATH}/usr/${CROSS_COMPILE_PREFIX}/lib/CRT_glob.o"
         elif [ "${TARGET_PLATFORM}" == "linux" ]
         then
-          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH:-${LIBS_INSTALL_FOLDER_PATH}/lib}"
         fi
       fi
 
