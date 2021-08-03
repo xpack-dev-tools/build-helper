@@ -1036,19 +1036,6 @@ function test_expect()
   local app_name="$1"
   local expected="$2"
 
-  if [ "${TARGET_PLATFORM}" == "win32" ]
-  then
-    if [ -x "${app_name}" ]
-    then
-      # For native variants.
-      run_verbose ls -l "${app_name}"
-    else
-      run_verbose ls -l "${app_name}.exe"
-    fi
-  else
-    run_verbose ls -l "${app_name}"
-  fi
-
   show_libs "${app_name}"
 
   # Remove the trailing CR present on Windows.
@@ -1077,8 +1064,10 @@ function show_libs()
   (
     xbb_activate
 
+
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
+      run_verbose ls -l "${app_path}"
       echo
       echo "[readelf -d ${app_path} | egrep -i ...]"
       # Ignore errors in case it is not using shared libraries.
@@ -1092,6 +1081,7 @@ function show_libs()
       set -e
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
+      run_verbose ls -l "${app_path}"
       echo
       echo "[otool -L ${app_path}]"
       otool -L "${app_path}"
@@ -1099,6 +1089,7 @@ function show_libs()
     then
       if is_elf "${app_path}"
       then
+        run_verbose ls -l "${app_path}"
         echo
         echo "[readelf -d ${app_path} | egrep -i ...]"
         # Ignore errors in case it is not using shared libraries.
@@ -1113,11 +1104,13 @@ function show_libs()
       else
         if [ -f "${app_path}" ]
         then
+          run_verbose ls -l "${app_path}"
           echo
           echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}]"
           ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' || true
         elif [ -f "${app_path}.exe" ]
         then
+          run_verbose ls -l "${app_path}.exe"
           echo
           echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe]"
           ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' || true
