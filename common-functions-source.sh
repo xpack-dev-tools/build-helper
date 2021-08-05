@@ -350,6 +350,44 @@ function prepare_xbb_env()
 
   # ---------------------------------------------------------------------------
 
+  if [ ! -z "$(xbb_activate; which "clang++-xbb")" ]
+  then
+    prepare_clang_env "" "-xbb"
+  elif [ ! -z "$(xbb_activate; which "g++-xbb")" ]
+  then
+    prepare_gcc_env "" "-xbb"
+  elif [ ! -z "$(xbb_activate; which "g++-9")" ]
+  then
+    prepare_gcc_env "" "-9"
+  elif [ ! -z "$(xbb_activate; which "g++-8")" ]
+  then
+    prepare_gcc_env "" "-8"
+  elif [ ! -z "$(xbb_activate; which "g++-7")" ]
+  then
+    prepare_gcc_env "" "-7"
+  else
+    if [ "${TARGET_PLATFORM}" == "darwin" ]
+    then
+      prepare_clang_env "" ""
+    else
+      prepare_gcc_env "" ""
+    fi
+  fi
+
+  (
+    xbb_activate
+
+    echo
+
+    which ${CC}
+    ${CC} --version
+
+    which make
+    make --version
+  )
+
+  # ---------------------------------------------------------------------------
+
   export BUILD
   export HOST
   export TARGET
@@ -379,7 +417,7 @@ function prepare_xbb_env()
   env | sort
 }
 
-function prepare_xbb_extras()
+function _prepare_xbb_extras()
 {
   # ---------------------------------------------------------------------------
 
@@ -412,30 +450,6 @@ function prepare_xbb_extras()
     XBB_LDFLAGS+=" -v"
   fi
 
-  if [ ! -z "$(xbb_activate; which "clang++-xbb")" ]
-  then
-    prepare_clang_env "" "-xbb"
-  elif [ ! -z "$(xbb_activate; which "g++-xbb")" ]
-  then
-    prepare_gcc_env "" "-xbb"
-  elif [ ! -z "$(xbb_activate; which "g++-9")" ]
-  then
-    prepare_gcc_env "" "-9"
-  elif [ ! -z "$(xbb_activate; which "g++-8")" ]
-  then
-    prepare_gcc_env "" "-8"
-  elif [ ! -z "$(xbb_activate; which "g++-7")" ]
-  then
-    prepare_gcc_env "" "-7"
-  else
-    if [ "${TARGET_PLATFORM}" == "darwin" ]
-    then
-      prepare_clang_env "" ""
-    else
-      prepare_gcc_env "" ""
-    fi
-  fi
-
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
     SHLIB_EXT="so"
@@ -455,15 +469,19 @@ function prepare_xbb_extras()
     then
       XBB_CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
       XBB_CXXFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
-
-      # Note: macOS linker ignores -static-libstdc++, so 
-      # libstdc++.6.dylib should be handled.
-      XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
     fi
+
+    # Note: macOS linker ignores -static-libstdc++, so 
+    # libstdc++.6.dylib should be handled.
+    XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
 
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
-    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libstdc++"
+    if [[ "${CC}" =~ *gcc* ]]
+    then
+      XBB_LDFLAGS_APP_STATIC_GCC+=" -static-libgcc"
+    fi
   elif [ "${TARGET_PLATFORM}" == "win32" ]
   then
     SHLIB_EXT="dll"
@@ -521,16 +539,6 @@ function prepare_xbb_extras()
   echo "PKG_CONFIG_LIBDIR=${PKG_CONFIG_LIBDIR}"
   set -u
 
-  (
-    xbb_activate
-
-    which ${CC}
-    ${CC} --version
-
-    which make
-    make --version
-  )
-
   # ---------------------------------------------------------------------------
 
   export SHLIB_EXT
@@ -583,6 +591,8 @@ function prepare_gcc_env()
   export WINDRES="${prefix}windres"
   export WINDMC="${prefix}windmc"
   export RC="${prefix}windres"
+
+  _prepare_xbb_extras
 }
 
 function unset_gcc_env()
@@ -603,6 +613,19 @@ function unset_gcc_env()
   unset WINDRES
   unset WINDMC
   unset RC
+
+  unset XBB_CPPFLAGS
+
+  unset XBB_CFLAGS
+  unset XBB_CXXFLAGS
+
+  unset XBB_CFLAGS_NO_W
+  unset XBB_CXXFLAGS_NO_W
+
+  unset XBB_LDFLAGS
+  unset XBB_LDFLAGS_LIB
+  unset XBB_LDFLAGS_APP
+  unset XBB_LDFLAGS_APP_STATIC_GCC
 }
 
 function prepare_clang_env()
@@ -634,6 +657,8 @@ function prepare_clang_env()
   # export WINDRES="${prefix}windres"
   # export WINDMC="${prefix}windmc"
   # export RC="${prefix}windres"
+
+  _prepare_xbb_extras
 }
 
 # -----------------------------------------------------------------------------
