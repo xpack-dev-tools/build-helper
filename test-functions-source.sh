@@ -1242,7 +1242,7 @@ function prepare_env()
 
 # -----------------------------------------------------------------------------
 
-# Requires base_url and lots of other variables.
+# Requires BASE_URL and lots of other variables.
 function install_archive()
 {
   local archive_extension
@@ -1267,7 +1267,7 @@ function install_archive()
     echo
     echo "Downloading ${archive_name}..."
     curl -L --fail -o "${cache_folder_path}/${archive_name}" \
-      "${base_url}/${archive_name}"
+      "${BASE_URL}/${archive_name}"
     echo
   fi
 
