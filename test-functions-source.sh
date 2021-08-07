@@ -1100,7 +1100,7 @@ __EOF__
   # This script requires an authentication token in the environment.
   # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 
-  run_verbose curl \
+  curl \
     --request POST \
     --include \
     --header "Authorization: token ${GITHUB_API_DISPATCH_TOKEN}" \
