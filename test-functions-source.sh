@@ -1135,8 +1135,14 @@ function prepare_env()
     repo_folder_path="$1"
   fi
 
+  RELEASE_VERSION="${RELEASE_VERSION:-'current'}"
+  
+  if [ "${RELEASE_VERSION}" == "current" ]
+  then 
   # Extract only the first line
-  RELEASE_VERSION="${RELEASE_VERSION:-$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')}"
+    RELEASE_VERSION="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')}"
+  fi
+
   if [ -z "${RELEASE_VERSION}" ]
   then
     echo "Check the version, it cannot be empty."
