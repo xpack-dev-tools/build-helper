@@ -1094,12 +1094,15 @@ function trigger_github_workflow()
 __EOF__
 
   echo
-  echo "Body:"
+  echo "Request body:"
   cat "${tmp_path}"
 
   # This script requires an authentication token in the environment.
   # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 
+  echo
+  echo "Response:"
+  
   curl \
     --request POST \
     --include \
