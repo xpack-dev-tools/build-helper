@@ -1197,7 +1197,7 @@ function prepare_env()
   if [ "${RELEASE_VERSION}" == "current" ]
   then 
   # Extract only the first line
-    RELEASE_VERSION="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')}"
+    RELEASE_VERSION="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')"
   fi
 
   if [ -z "${RELEASE_VERSION}" ]
