@@ -1090,7 +1090,7 @@ function trigger_github_workflow()
     --header "Content-Type: application/json" \
     --header "Accept: application/vnd.github.v3+json" \
     --data '{"ref": "${ref}", "inputs": {"base_url": "${base_url}", "version": "${version}"}}' \
-    https://api.github.com/repos/${github_org}/${github_repo}/actions/workflows/${workflow-id}/dispatches
+    https://api.github.com/repos/${github_org}/${github_repo}/actions/workflows/${workflow_id}/dispatches
 }
 
 # -----------------------------------------------------------------------------
