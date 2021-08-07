@@ -1095,9 +1095,12 @@ function trigger_github_workflow()
 
 # -----------------------------------------------------------------------------
 
+# Runs natively or inside a container.
 #
-# - node_platform={win32,linux,darwin}
-# - node_architecture={x64,ia32,arm64,arm}
+# Sets the following variables:
+#
+# - TARGET_PLATFORM=node_platform={win32,linux,darwin}
+# - TARGET_ARCH=node_architecture={x64,ia32,arm64,arm}
 # - bits={32,64}
 
 function detect_architecture()
@@ -1142,6 +1145,22 @@ function detect_architecture()
   export TARGET_PLATFORM="${node_platform}"
   export TARGET_ARCH="${node_architecture}"
 }
+
+# Runs natively or inside a container.
+#
+# Sets the following variables:
+# - WORK_FOLDER_PATH
+# - repo_folder_path
+# - RELEASE_VERSION
+# - LD_LIBRARY_PATH
+# - XBB_FOLDER_PATH
+# - TARGET_FOLDER_NAME
+# - DOT_EXE
+# - SHLIB_EXT
+# - CROSS_COMPILE_PREFIX
+# - HOST
+# - TARGET
+# - IS_DEVELOP
 
 function prepare_env() 
 {
