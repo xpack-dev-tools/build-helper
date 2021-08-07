@@ -1079,6 +1079,22 @@ function trigger_github_workflow()
   local base_url="$5"
   local version="$6"
 
+  local tmp_path=$(mktemp)
+  rm -rf "${tmp_path}"
+
+  # Note: __EOF__ is NOT quoted to allow substitutions.
+  cat <<__EOF__ > "${tmp_path}"
+{
+  "ref": "${ref}", 
+  "inputs": {
+    "base_url": "${base_url}", 
+    "version": "${version}"
+  }
+}
+__EOF__
+
+  cat "${tmp_path}"
+
   # This script requires an authentication token in the environment.
   # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 
@@ -1089,7 +1105,7 @@ function trigger_github_workflow()
     --header "Authorization: token ${GITHUB_API_DISPATCH_TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/vnd.github.v3+json" \
-    --data '{"ref": "${ref}", "inputs": {"base_url": "${base_url}", "version": "${version}"}}' \
+    --data-binary @"${tmp_path}" \
     https://api.github.com/repos/${github_org}/${github_repo}/actions/workflows/${workflow_id}/dispatches
 }
 
