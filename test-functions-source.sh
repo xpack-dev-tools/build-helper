@@ -1093,12 +1093,14 @@ function trigger_github_workflow()
 }
 __EOF__
 
+  echo
+  echo "Body:"
   cat "${tmp_path}"
 
   # This script requires an authentication token in the environment.
   # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 
-  curl \
+  run_verbose curl \
     --request POST \
     --include \
     --header "Authorization: token ${GITHUB_API_DISPATCH_TOKEN}" \
@@ -1106,6 +1108,8 @@ __EOF__
     --header "Accept: application/vnd.github.v3+json" \
     --data-binary @"${tmp_path}" \
     https://api.github.com/repos/${github_org}/${github_repo}/actions/workflows/${workflow_id}/dispatches
+
+    rm -rf "${tmp_path}"
 }
 
 # -----------------------------------------------------------------------------
