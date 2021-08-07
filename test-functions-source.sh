@@ -1145,16 +1145,28 @@ function detect_architecture()
   bits=""
   if [ "${uname_machine}" == "x86_64" ]
   then
-    node_architecture="x64"
-    bits="64"
+    if [ "${force_32_bit}" == "y" ]
+    then
+      node_architecture="ia32"
+      bits="32"
+    else
+      node_architecture="x64"
+      bits="64"
+    fi
   elif [ "${uname_machine}" == "i386" -o "${uname_machine}" == "i586" -o "${uname_machine}" == "i686" ]
   then
     node_architecture="ia32"
     bits="32"
   elif [ "${uname_machine}" == "aarch64" ]
   then
-    node_architecture="arm64"
-    bits="64"
+    if [ "${force_32_bit}" == "y" ]
+    then
+      node_architecture="arm"
+      bits="32"
+    else
+      node_architecture="arm64"
+      bits="64"
+    fi
   elif [ "${uname_machine}" == "armv7l" -o "${uname_machine}" == "armv8l" ]
   then
     node_architecture="arm"
