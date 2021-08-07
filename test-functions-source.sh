@@ -1070,8 +1070,31 @@ function trigger_travis()
 
 # -----------------------------------------------------------------------------
 
-# Runs inside a container.
-# Set the following variables:
+function trigger_github_workflow()
+{
+  local github_org="$1"
+  local github_repo="$2"
+  local workflow_id="$3"
+  local ref="$4"
+  local base_url="$5"
+  local version="$6"
+
+  # This script requires an authentication token in the environment.
+  # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
+
+  curl \
+    --verbose \
+    --request POST \
+    --include \
+    --header "Authorization: token ${GITHUB_API_DISPATCH_TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/vnd.github.v3+json" \
+    --data '{"ref": "${ref}", "inputs": {"base_url": "${base_url}", "version": "${version}"}}' \
+    https://api.github.com/repos/${github_org}/${github_repo}/actions/workflows/${workflow-id}/dispatches
+}
+
+# -----------------------------------------------------------------------------
+
 #
 # - node_platform={win32,linux,darwin}
 # - node_architecture={x64,ia32,arm64,arm}
