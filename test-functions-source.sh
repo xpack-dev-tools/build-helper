@@ -1099,7 +1099,6 @@ __EOF__
   # https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
 
   curl \
-    --verbose \
     --request POST \
     --include \
     --header "Authorization: token ${GITHUB_API_DISPATCH_TOKEN}" \
