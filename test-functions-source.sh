@@ -1488,9 +1488,12 @@ function good_bye()
     run_verbose sw_vers
   fi
 
-  echo
-  echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
-  echo "This test also leaves a folder in ~/Downloads and an archive in ${cache_folder_path}."
+  if [ "${CI:-"false"}" != "true" ]
+  then
+    echo
+    echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
+    echo "This test also leaves a folder in ~/Downloads and an archive in ${cache_folder_path}."
+  fi
 }
 
 # -----------------------------------------------------------------------------
