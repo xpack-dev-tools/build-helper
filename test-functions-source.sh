@@ -1201,6 +1201,8 @@ function prepare_env()
   container_work_folder_path="/Host/Work"
   container_repo_folder_path="/Host/repo"
 
+  export CI=${CI:-"false"}
+
   if [ -f "/.dockerenv" -a -d "${container_work_folder_path}" ]
   then
     WORK_FOLDER_PATH="${container_work_folder_path}"
@@ -1488,7 +1490,7 @@ function good_bye()
     run_verbose sw_vers
   fi
 
-  if [ "${CI:-"false"}" != "true" ]
+  if ! ${CI}
   then
     echo
     echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
