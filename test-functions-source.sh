@@ -1143,6 +1143,8 @@ function detect_architecture()
 
   node_architecture=""
   bits=""
+  force_32_bit="${force_32_bit:-""}"
+
   if [ "${uname_machine}" == "x86_64" ]
   then
     if [ "${force_32_bit}" == "y" ]
@@ -1397,22 +1399,50 @@ function install_xpm()
 
 # -----------------------------------------------------------------------------
 
-# $1 = image name
-# $2 = base URL
 function docker_run_test() {
 
-  local script_name
-  if [ $# -gt 0 -a "$1" == "--script" ]
-  then
-    script_name="$2"
-    shift
-    shift
-  else
-    script_name="container-test.sh"
-  fi
+  local script_name="none.sh"
+  local prefix32=""
+  local image_name="none"
+  local version="current"
+  local base_url="release"
 
-  local image_name="$1"
-  shift
+  while [ $# -gt 0 ]
+  do
+    case "$1" in
+
+      --script)
+        script_name="$2"
+        shift 2
+        ;;
+
+      --32)
+        prefix32="linux32"
+        shift
+        ;;
+
+      --image)
+        image_name="$2"
+        shift 2
+        ;;
+
+      --version)
+        version="$2"
+        shift 2
+        ;;
+
+      --base-url)
+        base_url="$2"
+        shift 2
+        ;;
+
+      --*)
+        echo "Unsupported option $1."
+        exit 1
+        ;;
+
+    esac
+  done
 
   (
     prefix32="${prefix32:-""}"
@@ -1420,7 +1450,7 @@ function docker_run_test() {
     # For --security-opt see:
     # https://github.com/tianon/docker-brew-ubuntu-core/issues/183
 
-    docker run \
+    run_verbose docker run \
       --tty \
       --security-opt seccomp:unconfined \
       --hostname "docker" \
@@ -1429,17 +1459,10 @@ function docker_run_test() {
       --volume "${WORK_FOLDER_PATH}:${container_work_folder_path}" \
       --volume "${repo_folder_path}:${container_repo_folder_path}" \
       "${image_name}" \
-      ${prefix32} /bin/bash "${container_repo_folder_path}/tests/scripts/${script_name}" \
-        "${image_name}" \
-        "$@"
-  )
-}
-
-function docker_run_test_32() {
-  (
-    prefix32="linux32"
-
-    docker_run_test "$@"
+      ${prefix32} /bin/bash "${container_repo_folder_path}/${script_name}" \
+        --image "${image_name}" \
+        --version "${version}" \
+        --base-url "${base_url}"
   )
 }
 
@@ -1490,7 +1513,7 @@ function good_bye()
     run_verbose sw_vers
   fi
 
-  if ! ${CI}
+if [ ! -f "/.dockerenv" ]
   then
     echo
     echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
