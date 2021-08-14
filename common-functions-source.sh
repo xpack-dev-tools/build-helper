@@ -1089,7 +1089,6 @@ function show_libs()
   (
     xbb_activate
 
-
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_verbose ls -l "${app_path}"
