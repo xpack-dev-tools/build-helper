@@ -1473,9 +1473,14 @@ function show_libs()
   # Does not include the .exe extension.
   local app_path=$1
   shift
-  if [ "${node_platform}" == "win32" ]
+  if [ "${node_platform}" == "win32" ] && [[ ${app_path} != *.dll ]]
   then
     app_path+='.exe'
+  fi
+  
+  if [ -f "${app_path}" ]
+  then
+    run_verbose ls -l "${app_path}"
   fi
 
   if [ "${node_platform}" == "linux" ]
@@ -1493,6 +1498,12 @@ function show_libs()
     echo
     echo "[otool -L ${app_path}]"
     otool -L "${app_path}"
+  elif [ "${node_platform}" == "win32" ]
+  then
+    : # Unfortunately objdump is not available on regular Windows.
+    # echo
+    # echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}]"
+    # ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' || true
   fi
 }
 
