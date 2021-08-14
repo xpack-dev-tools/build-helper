@@ -663,6 +663,12 @@ function build_mingw_winpthreads()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
+          # This prevents references to libwinpthread-1.dll, which is
+          # particularly useful with -static-libstdc++, otherwise the
+          # result is not exactly static.
+          # This also requires disabling shared in the GCC configuration.
+          config_options+=("--disable-shared")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" \
             "${config_options[@]}"
 
@@ -1145,6 +1151,7 @@ function build_binutils()
             config_options+=("--disable-multilib")
             config_options+=("--disable-werror")
             config_options+=("--disable-shared")
+            # TODO
             config_options+=("--disable-gdb")
             config_options+=("--disable-nls")
 
