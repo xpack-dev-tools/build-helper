@@ -1151,8 +1151,6 @@ function build_binutils()
             config_options+=("--disable-multilib")
             config_options+=("--disable-werror")
             config_options+=("--disable-shared")
-            # TODO
-            config_options+=("--disable-gdb")
             config_options+=("--disable-nls")
 
             config_options+=("--enable-static")
@@ -1245,7 +1243,6 @@ function build_binutils()
             config_options+=("--disable-multilib")
             config_options+=("--disable-werror")
             config_options+=("--disable-sim")
-            config_options+=("--disable-gdb")
 
           fi
 
