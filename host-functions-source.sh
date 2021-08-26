@@ -525,9 +525,9 @@ function host_common()
 
   # ---------------------------------------------------------------------------
 
-  common_helper_functions_script_path="${helper_folder_path}/common-functions-source.sh"
-  echo "Common helper functions source script: \"${common_helper_functions_script_path}\"."
-  source "${common_helper_functions_script_path}"
+  helper_common_functions_script_path="${helper_folder_path}/common-functions-source.sh"
+  echo "Common helper functions source script: \"${helper_common_functions_script_path}\"."
+  source "${helper_common_functions_script_path}"
 
   # May override some of the helper/common definitions.
   common_functions_script_path="${script_folder_path}/common-functions-source.sh"
@@ -537,13 +537,13 @@ function host_common()
     source "${common_functions_script_path}"
   fi
 
-  common_helper_libs_functions_script_path="${helper_folder_path}/common-libs-functions-source.sh"
-  echo "Common helper libs functions source script: \"${common_helper_libs_functions_script_path}\"."
-  source "${common_helper_libs_functions_script_path}"
+  helper_common_libs_functions_script_path="${helper_folder_path}/common-libs-functions-source.sh"
+  echo "Common helper libs functions source script: \"${helper_common_libs_functions_script_path}\"."
+  source "${helper_common_libs_functions_script_path}"
 
-  common_helper_apps_functions_script_path="${helper_folder_path}/common-apps-functions-source.sh"
-  echo "Common helper apps functions source script: \"${common_helper_apps_functions_script_path}\"."
-  source "${common_helper_apps_functions_script_path}"
+  helper_common_apps_functions_script_path="${helper_folder_path}/common-apps-functions-source.sh"
+  echo "Common helper apps functions source script: \"${helper_common_apps_functions_script_path}\"."
+  source "${helper_common_apps_functions_script_path}"
 
   common_versions_script_path="${script_folder_path}/common-versions-source.sh"
   echo "Common versions source script: \"${common_versions_script_path}\"."
