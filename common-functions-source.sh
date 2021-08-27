@@ -3133,10 +3133,16 @@ function copy_dependencies_recursive()
             fi
           fi
         else
-          # Relative paths are tricky, hopefully they'll never be needed.
-          # This implies trying several locations, like on Linux.
-          echo ">>> Relative paths like ${lib_path} not yet supported"
-          exit 1
+          ## Relative path.
+          develop_echo "${lib_path} is a relative path"
+          if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}" ]
+          then
+            # Make the from path absolute.
+            from_path="${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}"
+          else
+            echo ">>> Relative path ${lib_path} not found in libs/lib"
+            exit 1
+          fi
         fi
 
         # Copy to libexec and use @loader_path.
@@ -3405,7 +3411,7 @@ function copy_license()
           local files=$(find . -type f)
           for file in ${files}
           do
-        install -d -m 0755 \
+            install -d -m 0755 \
               "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2/$(dirname ${file})"
             install -v -c -m 644 "$file" \
               "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2/$(dirname ${file})"
