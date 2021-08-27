@@ -2883,7 +2883,7 @@ function copy_dependencies_recursive()
 
     # Assume a regular file. Later changed if link.
     local actual_source_file_path="${source_file_path}"
-    local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
+    local actual_destination_file_path="$(realpath ${destination_folder_path})/${source_file_name}"
 
     # echo "I. Processing ${source_file_path} itself..."
 
@@ -2928,6 +2928,7 @@ function copy_dependencies_recursive()
 
         if [ ! -f "${destination_file_path}" ]
         then
+          run_verbose install -d -m 755 "$(dirname "${destination_file_path}")"
           run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
         fi
 
@@ -3114,6 +3115,8 @@ function copy_dependencies_recursive()
           continue
         fi
 
+        local from_path="${lib_path}"
+
         if [ "${lib_path:0:1}" == "/" ]
         then
           # Regular absolute path, possibly a link.
@@ -3130,10 +3133,16 @@ function copy_dependencies_recursive()
             fi
           fi
         else
-          # Relative paths are tricky, hopefully they'll never be needed.
-          # This implies trying several locations, like on Linux.
-          echo ">>> Relative paths like ${lib_path} not yet supported"
-          exit 1
+          ## Relative path.
+          develop_echo "${lib_path} is a relative path"
+          if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}" ]
+          then
+            # Make the from path absolute.
+            from_path="${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}"
+          else
+            echo ">>> Relative path ${lib_path} not found in libs/lib"
+            exit 1
+          fi
         fi
 
         # Copy to libexec and use @loader_path.
@@ -3144,10 +3153,10 @@ function copy_dependencies_recursive()
         # TODO: add libexec to LC_RPATH and copy the libraries there.
 
         copy_dependencies_recursive \
-          "${lib_path}" \
+          "${from_path}" \
           "${APP_PREFIX}/libexec" 
 
-        local lib_name="$(basename "${lib_path}")"
+        local lib_name="$(basename "${from_path}")"
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
 
         # chmod +w "${file_path}"
@@ -3198,6 +3207,7 @@ function copy_dependencies_recursive()
       then
         if [ ! -f "${copied_file_path}" ]
         then
+          run_verbose install -d -m 755 "$(dirname "${copied_file_path}")"
           run_verbose install -c -m 755 "${actual_source_file_path}" "${copied_file_path}"
         fi
       else
@@ -3396,10 +3406,17 @@ function copy_license()
         fi
       elif [ -d "$f" ] && [[ "$f" =~ [Ll][Ii][Cc][Ee][Nn][Ss][Ee]* ]]
       then
-        install -d -m 0755 \
-          "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
-        install -v -c -m 644 "$f"/* \
-          "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
+        (
+          cd "$f"
+          local files=$(find . -type f)
+          for file in ${files}
+          do
+            install -d -m 0755 \
+              "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2/$(dirname ${file})"
+            install -v -c -m 644 "$file" \
+              "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2/$(dirname ${file})"
+          done
+        )
       fi
     done
   )
