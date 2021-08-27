@@ -2928,6 +2928,7 @@ function copy_dependencies_recursive()
 
         if [ ! -f "${destination_file_path}" ]
         then
+          run_verbose install -d -m 755 "$(dirname "${destination_file_path}")"
           run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
         fi
 
@@ -3198,6 +3199,7 @@ function copy_dependencies_recursive()
       then
         if [ ! -f "${copied_file_path}" ]
         then
+          run_verbose install -d -m 755 "$(dirname "${copied_file_path}")"
           run_verbose install -c -m 755 "${actual_source_file_path}" "${copied_file_path}"
         fi
       else
