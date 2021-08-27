@@ -3396,10 +3396,17 @@ function copy_license()
         fi
       elif [ -d "$f" ] && [[ "$f" =~ [Ll][Ii][Cc][Ee][Nn][Ss][Ee]* ]]
       then
+        (
+          cd "$f"
+          local files=$(find . -type f)
+          for file in ${files}
+          do
         install -d -m 0755 \
-          "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
-        install -v -c -m 644 "$f"/* \
-          "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
+              "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2/$(dirname ${file})"
+            install -v -c -m 644 "$file" \
+              "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2/$(dirname ${file})"
+          done
+        )
       fi
     done
   )
