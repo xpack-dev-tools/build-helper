@@ -3115,6 +3115,8 @@ function copy_dependencies_recursive()
           continue
         fi
 
+        local from_path="${lib_path}"
+
         if [ "${lib_path:0:1}" == "/" ]
         then
           # Regular absolute path, possibly a link.
@@ -3145,10 +3147,10 @@ function copy_dependencies_recursive()
         # TODO: add libexec to LC_RPATH and copy the libraries there.
 
         copy_dependencies_recursive \
-          "${lib_path}" \
+          "${from_path}" \
           "${APP_PREFIX}/libexec" 
 
-        local lib_name="$(basename "${lib_path}")"
+        local lib_name="$(basename "${from_path}")"
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
 
         # chmod +w "${file_path}"
