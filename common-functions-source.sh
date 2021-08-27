@@ -2883,7 +2883,7 @@ function copy_dependencies_recursive()
 
     # Assume a regular file. Later changed if link.
     local actual_source_file_path="${source_file_path}"
-    local actual_destination_file_path="$(realpath "${destination_folder_path}/${source_file_name}")"
+    local actual_destination_file_path="$(realpath ${destination_folder_path})/${source_file_name}"
 
     # echo "I. Processing ${source_file_path} itself..."
 
