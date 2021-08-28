@@ -277,7 +277,7 @@ function host_options()
         # Some of the options are processed by the container script.
         echo "${help_message}"
         echo
-        exit 1
+        exit 0
         ;;
 
       *)
@@ -380,7 +380,7 @@ function host_options_windows()
         # Some of the options are processed by the container script.
         echo "${help_message}"
         echo
-        exit 1
+        exit 0
         ;;
 
       *)
