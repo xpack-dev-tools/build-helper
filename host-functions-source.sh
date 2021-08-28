@@ -178,6 +178,8 @@ function host_options()
   DO_BUILD_OSX=""
   ENV_FILE=""
 
+  RELEASE_VERSION="${RELEASE_VERSION:-current}"
+
   argc=$#
   declare -a argv
   argv=( "$@" )
@@ -201,6 +203,11 @@ function host_options()
 
       clean|cleanlibs|cleanall|preload-images)
         ACTION="${arg}"
+        ;;
+
+      --version)
+        ((++i))
+        RELEASE_VERSION="${argv[$i]}"
         ;;
 
       --win32|--windows32)
@@ -514,10 +521,21 @@ function host_native_options()
 
 function host_common()
 {
-  if [ -f "${script_folder_path}/VERSION" ]
+  RELEASE_VERSION="${RELEASE_VERSION:-'current'}"
+
+  if [ "${RELEASE_VERSION}" == "current" ]
+  then 
+    if [ -f "${script_folder_path}/VERSION" ]
+    then
+      # Extract only the first line.
+      RELEASE_VERSION="$(cat "${script_folder_path}/VERSION" | sed -e '2,$d')"
+    fi
+  fi
+
+  if [ -z "${RELEASE_VERSION}" ]
   then
-    # When running from the distribution folder.
-    RELEASE_VERSION=${RELEASE_VERSION:-"$(cat "${script_folder_path}"/VERSION)"}
+    echo "Check the version, it cannot be empty."
+    exit 1
   fi
 
   echo
@@ -616,7 +634,6 @@ function host_prepare_prerequisites()
     else
       must_install="y"
     fi
-
 
     if [ ! -z "${xbb_folder_path}" ]
     then
