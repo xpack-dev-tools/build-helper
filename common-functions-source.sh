@@ -178,6 +178,19 @@ function xbb_activate_tex()
 
 # -----------------------------------------------------------------------------
 
+function get_current_version()
+{
+  # Hack to get the 'scripts' path.
+  local version_file_path="${helper_folder_path}/../VERSION"
+  if [ $# -ge 1 ]
+  then
+    version_file_path="$1"
+  fi
+
+  # Extract only the first line
+  cat "${version_file_path}" | sed -e '2,$d'
+}
+
 function do_config_guess() 
 {
   BUILD="$(bash ${helper_folder_path}/config.guess)"

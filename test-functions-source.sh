@@ -1199,13 +1199,8 @@ function prepare_env()
     repo_folder_path="$1"
   fi
 
-  RELEASE_VERSION="${RELEASE_VERSION:-'current'}"
-  
-  if [ "${RELEASE_VERSION}" == "current" ]
-  then 
   # Extract only the first line
-    RELEASE_VERSION="$(cat ${repo_folder_path}/scripts/VERSION | sed -e '2,$d')"
-  fi
+  RELEASE_VERSION="${RELEASE_VERSION:-$(get_current_version ${repo_folder_path}/scripts/VERSION)}"
 
   if [ -z "${RELEASE_VERSION}" ]
   then
@@ -1388,7 +1383,7 @@ function docker_run_test() {
   local script_name="none.sh"
   local prefix32=""
   local image_name="none"
-  local version="current"
+  local version=${RELEASE_VERSION:-"$(cat "${script_folder_path}"/VERSION | sed -e '2,$d')"}
   local base_url="release"
 
   while [ $# -gt 0 ]

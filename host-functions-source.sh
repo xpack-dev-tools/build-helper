@@ -178,7 +178,7 @@ function host_options()
   DO_BUILD_OSX=""
   ENV_FILE=""
 
-  RELEASE_VERSION="${RELEASE_VERSION:-current}"
+  RELEASE_VERSION="${RELEASE_VERSION:-$(get_current_version)}"
 
   argc=$#
   declare -a argv
@@ -521,16 +521,11 @@ function host_native_options()
 
 function host_common()
 {
-  RELEASE_VERSION="${RELEASE_VERSION:-'current'}"
-
-  if [ "${RELEASE_VERSION}" == "current" ]
-  then 
     if [ -f "${script_folder_path}/VERSION" ]
     then
       # Extract only the first line.
       RELEASE_VERSION="$(cat "${script_folder_path}/VERSION" | sed -e '2,$d')"
     fi
-  fi
 
   if [ -z "${RELEASE_VERSION}" ]
   then
