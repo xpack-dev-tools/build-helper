@@ -87,12 +87,18 @@ function build_patchelf()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running patchelf configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -216,12 +222,18 @@ function build_automake()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running automake configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" --help
+          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" \
             --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
@@ -427,7 +439,10 @@ function build_mingw_headers()
           echo
           echo "Running mingw-w64-headers${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" --help
+          fi
 
           prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
           config_options=("${config_options_common[@]}")
@@ -546,12 +561,18 @@ function build_mingw_crt()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mingw-w64-crt${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" --help
+          fi
 
           prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
           config_options=("${config_options_common[@]}")
@@ -645,12 +666,18 @@ function build_mingw_winpthreads()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mingw-w64-winpthreads${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" --help
+          fi
 
           config_options=()
 
@@ -726,12 +753,18 @@ function build_mingw_winstorecompat()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mingw-w64-winstorecompat${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" --help
+          fi
 
           config_options=()
           # Note: native library.
@@ -795,12 +828,18 @@ function build_mingw_libmangle()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mingw-w64-libmangle${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" --help
+          fi
 
           config_options=()
           # Note: native library.
@@ -870,12 +909,18 @@ function build_mingw_gendef()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mingw-w64-gendef${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" --help
+          fi
 
           config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
 
@@ -945,12 +990,18 @@ function build_mingw_widl()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mingw-w64-widl${MINGW_NAME_SUFFIX} configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" --help
+          fi
 
           config_options=()
           config_options+=("--prefix=${APP_PREFIX}${MINGW_NAME_SUFFIX}")
@@ -1118,17 +1169,23 @@ function build_binutils()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running binutils configure..."
       
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" --help
 
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/binutils/configure" --help
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/bfd/configure" --help
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/gas/configure" --help
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/ld/configure" --help
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/binutils/configure" --help
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/bfd/configure" --help
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/gas/configure" --help
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/ld/configure" --help
+          fi
 
           # ? --without-python --without-curses, --with-expat
           config_options=()

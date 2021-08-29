@@ -167,8 +167,11 @@ function xbb_activate_installed_dev()
   export PKG_CONFIG_PATH
   export LD_LIBRARY_PATH
 
-  echo
-  env | sort
+  if [ "${IS_DEVELOP}" == "y" ]
+  then
+    echo
+    env | sort
+  fi
 }
 
 function xbb_activate_tex()

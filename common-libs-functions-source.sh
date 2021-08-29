@@ -104,12 +104,18 @@ function build_zlib()
         if [ ! -f "libz.a" ]
         then
           (
-            env | sort
+            if [ "${IS_DEVELOP}" == "y" ]
+            then
+              env | sort
+            fi
 
             echo
             echo "Running zlib configure..."
 
-            bash "configure" --help
+            if [ "${IS_DEVELOP}" == "y" ]
+            then
+              run_verbose bash "configure" --help
+            fi
 
             run_verbose bash ${DEBUG} "configure" \
               --prefix="${LIBS_INSTALL_FOLDER_PATH}" 
@@ -238,7 +244,10 @@ function build_gmp()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running gmp configure..."
@@ -246,7 +255,10 @@ function build_gmp()
           # ABI is mandatory, otherwise configure fails on 32-bit.
           # (see https://gmplib.org/manual/ABI-and-ISA.html)
 
-          bash "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -374,12 +386,18 @@ function build_mpfr()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mpfr configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -496,12 +514,18 @@ function build_mpc()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running mpc configure..."
         
-          bash "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -619,12 +643,18 @@ function build_isl()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running isl configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -755,7 +785,10 @@ function build_zstd()
       if [ ! -f "CMakeCache.txt" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running zstd cmake..."
@@ -890,12 +923,18 @@ function build_libiconv()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libiconv configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -1019,12 +1058,18 @@ function build_ncurses()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running ncurses configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -1254,12 +1299,18 @@ function build_libffi()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libffi configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -1371,15 +1422,21 @@ function build_gettext()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running gettext configure..."
 
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" --help
+          fi
+
           # Build only the /gettext-runtime folder, attempts to build
           # the full package fail with a CXX='no' problem.
-          bash "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" --help
-
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
@@ -1515,12 +1572,18 @@ function build_libelf()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libelf configure..."
 
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libelf_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -1637,12 +1700,18 @@ function build_expat()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running expat configure..."
 
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -1746,12 +1815,18 @@ function build_xz()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running xz configure..."
 
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -1885,12 +1960,18 @@ function build_gpm()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running gpm configure..."
 
-          run_verbose bash "configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "configure" --help
+          fi
 
           config_options=()
 
@@ -2025,12 +2106,18 @@ function build_libmpdec()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libmpdec configure..."
 
-          bash "configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "configure" --help
+          fi
 
           config_options=()
 
@@ -2173,12 +2260,18 @@ function build_libxcrypt()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libxcrypt configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -2338,7 +2431,10 @@ function build_openssl()
       if [ ! -f config.stamp ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running openssl configure..."
@@ -2355,7 +2451,10 @@ function build_openssl()
 
               # This config does not use the standard GNU environment definitions.
               # `Configure` is a Perl script.
-              "./Configure" --help || true
+              if [ "${IS_DEVELOP}" == "y" ]
+              then
+                run_verbose "./Configure" --help || true
+              fi
 
               run_verbose "./Configure" "darwin64-x86_64-cc" \
                 --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
@@ -2369,7 +2468,10 @@ function build_openssl()
 
             else
 
-              "./config" --help
+              if [ "${IS_DEVELOP}" == "y" ]
+              then
+                run_verbose "./config" --help
+              fi
 
               export KERNEL_BITS=64
               run_verbose "./config" \
@@ -2551,12 +2653,18 @@ function build_sqlite()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running sqlite configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${sqlite_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${sqlite_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -2679,12 +2787,18 @@ function build_readline()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running readline configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${readline_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${readline_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -2808,7 +2922,10 @@ function build_bzip2()
       export LDFLAGS
 
       (
-        env | sort
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          env | sort
+        fi
 
         echo
         echo "Running bzip2 make..."
@@ -2935,12 +3052,18 @@ function build_python2()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running python2 configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" --help
+          fi
 
           # Fail on macOS:
           # --enable-universalsdk
@@ -3188,12 +3311,18 @@ function build_python3()
       if [ ! -f "config.status" ]
       then
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running python3 configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" --help
+          fi
 
           # Fail on macOS:
           # --enable-universalsdk
@@ -3564,12 +3693,18 @@ function build_libpng()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libpng configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${libpng_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libpng_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -3675,12 +3810,18 @@ function build_jpeg()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running jpeg configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${jpeg_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${jpeg_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -3787,12 +3928,18 @@ function build_pixman()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running pixman configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${pixman_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${pixman_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -3924,12 +4071,18 @@ function build_glib()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running glib configure..."
 
-          bash "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -4076,12 +4229,18 @@ function build_libxml2()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libxml2 configure..."
 
-          bash "configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "configure" --help
+          fi
 
           config_options=()
 
@@ -4190,12 +4349,18 @@ function build_libedit()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running libedit configure..."
 
-          run_verbose bash "${SOURCES_FOLDER_PATH}/${libedit_src_folder_name}/configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libedit_src_folder_name}/configure" --help
+          fi
 
           config_options=()
 
@@ -4324,12 +4489,18 @@ function build_xar()
       if [ ! -f "config.status" ]
       then 
         (
-          env | sort
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
 
           echo
           echo "Running xar configure..."
 
-          bash "./configure" --help
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "./configure" --help
+          fi
 
           config_options=()
 
