@@ -1076,6 +1076,7 @@ function trigger_github_workflow()
   local github_repo="$2"
   local workflow_id="$3"
   local data_file_path="$4"
+  local token="$5"
 
   echo
   echo "Request body:"
@@ -1090,7 +1091,7 @@ function trigger_github_workflow()
   curl \
     --request POST \
     --include \
-    --header "Authorization: token ${GITHUB_API_DISPATCH_TOKEN}" \
+    --header "Authorization: token ${token}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/vnd.github.v3+json" \
     --data-binary @"${data_file_path}" \
