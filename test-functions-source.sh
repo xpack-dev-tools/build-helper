@@ -417,8 +417,8 @@ function install_archive()
   else
     archive_extension="tar.gz"
   fi
-  archive_name="xpack-${app_lc_name}-${RELEASE_VERSION}-${node_platform}-${archive_architecture}.${archive_extension}"
-  archive_folder_name="xpack-${app_lc_name}-${RELEASE_VERSION}"
+  archive_name="${DISTRO_LC_NAME}-${APP_LC_NAME}-${RELEASE_VERSION}-${node_platform}-${archive_architecture}.${archive_extension}"
+  archive_folder_name="${DISTRO_LC_NAME}-${APP_LC_NAME}-${RELEASE_VERSION}"
 
   mkdir -pv "${cache_folder_path}"
 
@@ -584,7 +584,7 @@ function show_libs()
 function good_bye()
 {
   echo
-  echo "All ${app_lc_name} ${RELEASE_VERSION} tests completed successfully."
+  echo "All ${APP_LC_NAME} ${RELEASE_VERSION} tests completed successfully."
 
   run_verbose uname -a
   if [ "${node_platform}" == "linux" ]
