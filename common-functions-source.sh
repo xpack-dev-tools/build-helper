@@ -359,7 +359,7 @@ function prepare_xbb_env()
   WITH_TESTS=${WITH_TESTS:-"y"}
 
   # Redefine this to "y" to create files that include the architecture.
-  HAS_NAME_ARCH=${HAS_NAME_ARCH:-""}
+  HAS_NAME_ARCH=${HAS_NAME_ARCH:-"y"}
 
   USE_TAR_GZ=${USE_TAR_GZ:-"y"}
   USE_SINGLE_FOLDER_PATH=${USE_SINGLE_FOLDER_PATH:-"y"}
