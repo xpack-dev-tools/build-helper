@@ -49,6 +49,7 @@ helper_folder_path="${scripts_folder_path}/helper"
 
 source "${scripts_folder_path}/defs-source.sh"
 
+# Helper functions
 source "${helper_folder_path}/common-functions-source.sh"
 source "${helper_folder_path}/test-functions-source.sh"
 
