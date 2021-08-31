@@ -141,7 +141,8 @@ function host_detect()
   TARGET_ARCH="${HOST_NODE_ARCH}"
   TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
   TARGET_MACHINE="${HOST_MACHINE}"
-
+  TARGET_BITS="${HOST_BITS}"
+  
   IS_NATIVE=""
   IS_DEVELOP=""
   # Redefine it to "y" to run as root inside the container.
