@@ -586,7 +586,7 @@ function host_common()
 
   host_prepare_cache
 
-  CONTAINER_BUILD_SCRIPT_REL_PATH="build.git/scripts/${CONTAINER_SCRIPT_NAME}"
+  CONTAINER_BUILD_SCRIPT_REL_PATH="build.git/scripts/${CONTAINER_SCRIPT_NAME:-"container-build.sh"}"
   echo "Container build script: \"${HOST_WORK_FOLDER_PATH}/${CONTAINER_BUILD_SCRIPT_REL_PATH}\"."
 
   # ---------------------------------------------------------------------------
