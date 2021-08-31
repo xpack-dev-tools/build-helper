@@ -42,7 +42,7 @@ script_folder_name="$(basename "${script_folder_path}")"
 
 # =============================================================================
 
-scripts_folder_path="$(dirname $(dirname "${script_folder_path}"))/scripts"
+scripts_folder_path="$(dirname $(dirname $(dirname "${script_folder_path}")))/scripts"
 helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
@@ -60,16 +60,10 @@ source "${helper_folder_path}/test-functions-source.sh"
 
 # GITHUB_API_DISPATCH_TOKEN must be present in the environment.
 
-if [ $# -lt 1 ]
-then
-  echo "usage: $(basename $0) [--branch name] [--version X.Y.Z] --base-url URL"
-  exit 1
-fi
-
 message="Test ${APP_DESCRIPTION} on native platforms"
 
 branch="xpack-develop"
-base_url=""
+base_url="https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 version="${RELEASE_VERSION:-$(get_current_version)}"
 workflow_id="test-native.yml"
 
@@ -99,12 +93,6 @@ do
 
   esac
 done
-
-if [ -z "${base_url}" ]
-then
-  echo "Mandatory --base-url missing."
-  exit 1
-fi
 
 # -----------------------------------------------------------------------------
 
