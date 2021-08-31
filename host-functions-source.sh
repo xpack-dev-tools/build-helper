@@ -562,11 +562,11 @@ function host_common()
   echo "Common versions source script: \"${common_versions_script_path}\"."
   source "${common_versions_script_path}"
 
-  common_libs_functions_script_path="${script_folder_path}/${COMMON_LIBS_FUNCTIONS_SCRIPT_NAME}"
+  common_libs_functions_script_path="${script_folder_path}/common-libs-functions-source.sh"
   echo "Common libs functions source script: \"${common_libs_functions_script_path}\"."
   source "${common_libs_functions_script_path}"
 
-  common_apps_functions_script_path="${script_folder_path}/${COMMON_APPS_FUNCTIONS_SCRIPT_NAME}"
+  common_apps_functions_script_path="${script_folder_path}/common-apps-functions-source.sh"
   echo "Common app functions source script: \"${common_apps_functions_script_path}\"."
   source "${common_apps_functions_script_path}"
 
