@@ -157,13 +157,15 @@ function trigger_travis()
   local data_file_path="$3"
   local token="$4"
 
-  curl -v -X POST \
-   -H "Content-Type: application/json" \
-   -H "Accept: application/json" \
-   -H "Travis-API-Version: 3" \
-   -H "Authorization: token ${token}" \
-   --data-binary @"${data_file_path}" \
-   https://api.travis-ci.com/repo/${github_org}%2F${github_repo}/requests
+  curl \
+    --request POST \
+    --include \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --header "Travis-API-Version: 3" \
+    --header "Authorization: token ${token}" \
+    --data-binary @"${data_file_path}" \
+    https://api.travis-ci.com/repo/${github_org}%2F${github_repo}/requests
 
   rm -rf "${data_file_path}"
 }
