@@ -117,8 +117,6 @@ trigger_github_workflow \
   "${data_file_path}" \
   "${GITHUB_API_DISPATCH_TOKEN}"
 
-rm -rf "${data_file_path}"
-
 echo
 echo "Done."
 

@@ -48,6 +48,8 @@ function create_macos_data_file()
   local base_url="$3"
   local data_file_path="$4"
 
+rm -rf "${data_file_path}"
+
 # Note: __EOF__ is NOT quoted to allow substitutions.
 cat <<__EOF__ > "${data_file_path}"
 {
@@ -141,6 +143,7 @@ cat <<__EOF__ > "${data_file_path}"
 }
 __EOF__
 
+cat "${data_file_path}"
 }
 
 
@@ -160,6 +163,8 @@ function trigger_travis()
    -H "Authorization: token ${TRAVIS_COM_TOKEN}" \
    --data-binary @"${data_file_path}" \
    https://api.travis-ci.com/repo/${github_org}%2F${github_repo}/requests
+
+  rm -rf "${data_file_path}"
 }
 
 # -----------------------------------------------------------------------------
