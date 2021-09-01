@@ -174,6 +174,7 @@ function trigger_travis()
     --header "Authorization: token ${token}" \
     --data-binary @"${data_file_path}" \
     https://api.travis-ci.com/repo/${github_org}%2F${github_repo}/requests
+    # Warning: Do not add a trailing slash, it'll fail!
 
   rm -rf "${data_file_path}"
 }
