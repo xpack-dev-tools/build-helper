@@ -11,34 +11,6 @@
 
 # -----------------------------------------------------------------------------
 
-# https://github.com/docker-library/official-images#architectures-other-than-amd64
-# - https://hub.docker.com/_/ubuntu
-# - https://hub.docker.com/r/i386/ubuntu/
-# - https://hub.docker.com/r/arm32v7/ubuntu
-# - https://hub.docker.com/_/debian
-# - https://hub.docker.com/r/i386/debian
-# - https://hub.docker.com/r/arm32v7/debian
-# - https://hub.docker.com/_/centos
-# - https://hub.docker.com/r/i386/centos
-# - https://hub.docker.com/r/opensuse/tumbleweed
-# - https://hub.docker.com/_/fedora
-# - https://hub.docker.com/_/archlinux
-# - https://hub.docker.com/u/manjarolinux
-# - https://hub.docker.com/r/gentoo/portage
-
-# "i386/ubuntu:20.04" # Fails to install prerequisites
-# "i386/ubuntu:12.04" --skip-gdb-py # Not available
-# "i386/centos:8" # not available
-
-# arm32v7/fedora:29 - Error: Failed to synchronize cache for repo 'fedora-modular'
-# arm32v7/fedora:27 - Error: Failed to synchronize cache for repo 'fedora-modular'
-# arm32v7/fedora:25 - KeyError: 'armv8l'
-
-# Debian versions: 
-# - 8 jessie
-# - 9 stretch
-# - 10 buster
-
 # Still in use, as the only available with old macOS versions.
 # https://docs.travis-ci.com/user/reference/osx/
 function create_macos_data_file()
