@@ -61,3 +61,5 @@ jobs:
           repo: '{{ APP_LC_NAME }}2-xpack'
           tag: 'v{% raw %}${{ github.event.inputs.version }}{% endraw %}'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
+      - name: 'Show SHA'
+        run: cat ~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}/deploy/*.sha
