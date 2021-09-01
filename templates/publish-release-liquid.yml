@@ -30,7 +30,7 @@ on:
 
 jobs:
   linux-x64:
-    name: 'Build {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} on Intel Linux'
+    name: 'Publish release {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} on Intel Linux'
     runs-on: [self-hosted, Linux, X64]
     steps:
       - name: 'Checkout'
