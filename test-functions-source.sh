@@ -68,7 +68,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
           ]
         },
         {
@@ -80,7 +80,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
           ]
         },
         {
@@ -92,7 +92,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
           ]
         },
         {
@@ -104,7 +104,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
           ]
         },
         {
@@ -116,7 +116,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
           ]
         },
         {
@@ -128,7 +128,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash tests/scripts/native-test.sh ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
           ]
         }
       ],
@@ -196,7 +196,7 @@ function trigger_github_workflow()
     --data-binary @"${data_file_path}" \
     https://api.github.com/repos/${github_org}/${github_repo}/actions/workflows/${workflow_id}/dispatches
 
-    rm -rf "${data_file_path}"
+  rm -rf "${data_file_path}"
 }
 
 # -----------------------------------------------------------------------------
