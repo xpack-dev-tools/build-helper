@@ -32,6 +32,42 @@ cat <<__EOF__ > "${data_file_path}"
       "merge_mode": "replace",
       "jobs": [
         {
+          "name": "macOS 11.3 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": " xcode12.5",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 11.2 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": " xcode12.4",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
+          ]
+        },
+        {
+          "name": "macOS 11.1 Intel",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": " xcode12.3",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash scripts/tests/native-test.sh --base-url ${base_url}" 
+          ]
+        },
+        {
           "name": "macOS 10.15 Intel",
           "os": "osx",
           "arch": "amd64",
