@@ -35,7 +35,7 @@ on:
 
 jobs:
   linux-x64:
-    name: 'Linux 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    name: 'Intel Linux 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -43,6 +43,20 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
+      - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+        run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+
+  linux-arm64:
+    name: 'Arm Linux 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: [self-hosted, Linux, Arm64]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Clean cache'
+        run: rm -rf ~/Work/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
       - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
