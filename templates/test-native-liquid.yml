@@ -61,7 +61,7 @@ jobs:
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   macos-x64:
-    name: 'macOS 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    name: 'Intel macOS 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: macos-latest
     steps:
       - name: 'Checkout'
