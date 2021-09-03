@@ -44,10 +44,7 @@ jobs:
           fetch-depth: 3
           submodules: true
       - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-        run: |
-          pwd
-          ls -lL
-          bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+        run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   macos-x64:
     name: 'macOS 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
