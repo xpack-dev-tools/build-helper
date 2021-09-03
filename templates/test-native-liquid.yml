@@ -56,7 +56,7 @@ jobs:
           fetch-depth: 3
           submodules: true
       - name: 'Clean cache'
-        run: rm -rf ~/Work/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
+        run: rm -rf ~/Work/cache/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
       - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
