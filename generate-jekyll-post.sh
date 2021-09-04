@@ -61,24 +61,22 @@ source "${helper_folder_path}/common-functions-source.sh"
 
 version=${RELEASE_VERSION:-"$(get_current_version)"}
 
-if false
-then
-
-rm -rf "~/Downloads/xpack-binaries/${APP_LC_NAME}"
-mkdir -p "~/Downloads/xpack-binaries/${APP_LC_NAME}"
+dest_folder_path="${HOME}/Downloads/xpack-binaries/${APP_LC_NAME}"
+rm -rf "${dest_folder_path}"
+mkdir -p "${dest_folder_path}"
 
 echo
-scp -p xbbi:"Work/${APP_LC_NAME}-${version}/deploy/*" "~/Downloads/xpack-binaries/${APP_LC_NAME}"
+scp -p xbbi:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 echo
-scp -p xbba:"Work/${APP_LC_NAME}-${version}/deploy/*" "~/Downloads/xpack-binaries/${APP_LC_NAME}"
+scp -p xbba:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 echo
-scp -p xbbm:"Work/${APP_LC_NAME}-${version}/deploy/*" "~/Downloads/xpack-binaries/${APP_LC_NAME}"
+scp -p xbbm:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 
 echo
-ls -lL "~/Downloads/xpack-binaries/${APP_LC_NAME}"
+ls -lL "${dest_folder_path}"
 
 echo
-fi
+cat ${dest_folder_path}/*.sha
 
 release_date="$(date '+%Y-%m-%d %H:%M:%S %z')"
 post_file_path="${HOME}/Desktop/$(date -u '+%Y-%m-%d')-${APP_LC_NAME}-v$(echo ${version} | tr '.' '-')-released.md"
@@ -92,7 +90,7 @@ cat scripts/templates/body-jekyll-release-post-part-1-liquid.md | liquidjs "{ \"
 
 echo >> "${post_file_path}"
 echo '```console'  >> "${post_file_path}"
-cat ~/Downloads/xpack-binaries/${APP_LC_NAME}/*.sha \
+cat ${dest_folder_path}/*.sha \
   | sed -e 's|$|\n|' \
   | sed -e 's|  |\n|' \
   >> "${post_file_path}"
