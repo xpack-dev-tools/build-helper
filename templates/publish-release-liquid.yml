@@ -30,7 +30,7 @@ on:
 
 jobs:
   linux-x64:
-    name: 'Publish {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} release from Intel Linux'
+    name: 'Intel Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, Linux, X64]
     steps:
       - name: 'Checkout'
@@ -65,7 +65,7 @@ jobs:
         run: cat ~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}/deploy/*.sha
 
   linux-arm64:
-    name: 'Publish {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} release from Arm Linux'
+    name: 'Arm Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, Linux, ARM64]
     steps:
       - name: 'Checkout'
@@ -100,7 +100,7 @@ jobs:
         run: cat ~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}/deploy/*.sha
 
   macos-x64:
-    name: 'Publish {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} release from Intel macOS'
+    name: 'Intel macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, macOS, X64]
     steps:
       - name: 'Checkout'
