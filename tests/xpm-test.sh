@@ -119,7 +119,7 @@ mkdir -p "${test_xpm_folder_path}"
 cd "${test_xpm_folder_path}"
 
 xpm init
-if [ force_32_bit == "y" ]
+if [ "${force_32_bit}" == "y" ]
 then
   xpm install ${NPM_PACKAGE} --force-32bit
 else
