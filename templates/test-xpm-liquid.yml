@@ -86,4 +86,18 @@ jobs:
       - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
         run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  windows-ia32:
+    name: 'Windows 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Install xpm'
+        run: npm install --global xpm
+      - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --32
+
 # -----------------------------------------------------------------------------
