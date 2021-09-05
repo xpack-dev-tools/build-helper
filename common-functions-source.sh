@@ -193,6 +193,19 @@ function get_current_version()
   cat "${version_file_path}" | sed -e '2,$d'
 }
 
+function get_current_package_version()
+{
+  # Hack to get the 'repo' path.
+  local package_file_path="${scripts_folder_path}/../package.json"
+  if [ $# -ge 1 ]
+  then
+    package_file_path="$1"
+  fi
+
+  # Extract only the first line
+  grep '"version":' "${package_file_path}" | sed -e 's|.*"version": "\(.*\)".*|\1|'
+}
+
 function do_config_guess() 
 {
   BUILD="$(bash ${helper_folder_path}/config.guess)"
