@@ -57,7 +57,7 @@ jobs:
         uses: docker://ilegeul/debian:10-npm-v1
         with:
           entrypoint: /usr/bin/linux32
-          args: bash -c "npm install --global xpm"
-          # && /bin/bash /github/workspace/scripts/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+          args: /bin/bash bash scripts/helper/tests/xpm-test2.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+
 
 # -----------------------------------------------------------------------------
