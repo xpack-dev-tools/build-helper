@@ -183,8 +183,7 @@ function xbb_activate_tex()
 
 function get_current_version()
 {
-  # Hack to get the 'scripts' path.
-  local version_file_path="${helper_folder_path}/../VERSION"
+  local version_file_path="${scripts_folder_path}/VERSION"
   if [ $# -ge 1 ]
   then
     version_file_path="$1"
