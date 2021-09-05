@@ -42,7 +42,7 @@ jobs:
       - name: 'Install xpm'
         run: npm install --global xpm
       - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-        run: bash scripts/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
   linux-arm64:
     name: 'Arm Linux 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
@@ -56,7 +56,7 @@ jobs:
       - name: 'Install xpm'
         run: npm install --global xpm
       - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-        run: bash scripts/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
   macos-x64:
     name: 'Intel macOS 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
@@ -70,7 +70,7 @@ jobs:
       - name: 'Install xpm'
         run: npm install --global xpm
       - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-        run: bash scripts/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
   windows-x64:
     name: 'Windows 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
@@ -84,6 +84,6 @@ jobs:
       - name: 'Install xpm'
         run: npm install --global xpm
       - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-        run: bash scripts/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
 # -----------------------------------------------------------------------------
