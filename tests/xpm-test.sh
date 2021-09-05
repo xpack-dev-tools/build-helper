@@ -63,6 +63,7 @@ source "${scripts_folder_path}/tests/common-functions-source.sh"
 # -----------------------------------------------------------------------------
 
 force_32_bit=""
+image_name=""
 RELEASE_VERSION="${RELEASE_VERSION:-latest}"
 
 while [ $# -gt 0 ]
@@ -72,6 +73,11 @@ do
     --32)
       force_32_bit="y"
       shift
+      ;;
+
+    --image)
+      image_name="$2"
+      shift 2
       ;;
 
     --version)
@@ -117,6 +123,17 @@ test_xpm_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests/${APP_LC_N
 rm -rf "${test_xpm_folder_path}"
 mkdir -p "${test_xpm_folder_path}"
 cd "${test_xpm_folder_path}"
+
+if [ -n "${image_name}" ]
+then
+  # set -x
+  export NVM_DIR="/root/.nvm"; \
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; \
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" ; \
+  hash -r
+
+  npm install --global xpm
+fi
 
 xpm init
 if [ "${force_32_bit}" == "y" ]
