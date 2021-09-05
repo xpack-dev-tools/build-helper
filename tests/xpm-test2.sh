@@ -63,6 +63,7 @@ source "${scripts_folder_path}/tests/common-functions-source.sh"
 # -----------------------------------------------------------------------------
 
 force_32_bit=""
+image_name=""
 RELEASE_VERSION="${RELEASE_VERSION:-latest}"
 
 while [ $# -gt 0 ]
@@ -72,6 +73,11 @@ do
     --32)
       force_32_bit="y"
       shift
+      ;;
+
+    --image)
+      image_name="$2"
+      shift 2
       ;;
 
     --version)
@@ -118,7 +124,10 @@ rm -rf "${test_xpm_folder_path}"
 mkdir -p "${test_xpm_folder_path}"
 cd "${test_xpm_folder_path}"
 
-npm install --global xpm
+if [ -n "${image_name}" ]
+then
+  npm install --global xpm
+fi
 
 xpm init
 if [ "${force_32_bit}" == "y" ]
