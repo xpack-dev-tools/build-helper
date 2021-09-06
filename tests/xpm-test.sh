@@ -143,7 +143,7 @@ if [ "${force_32_bit}" == "y" ]
 then
   xpm install ${NPM_PACKAGE} --force-32bit
 else
-  xpm install ${NPM_PACKAGE}
+  xpm install ${NPM_PACKAGE} -dd
 fi
 
 run_tests
