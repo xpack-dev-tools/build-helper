@@ -110,22 +110,8 @@ then
     echo "No image defined, quit."
     exit 1
   fi
-fi
 
-# -----------------------------------------------------------------------------
-
-detect_architecture
-
-prepare_env "$(dirname ${scripts_folder_path})"
-
-test_xpm_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests/${APP_LC_NAME}"
-
-rm -rf "${test_xpm_folder_path}"
-mkdir -p "${test_xpm_folder_path}"
-cd "${test_xpm_folder_path}"
-
-if [ -n "${image_name}" ]
-then
+  # The Debian npm docker images have nvm installed in the /root folder.
   if [ -d "/root/.nvm" ]
   then
     export NVM_DIR="/root/.nvm"
@@ -136,9 +122,23 @@ then
   fi
 fi
 
+# -----------------------------------------------------------------------------
+
+detect_architecture
+
+prepare_env "$(dirname ${scripts_folder_path})"
+
+# -----------------------------------------------------------------------------
+
+test_xpm_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests/${APP_LC_NAME}"
+
+rm -rf "${test_xpm_folder_path}"
+mkdir -p "${test_xpm_folder_path}"
+cd "${test_xpm_folder_path}"
+run_verbose pwd
+
 run_verbose npm install --global xpm
 
-pwd
 run_verbose xpm init
 if [ "${force_32_bit}" == "y" ]
 then
@@ -146,6 +146,8 @@ then
 else
   run_verbose xpm install ${NPM_PACKAGE}
 fi
+
+# -----------------------------------------------------------------------------
 
 run_tests
 
