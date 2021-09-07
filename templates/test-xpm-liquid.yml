@@ -30,6 +30,35 @@ on:
         default: 'latest'
 
 jobs:
+  linux-x64:
+    name: 'Intel Linux 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Install xpm'
+        run: npm install --global xpm
+      - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+
+  linux-ia32:
+    name: 'Intel Linux 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Debian 10 ia32'
+        uses: docker://ilegeul/debian:i386-10-npm-v1
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash scripts/helper/tests/xpm-test.sh --image ilegeul/debian:i386-10-npm-v1 --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+
   linux-arm64:
     name: 'Arm Linux 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, ARM64]
@@ -59,5 +88,46 @@ jobs:
           entrypoint: /usr/bin/linux32
           args: /bin/bash scripts/helper/tests/xpm-test.sh --image ilegeul/debian:arm32v7-10-npm-v1 --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  macos-x64:
+    name: 'Intel macOS 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: macos-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Install xpm'
+        run: npm install --global xpm
+      - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+
+  windows-x64:
+    name: 'Windows 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Install xpm'
+        run: npm install --global xpm
+      - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+
+  windows-ia32:
+    name: 'Windows 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: windows-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Install xpm'
+        run: npm install --global xpm
+      - name: 'Run xpm {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --32
 
 # -----------------------------------------------------------------------------
