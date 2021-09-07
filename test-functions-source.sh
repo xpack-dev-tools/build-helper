@@ -618,7 +618,7 @@ function good_bye()
     run_verbose sw_vers
   fi
 
-if [ ! -f "/.dockerenv" -a ! -d ".content/bin" ]
+if [ ! -f "/.dockerenv" -a ! -d ".content/bin" -a "${CI:-""}" != "true" ]
   then
     echo
     echo "To remove the temporary folders, use: ' rm -rf ${test_xpacks_folder_path} '."
