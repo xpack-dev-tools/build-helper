@@ -1,6 +1,6 @@
 
 # -----------------------------------------------------------------------------
-# DO NOT EDIT! Generated from scripts/helper/templates/test-native-liquid.yml.
+# DO NOT EDIT! Generated from scripts/helper/templates/test-prime-liquid.yml.
 #
 # This file is part of the xPack distribution.
 #   (https://xpack.github.io)
@@ -19,7 +19,7 @@
 
 # -----------------------------------------------------------------------------
 
-name: 'Test xPack {{ APP_NAME }} on native platforms'
+name: 'Test xPack {{ APP_NAME }} on supported platforms'
 
 on:
   workflow_dispatch:
@@ -43,8 +43,23 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+
+  linux-ia32:
+    name: 'Intel Linux 32-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} docker test'
+        uses: docker://i386/debian:buster
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   linux-arm64:
     name: 'Arm Linux 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
@@ -57,8 +72,25 @@ jobs:
           submodules: true
       - name: 'Clean cache'
         run: rm -rf ~/Work/cache/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
-      - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+
+  linux-arm32:
+    name: 'Arm Linux 32-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+    runs-on: [self-hosted, Linux, Arm64]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Clean cache'
+        run: rm -rf ~/Work/cache/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} docker test'
+        uses: docker://arm32v7/debian:buster
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/tests/native-test.sh --image arm32v7/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   macos-x64:
     name: 'Intel macOS 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
@@ -69,7 +101,7 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   windows-x64:
@@ -81,7 +113,7 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   windows-ia32:
@@ -93,7 +125,7 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run native {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/tests/native-test.sh --32 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
 # -----------------------------------------------------------------------------

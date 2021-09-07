@@ -65,7 +65,7 @@ message="Test ${APP_DESCRIPTION} on native platforms"
 branch="xpack-develop"
 base_url="https://github.com/xpack-dev-tools/pre-releases/releases/download/test/"
 version="${RELEASE_VERSION:-$(get_current_version)}"
-workflow_id="test-native.yml"
+workflow_id="test-prime.yml"
 
 while [ $# -gt 0 ]
 do
