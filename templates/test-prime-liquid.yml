@@ -70,8 +70,6 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Clean cache'
-        run: rm -rf ~/Work/cache/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
@@ -84,8 +82,6 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Clean cache'
-        run: rm -rf ~/Work/cache/xpack-{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} docker test'
         uses: docker://arm32v7/debian:buster
         with:
