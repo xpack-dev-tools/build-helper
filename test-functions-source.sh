@@ -439,8 +439,11 @@ function install_archive()
 
   mkdir -pv "${cache_folder_path}"
 
-  if [ ! -f "${cache_folder_path}/${archive_name}" ]
+  if [ -f "${cache_folder_path}/${archive_name}" -a "${CI:-""}" != "true" ]
   then
+    echo
+    echo "Using cached "${cache_folder_path}/${archive_name}"..."
+  else
     echo
     echo "Downloading ${archive_name}..."
     curl -L --fail -o "${cache_folder_path}/${archive_name}" \
