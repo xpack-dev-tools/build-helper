@@ -134,16 +134,17 @@ then
     
     hash -r
   fi
-
-  npm install --global xpm
 fi
 
-xpm init
+run_verbose npm install --global xpm
+
+pwd
+run_verbose xpm init
 if [ "${force_32_bit}" == "y" ]
 then
-  xpm install ${NPM_PACKAGE} --force-32bit
+  run_verbose xpm install ${NPM_PACKAGE} --force-32bit
 else
-  xpm install ${NPM_PACKAGE}
+  run_verbose xpm install ${NPM_PACKAGE}
 fi
 
 run_tests
