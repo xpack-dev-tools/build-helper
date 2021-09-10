@@ -52,7 +52,7 @@ helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
 
-source "${script_folder_path}/defs-source.sh"
+source "${scripts_folder_path}/defs-source.sh"
 
 echo
 echo "${APP_DESCRIPTION} distribution build script."
@@ -62,7 +62,10 @@ source "${helper_folder_path}/common-functions-source.sh"
 source "${helper_folder_path}/host-functions-source.sh"
 
 # The order is important, it may override helper defs.
-source "${script_folder_path}/common-functions-source.sh"
+if [ -f "${scripts_folder_path}/common-functions-source.sh" ]
+then
+  source "${scripts_folder_path}/common-functions-source.sh"
+fi
 
 host_detect
 
