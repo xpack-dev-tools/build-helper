@@ -539,37 +539,19 @@ function host_common()
 
   # ---------------------------------------------------------------------------
 
-  helper_common_functions_script_path="${helper_folder_path}/common-functions-source.sh"
-  echo "Common helper functions source script: \"${helper_common_functions_script_path}\"."
-  source "${helper_common_functions_script_path}"
+  # Helper functions.
+  source "${helper_folder_path}/common-functions-source.sh"
+  source "${helper_folder_path}/common-libs-functions-source.sh"
+  source "${helper_folder_path}/common-apps-functions-source.sh"
 
-  # May override some of the helper/common definitions.
-  common_functions_script_path="${script_folder_path}/common-functions-source.sh"
-  if [ -f "${common_functions_script_path}" ]
+  # The order is important, it may override helper defs.
+  if [ -f "${scripts_folder_path}/common-functions-source.sh" ]
   then
-    echo "Common functions source script: \"${common_functions_script_path}\"."
-    source "${common_functions_script_path}"
+    source "${scripts_folder_path}/common-functions-source.sh"
   fi
-
-  helper_common_libs_functions_script_path="${helper_folder_path}/common-libs-functions-source.sh"
-  echo "Common helper libs functions source script: \"${helper_common_libs_functions_script_path}\"."
-  source "${helper_common_libs_functions_script_path}"
-
-  helper_common_apps_functions_script_path="${helper_folder_path}/common-apps-functions-source.sh"
-  echo "Common helper apps functions source script: \"${helper_common_apps_functions_script_path}\"."
-  source "${helper_common_apps_functions_script_path}"
-
-  common_versions_script_path="${script_folder_path}/common-versions-source.sh"
-  echo "Common versions source script: \"${common_versions_script_path}\"."
-  source "${common_versions_script_path}"
-
-  common_libs_functions_script_path="${script_folder_path}/common-libs-functions-source.sh"
-  echo "Common libs functions source script: \"${common_libs_functions_script_path}\"."
-  source "${common_libs_functions_script_path}"
-
-  common_apps_functions_script_path="${script_folder_path}/common-apps-functions-source.sh"
-  echo "Common app functions source script: \"${common_apps_functions_script_path}\"."
-  source "${common_apps_functions_script_path}"
+  source "${scripts_folder_path}/common-libs-functions-source.sh"
+  source "${scripts_folder_path}/common-apps-functions-source.sh"
+  source "${scripts_folder_path}/common-versions-source.sh"
 
   # ---------------------------------------------------------------------------
 
