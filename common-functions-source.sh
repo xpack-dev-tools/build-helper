@@ -1326,7 +1326,8 @@ function copy_build_git()
 {
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git"
   mkdir -pv "${HOST_WORK_FOLDER_PATH}/build.git"
-  cp -r "$(dirname ${script_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
+  echo ${scripts_folder_path}
+  cp -r "$(dirname ${scripts_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/.git"
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/build-helper.sh"
 }
