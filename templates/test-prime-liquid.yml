@@ -59,7 +59,7 @@ jobs:
         uses: docker://i386/debian:buster
         with:
           entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   linux-arm64:
     name: 'Arm Linux 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
@@ -86,7 +86,7 @@ jobs:
         uses: docker://arm32v7/debian:buster
         with:
           entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/tests/native-test.sh --image arm32v7/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image arm32v7/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   macos-x64:
     name: 'Intel macOS 64-bit {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
