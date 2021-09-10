@@ -58,7 +58,7 @@ source "${helper_folder_path}/test-functions-source.sh"
 source "${scripts_folder_path}/common-apps-functions-source.sh"
 
 # Common native & docker functions (like run_tests()).
-source "${script_folder_path}/common-functions-source.sh"
+source "${scripts_folder_path}/tests/common-functions-source.sh"
 
 # -----------------------------------------------------------------------------
 
