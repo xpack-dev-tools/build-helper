@@ -1293,7 +1293,7 @@ function download()
       echo "Downloading \"${archive_name}\" from \"${url}\"..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
       mkdir -pv "${DOWNLOAD_FOLDER_PATH}"
-      curl --fail -L -o "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
+      run_verbose curl --fail -L -o "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
       mv "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${DOWNLOAD_FOLDER_PATH}/${archive_name}"
     )
   else
@@ -1327,11 +1327,11 @@ function git_clone()
   (
     echo
     echo "Cloning \"${folder_name}\" from \"${url}\"..."
-    git clone --branch="${branch}" "${url}" "${folder_name}"
+    run_verbose git clone --branch="${branch}" "${url}" "${folder_name}"
     if [ -n "${commit}" ]
     then
       cd "${folder_name}"
-      git checkout -qf "${commit}"
+      run_verbose git checkout -qf "${commit}"
     fi
   )
 }
