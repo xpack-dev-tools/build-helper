@@ -211,7 +211,7 @@ function do_config_guess()
   BUILD="$(bash ${helper_folder_path}/config.guess)"
 }
 
-function prepare_xbb_env() 
+function set_xbb_env() 
 {
   # Defaults, to ensure the variables are defined.
   PATH="${PATH:-""}"
