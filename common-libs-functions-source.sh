@@ -38,6 +38,8 @@ function build_zlib()
   # The folder name for build, licenses, etc.
   local zlib_folder_name="${zlib_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
+
   local zlib_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${zlib_folder_name}-installed"
   if [ ! -f "${zlib_stamp_file_path}" ]
   then
@@ -57,8 +59,6 @@ function build_zlib()
         mv -v "${zlib_src_folder_name}" "${zlib_folder_name}"
       fi
     fi
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
 
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}"
@@ -197,6 +197,8 @@ function build_gmp()
   # The folder name for build, licenses, etc.
   local gmp_folder_name="${gmp_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
+
   local gmp_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${gmp_folder_name}-installed"
   if [ ! -f "${gmp_stamp_file_path}" ]
   then
@@ -205,8 +207,6 @@ function build_gmp()
 
     download_and_extract "${gmp_url}" "${gmp_archive}" \
       "${gmp_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
@@ -354,6 +354,8 @@ function build_mpfr()
   # The folder name for build, licenses, etc.
   local mpfr_folder_name="${mpfr_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
+
   local mpfr_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mpfr_folder_name}-installed"
   if [ ! -f "${mpfr_stamp_file_path}" ]
   then
@@ -362,8 +364,6 @@ function build_mpfr()
 
     download_and_extract "${mpfr_url}" "${mpfr_archive}" \
       "${mpfr_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
@@ -483,6 +483,8 @@ function build_mpc()
   # The folder name for build, licenses, etc.
   local mpc_folder_name="${mpc_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
+
   local mpc_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mpc_folder_name}-installed"
   if [ ! -f "${mpc_stamp_file_path}" ]
   then
@@ -491,8 +493,6 @@ function build_mpc()
 
     download_and_extract "${mpc_url}" "${mpc_archive}" \
       "${mpc_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
@@ -613,6 +613,8 @@ function build_isl()
   # The folder name for build, licenses, etc.
   local isl_folder_name="${isl_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
+
   local isl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${isl_folder_name}-installed"
   if [ ! -f "${isl_stamp_file_path}" ]
   then
@@ -621,8 +623,6 @@ function build_isl()
 
     download_and_extract "${isl_url}" "${isl_archive}" \
       "${isl_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
@@ -748,6 +748,8 @@ function build_zstd()
   # The folder name for build, licenses, etc.
   local zstd_folder_name="${zstd_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${zstd_folder_name}"
+
   local zstd_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${zstd_folder_name}-installed"
   if [ ! -f "${zstd_stamp_file_path}" ]
   then
@@ -756,8 +758,6 @@ function build_zstd()
 
     download_and_extract "${zstd_url}" "${zstd_archive}" \
       "${zstd_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${zstd_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${zstd_folder_name}"
@@ -893,6 +893,8 @@ function build_libiconv()
 
   local libiconv_folder_name="${libiconv_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
+
   local libiconv_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libiconv_folder_name}-installed"
   if [ ! -f "${libiconv_stamp_file_path}" ]
   then
@@ -901,8 +903,6 @@ function build_libiconv()
 
     download_and_extract "${libiconv_url}" "${libiconv_archive}" \
       "${libiconv_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libiconv_folder_name}"
@@ -1031,6 +1031,8 @@ function build_ncurses()
   # The folder name  for build, licenses, etc.
   local ncurses_folder_name="${ncurses_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${ncurses_folder_name}"
+
   local ncurses_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${ncurses_folder_name}-installed"
   if [ ! -f "${ncurses_stamp_file_path}" ]
   then
@@ -1039,8 +1041,6 @@ function build_ncurses()
 
     download_and_extract "${ncurses_url}" "${ncurses_archive}" \
       "${ncurses_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${ncurses_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${ncurses_folder_name}"
@@ -1260,6 +1260,8 @@ function build_libffi()
 
   local libffi_folder_name="${libffi_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libffi_folder_name}"
+
   local libffi_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libffi_folder_name}-installed"
   if [ ! -f "${libffi_stamp_file_path}" ]
   then
@@ -1268,8 +1270,6 @@ function build_libffi()
 
     download_and_extract "${libffi_url}" "${libffi_archive}" \
       "${libffi_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libffi_folder_name}"
 
     (
       if [ ! -x "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" ]
@@ -1397,6 +1397,9 @@ function build_gettext()
   local gettext_url="http://ftp.gnu.org/pub/gnu/gettext/${gettext_archive}"
 
   local gettext_folder_name="${gettext_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${gettext_folder_name}"
+
   local gettext_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${gettext_folder_name}-installed"
   if [ ! -f "${gettext_stamp_file_path}" ]
   then
@@ -1405,8 +1408,6 @@ function build_gettext()
 
     download_and_extract "${gettext_url}" "${gettext_archive}" \
       "${gettext_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${gettext_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gettext_folder_name}"
@@ -1548,6 +1549,8 @@ function build_libelf()
 
   local libelf_folder_name="${libelf_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libelf_folder_name}"
+
   local libelf_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libelf_folder_name}-installed"
   if [ ! -f "${libelf_stamp_file_path}" ]
   then
@@ -1556,8 +1559,6 @@ function build_libelf()
 
     download_and_extract "${libelf_url}" "${libelf_archive}" \
       "${libelf_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libelf_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libelf_folder_name}"
@@ -1677,6 +1678,8 @@ function build_expat()
 
   local expat_folder_name="${expat_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${expat_folder_name}"
+
   local expat_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${expat_folder_name}-installed"
   if [ ! -f "${expat_stamp_file_path}" ]
   then
@@ -1685,8 +1688,6 @@ function build_expat()
 
     download_and_extract "${expat_url}" "${expat_archive}" \
       "${expat_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${expat_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${expat_folder_name}"
@@ -1793,6 +1794,8 @@ function build_xz()
 
   local xz_folder_name="${xz_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${xz_folder_name}"
+
   local xz_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${xz_folder_name}-installed"
   if [ ! -f "${xz_stamp_file_path}" ]
   then
@@ -1801,8 +1804,6 @@ function build_xz()
 
     download_and_extract "${xz_url}" "${xz_archive}" \
       "${xz_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${xz_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${xz_folder_name}"
@@ -1916,6 +1917,8 @@ function build_gpm()
 
   local gpm_folder_name="${gpm_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${gpm_folder_name}"
+
   local gpm_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${gpm_folder_name}-installed"
   if [ ! -f "${gpm_stamp_file_path}" ]
   then
@@ -1937,8 +1940,6 @@ function build_gpm()
         mv -v "${gpm_src_folder_name}" "${gpm_folder_name}"
       fi
     fi
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${gpm_folder_name}"
 
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}"
@@ -2073,6 +2074,8 @@ function build_libmpdec()
 
   local libmpdec_folder_name="${libmpdec_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}"
+
   local libmpdec_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libmpdec_folder_name}-installed"
   if [ ! -f "${libmpdec_stamp_file_path}" ]
   then
@@ -2092,8 +2095,6 @@ function build_libmpdec()
         mv -v "${libmpdec_src_folder_name}" "${libmpdec_folder_name}"
       fi
     fi
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}"
 
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_src_folder_name}"
@@ -2216,6 +2217,8 @@ function build_libxcrypt()
 
   local libxcrypt_folder_name="${libxcrypt_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}"
+
   local libxcrypt_patch_file_path="${BUILD_GIT_PATH}/patches/${libxcrypt_folder_name}.patch"
   local libxcrypt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libxcrypt_folder_name}-installed"
   if [ ! -f "${libxcrypt_stamp_file_path}" ]
@@ -2227,8 +2230,6 @@ function build_libxcrypt()
     download_and_extract "${libxcrypt_url}" "${libxcrypt_archive}" \
       "${libxcrypt_src_folder_name}" "${libxcrypt_patch_file_path}"
     set -e
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}"
 
     if [ ! -x "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" ]
     then
@@ -2400,6 +2401,8 @@ function build_openssl()
 
   local openssl_folder_name="${openssl_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${openssl_folder_name}"
+
   local openssl_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${openssl_folder_name}-installed"
   if [ ! -f "${openssl_stamp_file_path}" ]
   then
@@ -2419,8 +2422,6 @@ function build_openssl()
         mv -v "${openssl_src_folder_name}" "${openssl_folder_name}"
       fi
     fi
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${openssl_folder_name}"
 
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${openssl_folder_name}"
@@ -2636,6 +2637,8 @@ function build_sqlite()
 
   local sqlite_folder_name="sqlite-${sqlite_version}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${sqlite_folder_name}"
+
   local sqlite_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${sqlite_folder_name}-installed"
   if [ ! -f "${sqlite_stamp_file_path}" ]
   then
@@ -2644,8 +2647,6 @@ function build_sqlite()
 
     download_and_extract "${sqlite_url}" "${sqlite_archive}" \
       "${sqlite_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${sqlite_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${sqlite_folder_name}"
@@ -2771,6 +2772,8 @@ function build_readline()
   # The folder name  for build, licenses, etc.
   local readline_folder_name="${readline_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${readline_folder_name}"
+
   local readline_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${readline_folder_name}-installed"
   if [ ! -f "${readline_stamp_file_path}" ]
   then
@@ -2779,8 +2782,6 @@ function build_readline()
 
     download_and_extract "${readline_url}" "${readline_archive}" \
       "${readline_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${readline_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${readline_folder_name}"
@@ -2898,6 +2899,8 @@ function build_bzip2()
 
   local bzip2_folder_name="${bzip2_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${bzip2_folder_name}"
+
   local bzip2_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${bzip2_folder_name}-installed"
   if [ ! -f "${bzip2_stamp_file_path}" ]
   then
@@ -2917,8 +2920,6 @@ function build_bzip2()
         mv -v "${bzip2_src_folder_name}" "${bzip2_folder_name}"
       fi
     fi
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${bzip2_folder_name}"
 
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${bzip2_folder_name}"
@@ -3028,6 +3029,8 @@ function build_python2()
 
   local python2_folder_name="python-${python2_version}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${python2_folder_name}"
+
   local python2_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${python2_folder_name}-installed"
   if [ ! -f "${python2_stamp_file_path}" ]
   then
@@ -3036,8 +3039,6 @@ function build_python2()
 
     download_and_extract "${python2_url}" "${python2_archive}" \
       "${PYTHON2_SRC_FOLDER_NAME}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${python2_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python2_folder_name}"
@@ -3288,6 +3289,8 @@ function build_python3()
 
   local python3_folder_name="python-${python3_version}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${python3_folder_name}"
+
   local python3_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${python3_folder_name}-installed"
   if [ ! -f "${python3_stamp_file_path}" ]
   then
@@ -3296,8 +3299,6 @@ function build_python3()
 
     download_and_extract "${python3_url}" "${python3_archive}" \
       "${PYTHON3_SRC_FOLDER_NAME}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${python3_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
@@ -3680,6 +3681,9 @@ function build_libpng()
   local libpng_url="https://sourceforge.net/projects/libpng/files/libpng${libpng_major_minor_version}/${libpng_version}/${libpng_archive}"
 
   local libpng_folder_name="${libpng_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libpng_folder_name}"
+
   local libpng_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libpng-${libpng_version}-installed"
   if [ ! -f "${libpng_stamp_file_path}" ]
   then
@@ -3688,8 +3692,6 @@ function build_libpng()
 
     download_and_extract "${libpng_url}" "${libpng_archive}" \
       "${libpng_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libpng_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libpng_folder_name}"
@@ -3798,6 +3800,9 @@ function build_jpeg()
   local jpeg_url="http://www.ijg.org/files/${jpeg_archive}"
 
   local jpeg_folder_name="${jpeg_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${jpeg_folder_name}"
+
   local jpeg_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-jpeg-${jpeg_version}-installed"
   if [ ! -f "${jpeg_stamp_file_path}" ]
   then
@@ -3806,8 +3811,6 @@ function build_jpeg()
 
     download_and_extract "${jpeg_url}" "${jpeg_archive}" \
         "${jpeg_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${jpeg_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${jpeg_folder_name}"
@@ -3914,6 +3917,9 @@ function build_pixman()
   local pixman_url="http://cairographics.org/releases/${pixman_archive}"
 
   local pixman_folder_name="${pixman_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${pixman_folder_name}"
+
   local pixman_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-pixman-${pixman_version}-installed"
   if [ ! -f "${pixman_stamp_file_path}" ]
   then
@@ -3922,8 +3928,6 @@ function build_pixman()
 
     download_and_extract "${pixman_url}" "${pixman_archive}" \
       "${pixman_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${pixman_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${pixman_folder_name}"
@@ -4052,6 +4056,9 @@ function build_glib()
   local glib_url="http://ftp.gnome.org/pub/GNOME/sources/glib/${glib_MAJOR_MINOR_version}/${glib_archive}"
 
   local glib_folder_name="${glib_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${glib_folder_name}"
+
   local glib_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-glib-${glib_version}-installed"
   if [ ! -f "${glib_stamp_file_path}" ]
   then
@@ -4060,8 +4067,6 @@ function build_glib()
 
     download_and_extract "${glib_url}" "${glib_archive}" \
       "${glib_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${glib_folder_name}"
 
     (
       # Hack, /gio/lib added because libtool needs it on Win32.
@@ -4204,6 +4209,9 @@ function build_libxml2()
   local libxml2_url="ftp://xmlsoft.org/libxml2/${libxml2_archive}"
 
   local libxml2_folder_name="${libxml2_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libxml2_folder_name}"
+
   local libxml2_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libxml2-${libxml2_version}-installed"
   if [ ! -f "${libxml2_stamp_file_path}" ]
   then
@@ -4212,8 +4220,6 @@ function build_libxml2()
 
     download_and_extract "${libxml2_url}" "${libxml2_archive}" \
       "${libxml2_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libxml2_folder_name}"
 
     # Fails if not built in place.
     if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${libxml2_folder_name}" ]
@@ -4340,6 +4346,8 @@ function build_libedit()
 
   local libedit_folder_name="libedit-${libedit_version_short}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libedit_folder_name}"
+
   local libedit_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libedit_folder_name}-installed"
   if [ ! -f "${libedit_stamp_file_path}" ]
   then
@@ -4348,8 +4356,6 @@ function build_libedit()
 
     download_and_extract "${libedit_url}" "${libedit_archive}" \
       "${libedit_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${libedit_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libedit_folder_name}"
@@ -4461,6 +4467,8 @@ function build_xar()
 
   local xar_folder_name="xar-${xar_version}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${xar_folder_name}"
+
   local xar_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${xar_folder_name}-installed"
   if [ ! -f "${xar_stamp_file_path}" ]
   then
@@ -4482,8 +4490,6 @@ function build_xar()
         mv -v "${xar_src_folder_name}" "${xar_folder_name}"
       fi
     fi
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${xar_folder_name}"
 
     (
       cd "${LIBS_BUILD_FOLDER_PATH}/${xar_folder_name}/xar/"

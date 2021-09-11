@@ -38,6 +38,8 @@ function build_patchelf()
 
   local patchelf_folder_name="${patchelf_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${patchelf_folder_name}"
+
   local patchelf_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${patchelf_folder_name}-installed"
   if [ ! -f "${patchelf_stamp_file_path}" ]
   then
@@ -46,8 +48,6 @@ function build_patchelf()
 
     download_and_extract "${patchelf_url}" "${patchelf_archive}" \
       "${patchelf_src_folder_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${patchelf_folder_name}"
 
     (
       if [ ! -x "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}/configure" ]
@@ -191,6 +191,8 @@ function build_automake()
 
   local automake_folder_name="${automake_src_folder_name}"
 
+  mkdir -pv "${LOGS_FOLDER_PATH}/${automake_folder_name}"
+
   # help2man: can't get `--help' info from automake-1.16
   # Try `--no-discard-stderr' if option outputs to stderr
 
@@ -204,8 +206,6 @@ function build_automake()
     download_and_extract "${automake_url}" "${automake_archive}" \
       "${automake_src_folder_name}" \
       "${automake_patch_file_path}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${automake_folder_name}"
 
     (
       mkdir -pv "${BUILD_FOLDER_PATH}/${automake_folder_name}"
@@ -1090,8 +1090,9 @@ function build_binutils()
   local binutils_archive="${binutils_src_folder_name}.tar.xz"
   local binutils_url="https://ftp.gnu.org/gnu/binutils/${binutils_archive}"
 
-  local binutils_patch_file_name="binutils-${binutils_version}.patch"
+  mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
 
+  local binutils_patch_file_name="binutils-${binutils_version}.patch"
   local binutils_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${binutils_folder_name}-installed"
   if [ ! -f "${binutils_stamp_file_path}" ]
   then
@@ -1100,8 +1101,6 @@ function build_binutils()
 
     download_and_extract "${binutils_url}" "${binutils_archive}" \
       "${binutils_src_folder_name}" "${binutils_patch_file_name}"
-
-    mkdir -pv "${LOGS_FOLDER_PATH}/${binutils_folder_name}"
 
     local binutils_prerequisites_download_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${binutils_folder_name}-prerequisites-downloaded"
     if [ ! -f "${binutils_prerequisites_download_stamp_file_path}" ]
@@ -1124,7 +1123,6 @@ function build_binutils()
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
-
 
       if [ -n "${name_suffix}" ]
       then
