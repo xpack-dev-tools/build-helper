@@ -445,7 +445,7 @@ function prepare_xbb_env()
   env | sort
 }
 
-function _prepare_xbb_extras()
+function _set_xbb_extras()
 {
   # ---------------------------------------------------------------------------
 
@@ -620,7 +620,7 @@ function prepare_gcc_env()
   export WINDMC="${prefix}windmc"
   export RC="${prefix}windres"
 
-  _prepare_xbb_extras
+  _set_xbb_extras
 }
 
 function unset_gcc_env()
@@ -686,7 +686,7 @@ function prepare_clang_env()
   # export WINDMC="${prefix}windmc"
   # export RC="${prefix}windres"
 
-  _prepare_xbb_extras
+  _set_xbb_extras
 }
 
 # -----------------------------------------------------------------------------
