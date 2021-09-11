@@ -919,7 +919,7 @@ function do_actions()
 
 # -----------------------------------------------------------------------------
 
-function develop_echo()
+function echo_develop()
 {
   if [ "${IS_DEVELOP}" == "y" ]
   then
@@ -2983,7 +2983,7 @@ function copy_dependencies_recursive()
       fi
 
     else
-      develop_echo "already there ${destination_file_path}"
+      echo_develop "already there ${destination_file_path}"
     fi
 
     if [ "${WITH_STRIP}" == "y" -a ! -L "${actual_destination_file_path}" ]
@@ -3017,11 +3017,11 @@ function copy_dependencies_recursive()
       # On Linux the references are library names.
       for lib_name in ${lib_names}
       do
-        develop_echo "processing ${lib_name} of ${actual_destination_file_path}"
+        echo_develop "processing ${lib_name} of ${actual_destination_file_path}"
 
         if is_linux_allowed_sys_so "${lib_name}"
         then
-          develop_echo "${lib_name} is allowed sys so"
+          echo_develop "${lib_name} is allowed sys so"
           continue # System library, no need to copy it.
         fi
 
@@ -3037,14 +3037,14 @@ function copy_dependencies_recursive()
 
         for rpath in $(echo "${linux_rpaths_line}" | tr ":" "\n")
         do
-          develop_echo "rpath ${rpath}"
+          echo_develop "rpath ${rpath}"
 
           if [ "${rpath:0:1}" == "/" ]
           then
             # Absolute path.
             if [ -f "${rpath}/${lib_name}" ]
             then
-              develop_echo "${lib_name} found in ${rpath}"
+              echo_develop "${lib_name} found in ${rpath}"
               # Library present in the absolute path
               copy_dependencies_recursive \
                 "${rpath}/${lib_name}" \
@@ -3062,7 +3062,7 @@ function copy_dependencies_recursive()
             if [ -f "${actual_destination_folder_path}/${file_relative_path}/${lib_name}" ]
             then
               # Library present in the $ORIGIN path
-              develop_echo "${lib_name} found in ${rpath}"
+              echo_develop "${lib_name} found in ${rpath}"
               was_processed="y"
               break
             fi
@@ -3083,7 +3083,7 @@ function copy_dependencies_recursive()
             must_add_origin="\$ORIGIN"
           elif [ "${full_path}" != "${lib_name}" ]
           then
-            develop_echo "${lib_name} found as compiler file \"${full_path}\""
+            echo_develop "${lib_name} found as compiler file \"${full_path}\""
             copy_dependencies_recursive \
               "${full_path}" \
               "${APP_PREFIX}/libexec"
@@ -3149,13 +3149,13 @@ function copy_dependencies_recursive()
         # relative to a special prefix (executable, loader, rpath).
         # The name usually is a link to more strictly versioned file.
         
-        develop_echo "processing ${lib_path} of ${actual_destination_file_path}"
+        echo_develop "processing ${lib_path} of ${actual_destination_file_path}"
 
         if [ "${lib_path:0:1}" == "@" ]
         then
           # If special prefix, someone else took care to place the
           # dependencies in the correct location.
-          develop_echo "${lib_path} was already processed"
+          echo_develop "${lib_path} was already processed"
           continue
         fi
 
@@ -3169,7 +3169,7 @@ function copy_dependencies_recursive()
             if is_darwin_allowed_sys_dylib "${lib_path}"
             then
               # Allowed system library, no need to copy it.
-              develop_echo "${lib_path} is allowed sys dylib"
+              echo_develop "${lib_path} is allowed sys dylib"
               continue 
             else
               echo ">>> absolute \"${lib_path}\" not one of the allowed libs"
@@ -3178,7 +3178,7 @@ function copy_dependencies_recursive()
           fi
         else
           ## Relative path.
-          develop_echo "${lib_path} is a relative path"
+          echo_develop "${lib_path} is a relative path"
           if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}" ]
           then
             # Make the from path absolute.
