@@ -355,6 +355,8 @@ function prepare_env()
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
 
+  SOURCES_FOLDER_PATH=${SOURCES_FOLDER_PATH:-"${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/sources"}
+
   # Always in the user home, even when inside a container.
   test_xpacks_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
   cache_folder_path="${WORK_FOLDER_PATH}/cache"
