@@ -1230,10 +1230,10 @@ function do_patch()
       if [[ ${patch_path} == *.patch.diff ]]
       then
         # Sourcetree creates patch.diff files, which require -p1.
-        patch -p1 < "${patch_path}"
+        run_verbose_develop patch -p1 < "${patch_path}"
       else
         # Manually created patches.
-        patch -p0 < "${patch_path}"
+        run_verbose_develop patch -p0 < "${patch_path}"
       fi
     fi
   fi
@@ -1255,15 +1255,15 @@ function extract()
       echo "Extracting \"${archive_name}\" -> \"${pwd}/${folder_name}\"..."
       if [[ "${archive_name}" == *zip ]]
       then
-        unzip "${archive_name}" 
+        run_verbose_develop unzip "${archive_name}" 
       else
         # On macOS Docker seems to have a problem and extracting symlinks
         # fails, but a second atempt is successful.
         if [ ! -z "${DEBUG}" ]
         then
-          tar -x -v -f "${archive_name}" --no-same-owner || tar -x -v -f "${archive_name}" --no-same-owner
+          run_verbose_develop tar -x -v -f "${archive_name}" --no-same-owner || tar -x -v -f "${archive_name}" --no-same-owner
         else
-          tar -x -f "${archive_name}" --no-same-owner || tar -x -f "${archive_name}" --no-same-owner
+          run_verbose_develop tar -x -f "${archive_name}" --no-same-owner || tar -x -f "${archive_name}" --no-same-owner
         fi
       fi
 
