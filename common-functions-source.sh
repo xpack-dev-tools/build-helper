@@ -378,6 +378,37 @@ function set_xbb_env()
 
   # ---------------------------------------------------------------------------
 
+  export BUILD
+  export HOST
+  export TARGET
+  
+  export LANGUAGE="en_US:en"
+  export LANG="en_US.UTF-8"
+  export LC_ALL="en_US.UTF-8"
+  export LC_COLLATE="en_US.UTF-8"
+  export LC_CTYPE="UTF-8"
+  export LC_MESSAGES="en_US.UTF-8"
+  export LC_MONETARY="en_US.UTF-8"
+  export LC_NUMERIC="en_US.UTF-8"
+  export LC_TIME="en_US.UTF-8"
+
+  export PATH
+  export LD_LIBRARY_PATH
+
+  export APP_PREFIX
+  export SOURCES_FOLDER_PATH
+  export DOT_EXE
+
+  # libtool fails with the Ubuntu /bin/sh.
+  export SHELL="/bin/bash"
+  export CONFIG_SHELL="/bin/bash"
+
+  echo
+  env | sort
+}
+
+function set_compiler_env()
+{
   if [ ! -z "$(xbb_activate; which "clang++-xbb")" ]
   then
     prepare_clang_env "" "-xbb"
@@ -413,36 +444,6 @@ function set_xbb_env()
     which make
     make --version
   )
-
-  # ---------------------------------------------------------------------------
-
-  export BUILD
-  export HOST
-  export TARGET
-  
-  export LANGUAGE="en_US:en"
-  export LANG="en_US.UTF-8"
-  export LC_ALL="en_US.UTF-8"
-  export LC_COLLATE="en_US.UTF-8"
-  export LC_CTYPE="UTF-8"
-  export LC_MESSAGES="en_US.UTF-8"
-  export LC_MONETARY="en_US.UTF-8"
-  export LC_NUMERIC="en_US.UTF-8"
-  export LC_TIME="en_US.UTF-8"
-
-  export PATH
-  export LD_LIBRARY_PATH
-
-  export APP_PREFIX
-  export SOURCES_FOLDER_PATH
-  export DOT_EXE
-
-  # libtool fails with the Ubuntu /bin/sh.
-  export SHELL="/bin/bash"
-  export CONFIG_SHELL="/bin/bash"
-
-  echo
-  env | sort
 }
 
 function _set_xbb_extras()
