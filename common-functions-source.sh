@@ -940,6 +940,20 @@ function run_verbose()
   "${app_path}" "$@" 2>&1
 }
 
+function run_verbose_develop()
+{
+  # Does not include the .exe extension.
+  local app_path=$1
+  shift
+
+  if [ "${IS_DEVELOP}" == "y" ]
+  then
+    echo
+    echo "[${app_path} $@]"
+  fi
+  "${app_path}" "$@" 2>&1
+}
+
 function run_verbose_timed()
 {
   # Does not include the .exe extension.
