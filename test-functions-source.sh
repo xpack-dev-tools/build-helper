@@ -32,7 +32,7 @@ cat <<__EOF__ > "${data_file_path}"
       "merge_mode": "replace",
       "jobs": [
         {
-          "name": "macOS 11.3 Intel",
+          "name": "x64 macOS 11.3",
           "os": "osx",
           "arch": "amd64",
           "osx_image": " xcode12.5",
@@ -44,7 +44,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 11.2 Intel",
+          "name": "x64 macOS 11.2",
           "os": "osx",
           "arch": "amd64",
           "osx_image": " xcode12.4",
@@ -56,7 +56,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 11.1 Intel",
+          "name": "x64 macOS 11.1",
           "os": "osx",
           "arch": "amd64",
           "osx_image": " xcode12.3",
@@ -68,7 +68,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 10.15 Intel",
+          "name": "x64 macOS 10.15",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode11.5",
@@ -80,7 +80,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 10.14 Intel",
+          "name": "x64 macOS 10.14",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode11.3",
@@ -92,7 +92,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 10.13 Intel",
+          "name": "x64 macOS 10.13",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode10.1",
@@ -104,7 +104,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 10.12 Intel",
+          "name": "x64 macOS 10.12",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode9.2",
@@ -116,7 +116,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 10.11 Intel",
+          "name": "x64 macOS 10.11",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode8",
@@ -128,7 +128,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "macOS 10.10 Intel",
+          "name": "x64 macOS 10.10",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode6.4",
