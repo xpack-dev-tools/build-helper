@@ -623,7 +623,7 @@ function prepare_gcc_env()
   _set_xbb_extras
 }
 
-function unset_gcc_env()
+function unset_compiler_env()
 {
   unset CC
   unset CXX
