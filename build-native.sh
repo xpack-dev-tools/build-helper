@@ -45,7 +45,7 @@ helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
 
-# Script to build a native xPack OpenOCD, which uses the
+# Script to run a native build, which uses the
 # tools and libraries available on the host machine. It is generally
 # intended for development and creating customised versions (as opposed
 # to the build intended for creating distribution packages).

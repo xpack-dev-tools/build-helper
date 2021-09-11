@@ -45,7 +45,7 @@ helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
 
-# Script to build the xPack OpenOCD distribution packages.
+# Script to build the xPack distribution packages.
 #
 # Developed on macOS 10.13 High Sierra, but also intended to run on
 # Intel & Arm Linux XBB.
