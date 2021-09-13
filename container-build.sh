@@ -196,19 +196,6 @@ echo
 
 tests_initialize
 
-if [ "${TARGET_PLATFORM}" == "linux" ]
-then
-  (
-    xbb_activate
-
-    # Build a newer version than available in XBB.
-    build_patchelf "0.12"
-  )
-
-  export PATCHELF="${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf"
-  # export PATCHELF="$(which patchelf)"
-fi
-
 build_versions
 
 # -----------------------------------------------------------------------------
