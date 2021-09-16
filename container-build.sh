@@ -80,13 +80,17 @@ then
   echo $@
 fi
 
-WITH_STRIP="y"
-WITH_PDF="y"
-WITH_HTML="y"
-IS_DEVELOP=""
-IS_DEBUG=""
+WITH_STRIP=${WITH_STRIP:-"y"}
+WITH_PDF=${WITH_PDF:-"y"}
+WITH_HTML=${WITH_HTML:-"n"}
+
 WITH_TESTS="y"
+
+IS_DEVELOP="n"
+IS_DEBUG="n"
+
 LINUX_INSTALL_RELATIVE_PATH=""
+
 TEST_ONLY=""
 
 if [ "$(uname)" == "Linux" ]
