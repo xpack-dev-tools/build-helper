@@ -654,7 +654,7 @@ function host_prepare_prerequisites()
       then
 
         # TODO: update for Apple Silicon
-        PATH="${tl_folder}/bin/x86_64-darwin:${PATH}"
+        PATH="${tl_folder}/bin/$(ls "${tl_folder}/bin" | sed -n -e 1p):${PATH}"
         export PATH
 
         echo
