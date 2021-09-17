@@ -485,7 +485,7 @@ function host_native_options()
         ;;
 
       --help)
-        echo "Build a local/native ${DISTRO_UC_NAME} ${APP_NAME}."
+        echo "Build a local/native ${DISTRO_NAME} ${APP_NAME}."
         echo "Usage:"
         # Some of the options are processed by the container script.
         echo "${help_message}"
