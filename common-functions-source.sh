@@ -374,7 +374,6 @@ function set_xbb_env()
   HAS_NAME_ARCH=${HAS_NAME_ARCH:-"y"}
 
   USE_TAR_GZ=${USE_TAR_GZ:-"y"}
-  USE_SINGLE_FOLDER_PATH=${USE_SINGLE_FOLDER_PATH:-"y"}
 
   # ---------------------------------------------------------------------------
 
@@ -3610,12 +3609,6 @@ function create_archive()
 
       local distribution_file="${distribution_file}.zip"
 
-      if [ "${USE_SINGLE_FOLDER_PATH}" != "y" ]
-      then
-        # DEPRECATED!
-        archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_UC_NAME}/${APP_UC_NAME}/${distribution_file_version}"
-      fi
-
       echo
       echo "ZIP file: \"${distribution_file}\"."
 
@@ -3641,13 +3634,6 @@ function create_archive()
         distribution_file="${distribution_file}.tar.gz"
       else
         distribution_file="${distribution_file}.tgz"
-      fi
-
-      local archive_version_path
-      if [ "${USE_SINGLE_FOLDER_PATH}" != "y" ]
-      then
-        # DEPRECATED!
-        archive_version_path="${INSTALL_FOLDER_PATH}/archive/${DISTRO_TOP_FOLDER_PATH}/${APP_LC_NAME}/${distribution_file_version}"
       fi
 
       echo "Compressed tarball: \"${distribution_file}\"."
