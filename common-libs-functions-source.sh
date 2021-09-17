@@ -3311,6 +3311,19 @@ function build_python3()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
+      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        if [[ "${CC}" =~ gcc* ]]
+        then
+          # HACK! GCC chokes on dynamic sizes:
+          # error: variably modified ‘bytes’ at file scope
+          # char bytes[kAuthorizationExternalFormLength];
+          # -DkAuthorizationExternalFormLength=32 not working
+          export CC=clang
+          export CXX=clang++
+        fi     
+      fi
+
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
