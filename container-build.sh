@@ -195,13 +195,25 @@ set_compiler_env
 # -----------------------------------------------------------------------------
 
 # Temporary hack.
-export TEXLIVE_FOLDER_PATH="/opt/texlive"
+if [ -d "${HOME}/.local/texlive" ]
+then
+  export TEXLIVE_FOLDER_PATH="${HOME}/.local/texlive"
+elif [ -d "/opt/texlive" ]
+then
+  export TEXLIVE_FOLDER_PATH="/opt/texlive"
+fi
 
 function xbb_activate_tex()
 {
-  PATH="${TEXLIVE_FOLDER_PATH}/bin/$(ls "${TEXLIVE_FOLDER_PATH}/bin" | sed -n -e 1p):${PATH}"
+  if [ -d "${TEXLIVE_FOLDER_PATH}/bin" ]
+  then
+    PATH="${TEXLIVE_FOLDER_PATH}/bin/$(ls "${TEXLIVE_FOLDER_PATH}/bin" | sed -n -e 1p):${PATH}"
 
-  export PATH
+    export PATH
+  else
+    echo "No valid TeX Live path. Quit."
+    exit 1
+  fi
 }
 
 # -----------------------------------------------------------------------------
