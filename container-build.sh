@@ -75,6 +75,18 @@ source "${scripts_folder_path}/common-versions-source.sh"
 
 # -----------------------------------------------------------------------------
 
+# Temporary hack.
+export TEXLIVE_FOLDER_PATH="/opt/texlive"
+
+function xbb_activate_tex()
+{
+  PATH="${TEXLIVE_FOLDER_PATH}/bin/$(ls "${TEXLIVE_FOLDER_PATH}/bin" | sed -n -e 1p):${PATH}"
+
+  export PATH
+}
+
+# -----------------------------------------------------------------------------
+
 if [ ! -z "#{DEBUG}" ]
 then
   echo $@
