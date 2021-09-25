@@ -1913,7 +1913,7 @@ function strip_binaries()
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
 
-        binaries=$(find "${folder_path}" \( -name \*.exe -o -name '*.dll' \))
+        binaries=$(find "${folder_path}" \( -name \*.exe -o -name \*.dll -o -name \*.pyd \))
         for bin in ${binaries} 
         do
           strip_binary "${bin}"
@@ -2017,7 +2017,7 @@ function strip_binary()
     then
       strip="${CROSS_COMPILE_PREFIX}-strip"
     fi
-    if [[ "${file_path}" != *.exe ]] && [[ "${file_path}" != *.dll ]]
+    if [[ "${file_path}" != *.exe ]] && [[ "${file_path}" != *.dll ]] && [[ "${file_path}" != *.pyd ]]
     then
       file_path="${file_path}.exe"
     fi
@@ -2083,7 +2083,7 @@ function strip_libs()
       then
         run_verbose which ${CROSS_COMPILE_PREFIX}-strip
 
-        local libs=$(find "${APP_PREFIX}" -type f \( -name \*.a -o -name \*.o -o -name \*.dll \))
+        local libs=$(find "${APP_PREFIX}" -type f \( -name \*.a -o -name \*.o -o -name \*.dll -o -name \*.pyd \))
         for lib in ${libs}
         do
           echo "${CROSS_COMPILE_PREFIX}-strip --strip-debug ${lib}"
