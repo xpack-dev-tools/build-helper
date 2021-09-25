@@ -4051,14 +4051,15 @@ function build_glib()
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=glib2-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-glib2
 
-  # glib_MVERSION="2.44"
-  # glib_MVERSION="2.51" # 2016-10-24
-  # glib_version="${glib_MVERSION}.0"
-  # The last one without meson.
-  # glib_MVERSION="2.56" 
-  # glib_version="${glib_MVERSION}.3" # 2018-12-18
-  # 2.60
-  # 2021-May-11, "2.68"
+  # 2015-May-13, "2.44.1"
+  # 2017-Mar-13, "2.51.5"
+  # 2018-Sep-21, "2.56.3"
+  # 2018-Dec-18, "2.56.4"
+  # --- Starting with 2.57, the build was migrated to meson (TODO) ---
+  # 2018-Aug-23, "2.57.3"
+  # 2019-Sep-02, "2.60.7"
+  # 2021-May-11, "2.68.4"
+  # 2021-Sep-17, "2.70.0"
 
   local glib_version="$1"
 
