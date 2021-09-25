@@ -3218,7 +3218,7 @@ function copy_dependencies_recursive()
       echo
       echo "${actual_destination_file_path}:"
       ${CROSS_COMPILE_PREFIX}-objdump -x "${source_file_path}" \
-            | grep -i 'DLL Name'
+            | grep -i 'DLL Name' || true
 
       local source_file_name="$(basename "${source_file_path}")"
       local source_folder_path="$(dirname "${source_file_path}")"
