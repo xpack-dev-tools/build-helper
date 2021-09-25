@@ -4096,6 +4096,9 @@ function build_glib()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      elif [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        LDFLAGS+=" -Wl,--allow-multiple-definition"
       fi      
 
       export CPPFLAGS
