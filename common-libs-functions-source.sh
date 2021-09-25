@@ -2604,8 +2604,20 @@ function test_openssl()
     echo "Checking the openssl shared libraries..."
 
     show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl"
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libssl.${SHLIB_EXT}"
+    
+    if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}" ]
+    then
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}"
+    else
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
+    fi
+
+    if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/libssl.${SHLIB_EXT}" ]
+    then
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib64/libssl.${SHLIB_EXT}"
+    else
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libssl.${SHLIB_EXT}"
+    fi
   )
 }
 
