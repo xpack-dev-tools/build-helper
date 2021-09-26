@@ -246,18 +246,19 @@ function host_options()
       --all)
         if [ "${HOST_NODE_ARCH}" == "arm64" ]
         then
-          DO_BUILD_LINUX_ARM32="y"
-          DO_BUILD_LINUX_ARM64="y"
+          DO_BUILD_LINUX_ARM32="${DO_BUILD_LINUX_ARM32:-"y"}"
+          DO_BUILD_LINUX_ARM64="${DO_BUILD_LINUX_ARM64:-"y"}"
         elif [ "${HOST_NODE_ARCH}" == "x64" ]
         then
-          DO_BUILD_WIN32="y"
-          DO_BUILD_WIN64="y"
-          DO_BUILD_LINUX32="y"
-          DO_BUILD_LINUX64="y"
-          DO_BUILD_SOURCES="y"
           if [ "$(uname)" == "Darwin" ] 
           then
-            DO_BUILD_OSX="y"
+            DO_BUILD_OSX="${DO_BUILD_OSX:-"y"}"
+          else
+            DO_BUILD_WIN32="${DO_BUILD_WIN32:-"y"}"
+            DO_BUILD_WIN64="${DO_BUILD_WIN64:-"y"}"
+            DO_BUILD_LINUX32="${DO_BUILD_LINUX32:-"y"}"
+            DO_BUILD_LINUX64="${DO_BUILD_LINUX64:-"y"}"
+            DO_BUILD_SOURCES="y"
           fi
         else
           echo "--all supported only on 64-bit hosts"
