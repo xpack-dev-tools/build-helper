@@ -319,9 +319,11 @@ function prepare_mingw_config_options_common()
   # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-160
   # Windows 7
   config_options_common+=("--with-default-win32-winnt=0x601")
+
+  # `ucrt` is the new Microsoft C runtime.
   # https://support.microsoft.com/en-us/topic/update-for-universal-c-runtime-in-windows-c0514201-7fe6-95a3-b0a5-287930f3560c
-  # ucrt fails in GCC 8.5 with missing _setjmp.
-  config_options_common+=("--with-default-msvcrt=${MINGW_MSVCRT:-msvcrt}")
+  config_options_common+=("--with-default-msvcrt=${MINGW_MSVCRT:-ucrt}")
+  # config_options_common+=("--with-default-msvcrt=${MINGW_MSVCRT:-msvcrt}")
 
   config_options_common+=("--enable-wildcard")
   config_options_common+=("--enable-warnings=0")
