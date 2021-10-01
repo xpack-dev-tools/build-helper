@@ -258,7 +258,7 @@ function build_automake()
         # XFAIL: t/pm/Cond2.pl
         # XFAIL: t/pm/Cond3.pl
         # ...
-        if false # [ "${RUN_LONG_TESTS}" == "y" ]
+        if false
         then
           run_verbose make -j1 check
         fi
