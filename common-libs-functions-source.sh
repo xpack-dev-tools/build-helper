@@ -68,6 +68,11 @@ function build_zlib()
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
         (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
           echo
           echo "Running zlib make..."
 
