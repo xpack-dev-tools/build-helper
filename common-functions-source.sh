@@ -605,17 +605,22 @@ function prepare_gcc_env()
     suffix=""
   fi
 
+  unset_compiler_env
+
   export CC="${prefix}gcc${suffix}"
   export CXX="${prefix}g++${suffix}"
 
+  # These are the special GCC versions, not the binutils ones.
   export AR="${prefix}gcc-ar${suffix}"
+  export NM="${prefix}gcc-nm${suffix}"
+  export RANLIB="${prefix}gcc-ranlib${suffix}"
+
+  # From binutils.
   export AS="${prefix}as"
   export DLLTOOL="${prefix}dlltool"
   export LD="${prefix}ld"
-  export NM="${prefix}gcc-nm${suffix}"
   export OBJCOPY="${prefix}objcopy"
   export OBJDUMP="${prefix}objdump"
-  export RANLIB="${prefix}gcc-ranlib${suffix}"
   export READELF="${prefix}readelf"
   export SIZE="${prefix}size"
   export STRIP="${prefix}strip"
@@ -670,6 +675,8 @@ function prepare_clang_env()
   else
     suffix=""
   fi
+
+  unset_compiler_env
 
   export CC="${prefix}clang${suffix}"
   export CXX="${prefix}clang++${suffix}"
