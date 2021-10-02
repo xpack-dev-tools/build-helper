@@ -1116,7 +1116,13 @@ function test_expect()
   show_libs "${app_name}"
 
   # Remove the trailing CR present on Windows.
-  local output="$(run_app_silent "./${app_name}" "$@" | sed 's/\r$//')"
+  local output
+  if [ "${app_name:0:1}" == "/" ]
+  then
+    output="$(run_app_silent "${app_name}" "$@" | sed 's/\r$//')"
+  else
+    output="$(run_app_silent "./${app_name}" "$@" | sed 's/\r$//')"
+  fi
 
   if [ "x${output}x" == "x${expected}x" ]
   then
