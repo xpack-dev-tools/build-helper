@@ -341,7 +341,6 @@ function prepare_mingw_env()
   export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}${MINGW_NAME_SUFFIX}"
 }
 
-# headers & crt
 function build_mingw_headers() 
 {
   # http://mingw-w64.org/doku.php/start
