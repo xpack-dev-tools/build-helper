@@ -432,6 +432,12 @@ function set_compiler_env()
     fi
   fi
 
+  if [ "${TARGET_PLATFORM}" == "win32" ]
+  then
+    export NATIVE_CC=${CC}
+    export NATIVE_CXX=${CXX}
+  fi
+
   (
     xbb_activate
 
@@ -514,9 +520,6 @@ function set_xbb_extras()
   then
     SHLIB_EXT="dll"
 
-    export NATIVE_CC=${CC}
-    export NATIVE_CXX=${CXX}
-    
     # Note: use this explcitly in the application.
     # prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
 
