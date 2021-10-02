@@ -445,7 +445,7 @@ function set_compiler_env()
   )
 }
 
-function _set_xbb_extras()
+function set_xbb_extras()
 {
   # ---------------------------------------------------------------------------
 
@@ -620,7 +620,7 @@ function prepare_gcc_env()
   export WINDMC="${prefix}windmc"
   export RC="${prefix}windres"
 
-  _set_xbb_extras
+  set_xbb_extras
 }
 
 function unset_compiler_env()
@@ -686,7 +686,7 @@ function prepare_clang_env()
   # export WINDMC="${prefix}windmc"
   # export RC="${prefix}windres"
 
-  _set_xbb_extras
+  set_xbb_extras
 }
 
 # -----------------------------------------------------------------------------
