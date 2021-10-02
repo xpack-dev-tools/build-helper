@@ -1245,6 +1245,7 @@ function build_libffi()
 {
   # http://www.sourceware.org/libffi/
   # ftp://sourceware.org/pub/libffi/
+  # https://github.com/libffi/libffi
   # https://github.com/libffi/libffi/archive/v3.2.1.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/libffi/files/PKGBUILD
@@ -1253,6 +1254,7 @@ function build_libffi()
 
   # 12-Nov-2014, "3.2.1"
   # 23 Nov 2019, "3.3"
+  # 29 Jun 2021, "3.4.2"
 
   local libffi_version="$1"
 
