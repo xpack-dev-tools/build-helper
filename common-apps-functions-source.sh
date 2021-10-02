@@ -445,16 +445,19 @@ function build_mingw_headers()
             run_verbose bash "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" --help
           fi
 
-          prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
-          config_options=("${config_options_common[@]}")
-
           if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
+            prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
+            config_options=("${config_options_common[@]}")
+            
             config_options+=("--build=${BUILD}")
             # The bootstrap binaries will run on the build machine.
             config_options+=("--host=${TARGET}")
             config_options+=("--target=${TARGET}")
           else
+            prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
+            config_options=("${config_options_common[@]}")
+
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
             config_options+=("--target=${TARGET}")
@@ -487,14 +490,20 @@ function build_mingw_headers()
 
         if [ -n "${MINGW_NAME_SUFFIX}" ]
         then
-          # This is this needed by the bootstrap; otherwise:
+          mkdir -pv "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
+          (
+            cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}/${CROSS_COMPILE_PREFIX}"
+            run_verbose ln -sv ../include include
+          )
+
+          # This is this needed by the GCC bootstrap; otherwise:
           # The directory that should contain system headers does not exist:
           # /Host/home/ilg/Work/gcc-11.1.0-1/win32-x64/install/gcc-bootstrap/mingw/include
 
           rm -rf "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
           ( 
             cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
-            ln -sv "${CROSS_COMPILE_PREFIX}" "mingw"
+            run_verbose ln -sv "${CROSS_COMPILE_PREFIX}" "mingw"
           )
         fi
 
