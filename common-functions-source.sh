@@ -179,6 +179,11 @@ function xbb_activate_tex()
   :
 }
 
+function copy_custom_files()
+{
+  :
+}
+
 # -----------------------------------------------------------------------------
 
 function get_current_version()
