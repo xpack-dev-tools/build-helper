@@ -86,6 +86,8 @@ WITH_HTML=${WITH_HTML:-"n"}
 
 WITH_TESTS="y"
 
+WITHOUT_MULTILIB=""
+
 IS_DEVELOP="n"
 IS_DEBUG="n"
 
@@ -163,6 +165,11 @@ do
       shift
       ;;
 
+    --disable-multilib)
+      WITHOUT_MULTILIB="y"
+      shift
+      ;;
+
     *)
       echo "Unknown action/option $1"
       exit 1
@@ -219,6 +226,7 @@ then
     strip_binaries
 
     copy_distro_files
+    copy_custom_files
 
     check_binaries
 
