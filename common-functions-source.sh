@@ -2626,6 +2626,12 @@ function patch_linux_elf_set_rpath()
   local file_path="$1"
   local new_rpath="$2"
 
+  if [ "${new_rpath:(-2)}" == "/." ]
+  then
+    let remaining=${#new_rpath}-2
+    new_rpath=${new_rpath:0:${remaining}}
+  fi
+
   local do_require_rpath="${DO_REQUIRE_RPATH:-"y"}"
 
   if file "${file_path}" | grep statically
@@ -2679,6 +2685,12 @@ function patch_linux_elf_add_rpath()
 
   local file_path="$1"
   local new_rpath="$2"
+
+  if [ "${new_rpath:(-2)}" == "/." ]
+  then
+    let remaining=${#new_rpath}-2
+    new_rpath=${new_rpath:0:${remaining}}
+  fi
 
   local do_require_rpath="${DO_REQUIRE_RPATH:-"y"}"
 
