@@ -1156,12 +1156,12 @@ function show_libs()
     then
       run_verbose ls -l "${app_path}"
       echo
-      echo "[readelf -d ${app_path} | egrep -i ...]"
+      echo "[readelf -d ${app_path} | egrep ...]"
       # Ignore errors in case it is not using shared libraries.
       set +e 
-      readelf -d "${app_path}" | egrep -i '(SONAME)' || true
-      readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
-      readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
+      readelf -d "${app_path}" | egrep '(SONAME)' || true
+      readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
+      readelf -d "${app_path}" | egrep '(NEEDED)' || true
       echo
       echo "[ldd -v ${app_path}]"
       ldd -v "${app_path}" || true
@@ -1178,12 +1178,12 @@ function show_libs()
       then
         run_verbose ls -l "${app_path}"
         echo
-        echo "[readelf -d ${app_path} | egrep -i ...]"
+        echo "[readelf -d ${app_path} | egrep ...]"
         # Ignore errors in case it is not using shared libraries.
         set +e 
-        readelf -d "${app_path}" | egrep -i '(SONAME)' || true
-        readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
-        readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
+        readelf -d "${app_path}" | egrep '(SONAME)' || true
+        readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
+        readelf -d "${app_path}" | egrep '(NEEDED)' || true
         echo
         echo "[ldd -v ${app_path}]"
         ldd -v "${app_path}" || true
@@ -1223,12 +1223,12 @@ function show_native_libs()
     xbb_activate
 
     echo
-    echo "[readelf -d ${app_path} | egrep -i ...]"
+    echo "[readelf -d ${app_path} | egrep ...]"
     # Ignore errors in case it is not using shared libraries.
     set +e 
-    readelf -d "${app_path}" | egrep -i '(SONAME)' || true
-    readelf -d "${app_path}" | egrep -i '(RUNPATH|RPATH)' || true
-    readelf -d "${app_path}" | egrep -i '(NEEDED)' || true
+    readelf -d "${app_path}" | egrep '(SONAME)' || true
+    readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
+    readelf -d "${app_path}" | egrep '(NEEDED)' || true
     echo
     echo "[ldd -v ${app_path}]"
     ldd -v "${app_path}" || true
@@ -1408,7 +1408,7 @@ function get_linux_rpaths_line()
   local file_path="$1"
 
   readelf -d "${file_path}" \
-    | egrep -i '(RUNPATH|RPATH)' \
+    | egrep '(RUNPATH|RPATH)' \
     | sed -e 's|.*\[\(.*\)\]|\1|' 
   
 }
@@ -1594,16 +1594,16 @@ function check_binary_for_libraries()
       echo
       echo "${file_name}: (${file_path})"
       set +e
-      readelf -d "${file_path}" | egrep -i '(SONAME)'
-      readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)'
-      readelf -d "${file_path}" | egrep -i '(NEEDED)'
+      readelf -d "${file_path}" | egrep '(SONAME)'
+      readelf -d "${file_path}" | egrep '(RUNPATH|RPATH)'
+      readelf -d "${file_path}" | egrep '(NEEDED)'
 
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
         | sed -e 's/.*Shared library: \[\(.*\)\]/\1/' \
       )
 
-      # local relative_path=$(readelf -d "${file_path}" | egrep -i '(RUNPATH|RPATH)' | sed -e 's/.*\[\$ORIGIN//' | sed -e 's/\].*//')
+      # local relative_path=$(readelf -d "${file_path}" | egrep '(RUNPATH|RPATH)' | sed -e 's/.*\[\$ORIGIN//' | sed -e 's/\].*//')
       # echo $relative_path
       local linux_rpaths_line=$(get_linux_rpaths_line "${file_path}")
       local origin_prefix="\$ORIGIN"
@@ -1900,7 +1900,7 @@ function has_rpath()
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
     
-    local rpath=$(readelf -d ${elf} | egrep -i '(RUNPATH|RPATH)')
+    local rpath=$(readelf -d ${elf} | egrep '(RUNPATH|RPATH)')
     if [ ! -z "${rpath}" ]
     then
       return 0 # true
@@ -2890,7 +2890,7 @@ function prepare_app_folder_libraries()
           copy_dependencies_recursive "${bin_path}" \
             "$(dirname "${bin_path}")"
  
-          # echo $(basename "${bin_path}") $(readelf -d "${bin_path}" | egrep -i '(RUNPATH|RPATH)')
+          # echo $(basename "${bin_path}") $(readelf -d "${bin_path}" | egrep '(RUNPATH|RPATH)')
         fi
       done
 
@@ -3018,9 +3018,9 @@ function copy_dependencies_recursive()
 
       echo
       echo "${actual_destination_file_path}:"
-      readelf -d "${actual_destination_file_path}" | egrep -i '(SONAME)' || true
-      readelf -d "${actual_destination_file_path}" | egrep -i '(RUNPATH|RPATH)' || true
-      readelf -d "${actual_destination_file_path}" | egrep -i '(NEEDED)' || true
+      readelf -d "${actual_destination_file_path}" | egrep '(SONAME)' || true
+      readelf -d "${actual_destination_file_path}" | egrep '(RUNPATH|RPATH)' || true
+      readelf -d "${actual_destination_file_path}" | egrep '(NEEDED)' || true
 
       # patch_linux_elf_origin "${actual_destination_file_path}"
       
