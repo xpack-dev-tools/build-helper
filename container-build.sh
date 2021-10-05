@@ -217,7 +217,7 @@ then
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       # The Windows still has a reference to libgcc_s and libwinpthread
-      DO_COPY_GCC_LIBS="y"
+      export DO_COPY_GCC_LIBS="y"
     fi
 
     prepare_app_folder_libraries
