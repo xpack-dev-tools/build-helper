@@ -2585,9 +2585,15 @@ function patch_linux_elf_origin()
     patchelf_has_output="y"
   fi
 
-  local tmp_path=$(mktemp)
-  rm -rf "${tmp_path}"
-  cp "${file_path}" "${tmp_path}"
+  local use_copy_hack="${USE_COPY_HACK:-"y"}"
+  if [ "${use_copy_hack}" == "y" ]
+  then
+    local tmp_path=$(mktemp)
+    rm -rf "${tmp_path}"
+    cp "${file_path}" "${tmp_path}"
+  else
+    local tmp_path="${file_path}"
+  fi
 
   if file "${tmp_path}" | grep statically
   then
@@ -2609,10 +2615,23 @@ function patch_linux_elf_origin()
     else
       echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" \"${file_path}\"]"
       ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
-      cp "${tmp_path}" "${file_path}"
+      if [ "${use_copy_hack}" == "y" ]
+      then
+        cp "${tmp_path}" "${file_path}"
+      fi
     fi
+
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      readelf -d "${tmp_path}" | egrep '(RUNPATH|RPATH)'
+      ldd "${tmp_path}"
+    fi
+
   fi
-  rm -rf "${tmp_path}"
+  if [ "${use_copy_hack}" == "y" ]
+  then
+    rm -rf "${tmp_path}"
+  fi
 }
 
 function patch_linux_elf_set_rpath()
@@ -2648,9 +2667,15 @@ function patch_linux_elf_set_rpath()
       patchelf_has_output="y"
     fi
 
-    local tmp_path=$(mktemp)
-    rm -rf "${tmp_path}"
-    cp "${file_path}" "${tmp_path}"
+    local use_copy_hack="${USE_COPY_HACK:-"y"}"
+    if [ "${use_copy_hack}" == "y" ]
+    then
+      local tmp_path=$(mktemp)
+      rm -rf "${tmp_path}"
+      cp "${file_path}" "${tmp_path}"
+    else
+      local tmp_path="${file_path}"
+    fi
 
     if ! has_rpath "${file_path}"
     then
@@ -2668,10 +2693,22 @@ function patch_linux_elf_set_rpath()
     else
       echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
       ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
-      cp "${tmp_path}" "${file_path}"
+      if [ "${use_copy_hack}" == "y" ]
+      then
+        cp "${tmp_path}" "${file_path}"
+      fi
     fi
 
-    rm -rf "${tmp_path}"
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      readelf -d "${tmp_path}" | egrep '(RUNPATH|RPATH)'
+      ldd "${tmp_path}"
+    fi
+
+    if [ "${use_copy_hack}" == "y" ]
+    then
+      rm -rf "${tmp_path}"
+    fi
   fi
 }
 
@@ -2736,9 +2773,15 @@ function patch_linux_elf_add_rpath()
       patchelf_has_output="y"
     fi
 
-    local tmp_path=$(mktemp)
-    rm -rf "${tmp_path}"
-    cp "${file_path}" "${tmp_path}"
+    local use_copy_hack="${USE_COPY_HACK:-"y"}"
+    if [ "${use_copy_hack}" == "y" ]
+    then
+      local tmp_path=$(mktemp)
+      rm -rf "${tmp_path}"
+      cp "${file_path}" "${tmp_path}"
+    else
+      local tmp_path="${file_path}"
+    fi
 
     if [ "${patchelf_has_output}" == "y" ]
     then
@@ -2747,10 +2790,22 @@ function patch_linux_elf_add_rpath()
     else
       echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
       ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
-      cp "${tmp_path}" "${file_path}"
+      if [ "${use_copy_hack}" == "y" ]
+      then
+        cp "${tmp_path}" "${file_path}"
+      fi
     fi
     
-    rm -rf "${tmp_path}"
+    if [ "${IS_DEVELOP}" == "y" ]
+    then
+      readelf -d "${tmp_path}" | egrep '(RUNPATH|RPATH)'
+      ldd "${tmp_path}"
+    fi
+
+    if [ "${use_copy_hack}" == "y" ]
+    then
+      rm -rf "${tmp_path}"
+    fi
   fi
 }
 
