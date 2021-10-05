@@ -2585,7 +2585,7 @@ function patch_linux_elf_origin()
     patchelf_has_output="y"
   fi
 
-  local use_copy_hack="${USE_COPY_HACK:-"y"}"
+  local use_copy_hack="${USE_COPY_HACK:-"n"}"
   if [ "${use_copy_hack}" == "y" ]
   then
     local tmp_path=$(mktemp)
@@ -2667,7 +2667,7 @@ function patch_linux_elf_set_rpath()
       patchelf_has_output="y"
     fi
 
-    local use_copy_hack="${USE_COPY_HACK:-"y"}"
+    local use_copy_hack="${USE_COPY_HACK:-"n"}"
     if [ "${use_copy_hack}" == "y" ]
     then
       local tmp_path=$(mktemp)
@@ -2773,7 +2773,7 @@ function patch_linux_elf_add_rpath()
       patchelf_has_output="y"
     fi
 
-    local use_copy_hack="${USE_COPY_HACK:-"y"}"
+    local use_copy_hack="${USE_COPY_HACK:-"n"}"
     if [ "${use_copy_hack}" == "y" ]
     then
       local tmp_path=$(mktemp)
