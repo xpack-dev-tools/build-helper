@@ -2583,17 +2583,16 @@ function patch_linux_elf_origin()
   # run_verbose "${patchelf}" --help
 
   local patchelf_has_output=""
-  if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
-  then
-    patchelf_has_output="y"
-  fi
-
   local use_copy_hack="${USE_COPY_HACK:-"n"}"
   if [ "${use_copy_hack}" == "y" ]
   then
     local tmp_path=$(mktemp)
     rm -rf "${tmp_path}"
     cp "${file_path}" "${tmp_path}"
+    if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
+    then
+      patchelf_has_output="y"
+    fi
   else
     local tmp_path="${file_path}"
   fi
@@ -2665,17 +2664,16 @@ function patch_linux_elf_set_rpath()
     # run_verbose "${patchelf}" --help
 
     local patchelf_has_output=""
-    if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
-    then
-      patchelf_has_output="y"
-    fi
-
     local use_copy_hack="${USE_COPY_HACK:-"n"}"
     if [ "${use_copy_hack}" == "y" ]
     then
       local tmp_path=$(mktemp)
       rm -rf "${tmp_path}"
       cp "${file_path}" "${tmp_path}"
+      if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
+      then
+        patchelf_has_output="y"
+      fi
     else
       local tmp_path="${file_path}"
     fi
@@ -2771,17 +2769,16 @@ function patch_linux_elf_add_rpath()
     # run_verbose "${patchelf}" --help
 
     local patchelf_has_output=""
-    if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
-    then
-      patchelf_has_output="y"
-    fi
-
     local use_copy_hack="${USE_COPY_HACK:-"n"}"
     if [ "${use_copy_hack}" == "y" ]
     then
       local tmp_path=$(mktemp)
       rm -rf "${tmp_path}"
       cp "${file_path}" "${tmp_path}"
+      if "${patchelf}" --help 2>&1 | egrep -q -e '--output'
+      then
+        patchelf_has_output="y"
+      fi
     else
       local tmp_path="${file_path}"
     fi
