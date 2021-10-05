@@ -2005,7 +2005,10 @@ function strip_binary2()
     then
       if has_origin "${bin}"
       then
-        echo "${strip} ${bin} skipped (patched)"
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          echo "${strip} ${bin} skipped (patched)"
+        fi
       else
         echo "${strip} ${bin}"
         # ${strip} ${bin} 2>/dev/null || true
