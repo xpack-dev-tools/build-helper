@@ -1858,7 +1858,7 @@ function has_origin()
   local elf="$1"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    local origin=$(readelf -d ${elf} | egrep 'Library (runpath|rpath): \[\$ORIGIN\]')
+    local origin=$(readelf -d ${elf} | egrep '(RUNPATH|RPATH)' | egrep '\$ORIGIN')
     if [ ! -z "${origin}" ]
     then
       return 0 # true
