@@ -295,6 +295,154 @@ function test_automake()
 
 # -----------------------------------------------------------------------------
 
+
+function build_findutils() 
+{
+  # https://www.gnu.org/software/findutils/
+  # https://ftp.gnu.org/gnu/findutils/
+  # https://ftp.gnu.org/gnu/findutils/findutils-4.8.0.tar.xz
+  
+  # 2021-01-09, "4.8.0"
+
+  local findutils_version="$1"
+
+  local findutils_src_folder_name="findutils-${findutils_version}"
+
+  local findutils_archive="${findutils_src_folder_name}.tar.xz"
+  local findutils_url="https://ftp.gnu.org/gnu/findutils/${findutils_archive}"
+
+  local findutils_folder_name="${findutils_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${findutils_folder_name}"
+
+  local findutils_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${findutils_folder_name}-installed"
+  if [ ! -f "${findutils_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${findutils_url}" "${findutils_archive}" \
+      "${findutils_src_folder_name}"
+
+    (
+      if [ ! -x "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}/configure" ]
+      then
+
+        cd "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}"
+        
+        xbb_activate_installed_dev
+
+        run_verbose bash ${DEBUG} "bootstrap.sh"
+
+      fi
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/autogen-output.txt"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${findutils_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${findutils_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi      
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running findutils configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            
+          config_options+=("--build=${BUILD}")
+          # config_options+=("--host=${HOST}")
+          # config_options+=("--target=${TARGET}")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${findutils_folder_name}/config-log.txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/configure-output.txt"
+      fi
+
+      (
+        echo
+        echo "Running findutils make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+        show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/find"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/make-output.txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}" \
+        "${findutils_folder_name}"
+
+    )
+
+    (
+      test_findutils
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/test-output.txt"
+
+    touch "${findutils_stamp_file_path}"
+
+  else
+    echo "Component findutils already installed."
+  fi
+}
+
+function test_findutils()
+{
+  (
+    xbb_activate
+
+    echo
+    echo "Checking the findutils shared libraries..."
+
+    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/find"
+
+    echo
+    echo "Checking if findutils starts..."
+    "${LIBS_INSTALL_FOLDER_PATH}/bin/find" || true
+  )
+}
+
+# =============================================================================
+
 # Used to initialise options in all mingw builds:
 # `config_options=("${config_options_common[@]}")`
 
