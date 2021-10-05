@@ -1972,6 +1972,7 @@ function build_gpm()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        LDFLAGS+=" -Wl,--allow-multiple-definition"
       fi      
 
       export CPPFLAGS
