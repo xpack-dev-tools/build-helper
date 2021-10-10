@@ -326,21 +326,8 @@ jobs:
   # centos:latest outdated
   # docker://i386/centos:latest outdated
 
-  # - https://hub.docker.com/r/opensuse/tumbleweed
-  opensuse-x64-latest:
-    name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on OpenSUSE latest'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 3
-          submodules: true
-      - name: 'OpenSUSE tumbleweed x64'
-        uses: docker://opensuse/tumbleweed
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/tumbleweed --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+  # Fails during zypper in
+  # docker://opensuse/tumbleweed
 
   # fedora:rawhide - Curl error (6): Couldn't resolve host name for https://mirrors.fedoraproject.org/...
   # docker://fedora:latest
