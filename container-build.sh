@@ -92,6 +92,7 @@ IS_DEVELOP="${IS_DEVELOP:-"n"}"
 IS_DEBUG="${IS_DEBUG:-"n"}"
 
 TEST_ONLY="${TEST_ONLY:-""}"
+USE_GITS="${USE_GITS:-""}"
 
 LINUX_INSTALL_RELATIVE_PATH=""
 
@@ -167,6 +168,11 @@ do
 
     --disable-multilib)
       WITHOUT_MULTILIB="y"
+      shift
+      ;;
+
+    --use-gits)
+      USE_GITS="y"
       shift
       ;;
 
