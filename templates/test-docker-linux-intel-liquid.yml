@@ -1,23 +1,10 @@
 
-# -----------------------------------------------------------------------------
-# DO NOT EDIT! Generated from scripts/helper/templates/test-docker-linux-intel-liquid.yml.
-#
-# This file is part of the xPack distribution.
-#   (https://xpack.github.io)
-# Copyright (c) 2021 Liviu Ionescu.
-#
-# Permission to use, copy, modify, and/or distribute this software 
-# for any purpose is hereby granted, under the terms of the MIT license.
-# -----------------------------------------------------------------------------
+{% render "scripts/helper/templates/copyright-liquid.yml" %}
 
-# https://help.github.com/en/actions
-# https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-
-# https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
-# https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_dispatch
-# https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
-
-# -----------------------------------------------------------------------------
+{% if platforms == "all" -%}
+  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,win32-x64,win32-ia32" -%}
+{% endif -%}
+{% assign platforms = platforms | split: "," -%}
 
 # https://github.com/docker-library/official-images#architectures-other-than-amd64
 
@@ -52,6 +39,9 @@ on:
 # The scripts are executed in the Docker context by GitHub Actions, 
 # so `native-test.sh` should be fine, it already takes care of updates.
 jobs:
+{% for platform in platforms -%}
+  {% case platform -%}
+  {% when "linux-x64" %}
   # https://en.wikipedia.org/wiki/Ubuntu_version_history
   # https://hub.docker.com/_/ubuntu
   # The ubuntu:12.04 image fails to update.
@@ -85,37 +75,6 @@ jobs:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image ubuntu:14.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
-  # https://hub.docker.com/r/i386/ubuntu/
-  ubuntu-ia32:
-    name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu 18, 16, 14 stable'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 3
-          submodules: true
-      - name: 'Ubuntu 20.04 ia32'
-        uses: docker://i386/ubuntu:20.04
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:20.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      - name: 'Ubuntu 18.04 ia32'
-        uses: docker://i386/ubuntu:18.04
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:18.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      - name: 'Ubuntu 16.04 ia32'
-        uses: docker://i386/ubuntu:16.04
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:16.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      - name: 'Ubuntu 14.04 ia32'
-        uses: docker://i386/ubuntu:14.04
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:14.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-
   # https://en.wikipedia.org/wiki/Debian_version_history
   # https://hub.docker.com/_/debian
   debian-x64:
@@ -142,32 +101,6 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image debian:jessie --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-
-  # https://hub.docker.com/r/i386/debian
-  debian-ia32:
-    name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian 10, 9, 8 stable'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 3
-          submodules: true
-      - name: 'Debian 10 ia32'
-        uses: docker://i386/debian:buster
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      - name: 'Debian 9 ia32'
-        uses: docker://i386/debian:stretch
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:stretch --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      - name: 'Debian 8 ia32'
-        uses: docker://i386/debian:jessie
-        with:
-          entrypoint: /usr/bin/linux32
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:jessie --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   # End of life. See RedHat.
   # https://en.wikipedia.org/wiki/CentOS
@@ -286,8 +219,6 @@ jobs:
           args: /github/workspace/scripts/helper/tests/native-test.sh --image ubuntu:latest --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
       # ubuntu:rolling fails during update
 
-  # docker://i386/ubuntu:latest is 18.04, no need to test
-
   debian-x64-latest:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian latest'
     runs-on: ubuntu-latest
@@ -307,24 +238,6 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image debian:latest --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-
-  debian-ia32-latest:
-    name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian latest'
-    runs-on: ubuntu-latest
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 3
-          submodules: true
-      - name: 'Debian testing ia32'
-        uses: docker://i386/debian:testing
-        with:
-          entrypoint: /usr/bin/linux32 
-          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:testing --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-
-  # centos:latest outdated
-  # docker://i386/centos:latest outdated
 
   # - https://hub.docker.com/r/opensuse/tumbleweed
   opensuse-x64-latest:
@@ -366,5 +279,86 @@ jobs:
 
   # - https://hub.docker.com/r/gentoo/portage
   # docker://gentoo/portage - exec: "/bin/bash": stat /bin/bash: no such file or directory: unknown.
+
+  {% when "linux-ia32" %}
+  # https://hub.docker.com/r/i386/ubuntu/
+  ubuntu-ia32:
+    name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu 18, 16, 14 stable'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Ubuntu 20.04 ia32'
+        uses: docker://i386/ubuntu:20.04
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:20.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      - name: 'Ubuntu 18.04 ia32'
+        uses: docker://i386/ubuntu:18.04
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:18.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      - name: 'Ubuntu 16.04 ia32'
+        uses: docker://i386/ubuntu:16.04
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:16.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      - name: 'Ubuntu 14.04 ia32'
+        uses: docker://i386/ubuntu:14.04
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/ubuntu:14.04 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+
+  # https://hub.docker.com/r/i386/debian
+  debian-ia32:
+    name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian 10, 9, 8 stable'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Debian 10 ia32'
+        uses: docker://i386/debian:buster
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      - name: 'Debian 9 ia32'
+        uses: docker://i386/debian:stretch
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:stretch --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      - name: 'Debian 8 ia32'
+        uses: docker://i386/debian:jessie
+        with:
+          entrypoint: /usr/bin/linux32
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:jessie --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+
+  # docker://i386/ubuntu:latest is 18.04, no need to test
+
+  debian-ia32-latest:
+    name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian latest'
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'Debian testing ia32'
+        uses: docker://i386/debian:testing
+        with:
+          entrypoint: /usr/bin/linux32 
+          args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:testing --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+
+  # centos:latest outdated
+  # docker://i386/centos:latest outdated
+
+  {% endcase -%}
+{% endfor %}
 
 # -----------------------------------------------------------------------------
