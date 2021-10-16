@@ -1,23 +1,10 @@
 
-# -----------------------------------------------------------------------------
-# DO NOT EDIT! Generated from scripts/helper/templates/test-prime-liquid.yml.
-#
-# This file is part of the xPack distribution.
-#   (https://xpack.github.io)
-# Copyright (c) 2021 Liviu Ionescu.
-#
-# Permission to use, copy, modify, and/or distribute this software 
-# for any purpose is hereby granted, under the terms of the MIT license.
-# -----------------------------------------------------------------------------
+{% render "scripts/helper/templates/copyright-liquid.yml" %}
 
-# https://help.github.com/en/actions
-# https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-
-# https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
-# https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_dispatch
-# https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
-
-# -----------------------------------------------------------------------------
+{% if platforms == "all" -%}
+  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,win32-x64,win32-ia32" -%}
+{% endif -%}
+{% assign platforms = platforms | split: "," -%}
 
 name: 'Test xPack {{ APP_NAME }} on supported platforms'
 
@@ -34,6 +21,9 @@ on:
         default: 'current'
 
 jobs:
+{% for platform in platforms -%}
+  {% case platform -%}
+  {% when "linux-x64" %}
   linux-x64:
     name: 'x64 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
@@ -46,6 +36,7 @@ jobs:
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/helper/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
+  {% when "linux-ia32" %}
   linux-ia32:
     name: 'ia32 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
@@ -61,6 +52,7 @@ jobs:
           entrypoint: /usr/bin/linux32
           args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
+  {% when "linux-arm64" %}
   linux-arm64:
     name: 'arm64 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, Arm64]
@@ -73,6 +65,7 @@ jobs:
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/helper/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
+  {% when "linux-arm" %}
   linux-arm32:
     name: 'arm32 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, Arm64]
@@ -88,6 +81,7 @@ jobs:
           entrypoint: /usr/bin/linux32
           args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image arm32v7/debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
+  {% when "darwin-x64" %}
   macos-x64:
     name: 'x64 macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: macos-latest
@@ -100,6 +94,7 @@ jobs:
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/helper/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
+  {% when "win32-x64" %}
   windows-x64:
     name: 'x64 Windows {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: windows-latest
@@ -112,6 +107,7 @@ jobs:
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/helper/tests/native-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
+  {% when "win32-ia32" %}
   windows-ia32:
     name: 'ia32 Windows {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: windows-latest
@@ -123,5 +119,7 @@ jobs:
           submodules: true
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} native test'
         run: bash scripts/helper/tests/native-test.sh --32 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+  {% endcase -%}
+{% endfor %}
 
 # -----------------------------------------------------------------------------
