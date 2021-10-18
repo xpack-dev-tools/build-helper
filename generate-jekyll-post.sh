@@ -66,11 +66,28 @@ rm -rf "${dest_folder_path}"
 mkdir -p "${dest_folder_path}"
 
 echo
-scp -p xbbi:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+if [ "${SKIP_XBBI:-""}" == "y" ]
+then
+  echo "Skiping xbbi files..."
+else
+  scp -p xbbi:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+fi
+
 echo
-scp -p xbba:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+if [ "${SKIP_XBBA:-""}" == "y" ]
+then
+  echo "Skiping xbba files..."
+else
+  scp -p xbba:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+fi
+
 echo
-scp -p xbbm:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+if [ "${SKIP_XBBM:-""}" == "y" ]
+then
+  echo "Skiping xbbm files..."
+else
+  scp -p xbbm:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+fi
 
 echo
 ls -lL "${dest_folder_path}"
