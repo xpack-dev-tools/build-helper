@@ -58,8 +58,11 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
-        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm docker test on Debian 10 aarch64'
+        uses: docker://ilegeul/debian:arm64v8-10-npm-v1
+        with:
+          entrypoint: /bin/bash
+          args: scripts/helper/tests/xpm-test.sh --image ilegeul/debian:arm64v8-10-npm-v1 --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
   {% when "linux-arm" %}
   linux-arm32:
