@@ -2650,16 +2650,23 @@ function build_sqlite()
 
   local sqlite_version="$1"
 
-  local sqlite_commit
-  if [ "${sqlite_version}" == "3.32.3" ]
-  then
-    local sqlite_src_folder_name="SQLite-7ebdfa80"
-  else
-    local sqlite_src_folder_name="sqlite-src-${sqlite_version}"
-  fi
-
+  local sqlite_src_folder_name="sqlite-src-${sqlite_version}"
   local sqlite_archive="${sqlite_src_folder_name}.tar.gz"
-  local sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/${sqlite_archive}"
+  local sqlite_url
+
+  if [ "${sqlite_version}" == "3360000" ]
+  then
+    # 2021
+    sqlite_url="https://www.sqlite.org/2021/${sqlite_archive}"
+  elif [ "${sqlite_version}" == "3.32.3" ]
+  then
+    sqlite_src_folder_name="SQLite-7ebdfa80"
+    sqlite_archive="${sqlite_src_folder_name}.tar.gz"
+    sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/${sqlite_archive}"
+  else
+    echo "Unsupported version ${sqlite_version}. Quit."
+    exit 1
+  fi
 
   local sqlite_folder_name="sqlite-${sqlite_version}"
 
