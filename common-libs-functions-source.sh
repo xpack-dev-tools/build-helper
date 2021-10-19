@@ -2651,7 +2651,7 @@ function build_sqlite()
   local sqlite_version="$1"
 
   local sqlite_src_folder_name="sqlite-src-${sqlite_version}"
-  local sqlite_archive="${sqlite_src_folder_name}.tar.gz"
+  local sqlite_archive="${sqlite_src_folder_name}.zip"
   local sqlite_url
 
   if [ "${sqlite_version}" == "3360000" ]
