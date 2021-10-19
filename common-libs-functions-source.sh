@@ -1670,6 +1670,7 @@ function build_expat()
   # 26 Sep 2019 "2.2.9"
   # 3 Oct 2020, "2.2.10"
   # 25 Mar 2021 "2.3.0"
+  # 23 May 2021, "2.4.1"
 
   local expat_version="$1"
 
@@ -2214,6 +2215,7 @@ function build_libxcrypt()
   # Feb 25 2020, "4.4.15"
   # 23 Aug 2020, "4.4.17"
   # 1 May 2021, "4.4.20"
+  # 18 Sep 2021, "4.4.26"
 
   local libxcrypt_version="$1"
 
@@ -2396,6 +2398,7 @@ function build_openssl()
   # 2019-Dec-20, "1.0.2u"
   # 2020-Sep-22, "1.1.1h"
   # 2021-Mar-25, "1.1.1k"
+  # 2021-Aug-24, "1.1.1l"
 
   local openssl_version="$1"
   # Numbers
@@ -3298,6 +3301,9 @@ function build_python3()
   # 23-Sep-2020, "3.8.6"
   # May 3, 2021 "3.8.10"
   # May 3, 2021 "3.9.5"
+  # Aug. 30, 2021, "3.8.12"
+  # Aug. 30, 2021, "3.9.7"
+  # Sept. 4, 2021, "3.7.12"
 
   local python3_version="$1"
 
