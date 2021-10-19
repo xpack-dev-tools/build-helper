@@ -2634,26 +2634,29 @@ function test_openssl()
 function build_sqlite()
 {
   # https://www.sqlite.org/
+  # https://sqlite.org/chronology.html
+  # https://www.sqlite.org/download.html
   # https://www.sqlite.org/2020/sqlite-src-3330000.zip
+  # https://www.sqlite.org/2021/sqlite-src-3360000.zip
   # https://www.sqlite.org/src/tarball/7ebdfa80/SQLite-7ebdfa80.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/sqlite/files/PKGBUILD
 
   # 2020-06-18 "3.32.3" 7ebdfa80
-  # 2021-04-19 "3.35.5"
+  # 2021-06-18 "3360000"
 
   local sqlite_version="$1"
 
   local sqlite_commit
   if [ "${sqlite_version}" == "3.32.3" ]
   then
-    sqlite_commit="7ebdfa80"
+    local sqlite_src_folder_name="SQLite-7ebdfa80"
+  else
+    local sqlite_src_folder_name="sqlite-src-${sqlite_version}"
   fi
 
-  local sqlite_src_folder_name="SQLite-${sqlite_commit}"
-
   local sqlite_archive="${sqlite_src_folder_name}.tar.gz"
-  local sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/SQLite-${sqlite_commit}.tar.gz"
+  local sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/${sqlite_archive}"
 
   local sqlite_folder_name="sqlite-${sqlite_version}"
 
