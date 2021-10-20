@@ -4384,10 +4384,12 @@ function build_libedit()
 {
   # https://www.thrysoee.dk/editline/
   # https://www.thrysoee.dk/editline/libedit-20210522-3.1.tar.gz
+  # https://www.thrysoee.dk/editline/libedit-20210910-3.1.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/libedit/files/PKGBUILD
 
   # 2021-05-22, "20210522-3.1"
+  # 2021-09-1-, "20210910-3.1"
 
   local libedit_version="$1"
   local libedit_version_short="$(echo ${libedit_version} | sed -e 's|[0-9]*-||')"
