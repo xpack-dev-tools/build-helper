@@ -125,9 +125,9 @@ then
     exit 1
   fi
 else
-  if [ "${CI:-""}" == "true" -a "${RUNNER_OS:-""}" != "" ]
+  if [ "${GITHUB_ACTIONS:-""}" == "true" -a "${RUNNER_OS:-""}" == "Linux" ]
   then
-    update_image "$(echo "${RUNNER_OS}" | tr "[:upper:]" "[:lower:]")"
+    update_image "ubuntu"
   fi
 fi
 
