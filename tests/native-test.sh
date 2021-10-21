@@ -124,6 +124,11 @@ then
     echo "No image defined, quit."
     exit 1
   fi
+else
+  if [ "${CI:-""}" == "true" -a "${RUNNER_OS:-""}" != "" ]
+  then
+    update_image "$(echo "${RUNNER_OS}" | tr "[:upper:]" "[:lower:]")"
+  fi
 fi
 
 # -----------------------------------------------------------------------------
