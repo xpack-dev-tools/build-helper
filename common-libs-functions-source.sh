@@ -2580,7 +2580,7 @@ function build_openssl()
           install -v -c -m 644 "/private/etc/ssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
         fi
 
-        curl -L http://curl.haxx.se/ca/cacert.pem -o cacert.pem
+        curl --location http://curl.haxx.se/ca/cacert.pem -o cacert.pem
         install -v -c -m 644 cacert.pem "${LIBS_INSTALL_FOLDER_PATH}/openssl"
 
         if [ "${WITH_TESTS}" == "y" ]
@@ -2661,7 +2661,8 @@ function build_sqlite()
     sqlite_url="https://www.sqlite.org/2021/${sqlite_archive}"
   elif [ "${sqlite_version}" == "3.32.3" ]
   then
-    sqlite_src_folder_name="SQLite-7ebdfa80"
+    sqlite_commit="7ebdfa80"
+    sqlite_src_folder_name="SQLite-${sqlite_commit}"
     sqlite_archive="${sqlite_src_folder_name}.tar.gz"
     sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/${sqlite_archive}"
   else

@@ -416,7 +416,7 @@ function install_archive()
   else
     echo
     echo "Downloading ${archive_name}..."
-    curl -L --fail -o "${cache_folder_path}/${archive_name}" \
+    curl --fail --location --output "${cache_folder_path}/${archive_name}" \
       "${BASE_URL}/${archive_name}"
     echo
   fi
