@@ -124,6 +124,13 @@ then
     echo "No image defined, quit."
     exit 1
   fi
+else
+  # Not inside a Docker; perhaps a GitHub Actions VM.
+  if [ "${GITHUB_ACTIONS:-""}" == "true" -a "${RUNNER_OS:-""}" == "Linux" ]
+  then
+    # Currently "ubuntu20".
+    update_image "github-actions-${ImageOS}"
+  fi
 fi
 
 # -----------------------------------------------------------------------------

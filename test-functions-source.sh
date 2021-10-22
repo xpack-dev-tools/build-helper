@@ -22,6 +22,10 @@ function create_macos_data_file()
 
 rm -rf "${data_file_path}"
 
+# Versions before 10.13 may work for general packages, but fail on toolchains
+# since they do not have the expected system headers in:
+# /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+
 # Note: __EOF__ is NOT quoted to allow substitutions.
 cat <<__EOF__ > "${data_file_path}"
 {
@@ -96,42 +100,6 @@ cat <<__EOF__ > "${data_file_path}"
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode10.1",
-          "language": "minimal",
-          "script": [
-            "env | sort",
-            "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
-          ]
-        },
-        {
-          "name": "x64 macOS 10.12",
-          "os": "osx",
-          "arch": "amd64",
-          "osx_image": "xcode9.2",
-          "language": "minimal",
-          "script": [
-            "env | sort",
-            "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
-          ]
-        },
-        {
-          "name": "x64 macOS 10.11",
-          "os": "osx",
-          "arch": "amd64",
-          "osx_image": "xcode8",
-          "language": "minimal",
-          "script": [
-            "env | sort",
-            "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
-          ]
-        },
-        {
-          "name": "x64 macOS 10.10",
-          "os": "osx",
-          "arch": "amd64",
-          "osx_image": "xcode6.4",
           "language": "minimal",
           "script": [
             "env | sort",

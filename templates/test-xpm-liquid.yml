@@ -1,23 +1,10 @@
 
-# -----------------------------------------------------------------------------
-# DO NOT EDIT! Generated from scripts/helper/templates/test-native-liquid.yml.
-#
-# This file is part of the xPack distribution.
-#   (https://xpack.github.io)
-# Copyright (c) 2021 Liviu Ionescu.
-#
-# Permission to use, copy, modify, and/or distribute this software 
-# for any purpose is hereby granted, under the terms of the MIT license.
-# -----------------------------------------------------------------------------
+{% render "scripts/helper/templates/copyright-liquid.yml" %}
 
-# https://help.github.com/en/actions
-# https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-
-# https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
-# https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#workflow_dispatch
-# https://docs.github.com/en/rest/reference/actions#create-a-workflow-dispatch-event
-
-# -----------------------------------------------------------------------------
+{% if platforms == "all" -%}
+  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,win32-x64,win32-ia32" -%}
+{% endif -%}
+{% assign platforms = platforms | split: "," -%}
 
 name: 'Test xPack {{ APP_NAME }} via xpm'
 
@@ -30,6 +17,9 @@ on:
         default: 'latest'
 
 jobs:
+{% for platform in platforms -%}
+  {% case platform -%}
+  {% when "linux-x64" %}
   linux-x64:
     name: 'Intel Linux 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
@@ -40,8 +30,12 @@ jobs:
           fetch-depth: 3
           submodules: true
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
-        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+        uses: docker://ilegeul/debian:amd64-10-npm-v1
+        with:
+          entrypoint: /bin/bash
+          args: /github/workspace/scripts/helper/tests/xpm-test.sh --image debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  {% when "linux-ia32" %}
   linux-ia32:
     name: 'Intel Linux 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
@@ -57,6 +51,7 @@ jobs:
           entrypoint: /usr/bin/linux32
           args: /bin/bash scripts/helper/tests/xpm-test.sh --image ilegeul/debian:i386-10-npm-v1 --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  {% when "linux-arm64" %}
   linux-arm64:
     name: 'Arm Linux 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, ARM64]
@@ -66,9 +61,13 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
-        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+      - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm docker test on Debian 10 aarch64'
+        uses: docker://ilegeul/debian:arm64v8-10-npm-v1
+        with:
+          entrypoint: /bin/bash
+          args: scripts/helper/tests/xpm-test.sh --image ilegeul/debian:arm64v8-10-npm-v1 --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  {% when "linux-arm" %}
   linux-arm32:
     name: 'Arm Linux 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, ARM64]
@@ -84,6 +83,7 @@ jobs:
           entrypoint: /usr/bin/linux32
           args: /bin/bash scripts/helper/tests/xpm-test.sh --image ilegeul/debian:arm32v7-10-npm-v1 --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  {% when "darwin-x64" %}
   macos-x64:
     name: 'Intel macOS 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: macos-latest
@@ -96,6 +96,7 @@ jobs:
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
         run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  {% when "win32-x64" %}
   windows-x64:
     name: 'Windows 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: windows-latest
@@ -108,6 +109,7 @@ jobs:
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
         run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
+  {% when "win32-ia32" %}
   windows-ia32:
     name: 'Windows 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: windows-latest
@@ -119,5 +121,7 @@ jobs:
           submodules: true
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
         run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --32
+  {% endcase -%}
+{% endfor %}
 
 # -----------------------------------------------------------------------------

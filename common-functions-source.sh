@@ -1691,6 +1691,7 @@ function is_win_sys_dll()
     winmm.dll \
     ws2_32.dll \
     \
+    api-ms-win-core-path-l1-1-0.dll \
     api-ms-win-crt-conio-l1-1-0.dll \
     api-ms-win-crt-convert-l1-1-0.dll \
     api-ms-win-crt-environment-l1-1-0.dll \

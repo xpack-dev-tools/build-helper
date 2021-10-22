@@ -1671,6 +1671,7 @@ function build_expat()
   # 26 Sep 2019 "2.2.9"
   # 3 Oct 2020, "2.2.10"
   # 25 Mar 2021 "2.3.0"
+  # 23 May 2021, "2.4.1"
 
   local expat_version="$1"
 
@@ -2215,6 +2216,7 @@ function build_libxcrypt()
   # Feb 25 2020, "4.4.15"
   # 23 Aug 2020, "4.4.17"
   # 1 May 2021, "4.4.20"
+  # 18 Sep 2021, "4.4.26"
 
   local libxcrypt_version="$1"
 
@@ -2397,6 +2399,7 @@ function build_openssl()
   # 2019-Dec-20, "1.0.2u"
   # 2020-Sep-22, "1.1.1h"
   # 2021-Mar-25, "1.1.1k"
+  # 2021-Aug-24, "1.1.1l"
 
   local openssl_version="$1"
   # Numbers
@@ -2635,26 +2638,36 @@ function test_openssl()
 function build_sqlite()
 {
   # https://www.sqlite.org/
+  # https://sqlite.org/chronology.html
+  # https://www.sqlite.org/download.html
   # https://www.sqlite.org/2020/sqlite-src-3330000.zip
+  # https://www.sqlite.org/2021/sqlite-src-3360000.zip
   # https://www.sqlite.org/src/tarball/7ebdfa80/SQLite-7ebdfa80.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/sqlite/files/PKGBUILD
 
   # 2020-06-18 "3.32.3" 7ebdfa80
-  # 2021-04-19 "3.35.5"
+  # 2021-06-18 "3360000"
 
   local sqlite_version="$1"
 
-  local sqlite_commit
-  if [ "${sqlite_version}" == "3.32.3" ]
+  local sqlite_src_folder_name="sqlite-src-${sqlite_version}"
+  local sqlite_archive="${sqlite_src_folder_name}.zip"
+  local sqlite_url
+
+  if [ "${sqlite_version}" == "3360000" ]
   then
-    sqlite_commit="7ebdfa80"
+    # 2021
+    sqlite_url="https://www.sqlite.org/2021/${sqlite_archive}"
+  elif [ "${sqlite_version}" == "3.32.3" ]
+  then
+    sqlite_src_folder_name="SQLite-7ebdfa80"
+    sqlite_archive="${sqlite_src_folder_name}.tar.gz"
+    sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/${sqlite_archive}"
+  else
+    echo "Unsupported version ${sqlite_version}. Quit."
+    exit 1
   fi
-
-  local sqlite_src_folder_name="SQLite-${sqlite_commit}"
-
-  local sqlite_archive="${sqlite_src_folder_name}.tar.gz"
-  local sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/SQLite-${sqlite_commit}.tar.gz"
 
   local sqlite_folder_name="sqlite-${sqlite_version}"
 
@@ -3296,6 +3309,9 @@ function build_python3()
   # 23-Sep-2020, "3.8.6"
   # May 3, 2021 "3.8.10"
   # May 3, 2021 "3.9.5"
+  # Aug. 30, 2021, "3.8.12"
+  # Aug. 30, 2021, "3.9.7"
+  # Sept. 4, 2021, "3.7.12"
 
   local python3_version="$1"
 
@@ -4369,10 +4385,12 @@ function build_libedit()
 {
   # https://www.thrysoee.dk/editline/
   # https://www.thrysoee.dk/editline/libedit-20210522-3.1.tar.gz
+  # https://www.thrysoee.dk/editline/libedit-20210910-3.1.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/libedit/files/PKGBUILD
 
   # 2021-05-22, "20210522-3.1"
+  # 2021-09-1-, "20210910-3.1"
 
   local libedit_version="$1"
   local libedit_version_short="$(echo ${libedit_version} | sed -e 's|[0-9]*-||')"
