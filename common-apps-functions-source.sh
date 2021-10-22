@@ -1558,53 +1558,53 @@ function test_binutils()
   (
     if [ -d "xpacks/.bin" ]
     then
-      TEST_PREFIX="$(pwd)/xpacks/.bin"
+      TEST_BIN_PATH="$(pwd)/xpacks/.bin"
     elif [ -d "${APP_PREFIX}/bin" ]
     then
-      TEST_PREFIX="${APP_PREFIX}/bin"
+      TEST_BIN_PATH="${APP_PREFIX}/bin"
     else
       echo "Wrong folder."
       exit 1
     fi
 
-    show_libs "${TEST_PREFIX}/ar"
-    show_libs "${TEST_PREFIX}/as"
-    show_libs "${TEST_PREFIX}/elfedit"
-    show_libs "${TEST_PREFIX}/gprof"
-    show_libs "${TEST_PREFIX}/ld"
-    show_libs "${TEST_PREFIX}/ld.gold"
-    show_libs "${TEST_PREFIX}/strip"
-    show_libs "${TEST_PREFIX}/nm"
-    show_libs "${TEST_PREFIX}/objcopy"
-    show_libs "${TEST_PREFIX}/objdump"
-    show_libs "${TEST_PREFIX}/ranlib"
-    show_libs "${TEST_PREFIX}/readelf"
-    show_libs "${TEST_PREFIX}/size"
-    show_libs "${TEST_PREFIX}/strings"
-    show_libs "${TEST_PREFIX}/strip"
+    show_libs "${TEST_BIN_PATH}/ar"
+    show_libs "${TEST_BIN_PATH}/as"
+    show_libs "${TEST_BIN_PATH}/elfedit"
+    show_libs "${TEST_BIN_PATH}/gprof"
+    show_libs "${TEST_BIN_PATH}/ld"
+    show_libs "${TEST_BIN_PATH}/ld.gold"
+    show_libs "${TEST_BIN_PATH}/strip"
+    show_libs "${TEST_BIN_PATH}/nm"
+    show_libs "${TEST_BIN_PATH}/objcopy"
+    show_libs "${TEST_BIN_PATH}/objdump"
+    show_libs "${TEST_BIN_PATH}/ranlib"
+    show_libs "${TEST_BIN_PATH}/readelf"
+    show_libs "${TEST_BIN_PATH}/size"
+    show_libs "${TEST_BIN_PATH}/strings"
+    show_libs "${TEST_BIN_PATH}/strip"
 
     echo
     echo "Testing if binutils starts properly..."
 
-    run_app "${TEST_PREFIX}/ar" --version
-    run_app "${TEST_PREFIX}/as" --version
-    run_app "${TEST_PREFIX}/elfedit" --version
-    run_app "${TEST_PREFIX}/gprof" --version
-    run_app "${TEST_PREFIX}/ld" --version
-    if [ -f  "${TEST_PREFIX}/ld.gold${DOT_EXE}" ]
+    run_app "${TEST_BIN_PATH}/ar" --version
+    run_app "${TEST_BIN_PATH}/as" --version
+    run_app "${TEST_BIN_PATH}/elfedit" --version
+    run_app "${TEST_BIN_PATH}/gprof" --version
+    run_app "${TEST_BIN_PATH}/ld" --version
+    if [ -f  "${TEST_BIN_PATH}/ld.gold${DOT_EXE}" ]
     then
       # No ld.gold on Windows.
-      run_app "${TEST_PREFIX}/ld.gold" --version
+      run_app "${TEST_BIN_PATH}/ld.gold" --version
     fi
-    run_app "${TEST_PREFIX}/strip" --version
-    run_app "${TEST_PREFIX}/nm" --version
-    run_app "${TEST_PREFIX}/objcopy" --version
-    run_app "${TEST_PREFIX}/objdump" --version
-    run_app "${TEST_PREFIX}/ranlib" --version
-    run_app "${TEST_PREFIX}/readelf" --version
-    run_app "${TEST_PREFIX}/size" --version
-    run_app "${TEST_PREFIX}/strings" --version
-    run_app "${TEST_PREFIX}/strip" --version
+    run_app "${TEST_BIN_PATH}/strip" --version
+    run_app "${TEST_BIN_PATH}/nm" --version
+    run_app "${TEST_BIN_PATH}/objcopy" --version
+    run_app "${TEST_BIN_PATH}/objdump" --version
+    run_app "${TEST_BIN_PATH}/ranlib" --version
+    run_app "${TEST_BIN_PATH}/readelf" --version
+    run_app "${TEST_BIN_PATH}/size" --version
+    run_app "${TEST_BIN_PATH}/strings" --version
+    run_app "${TEST_BIN_PATH}/strip" --version
   )
 
   echo
