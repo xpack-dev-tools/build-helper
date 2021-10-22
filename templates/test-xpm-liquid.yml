@@ -30,7 +30,10 @@ jobs:
           fetch-depth: 3
           submodules: true
       - name: 'Run {% raw %}${{ github.event.inputs.version }}{% endraw %} xpm test'
-        run: bash scripts/helper/tests/xpm-test.sh --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
+        uses: docker://ilegeul/debian:amd64-10-npm-v1
+        with:
+          entrypoint: /bin/bash
+          args: /github/workspace/scripts/helper/tests/xpm-test.sh --image debian:buster --version {% raw %}${{ github.event.inputs.version }}{% endraw %}
 
   {% when "linux-ia32" %}
   linux-ia32:
