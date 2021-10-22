@@ -590,7 +590,8 @@ function build_mpc()
 # Depends on gmp.
 function build_isl()
 {
-  # http://isl.gforge.inria.fr
+  # http://isl.gforge.inria.fr - deprecated
+  # https://sourceforge.net/projects/libisl/files/
 
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=isl
 
@@ -608,12 +609,12 @@ function build_isl()
   local isl_src_folder_name="isl-${isl_version}"
 
   local isl_archive="${isl_src_folder_name}.tar.xz"
-  if [[ "${isl_version}" =~ 0\.12\.* ]]
+  if [[ "${isl_version}" =~ 0\.1[24]\.* ]]
   then
     isl_archive="${isl_src_folder_name}.tar.gz"
   fi
 
-  local isl_url="http://isl.gforge.inria.fr/${isl_archive}"
+  local isl_url="https://sourceforge.net/projects/libisl/files/${isl_archive}"
 
   # The folder name for build, licenses, etc.
   local isl_folder_name="${isl_src_folder_name}"
