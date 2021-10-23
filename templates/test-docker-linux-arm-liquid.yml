@@ -131,25 +131,6 @@ jobs:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image redhat/ubi8 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
-  # https://en.wikipedia.org/wiki/OpenSUSE#Releases
-  # https://hub.docker.com/u/opensuse
-  # `-static` disabled, there is no static libc.a.
-  opensuse-arm64:
-    name: 'arm64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on OpenSUSE 15, 13 stable'
-    runs-on: [self-hosted, Linux, Arm64]
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 3
-          submodules: true
-      - name: 'OpenSUSE 15 arm64'
-        uses: docker://opensuse/leap:15.3
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/leap:15.3 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      # docker://opensuse/leap:13 not available
-
   # https://en.wikipedia.org/wiki/Fedora_version_history
   # https://hub.docker.com/_/fedora
   # `-static` disabled, there is no static libc.a.
@@ -182,8 +163,25 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image fedora:27 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-
-  # fedora-arm: fails to update
+  
+  # https://en.wikipedia.org/wiki/OpenSUSE#Releases
+  # https://hub.docker.com/u/opensuse
+  # `-static` disabled, there is no static libc.a.
+  opensuse-arm64:
+    name: 'arm64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on OpenSUSE 15, 13 stable'
+    runs-on: [self-hosted, Linux, Arm64]
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+      - name: 'OpenSUSE 15 arm64'
+        uses: docker://opensuse/leap:15.3
+        with:
+          entrypoint: /bin/bash
+          args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/leap:15.3 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      # docker://opensuse/leap:13 not available
 
   # ---------------------------------------------------------------------------
 
@@ -324,6 +322,9 @@ jobs:
 
   # centos:latest outdated
   # docker://arm32v7/centos:latest outdated
+
+  # fedora-arm: fails to update
+
   {% endcase -%}
 {% endfor %}
 
