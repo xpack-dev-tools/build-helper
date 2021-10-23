@@ -97,21 +97,21 @@ jobs:
   # https://en.wikipedia.org/wiki/CentOS
   # https://hub.docker.com/_/centos
   # `-static` disabled, there is no static libc.a.
-  centos-arm64:
-    name: 'arm64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on CentOS 8, 7 stable'
-    runs-on: [self-hosted, Linux, Arm64]
-    steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 3
-          submodules: true
-      - name: 'CentOS 8 arm64'
-        uses: docker://centos:8
-        with:
-          entrypoint: /bin/bash
-          args: /github/workspace/scripts/helper/tests/native-test.sh --image centos:8 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-      # docker://centos:7 - undefined reference to `__cxa_thread_atexit_impl@GLIBC_2.18'
+  # centos-arm64:
+  #   name: 'arm64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on CentOS 8, 7 stable'
+  #   runs-on: [self-hosted, Linux, Arm64]
+  #   steps:
+  #     - name: 'Checkout'
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 3
+  #         submodules: true
+  #     - name: 'CentOS 8 arm64'
+  #       uses: docker://centos:8
+  #       with:
+  #         entrypoint: /bin/bash
+  #         args: /github/workspace/scripts/helper/tests/native-test.sh --image centos:8 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+  #     # docker://centos:7 - undefined reference to `__cxa_thread_atexit_impl@GLIBC_2.18'
 
 
   # https://hub.docker.com/r/redhat/ubi8
