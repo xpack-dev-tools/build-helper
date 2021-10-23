@@ -528,6 +528,10 @@ function set_xbb_extras()
     # Note: use this explcitly in the application.
     # prepare_gcc_env "${CROSS_COMPILE_PREFIX}-"
 
+    # To make `access()` not fail when passing a non-zero mode.
+    # https://sourceforge.net/p/mingw-w64/mailman/message/37372220/
+    XBB_CPPFLAGS+=" -D__USE_MINGW_ACCESS"
+
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
     # -static-libgcc avoids libgcc_s_sjlj-1.dll 
