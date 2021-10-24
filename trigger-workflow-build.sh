@@ -81,6 +81,11 @@ do
       shift 2
       ;;
 
+    --machine)
+      workflow_id="build-${2}.yml"
+      shift 2
+      ;;
+
     --*)
       echo "Unsupported option $1."
       exit 1
