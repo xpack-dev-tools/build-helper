@@ -161,7 +161,7 @@ do
       shift 2
       ;;
 
-    --test-only)
+    --test-only|--tests-only)
       TEST_ONLY="y"
       shift
       ;;
