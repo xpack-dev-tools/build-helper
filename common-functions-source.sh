@@ -1363,8 +1363,11 @@ function git_clone()
 # Copy the build files to the Work area, to make them easily available. 
 function copy_build_git()
 {
-  chmod -R +w "${HOST_WORK_FOLDER_PATH}/build.git"
-  rm -rf "${HOST_WORK_FOLDER_PATH}/build.git"
+  if [ -d "${HOST_WORK_FOLDER_PATH}/build.git" ]
+  then
+    chmod -R +w "${HOST_WORK_FOLDER_PATH}/build.git"
+    rm -rf "${HOST_WORK_FOLDER_PATH}/build.git"
+  fi
   mkdir -pv "${HOST_WORK_FOLDER_PATH}/build.git"
   echo ${scripts_folder_path}
   cp -r "$(dirname ${scripts_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
