@@ -2109,7 +2109,7 @@ function strip_libs()
         for lib in ${libs}
         do
           # Do not use --strip-debug here, since the macOS strip does not support it.
-          echo "strip -S ${lib}"
+          echo "[strip -S ${lib}]"
           strip -S "${lib}" || true
         done
       elif [ "${TARGET_PLATFORM}" == "win32" ]
@@ -2119,7 +2119,7 @@ function strip_libs()
         local libs=$(find "${APP_PREFIX}" -type f \( -name \*.a -o -name \*.o -o -name \*.dll -o -name \*.pyd \))
         for lib in ${libs}
         do
-          echo "${CROSS_COMPILE_PREFIX}-strip --strip-debug ${lib}"
+          echo "[${CROSS_COMPILE_PREFIX}-strip --strip-debug ${lib}]"
           ${CROSS_COMPILE_PREFIX}-strip --strip-debug "${lib}" || true
         done
       fi
