@@ -65,7 +65,7 @@ message="Build ${APP_NAME}"
 
 branch="xpack-develop"
 version=${RELEASE_VERSION:-"$(get_current_version)"}
-workflow_id="build.yml"
+workflow_id="build-all.yml"
 
 while [ $# -gt 0 ]
 do
