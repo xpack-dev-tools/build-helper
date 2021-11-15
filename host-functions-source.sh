@@ -74,15 +74,25 @@ function host_detect()
 
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
-    # uname -p -> i386
-    # uname -m -> x86_64
-
-    HOST_BITS="64"
+    # uname -p -> i386, arm
+    # uname -m -> x86_64, arm64
 
     HOST_DISTRO_NAME=Darwin
     HOST_DISTRO_LC_NAME=darwin
 
-    HOST_NODE_ARCH="x64" # For now.
+    HOST_BITS="64"
+
+    if [ "${HOST_MACHINE}" == "x86_64" ]
+    then
+      HOST_NODE_ARCH="x64"
+    elif [ "${HOST_MACHINE}" == "arm64" ]
+    then
+      HOST_NODE_ARCH="arm64"
+    else
+      echo "Unknown uname -m ${HOST_MACHINE}"
+      exit 1
+    fi
+   
     HOST_NODE_PLATFORM="darwin"
 
   elif [ "${HOST_UNAME}" == "Linux" ]

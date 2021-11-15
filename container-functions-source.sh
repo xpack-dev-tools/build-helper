@@ -50,11 +50,20 @@ function detect_container()
   if [ "${CONTAINER_UNAME}" == "Darwin" ]
   then
 
-    CONTAINER_BITS="64"
-    CONTAINER_MACHINE="x86_64"
-
     CONTAINER_NODE_PLATFORM="darwin"
-    CONTAINER_NODE_ARCH="x64"
+
+    CONTAINER_BITS="64"
+    CONTAINER_MACHINE="$(uname -m)"
+    if [ "${CONTAINER_MACHINE}" == "x86_64" ]
+    then
+      CONTAINER_NODE_ARCH="x64"
+    elif [ "${CONTAINER_MACHINE}" == "arm64" ]
+    then
+      CONTAINER_NODE_ARCH="arm64"
+    else
+      echo "Unknown uname -m ${CONTAINER_MACHINE}"
+      exit 1
+    fi
 
     CONTAINER_DISTRO_NAME=Darwin
     CONTAINER_DISTRO_LC_NAME=darwin

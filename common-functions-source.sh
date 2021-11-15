@@ -502,7 +502,16 @@ function set_xbb_extras()
   then
     SHLIB_EXT="dylib"
 
-    export MACOSX_DEPLOYMENT_TARGET="10.10"
+    if [ "${TARGET_ARCH}" == "x86" ]
+    then
+      export MACOSX_DEPLOYMENT_TARGET="10.10"
+    elif [ "${TARGET_ARCH}" == "arm64" ]
+    then
+      export MACOSX_DEPLOYMENT_TARGET="11.0"
+    else
+      echo "Unknown TARGET_ARCH ${TARGET_ARCH}"
+      exit 1
+    fi
 
     if [[ "${CC}" =~ *clang* ]]
     then
@@ -2154,7 +2163,7 @@ function _is_elf()
       file ${bin_path} | egrep -q "( ELF )"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      file ${bin_path} | egrep -q "Mach-O .*x86_64"
+      file ${bin_path} | egrep -q "(Mach-O .*x86_64) | (Mach-O .*arm64)"
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
       file ${bin_path} | egrep -q "( PE )|( PE32 )|( PE32\+ )"
@@ -2219,7 +2228,7 @@ function is_elf()
       file ${bin_path} | egrep -q "( ELF )"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      file ${bin_path} | egrep -q "Mach-O .*x86_64"
+      file ${bin_path} | egrep -q "(Mach-O .*x86_64) | (Mach-O .*arm64)"
     else
       return 1
     fi
@@ -2261,7 +2270,10 @@ function is_target()
       file ${bin_path} | egrep -q ", ARM, "
     elif [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "x64" ]
     then
-      file ${bin_path} | egrep -q " x86_64"
+      file ${bin_path} | egrep -q "x86_64"
+    elif [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "arm64" ]
+    then
+      file ${bin_path} | egrep -q "arm64"
     elif [ "${TARGET_PLATFORM}" == "win32" -a "${TARGET_ARCH}" == "x64" ]
     then
       file ${bin_path} | egrep -q " x86-64 "
