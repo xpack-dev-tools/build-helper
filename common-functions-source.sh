@@ -3981,7 +3981,7 @@ function fix_lto_plugin()
 
 # -----------------------------------------------------------------------------
 
-# Return the value via MACOS_SDK_PATH.
+# Return the value via STDOUT.
 function get_macos_sdk_path()
 {
   local macos_sdk_path
