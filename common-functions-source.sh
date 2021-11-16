@@ -3004,6 +3004,26 @@ function install_elf()
   fi
 }
 
+function replace_loader_path()
+{
+  local source_file_path="$1"
+  local destination_file_path="$2"
+
+  if [ "${TARGET_PLATFORM}" == "darwin" ]
+  then
+    local lc_rpaths=$(get_darwin_lc_rpaths "${destination_file_path}")
+    for lc_rpath in ${lc_rpaths}
+    do
+      if [ "${lc_rpath}" == "@loader_path" ]
+      then
+        run_verbose install_name_tool \
+          -rpath "@loader_path" "$(dirname "${source_file_path}")" \
+          "${destination_file_path}"
+      fi
+    done
+  fi
+}
+
 # The initial call uses the binary path (app or library, no links)
 # and its folder path,
 # so there is nothing to copy, only to process the dependencies.
@@ -3100,6 +3120,8 @@ function copy_dependencies_recursive()
     else
       echo_develop "already there ${destination_file_path}"
     fi
+
+    replace_loader_path "${actual_source_file_path}" "${actual_destination_file_path}"
 
     if [ "${WITH_STRIP}" == "y" -a ! -L "${actual_destination_file_path}" ]
     then
