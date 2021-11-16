@@ -2989,6 +2989,21 @@ function prepare_app_folder_libraries()
   ) 2>&1 | tee "${LOGS_FOLDER_PATH}/prepare-app-folder-libraries-output-$(date -u +%Y%m%d-%H%M).txt"
 }
 
+function install_elf()
+{
+  local source_file_path="$1"
+  local destination_file_path="$2"
+
+  if [ ! -f "${destination_file_path}" ]
+  then
+    if [ ! -d "$(dirname "${destination_file_path}")" ]
+    then
+      run_verbose install -d -m 755 "$(dirname "${destination_file_path}")"
+    fi
+    run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
+  fi
+}
+
 # The initial call uses the binary path (app or library, no links)
 # and its folder path,
 # so there is nothing to copy, only to process the dependencies.
@@ -3058,14 +3073,7 @@ function copy_dependencies_recursive()
           actual_destination_file_path="$(realpath "${actual_destination_file_path}")"
         fi
 
-        if [ ! -f "${actual_destination_file_path}" ]
-        then
-          if [ ! -d "$(dirname "${actual_destination_file_path}")" ]
-          then
-            run_verbose install -d -m 755 "$(dirname "${actual_destination_file_path}")"
-          fi
-          run_verbose install -c -m 755 "${actual_source_file_path}" "${actual_destination_file_path}"
-        fi
+        install_elf "${actual_source_file_path}" "${actual_destination_file_path}"
 
         (
           cd "${destination_folder_path}"
@@ -3081,14 +3089,7 @@ function copy_dependencies_recursive()
           echo "is_elf ${source_file_name}"
         fi
 
-        if [ ! -f "${destination_file_path}" ]
-        then
-          if [ ! -d "$(dirname "${destination_file_path}")" ]
-          then
-            run_verbose install -d -m 755 "$(dirname "${destination_file_path}")"
-          fi
-          run_verbose install -c -m 755 "${source_file_path}" "${destination_file_path}"
-        fi
+        install_elf "${source_file_path}" "${destination_file_path}"
 
       else
         file "${source_file_path}"
