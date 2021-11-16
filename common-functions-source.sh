@@ -502,7 +502,7 @@ function set_xbb_extras()
   then
     SHLIB_EXT="dylib"
 
-    if [ "${TARGET_ARCH}" == "x86" ]
+    if [ "${TARGET_ARCH}" == "x64" ]
     then
       export MACOSX_DEPLOYMENT_TARGET="10.10"
     elif [ "${TARGET_ARCH}" == "arm64" ]
