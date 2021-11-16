@@ -3345,12 +3345,20 @@ function copy_dependencies_recursive()
 
         local lib_name="$(basename "${from_path}")"
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-
+        
         # chmod +w "${file_path}"
-        run_verbose install_name_tool \
-          -change "${lib_path}" \
-          "@loader_path/${relative_folder_path}/${lib_name}" \
-          "${actual_destination_file_path}"
+        if [ "${relative_folder_path}" == "." ]
+        then
+          run_verbose install_name_tool \
+            -change "${lib_path}" \
+            "@loader_path/${lib_name}" \
+            "${actual_destination_file_path}"
+        else
+          run_verbose install_name_tool \
+            -change "${lib_path}" \
+            "@loader_path/${relative_folder_path}/${lib_name}" \
+            "${actual_destination_file_path}"
+        fi
 
       done
 
