@@ -1185,6 +1185,12 @@ function show_libs()
       echo
       echo "[otool -L ${app_path}]"
       otool -L "${app_path}"
+      local lc_rpaths=$(get_darwin_lc_rpaths "${app_path}")
+      local lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+      if [ -n "${lc_rpaths_line}" ]
+      then
+        echo "LC_RPATH=$(get_darwin_lc_rpaths "${app_path}")"
+      fi
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
       if is_elf "${app_path}"
