@@ -3285,7 +3285,8 @@ function copy_dependencies_recursive()
       local loader_prefix="@loader_path/"
       local rpath_prefix="@rpath/"
 
-      # On macOS the references to dynamic libraries use full paths.
+      # On macOS 10.13 the references to dynamic libraries use full paths;
+      # on 11.6 the paths are relative to @rpath.
       for lib_path in ${lib_paths}
       do
         # The path may be regular (absolute or relative), but may also be
@@ -3294,30 +3295,73 @@ function copy_dependencies_recursive()
         
         echo_develop "processing ${lib_path} of ${actual_destination_file_path}"
 
-        if [ "${lib_path:0:1}" == "@" ]
-        then
-          # If special prefix, someone else took care to place the
-          # dependencies in the correct location.
-          echo_develop "${lib_path} was already processed"
-          continue
-        fi
-
         local from_path="${lib_path}"
 
-        if [ "${lib_path:0:1}" == "/" ]
+        if [ "${lib_path:0:1}" == "@" ]
+        then
+          if [ "${lib_path:0:${#executable_prefix}}" == "${executable_prefix}" ]
+          then
+            echo ">>> \"${lib_path}\" is relative to unknown executable"
+            exit 1
+          elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
+          then
+            echo_develop "${lib_path} was already processed"
+            continue
+          elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
+          then
+            # Cases like @rpath/libstdc++.6.dylib; compute the absolute path.
+            local found_absolute_lib_path=""
+            local file_relative_path="${lib_path:${#rpath_prefix}}"
+            for lc_rpath in ${lc_rpaths}
+            do
+              if [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+              then
+                local actual_source_folder_path="$(dirname "${actual_source_file_path}")"
+                if [ -f "${actual_source_folder_path}/${file_relative_path}" ]
+                then
+                  found_absolute_lib_path="$(realpath ${actual_source_folder_path}/${file_relative_path})"
+                  break
+                else
+                  continue
+                fi
+              fi
+              if [ "${lc_rpath:0:1}" != "/" ]
+              then
+                echo ">>> \"${lc_rpath}\" is not expected as rpath"
+                exit 1
+              fi
+              if [ -f "${lc_rpath}/${file_relative_path}" ]
+              then
+                found_absolute_lib_path="$(realpath ${lc_rpath}/${file_relative_path})"
+                break
+              fi
+            done
+            if [ -z "${found_absolute_lib_path}" ]
+            then
+              echo ">>> \"${lib_path}\" not found in rpath"
+              exit 1
+            else
+              from_path="${found_absolute_lib_path}" 
+            fi
+          fi
+        fi
+
+        if [ "${from_path:0:1}" == "/" ]
         then
           # Regular absolute path, possibly a link.
-          if is_darwin_sys_dylib "${lib_path}"
+          if is_darwin_sys_dylib "${from_path}"
           then
-            if is_darwin_allowed_sys_dylib "${lib_path}"
+            if is_darwin_allowed_sys_dylib "${from_path}"
             then
               # Allowed system library, no need to copy it.
-              echo_develop "${lib_path} is allowed sys dylib"
+              echo_develop "${from_path} is allowed sys dylib"
               continue 
-            else
+            elif [ "${lib_path:0:1}" == "/" ]
+            then
               echo ">>> absolute \"${lib_path}\" not one of the allowed libs"
               exit 1
             fi
+            # from_path already an actual absolute path.
           fi
         else
           ## Relative path.
