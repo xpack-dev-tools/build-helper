@@ -3118,9 +3118,11 @@ function copy_dependencies_recursive()
         install_elf "${source_file_path}" "${destination_file_path}"
 
       else
+
         file "${source_file_path}"
         echo "Oops! ${source_file_path} not a symlink and not an elf"
         exit 1
+
       fi
 
     else
