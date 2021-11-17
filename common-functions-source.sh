@@ -1355,7 +1355,7 @@ function download_and_extract()
     extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}"
   fi
 
-  chmod -R +w "${folder_name}"
+  chmod -R +w "${folder_name}" || true
 
   if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "arm64" ]
   then
