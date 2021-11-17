@@ -3039,10 +3039,18 @@ function replace_loader_path()
     local lc_rpaths=$(get_darwin_lc_rpaths "${destination_file_path}")
     for lc_rpath in ${lc_rpaths}
     do
-      if [ "${lc_rpath}" == "@loader_path" ]
+      local loader_prefix="@loader_path"
+      if [ "${lc_rpath}" == "${loader_prefix}" ]
       then
         run_verbose install_name_tool \
-          -rpath "@loader_path" "$(dirname "${source_file_path}")" \
+          -rpath "${lc_rpath}" "$(dirname "${source_file_path}")" \
+          "${destination_file_path}"
+      elif [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+      then
+        local suffix_path="${lc_rpath:${#loader_prefix}}" # like `/../lib`
+        local new_rpath="$(realpath "$(dirname "${source_file_path}")${suffix_path}")"
+        run_verbose install_name_tool \
+          -rpath "${lc_rpath}" "${new_rpath}" \
           "${destination_file_path}"
       fi
     done
