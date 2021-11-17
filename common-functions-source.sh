@@ -1354,6 +1354,25 @@ function download_and_extract()
   else
     extract "${DOWNLOAD_FOLDER_PATH}/${archive_name}" "${folder_name}"
   fi
+
+  chmod -R +w "${folder_name}"
+
+  if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "arm64" ]
+  then
+    update_config_sub "${folder_name}"
+  fi
+}
+
+function update_config_sub()
+{
+  local folder_path="$1"
+
+  (
+    cd "${folder_path}"
+
+    find . -name 'config.sub' \
+      -exec cp -v "${helper_folder_path}/config.sub" "{}" \;
+  )
 }
 
 function git_clone()
