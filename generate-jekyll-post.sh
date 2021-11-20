@@ -94,7 +94,7 @@ if [ "${SKIP_XBBMA:-""}" == "y" ]
 then
   echo "Skiping xbbma files..."
 else
-  scp -p xbmma:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+  scp -p xbbma:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 fi
 
 echo
