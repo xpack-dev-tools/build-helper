@@ -1,11 +1,11 @@
 {% render "scripts/helper/templates/copyright-liquid.yml" %}
 
 {% if platforms == "all" -%}
-  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,win32-x64,win32-ia32" -%}
+  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,darwin-arm64,win32-x64,win32-ia32" -%}
 {% endif -%}
 {% assign platforms = platforms | split: "," -%}
 
-name: 'Build xPack {{ APP_NAME }} xbbm'
+name: 'Build xPack {{ APP_NAME }} xbbma'
 
 on:
   workflow_dispatch:
@@ -17,11 +17,11 @@ on:
 
 jobs:
 {% for platform in platforms -%}
-{% if platform == "darwin-x64" %}
-  macos-x64:
+{% if platform == "darwin-arm64" %}
+  macos-arm64:
     name: 'Intel macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 2880 # 2 days
-    runs-on: [self-hosted, macOS, X64]
+    runs-on: [self-hosted, macos, apple]
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -33,8 +33,8 @@ jobs:
         run: rm -rf ~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
 {% for platform in platforms -%}
   {% case platform -%}
-    {% when "darwin-x64" %}
-      - name: 'Build macOS x64 binary'
+    {% when "darwin-arm64" %}
+      - name: 'Build macOS arm64 binary'
         timeout-minutes: 1440
         run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --osx
   {% endcase -%}

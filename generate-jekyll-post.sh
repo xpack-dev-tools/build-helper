@@ -82,11 +82,19 @@ else
 fi
 
 echo
-if [ "${SKIP_XBBM:-""}" == "y" ]
+if [ "${SKIP_XBBMI:-""}" == "y" ]
 then
-  echo "Skiping xbbm files..."
+  echo "Skiping xbbmi files..."
 else
-  scp -p xbbm:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+  scp -p xbbmi:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+fi
+
+echo
+if [ "${SKIP_XBBMA:-""}" == "y" ]
+then
+  echo "Skiping xbbma files..."
+else
+  scp -p xbmma:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 fi
 
 echo

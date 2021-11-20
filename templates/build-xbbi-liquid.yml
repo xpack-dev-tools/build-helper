@@ -1,7 +1,7 @@
 {% render "scripts/helper/templates/copyright-liquid.yml" %}
 
 {% if platforms == "all" -%}
-  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,win32-x64,win32-ia32" -%}
+  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,darwin-arm64,win32-x64,win32-ia32" -%}
 {% endif -%}
 {% assign platforms = platforms | split: "," -%}
 
