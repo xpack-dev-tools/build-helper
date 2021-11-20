@@ -139,7 +139,7 @@ jobs:
 {% for platform in platforms -%}
 {% if platform == "darwin-arm64" %}
   macos-arm64:
-    name: 'Intel macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
+    name: 'Apple macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, macos, apple]
     steps:
       - name: 'Checkout'
