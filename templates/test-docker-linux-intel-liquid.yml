@@ -49,6 +49,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu 20, 18, 16, 14 stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -81,6 +83,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian 10, 9, 8 stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -136,6 +140,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on RedHat 8 stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -154,6 +160,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Fedora 35, 33, 30, 25, 20, stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -192,6 +200,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on OpenSUSE 15, 13 stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -212,6 +222,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu latest'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -228,6 +240,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian latest'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -255,6 +269,8 @@ jobs:
     name: 'x64 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Arch latest'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -278,6 +294,8 @@ jobs:
     name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu 18, 16, 14 stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -309,6 +327,8 @@ jobs:
     name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian 10, 9, 8 stable'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -336,6 +356,8 @@ jobs:
     name: 'ia32 {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian latest'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:

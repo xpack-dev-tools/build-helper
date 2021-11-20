@@ -22,6 +22,8 @@ jobs:
     name: 'Intel Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, Linux, X64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -62,6 +64,8 @@ jobs:
     name: 'Arm Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, Linux, ARM64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -101,7 +105,9 @@ jobs:
   macos-x64:
     name: 'Intel macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, macos, intel]
-    steps:
+    steps:      
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:

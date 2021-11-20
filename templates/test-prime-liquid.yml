@@ -28,6 +28,8 @@ jobs:
     name: 'x64 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -41,6 +43,8 @@ jobs:
     name: 'ia32 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: ubuntu-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -57,6 +61,8 @@ jobs:
     name: 'arm64 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, Arm64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -73,6 +79,8 @@ jobs:
     name: 'arm32 Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: [self-hosted, Linux, Arm64]
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -89,6 +97,8 @@ jobs:
     name: 'x64 macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: macos-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -108,7 +118,6 @@ jobs:
     steps:
       - name: 'Machine'
         run: uname -a
-
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -122,6 +131,8 @@ jobs:
     name: 'x64 Windows {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: windows-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
@@ -135,6 +146,8 @@ jobs:
     name: 'ia32 Windows {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test'
     runs-on: windows-latest
     steps:
+      - name: 'Machine'
+        run: uname -a
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:

@@ -23,6 +23,9 @@ jobs:
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, macos, intel]
     steps:
+      - name: 'Machine'
+        run: uname -a
+
       - name: 'Checkout'
         uses: actions/checkout@v2
         with:
