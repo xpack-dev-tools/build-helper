@@ -20,7 +20,7 @@ jobs:
   {% if platform == "linux-x64" or platform == "win32-x64" or platform == "linux-ia32" or platform == "win32-ia32" %}
   linux-x64:
     name: 'Intel Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, linux, x64]
     steps:
       - name: 'Machine'
         run: uname -a
@@ -62,7 +62,7 @@ jobs:
 {% if platform == "linux-arm64" or platform == "linux-arm" %}
   linux-arm64:
     name: 'Arm Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: [self-hosted, linux, arm64]
     steps:
       - name: 'Machine'
         run: uname -a

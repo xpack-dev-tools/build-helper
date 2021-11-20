@@ -21,7 +21,7 @@ jobs:
   linux-x64:
     name: 'Intel Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 5760 # 4 days
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: [self-hosted, linux, x64]
     steps:
       - name: 'Machine'
         run: uname -a

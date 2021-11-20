@@ -21,7 +21,7 @@ jobs:
   linux-arm64:
     name: 'Arm Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 2880 # 2 days
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: [self-hosted, linux, arm64]
     steps:
       - name: 'Machine'
         run: uname -a
