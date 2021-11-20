@@ -564,6 +564,9 @@ function show_libs()
   elif [ "${node_platform}" == "darwin" ]
   then
     echo
+    echo "[file ${app_path}]"
+    file "${app_path}"
+    echo
     echo "[otool -L ${app_path}]"
     otool -L "${app_path}"
   elif [ "${node_platform}" == "win32" ]

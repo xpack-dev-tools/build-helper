@@ -1182,6 +1182,10 @@ function show_libs()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
       run_verbose ls -l "${app_path}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        run_verbose file "${app_path}"
+      fi
       echo
       echo "[otool -L ${app_path}]"
       otool -L "${app_path}"
