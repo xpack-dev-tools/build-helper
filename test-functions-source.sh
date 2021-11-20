@@ -233,6 +233,10 @@ function detect_architecture()
       node_architecture="arm64"
       bits="64"
     fi
+  elif [ "${uname_machine}" == "arm64" ]
+  then
+    node_architecture="arm64"
+    bits="64"
   elif [ "${uname_machine}" == "armv7l" -o "${uname_machine}" == "armv8l" ]
   then
     node_architecture="arm"
