@@ -2257,7 +2257,7 @@ function is_elf()
       file ${bin_path} | egrep -q "( ELF )"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      file ${bin_path} | egrep -q " Mach-O "
+      file ${bin_path} | egrep -q "x86_64:Mach-O|arm64e:Mach-O"
     else
       return 1
     fi
@@ -2959,7 +2959,6 @@ function prepare_app_folder_libraries()
   fi
 
   (
-    set -x
     xbb_activate
 
     echo
