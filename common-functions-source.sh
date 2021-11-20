@@ -2257,7 +2257,8 @@ function is_elf()
       file ${bin_path} | egrep -q "( ELF )"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
-      file ${bin_path} | egrep -q "x86_64:Mach-O|arm64e:Mach-O"
+      # The first two are reported by 11.6, the third by 10.13.
+      file ${bin_path} | egrep -q "x86_64:Mach-O|arm64e:Mach-O|Mach-O.*x86_64"
     else
       return 1
     fi
