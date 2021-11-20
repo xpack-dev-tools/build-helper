@@ -146,7 +146,8 @@ jobs:
 {% if platform == "darwin-arm64" %}
   macos-arm64:
     name: 'Apple macOS {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
-    runs-on: [self-hosted, macos, apple]    defaults:
+    runs-on: [self-hosted, macos, apple]
+    defaults:
       run:
         shell: "/usr/bin/arch -arch arm64e /bin/bash -l {0}"
 
