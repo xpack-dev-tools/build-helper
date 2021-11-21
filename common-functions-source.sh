@@ -539,7 +539,10 @@ function set_xbb_extras()
 
     # To make `access()` not fail when passing a non-zero mode.
     # https://sourceforge.net/p/mingw-w64/mailman/message/37372220/
-    XBB_CPPFLAGS+=" -D__USE_MINGW_ACCESS"
+    # Do not add it to XBB_CPPFLAGS, since the current macro
+    # crashes C++ code, like in `llvm/lib/Support/LockFileManager.cpp`:
+    # `if (sys::fs::access(LockFileName.c_str(), sys::fs::AccessMode::Exist) ==`
+    XBB_CFLAGS+=" -D__USE_MINGW_ACCESS"
 
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll 
