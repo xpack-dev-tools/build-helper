@@ -19,7 +19,7 @@ jobs:
 {% for platform in platforms -%}
 {% if platform == "linux-arm64" or platform == "linux-arm" %}
   linux-arm64:
-    name: 'Arm Linux {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
+    name: 'Linux Arm {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, linux, arm64]
     steps:
