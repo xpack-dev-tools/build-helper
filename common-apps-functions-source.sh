@@ -1285,7 +1285,7 @@ function build_binutils()
       if [ -n "${name_suffix}" ]
       then
 
-        CPPFLAGS="${XBB_CPPFLAGS}"
+        CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include"
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
