@@ -1331,7 +1331,7 @@ function build_binutils()
           fi
 
           echo
-          echo "Running binutils configure..."
+          echo "Running binutils${name_suffix} configure..."
       
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1468,7 +1468,7 @@ function build_binutils()
 
       (
         echo
-        echo "Running binutils make..."
+        echo "Running binutils${name_suffix} make..."
       
         # Build.
         run_verbose make -j ${JOBS} 
@@ -1534,15 +1534,18 @@ function build_binutils()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output.txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}" \
-        "${binutils_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}" \
+          "${binutils_folder_name}"
+      fi
 
     )
 
     touch "${binutils_stamp_file_path}"
   else
-    echo "Component binutils already installed."
+    echo "Component binutils${name_suffix} already installed."
   fi
 
   if [ -n "${name_suffix}" ]
