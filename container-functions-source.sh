@@ -3,24 +3,24 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the xPack build 
-# scripts. As the name implies, it should contain only functions and 
+# Helper script used in the second edition of the xPack build
+# scripts. As the name implies, it should contain only functions and
 # should be included with 'source' by the container build scripts.
 
 # -----------------------------------------------------------------------------
 
-function start_timer() 
+function start_timer()
 {
   CONTAINER_BEGIN_SECOND=$(date +%s)
   echo
   echo "Container script \"$0\" started at $(date)."
 }
 
-function stop_timer() 
+function stop_timer()
 {
   local end_second=$(date +%s)
   echo
@@ -37,7 +37,7 @@ function stop_timer()
 
 # -----------------------------------------------------------------------------
 
-function detect_container() 
+function detect_container()
 {
   echo
   uname -a
@@ -136,13 +136,13 @@ function fix_ownership()
   then
     (
       xbb_activate
-      
-      # Set the owner of the folder and files created by the docker CentOS 
-      # container to match the user running the build script on the host. 
-      # When running on linux host, these folders and their content remain  
-      # owned by root if this is not done. However, on macOS  
-      # the owner used by Docker is the same as the macOS user, so an 
-      # ownership change is not realy necessary. 
+
+      # Set the owner of the folder and files created by the docker CentOS
+      # container to match the user running the build script on the host.
+      # When running on linux host, these folders and their content remain
+      # owned by root if this is not done. However, on macOS
+      # the owner used by Docker is the same as the macOS user, so an
+      # ownership change is not realy necessary.
       echo
       echo "Changing ownership to non-root GNU/Linux user..."
 

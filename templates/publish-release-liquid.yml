@@ -105,7 +105,7 @@ jobs:
   macos-x64:
     name: 'macOS Intel {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, macos, intel]
-    steps:      
+    steps:
       - name: 'Machine'
         run: uname -a
       - name: 'Checkout'

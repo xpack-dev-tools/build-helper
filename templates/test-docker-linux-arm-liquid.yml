@@ -8,7 +8,7 @@
 
 # https://github.com/docker-library/official-images#architectures-other-than-amd64
 
-# Debian versions: 
+# Debian versions:
 # - 8 jessie
 # - 9 stretch
 # - 10 buster
@@ -36,7 +36,7 @@ on:
         required: false
         default: 'current'
 
-# The scripts are executed in the Docker context by GitHub Actions, 
+# The scripts are executed in the Docker context by GitHub Actions,
 # so `native-test.sh` should be fine, it already takes care of updates.
 jobs:
 {% for platform in platforms -%}
@@ -171,7 +171,7 @@ jobs:
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image fedora:27 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
-  
+
   # https://en.wikipedia.org/wiki/OpenSUSE#Releases
   # https://hub.docker.com/u/opensuse
   # `-static` disabled, there is no static libc.a.

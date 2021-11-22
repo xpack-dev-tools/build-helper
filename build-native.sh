@@ -4,7 +4,7 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2019 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ helper_folder_path="${scripts_folder_path}/helper"
 # intended for development and creating customised versions (as opposed
 # to the build intended for creating distribution packages).
 #
-# Developed on Ubuntu 18 LTS x64 and macOS 10.13. 
+# Developed on Ubuntu 18 LTS x64 and macOS 10.13.
 
 # -----------------------------------------------------------------------------
 

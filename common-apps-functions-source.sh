@@ -3,25 +3,25 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in xPack Developer Tools build scripts. 
-# As the name implies, it should contain only functions and 
+# Helper script used in xPack Developer Tools build scripts.
+# As the name implies, it should contain only functions and
 # should be included with 'source' by the build scripts (both native
 # and container).
 
 # -----------------------------------------------------------------------------
 
-function build_patchelf() 
+function build_patchelf()
 {
   # https://nixos.org/patchelf.html
   # https://github.com/NixOS/patchelf
   # https://github.com/NixOS/patchelf/releases/
   # https://github.com/NixOS/patchelf/releases/download/0.12/patchelf-0.12.tar.bz2
   # https://github.com/NixOS/patchelf/archive/0.12.tar.gz
-  
+
   # 2016-02-29, "0.9"
   # 2019-03-28, "0.10"
   # 2020-06-09, "0.11"
@@ -54,7 +54,7 @@ function build_patchelf()
       then
 
         cd "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}"
-        
+
         xbb_activate_installed_dev
 
         run_verbose bash ${DEBUG} "bootstrap.sh"
@@ -77,7 +77,7 @@ function build_patchelf()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -103,7 +103,7 @@ function build_patchelf()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -169,7 +169,7 @@ function test_patchelf()
 
 # -----------------------------------------------------------------------------
 
-function build_automake() 
+function build_automake()
 {
   # https://www.gnu.org/software/automake/
   # https://ftp.gnu.org/gnu/automake/
@@ -296,12 +296,12 @@ function test_automake()
 # -----------------------------------------------------------------------------
 
 
-function build_findutils() 
+function build_findutils()
 {
   # https://www.gnu.org/software/findutils/
   # https://ftp.gnu.org/gnu/findutils/
   # https://ftp.gnu.org/gnu/findutils/findutils-4.8.0.tar.xz
-  
+
   # 2021-01-09, "4.8.0"
 
   local findutils_version="$1"
@@ -329,7 +329,7 @@ function build_findutils()
       then
 
         cd "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}"
-        
+
         xbb_activate_installed_dev
 
         run_verbose bash ${DEBUG} "bootstrap.sh"
@@ -352,7 +352,7 @@ function build_findutils()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -378,7 +378,7 @@ function build_findutils()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           # config_options+=("--host=${HOST}")
           # config_options+=("--target=${TARGET}")
@@ -461,7 +461,7 @@ function prepare_mingw_config_options_common()
     echo "prepare_mingw_config_options_common requires a prefix path"
     exit 1
   fi
-                
+
   config_options_common+=("--disable-multilib")
 
   # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-160
@@ -489,7 +489,7 @@ function prepare_mingw_env()
   export MINGW_FOLDER_NAME="${MINGW_SRC_FOLDER_NAME}${MINGW_NAME_SUFFIX}"
 }
 
-function build_mingw_headers() 
+function build_mingw_headers()
 {
   # http://mingw-w64.org/doku.php/start
   # https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/
@@ -505,7 +505,7 @@ function build_mingw_headers()
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-winpthreads-git/PKGBUILD
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-binutils/PKGBUILD
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
-  
+
   # https://github.com/msys2/MSYS2-packages/blob/master/gcc/PKGBUILD
 
   # https://github.com/StephanTLavavej/mingw-distro
@@ -519,19 +519,19 @@ function build_mingw_headers()
 
   local mingw_archive="${MINGW_SRC_FOLDER_NAME}.tar.bz2"
   local mingw_url="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/${mingw_archive}"
-  
+
   # If SourceForge is down, there is also a GitHub mirror.
   # https://github.com/mirror/mingw-w64
   # MINGW_FOLDER_NAME="mingw-w64-${MINGW_VERSION}"
   # mingw_archive="v${MINGW_VERSION}.tar.gz"
   # mingw_url="https://github.com/mirror/mingw-w64/archive/${mingw_archive}"
- 
+
   # https://sourceforge.net/p/mingw-w64/wiki2/Cross%20Win32%20and%20Win64%20compiler/
   # https://sourceforge.net/p/mingw-w64/mingw-w64/ci/master/tree/configure
 
   # For binutils/GCC, the official method to build the mingw-w64 toolchain
   # is to set --prefix and --with-sysroot to the same directory to allow
-  # the toolchain to be relocatable. 
+  # the toolchain to be relocatable.
 
   # Recommended GCC configuration:
   # (to disable multilib, add `--enable-targets="${TARGET}"`)
@@ -597,7 +597,7 @@ function build_mingw_headers()
           then
             prepare_mingw_config_options_common "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
             config_options=("${config_options_common[@]}")
-            
+
             config_options+=("--build=${BUILD}")
             # The bootstrap binaries will run on the build machine.
             config_options+=("--host=${TARGET}")
@@ -649,7 +649,7 @@ function build_mingw_headers()
           # /Host/home/ilg/Work/gcc-11.1.0-1/win32-x64/install/gcc-bootstrap/mingw/include
 
           rm -rf "${APP_PREFIX}${MINGW_NAME_SUFFIX}/mingw"
-          ( 
+          (
             cd "${APP_PREFIX}${MINGW_NAME_SUFFIX}"
             run_verbose ln -sv "${CROSS_COMPILE_PREFIX}" "mingw"
           )
@@ -674,7 +674,7 @@ function build_mingw_headers()
   fi
 }
 
-function build_mingw_crt() 
+function build_mingw_crt()
 {
   # ---------------------------------------------------------------------------
 
@@ -790,7 +790,7 @@ function build_mingw_crt()
 }
 
 
-function build_mingw_winpthreads() 
+function build_mingw_winpthreads()
 {
   # https://github.com/archlinux/svntogit-community/blob/packages/mingw-w64-winpthreads/trunk/PKGBUILD
 
@@ -820,7 +820,7 @@ function build_mingw_winpthreads()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-      
+
       if [ ! -f "config.status" ]
       then
         (
@@ -860,7 +860,7 @@ function build_mingw_winpthreads()
          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-winpthreads-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-winpthreads-output.txt"
       fi
-      
+
       (
         echo
         echo "Running mingw-w64-winpthreads${MINGW_NAME_SUFFIX} make..."
@@ -880,7 +880,7 @@ function build_mingw_winpthreads()
   fi
 }
 
-function build_mingw_winstorecompat() 
+function build_mingw_winstorecompat()
 {
   local mingw_winstorecompat_folder_name="mingw-${MINGW_VERSION}-winstorecompat${MINGW_NAME_SUFFIX}"
 
@@ -907,7 +907,7 @@ function build_mingw_winstorecompat()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-      
+
       if [ ! -f "config.status" ]
       then
         (
@@ -940,7 +940,7 @@ function build_mingw_winstorecompat()
          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-winstorecompat-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-winstorecompat-output.txt"
       fi
-      
+
       (
         echo
         echo "Running mingw-w64-winstorecompat${MINGW_NAME_SUFFIX} make..."
@@ -960,7 +960,7 @@ function build_mingw_winstorecompat()
   fi
 }
 
-function build_mingw_libmangle() 
+function build_mingw_libmangle()
 {
   local mingw_libmangle_folder_name="mingw-${MINGW_VERSION}-libmangle${MINGW_NAME_SUFFIX}"
 
@@ -976,13 +976,13 @@ function build_mingw_libmangle()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS}" 
+      LDFLAGS="${XBB_LDFLAGS}"
 
       export CPPFLAGS
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-      
+
       if [ ! -f "config.status" ]
       then
         (
@@ -1020,7 +1020,7 @@ function build_mingw_libmangle()
          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-libmangle-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-libmangle-output.txt"
       fi
-      
+
       (
         echo
         echo "Running mingw-w64-libmangle${MINGW_NAME_SUFFIX} make..."
@@ -1063,7 +1063,7 @@ function build_mingw_gendef()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-      
+
       if [ ! -f "config.status" ]
       then
         (
@@ -1101,7 +1101,7 @@ function build_mingw_gendef()
          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-gendef-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-gendef-output.txt"
       fi
-      
+
       (
         echo
         echo "Running mingw-w64-gendef${MINGW_NAME_SUFFIX} make..."
@@ -1144,7 +1144,7 @@ function build_mingw_widl()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-      
+
       if [ ! -f "config.status" ]
       then
         (
@@ -1187,7 +1187,7 @@ function build_mingw_widl()
          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-widl-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-widl-output.txt"
       fi
-      
+
       (
         echo
         echo "Running mingw-w64-widl${MINGW_NAME_SUFFIX} make..."
@@ -1299,7 +1299,7 @@ function build_binutils()
         CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}" 
+        LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
 
         if [ "${TARGET_PLATFORM}" == "win32" ]
         then
@@ -1332,7 +1332,7 @@ function build_binutils()
 
           echo
           echo "Running binutils${name_suffix} configure..."
-      
+
           if [ "${IS_DEVELOP}" == "y" ]
           then
             run_verbose bash "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" --help
@@ -1397,7 +1397,7 @@ function build_binutils()
             fi
 
             config_options+=("--without-system-zlib")
-            
+
             config_options+=("--with-pic")
 
             # error: debuginfod is missing or unusable
@@ -1446,7 +1446,7 @@ function build_binutils()
             config_options+=("--enable-plugins")
             config_options+=("--enable-build-warnings=no")
             config_options+=("--enable-deterministic-archives")
-            
+
             # TODO
             # config_options+=("--enable-nls")
             config_options+=("--disable-nls")
@@ -1461,7 +1461,7 @@ function build_binutils()
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
             ${config_options[@]}
-            
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output.txt"
       fi
@@ -1469,22 +1469,22 @@ function build_binutils()
       (
         echo
         echo "Running binutils${name_suffix} make..."
-      
+
         # Build.
-        run_verbose make -j ${JOBS} 
+        run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
           : # run_verbose make check
         fi
-      
+
         # Avoid strip here, it may interfere with patchelf.
         # make install-strip
         run_verbose make install
 
         if [ -n "${name_suffix}" ]
         then
-          
+
           show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-ar"
           show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-as"
           show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-ld"

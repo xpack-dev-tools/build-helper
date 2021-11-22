@@ -3,18 +3,18 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the xPack build 
-# scripts. As the name implies, it should contain only functions and 
+# Helper script used in the second edition of the xPack build
+# scripts. As the name implies, it should contain only functions and
 # should be included with 'source' by the build scripts (both native
 # and container).
 
 # -----------------------------------------------------------------------------
 
-function build_zlib() 
+function build_zlib()
 {
   # http://zlib.net
   # http://zlib.net/fossils/
@@ -81,7 +81,7 @@ function build_zlib()
             PREFIX=${CROSS_COMPILE_PREFIX}- \
             prefix="${LIBS_INSTALL_FOLDER_PATH}" \
             CFLAGS="${XBB_CFLAGS_NO_W} -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4"
-          
+
           run_verbose make -f win32/Makefile.gcc install \
             DESTDIR="${LIBS_INSTALL_FOLDER_PATH}/" \
             INCLUDE_PATH="include" \
@@ -99,7 +99,7 @@ function build_zlib()
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
           LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-        fi      
+        fi
 
         export CPPFLAGS
         export CFLAGS
@@ -124,8 +124,8 @@ function build_zlib()
             fi
 
             run_verbose bash ${DEBUG} "configure" \
-              --prefix="${LIBS_INSTALL_FOLDER_PATH}" 
-            
+              --prefix="${LIBS_INSTALL_FOLDER_PATH}"
+
             cp "configure.log" "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-log.txt"
           ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-output.txt"
         fi
@@ -235,16 +235,12 @@ function build_gmp()
         CPPFLAGS="${XBB_CPPFLAGS} -fexceptions"
         # Test fail with -Ofast, revert to -O2
         CFLAGS="${XBB_CFLAGS_NO_W}"
-      CFLAGS="${XBB_CFLAGS_NO_W}" 
-        CFLAGS="${XBB_CFLAGS_NO_W}"
         CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
         LDFLAGS="${XBB_LDFLAGS_LIB}"
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
           LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-        fi
-      fi      
         fi
 
         if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -435,8 +431,6 @@ function build_mpfr()
         then
           LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
         fi
-      fi      
-        fi
 
       fi
 
@@ -593,8 +587,6 @@ function build_mpc()
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
           LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-        fi
-      fi      
         fi
 
       fi
@@ -756,8 +748,6 @@ function build_isl()
         then
           LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
         fi
-      fi      
-        fi
 
       fi
 
@@ -909,7 +899,7 @@ function build_zstd()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -925,7 +915,7 @@ function build_zstd()
       fi
 
       if [ ! -f "CMakeCache.txt" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -934,7 +924,7 @@ function build_zstd()
 
           echo
           echo "Running zstd cmake..."
-        
+
           config_options=()
 
           config_options+=("-LH")
@@ -952,7 +942,7 @@ function build_zstd()
             "${config_options[@]}" \
             \
             "${SOURCES_FOLDER_PATH}/${zstd_src_folder_name}/build/cmake"
-            
+
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zstd_folder_name}/zstd-output.txt"
       fi
 
@@ -1056,7 +1046,7 @@ function build_libiconv()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1064,7 +1054,7 @@ function build_libiconv()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1082,7 +1072,7 @@ function build_libiconv()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -1192,7 +1182,7 @@ function build_ncurses()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1200,7 +1190,7 @@ function build_ncurses()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1218,7 +1208,7 @@ function build_ncurses()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -1242,13 +1232,13 @@ function build_ncurses()
             config_options+=("--with-build-cflags=${CFLAGS}")
             config_options+=("--with-build-cppflags=${CPPFLAGS}")
             config_options+=("--with-build-ldflags=${LDFLAGS}")
-               
+
             config_options+=("--without-progs")
 
             # Only for the MinGW port, it provides a way to substitute
             # the low-level terminfo library with different terminal drivers.
             config_options+=("--enable-term-driver")
-            
+
             config_options+=("--disable-termcap")
             config_options+=("--disable-home-terminfo")
             config_options+=("--disable-db-install")
@@ -1276,7 +1266,7 @@ function build_ncurses()
           config_options+=("--with-cxx-binding")
           config_options+=("--with-cxx-shared")
           config_options+=("--with-pkg-config-libdir=${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig")
-          
+
           # Fails on Linux, with missing _nc_cur_term, which is there.
           config_options+=("--without-pthread")
 
@@ -1372,7 +1362,7 @@ function build_ncurses()
 
 # -----------------------------------------------------------------------------
 
-function build_libffi() 
+function build_libffi()
 {
   # http://www.sourceware.org/libffi/
   # ftp://sourceware.org/pub/libffi/
@@ -1414,7 +1404,7 @@ function build_libffi()
       then
 
         cd "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}"
-        
+
         xbb_activate_installed_dev
 
         run_verbose bash ${DEBUG} "autogen.sh"
@@ -1436,7 +1426,7 @@ function build_libffi()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1444,7 +1434,7 @@ function build_libffi()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1462,7 +1452,7 @@ function build_libffi()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -1513,7 +1503,7 @@ function build_libffi()
 
 # -----------------------------------------------------------------------------
 
-function build_gettext() 
+function build_gettext()
 {
   # https://www.gnu.org/software/gettext/
   # http://ftp.gnu.org/pub/gnu/gettext/
@@ -1554,14 +1544,14 @@ function build_gettext()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
       LDFLAGS="${XBB_LDFLAGS_LIB}"
 
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1569,7 +1559,7 @@ function build_gettext()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1589,7 +1579,7 @@ function build_gettext()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -1712,7 +1702,7 @@ function build_libelf()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1720,7 +1710,7 @@ function build_libelf()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1738,7 +1728,7 @@ function build_libelf()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -1811,7 +1801,7 @@ function build_expat()
   then
     expat_archive="${expat_src_folder_name}.tar.gz"
   fi
-  
+
   local expat_release="R_$(echo ${expat_version} | sed -e 's|[.]|_|g')"
   local expat_url="https://github.com/libexpat/libexpat/releases/download/${expat_release}/${expat_archive}"
 
@@ -1842,7 +1832,7 @@ function build_expat()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1850,7 +1840,7 @@ function build_expat()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1868,14 +1858,14 @@ function build_expat()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" \
             "${config_options[@]}"
-            
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${expat_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${expat_folder_name}/configure-output.txt"
       fi
@@ -1958,7 +1948,7 @@ function build_xz()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -1966,7 +1956,7 @@ function build_xz()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1984,7 +1974,7 @@ function build_xz()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -2051,7 +2041,7 @@ function build_gpm()
   local gpm_src_folder_name="gpm-${gpm_version}"
   local gpm_archive="${gpm_src_folder_name}.tar.gz"
   local gpm_github_archive="${gpm_version}.tar.gz"
-  
+
   local gpm_url="https://github.com/telmich/gpm/archive/${gpm_github_archive}"
 
   local gpm_folder_name="${gpm_src_folder_name}"
@@ -2105,7 +2095,7 @@ function build_gpm()
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
         LDFLAGS+=" -Wl,--allow-multiple-definition"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -2113,7 +2103,7 @@ function build_gpm()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -2131,7 +2121,7 @@ function build_gpm()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -2140,7 +2130,7 @@ function build_gpm()
 
           run_verbose bash ${DEBUG} "configure" \
             "${config_options[@]}"
-            
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${gpm_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gpm_folder_name}/configure-output.txt"
       fi
@@ -2249,7 +2239,7 @@ function build_libmpdec()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       LD=${CC}
 
@@ -2278,11 +2268,11 @@ function build_libmpdec()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
-            
+
           # C++ tests fail on Linux.
           # config_options+=("--enable-cxx")
           config_options+=("--disable-cxx")
@@ -2331,7 +2321,7 @@ function build_libmpdec()
 
 # -----------------------------------------------------------------------------
 
-function build_libxcrypt() 
+function build_libxcrypt()
 {
   # Replacement for the old libcrypt.so.1.
 
@@ -2386,7 +2376,7 @@ function build_libxcrypt()
         then
           run_verbose bash ${DEBUG} bootstrap
         else
-          # 
+          #
           run_verbose autoreconf -fiv
         fi
 
@@ -2408,7 +2398,7 @@ function build_libxcrypt()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -2434,7 +2424,7 @@ function build_libxcrypt()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -2508,7 +2498,7 @@ function test_libxcrypt()
 
 # -----------------------------------------------------------------------------
 
-function build_openssl() 
+function build_openssl()
 {
   # https://www.openssl.org
   # https://www.openssl.org/source/
@@ -2516,8 +2506,8 @@ function build_openssl()
   # https://archlinuxarm.org/packages/aarch64/openssl/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-static
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-git
-  
-  # 2017-Nov-02 
+
+  # 2017-Nov-02
   # XBB_OPENSSL_VERSION="1.1.0g"
   # The new version deprecated CRYPTO_set_locking_callback, and yum fails with
   # /usr/lib64/python2.6/site-packages/pycurl.so: undefined symbol: CRYPTO_set_locking_callback
@@ -2581,7 +2571,7 @@ function build_openssl()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -2624,7 +2614,7 @@ function build_openssl()
                 enable-md2 enable-rc5 enable-tls enable-tls1_3 enable-tls1_2 enable-tls1_1 \
                 "${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
 
-              run_verbose make depend 
+              run_verbose make depend
 
             else
 
@@ -2658,7 +2648,7 @@ function build_openssl()
             set +u
 
             # undefined reference to EVP_md2
-            #  enable-md2 
+            #  enable-md2
 
             # perl, do not start with bash.
             run_verbose "./config" \
@@ -2679,7 +2669,7 @@ function build_openssl()
 
             if [ ${openssl_version_minor} -eq 0 ]
             then
-              run_verbose make depend 
+              run_verbose make depend
             fi
 
           fi
@@ -2746,7 +2736,7 @@ function test_openssl()
     echo "Checking the openssl shared libraries..."
 
     show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl"
-    
+
     if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}" ]
     then
       show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}"
@@ -2827,7 +2817,7 @@ function build_sqlite()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -2835,7 +2825,7 @@ function build_sqlite()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -2853,11 +2843,11 @@ function build_sqlite()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
-   
+
           config_options+=("--enable-tcl=no")
           # Fails on macOS & Linux.
           # config_options+=("--disable-tcl")
@@ -2962,7 +2952,7 @@ function build_readline()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -2970,7 +2960,7 @@ function build_readline()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -3100,7 +3090,7 @@ function build_bzip2()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -3167,13 +3157,13 @@ function build_bzip2()
 
 # -----------------------------------------------------------------------------
 
-function build_python2() 
+function build_python2()
 {
   # https://www.python.org
   # https://www.python.org/downloads/source/
   # https://www.python.org/ftp/python/
   # https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tar.xz
-  
+
   # https://archlinuxarm.org/packages/aarch64/python/files/PKGBUILD
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-pip
@@ -3221,7 +3211,7 @@ function build_python2()
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       if [[ "${CC}" =~ gcc* ]]
       then
@@ -3256,7 +3246,7 @@ function build_python2()
           # --enable-universalsdk
           # --with-lto
 
-          # "... you should not skip tests when using --enable-optimizations as 
+          # "... you should not skip tests when using --enable-optimizations as
           # the data required for profiling is generated by running tests".
 
           # --enable-optimizations takes too long
@@ -3268,7 +3258,7 @@ function build_python2()
 
           config_options+=("--without-ensurepip")
           config_options+=("--without-lto")
-          
+
           # Create the PythonX.Y.so.
           config_options+=("--enable-shared")
 
@@ -3281,7 +3271,7 @@ function build_python2()
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON2_SRC_FOLDER_NAME}/configure" \
             "${config_options[@]}"
-             
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${python2_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python2_folder_name}/configure-output.txt"
       fi
@@ -3349,7 +3339,7 @@ function test_python2()
 # -----------------------------------------------------------------------------
 
 # Download the Windows Python 2 libraries and headers.
-function download_python2_win() 
+function download_python2_win()
 {
   # https://www.python.org/downloads/release/python-2714/
   # https://www.python.org/ftp/python/2.7.14/python-2.7.14.msi
@@ -3399,7 +3389,7 @@ function download_python2_win()
       then
         (
           cd "${PYTHON2_WIN_SRC_FOLDER_NAME}"
-          patch -p0 <"${patch_path}" 
+          patch -p0 <"${patch_path}"
         )
       fi
     else
@@ -3422,13 +3412,13 @@ function download_python2_win()
 
 # https://stackoverflow.com/questions/44150871/embeded-python3-6-with-mingw-in-c-fail-on-linking
 
-function build_python3() 
+function build_python3()
 {
   # https://www.python.org
   # https://www.python.org/downloads/source/
   # https://www.python.org/ftp/python/
   # https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz
-  
+
   # https://archlinuxarm.org/packages/aarch64/python/files/PKGBUILD
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-pip
@@ -3489,14 +3479,14 @@ function build_python3()
           # -DkAuthorizationExternalFormLength=32 not working
           export CC=clang
           export CXX=clang++
-        fi     
+        fi
       fi
 
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       if [[ "${CC}" =~ gcc* ]]
       then
@@ -3531,7 +3521,7 @@ function build_python3()
           # --enable-universalsdk
           # --with-lto
 
-          # "... you should not skip tests when using --enable-optimizations as 
+          # "... you should not skip tests when using --enable-optimizations as
           # the data required for profiling is generated by running tests".
 
           # --enable-optimizations takes too long
@@ -3551,7 +3541,7 @@ function build_python3()
           # config_options+=("--with-openssl=${INSTALL_FOLDER_PATH}")
           config_options+=("--without-ensurepip")
           config_options+=("--without-lto")
-          
+
           # Create the PythonX.Y.so.
           config_options+=("--enable-shared")
 
@@ -3560,7 +3550,7 @@ function build_python3()
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" \
             "${config_options[@]}"
-             
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${python3_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python3_folder_name}/configure-output.txt"
       fi
@@ -3632,7 +3622,7 @@ function test_python3()
 # -----------------------------------------------------------------------------
 
 # Download the Windows Python 3 libraries and headers.
-function download_python3_win() 
+function download_python3_win()
 {
   # https://www.python.org/downloads/windows/
   # https://www.python.org/downloads/release/python-372/
@@ -3675,7 +3665,7 @@ function download_python3_win()
     else
       echo "Folder ${PYTHON3_WIN_SRC_FOLDER_NAME} already present."
     fi
-      
+
     cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
     echo "Copying python${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}.dll..."
     # From here it'll be copied as dependency.
@@ -3802,7 +3792,7 @@ function process_pyc()
 
   # echo "${folder_path}" "${file_name}"
 
-  if [ -f "${folder_path}/${file_name}.py" ] 
+  if [ -f "${folder_path}/${file_name}.py" ]
   then
     mv "${file_path}" "${folder_path}/${file_name}.pyc"
     rm "${folder_path}/${file_name}.py"
@@ -3834,7 +3824,7 @@ function move_pyc()
 
 # -----------------------------------------------------------------------------
 
-function build_libpng() 
+function build_libpng()
 {
   # To ensure builds stability, use slightly older releases.
   # https://sourceforge.net/projects/libpng/files/libpng16/
@@ -3881,14 +3871,14 @@ function build_libpng()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -3896,7 +3886,7 @@ function build_libpng()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -3914,7 +3904,7 @@ function build_libpng()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -3961,7 +3951,7 @@ function build_libpng()
 # See also
 # https://archlinuxarm.org/packages/aarch64/libjpeg-turbo/files/PKGBUILD
 
-function build_jpeg() 
+function build_jpeg()
 {
   # http://www.ijg.org
   # http://www.ijg.org/files/
@@ -4000,14 +3990,14 @@ function build_jpeg()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -4015,7 +4005,7 @@ function build_jpeg()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -4033,7 +4023,7 @@ function build_jpeg()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -4065,7 +4055,7 @@ function build_jpeg()
       copy_license \
         "${SOURCES_FOLDER_PATH}/${jpeg_src_folder_name}" \
         "${jpeg_folder_name}"
-    
+
     )
 
     touch "${jpeg_stamp_file_path}"
@@ -4075,7 +4065,7 @@ function build_jpeg()
   fi
 }
 
-function build_pixman() 
+function build_pixman()
 {
   # http://www.pixman.org
   # http://cairographics.org/releases/
@@ -4120,14 +4110,14 @@ function build_pixman()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -4135,7 +4125,7 @@ function build_pixman()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -4153,14 +4143,14 @@ function build_pixman()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
           # config_options+=("--with-gnu-ld")
 
-          # The numerous disables were inspired from Arch, after the initial 
+          # The numerous disables were inspired from Arch, after the initial
           # failed on armhf.
           config_options+=("--disable-static-testprogs")
           config_options+=("--disable-loongson-mmi")
@@ -4213,7 +4203,7 @@ function build_pixman()
 # -----------------------------------------------------------------------------
 
 
-function build_glib() 
+function build_glib()
 {
   # http://ftp.gnome.org/pub/GNOME/sources/glib
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=glib2-git
@@ -4258,7 +4248,7 @@ function build_glib()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
@@ -4268,7 +4258,7 @@ function build_glib()
       elif [ "${TARGET_PLATFORM}" == "win32" ]
       then
         LDFLAGS+=" -Wl,--allow-multiple-definition"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -4284,7 +4274,7 @@ function build_glib()
       fi
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -4302,7 +4292,7 @@ function build_glib()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -4372,7 +4362,7 @@ function build_glib()
 
 # -----------------------------------------------------------------------------
 
-function build_libxml2() 
+function build_libxml2()
 {
   # http://www.xmlsoft.org
   # ftp://xmlsoft.org/libxml2/
@@ -4429,14 +4419,14 @@ function build_libxml2()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"      
+      CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -4444,7 +4434,7 @@ function build_libxml2()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -4462,7 +4452,7 @@ function build_libxml2()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -4559,7 +4549,7 @@ function build_libedit()
       then
         CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -4567,7 +4557,7 @@ function build_libedit()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -4585,7 +4575,7 @@ function build_libedit()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
@@ -4637,7 +4627,7 @@ function build_libedit()
 # -----------------------------------------------------------------------------
 
 # Not yet functional.
-function build_xar() 
+function build_xar()
 {
   # https://github.com/mackyle/xar
   # https://github.com/mackyle/xar/archive/refs/tags/xar-1.6.1.tar.gz
@@ -4686,12 +4676,12 @@ function build_xar()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      
+
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      fi      
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -4708,7 +4698,7 @@ function build_xar()
       fi
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -4726,7 +4716,7 @@ function build_xar()
           config_options=()
 
           config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
+
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")

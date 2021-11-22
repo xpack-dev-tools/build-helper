@@ -4,7 +4,7 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
 
-# Inner script to run inside Docker containers to build the 
+# Inner script to run inside Docker containers to build the
 # xPack distribution packages.
 
 # For native builds, it runs on the host (macOS build cases,

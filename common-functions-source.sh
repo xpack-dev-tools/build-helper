@@ -3,12 +3,12 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the xPack build 
-# scripts. As the name implies, it should contain only functions and 
+# Helper script used in the second edition of the xPack build
+# scripts. As the name implies, it should contain only functions and
 # should be included with 'source' by the build scripts (both native
 # and container).
 
@@ -211,12 +211,12 @@ function get_current_package_version()
   grep '"version":' "${package_file_path}" | sed -e 's|.*"version": "\(.*\)".*|\1|'
 }
 
-function do_config_guess() 
+function do_config_guess()
 {
   BUILD="$(bash ${helper_folder_path}/config.guess)"
 }
 
-function set_xbb_env() 
+function set_xbb_env()
 {
   # Defaults, to ensure the variables are defined.
   PATH="${PATH:-""}"
@@ -317,7 +317,7 @@ function set_xbb_env()
   # Develop builds use the host folder.
   BUILD_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build"
   if [ -f "/.dockerenv" ]
-  then 
+  then
     if [ "${IS_DEVELOP}" != "y" ]
     then
       # Docker builds use a temporary folder.
@@ -354,7 +354,7 @@ function set_xbb_env()
   # mkdir -pv "${DEPLOY_FOLDER_PATH}"
 
   DISTRO_INFO_NAME=${DISTRO_INFO_NAME:-"distro-info"}
-  
+
   BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
 
   # ---------------------------------------------------------------------------
@@ -385,7 +385,7 @@ function set_xbb_env()
   export BUILD
   export HOST
   export TARGET
-  
+
   export LANGUAGE="en_US:en"
   export LANG="en_US.UTF-8"
   export LC_ALL="en_US.UTF-8"
@@ -519,7 +519,7 @@ function set_xbb_extras()
       XBB_CXXFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
     fi
 
-    # Note: macOS linker ignores -static-libstdc++, so 
+    # Note: macOS linker ignores -static-libstdc++, so
     # libstdc++.6.dylib should be handled.
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
 
@@ -545,8 +545,8 @@ function set_xbb_extras()
     XBB_CFLAGS+=" -D__USE_MINGW_ACCESS"
 
     # CRT_glob is from Arm script
-    # -static avoids libwinpthread-1.dll 
-    # -static-libgcc avoids libgcc_s_sjlj-1.dll 
+    # -static avoids libwinpthread-1.dll
+    # -static-libgcc avoids libgcc_s_sjlj-1.dll
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,--gc-sections"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libgcc -static-libstdc++"
@@ -857,7 +857,7 @@ function do_actions()
     if [ "${IS_NATIVE}" == "y" ]
     then
       echo "Removing the ${TARGET_FOLDER_NAME} folder..."
-  
+
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
     elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
     then
@@ -1031,7 +1031,7 @@ function run_app()
 
     (
       xbb_activate
-      
+
       local wine_path=$(which wine 2>/dev/null)
       if [ ! -z "${wine_path}" ]
       then
@@ -1113,7 +1113,7 @@ function run_app_exit()
   then
     app_path+='.exe'
   fi
-  
+
   (
     set +e
     echo
@@ -1174,7 +1174,7 @@ function show_libs()
       echo
       echo "[readelf -d ${app_path} | egrep ...]"
       # Ignore errors in case it is not using shared libraries.
-      set +e 
+      set +e
       readelf -d "${app_path}" | egrep '(SONAME)' || true
       readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
       readelf -d "${app_path}" | egrep '(NEEDED)' || true
@@ -1206,7 +1206,7 @@ function show_libs()
         echo
         echo "[readelf -d ${app_path} | egrep ...]"
         # Ignore errors in case it is not using shared libraries.
-        set +e 
+        set +e
         readelf -d "${app_path}" | egrep '(SONAME)' || true
         readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
         readelf -d "${app_path}" | egrep '(NEEDED)' || true
@@ -1251,7 +1251,7 @@ function show_native_libs()
     echo
     echo "[readelf -d ${app_path} | egrep ...]"
     # Ignore errors in case it is not using shared libraries.
-    set +e 
+    set +e
     readelf -d "${app_path}" | egrep '(SONAME)' || true
     readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
     readelf -d "${app_path}" | egrep '(NEEDED)' || true
@@ -1301,7 +1301,7 @@ function extract()
       echo "Extracting \"${archive_name}\" -> \"${pwd}/${folder_name}\"..."
       if [[ "${archive_name}" == *zip ]]
       then
-        run_verbose_develop unzip "${archive_name}" 
+        run_verbose_develop unzip "${archive_name}"
       else
         # On macOS Docker seems to have a problem and extracting symlinks
         # fails, but a second atempt is successful.
@@ -1401,7 +1401,7 @@ function git_clone()
   )
 }
 
-# Copy the build files to the Work area, to make them easily available. 
+# Copy the build files to the Work area, to make them easily available.
 function copy_build_git()
 {
   if [ -d "${HOST_WORK_FOLDER_PATH}/build.git" ]
@@ -1458,8 +1458,8 @@ function get_linux_rpaths_line()
 
   readelf -d "${file_path}" \
     | egrep '(RUNPATH|RPATH)' \
-    | sed -e 's|.*\[\(.*\)\]|\1|' 
-  
+    | sed -e 's|.*\[\(.*\)\]|\1|'
+
 }
 
 # -----------------------------------------------------------------------------
@@ -1501,7 +1501,7 @@ function check_binary_for_libraries()
       local n
       for n in ${dll_names}
       do
-        if [ ! -f "${folder_path}/${n}" ] 
+        if [ ! -f "${folder_path}/${n}" ]
         then
           if is_win_sys_dll "${n}"
           then
@@ -1553,7 +1553,7 @@ function check_binary_for_libraries()
             )
       fi
 
-      # For debug, use DYLD_PRINT_LIBRARIES=1 
+      # For debug, use DYLD_PRINT_LIBRARIES=1
       # https://medium.com/@donblas/fun-with-rpath-otool-and-install-name-tool-e3e41ae86172
 
       for lib_path in ${lib_paths}
@@ -1674,7 +1674,7 @@ function check_binary_for_libraries()
               # Looks like "", "/../lib"
               local folder_relative_path="${rpath:${#origin_prefix}}"
 
-              if [ -f "${folder_path}${folder_relative_path}/${so_name}" ] 
+              if [ -f "${folder_path}${folder_relative_path}/${so_name}" ]
               then
                 found="y"
                 break
@@ -1699,7 +1699,7 @@ function check_binary_for_libraries()
   )
 }
 
-function is_win_sys_dll() 
+function is_win_sys_dll()
 {
   local dll_name="$(echo "$1" | tr "[:upper:]" "[:lower:]")"
 
@@ -1776,14 +1776,14 @@ function is_win_sys_dll()
   return 1 # False
 }
 
-function is_linux_allowed_sys_so() 
+function is_linux_allowed_sys_so()
 {
   local lib_name="$1"
 
-  # Do not add these two, they are present if the toolchain is installed, 
+  # Do not add these two, they are present if the toolchain is installed,
   # but this is not guaranteed, so better copy them from the xbb toolchain.
-  # libstdc++.so.6 
-  # libgcc_s.so.1 
+  # libstdc++.so.6
+  # libgcc_s.so.1
 
   # Shared libraries that are expected to be present on any Linux.
   # Note the X11 libraries.
@@ -1818,7 +1818,7 @@ function is_linux_allowed_sys_so()
 }
 
 # Links are automatically followed.
-function is_darwin_sys_dylib() 
+function is_darwin_sys_dylib()
 {
   local lib_name="$1"
 
@@ -1838,13 +1838,13 @@ function is_darwin_sys_dylib()
   return 1 # False
 }
 
-function is_darwin_allowed_sys_dylib() 
+function is_darwin_allowed_sys_dylib()
 {
   local lib_name="$1"
 
-  # Since there is no -static-libc++, the first attempt was to not 
-  # define these here and have the 10.10 ones copied to the application. 
-  # Building CMake proved that this is ok with 10.11 and 10.12, but 
+  # Since there is no -static-libc++, the first attempt was to not
+  # define these here and have the 10.10 ones copied to the application.
+  # Building CMake proved that this is ok with 10.11 and 10.12, but
   # failes on 10.13 and 10.14 with:
   # dyld: Symbol not found: __ZNSt3__118shared_timed_mutex13unlock_sharedEv
   # Referenced from: /System/Library/Frameworks/CoreDisplay.framework/Versions/A/CoreDisplay
@@ -1949,13 +1949,13 @@ function has_rpath()
   local elf="$1"
   if [ "${TARGET_PLATFORM}" == "linux" ]
   then
-    
+
     local rpath=$(readelf -d ${elf} | egrep '(RUNPATH|RPATH)')
     if [ ! -z "${rpath}" ]
     then
       return 0 # true
     fi
-    
+
   fi
   return 1 # false
 }
@@ -1985,7 +1985,7 @@ function strip_binaries()
       then
 
         binaries=$(find "${folder_path}" \( -name \*.exe -o -name \*.dll -o -name \*.pyd \))
-        for bin in ${binaries} 
+        for bin in ${binaries}
         do
           strip_binary "${bin}"
         done
@@ -1994,7 +1994,7 @@ function strip_binaries()
       then
 
         binaries=$(find "${folder_path}" -name \* -perm +111 -type f ! -type l | grep -v 'MacOSX.*\.sdk' | grep -v 'macOS.*\.sdk' )
-        for bin in ${binaries} 
+        for bin in ${binaries}
         do
           if is_elf "${bin}"
           then
@@ -2014,7 +2014,7 @@ function strip_binaries()
       then
 
         binaries=$(find "${folder_path}" -name \* -type f ! -type l)
-        for bin in ${binaries} 
+        for bin in ${binaries}
         do
           if is_elf "${bin}"
           then
@@ -2038,7 +2038,7 @@ function strip_binaries()
 
 # Strip binary files as in "strip binary" form, for both native
 # (linux/mac) and mingw.
-function strip_binary2() 
+function strip_binary2()
 {
   (
     set +e
@@ -2072,7 +2072,7 @@ function strip_binary2()
   )
 }
 
-function strip_binary() 
+function strip_binary()
 {
   if [ $# -lt 1 ]
   then
@@ -2114,7 +2114,7 @@ function strip_binary()
   else
     echo $(file "${file_path}")
     return
-  fi  
+  fi
 
   if has_origin "${file_path}"
   then
@@ -2416,7 +2416,7 @@ function is_ar()
 # -----------------------------------------------------------------------------
 
 # Deprecated, use copy_dependencies_recursive().
-function copy_win_gcc_dll() 
+function copy_win_gcc_dll()
 {
   local dll_name="$1"
 
@@ -2452,7 +2452,7 @@ function copy_win_gcc_dll()
 }
 
 # Deprecated, use copy_dependencies_recursive().
-function copy_win_libwinpthread_dll() 
+function copy_win_libwinpthread_dll()
 {
   if [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" ]
   then
@@ -2478,7 +2478,7 @@ function change_dylib()
 
   if [ -L "${file_path}" ]
   then
-    echo "Oops! change_dylib should not change links! (${file_path})" 
+    echo "Oops! change_dylib should not change links! (${file_path})"
     exit 1
   fi
 
@@ -2512,7 +2512,7 @@ function change_dylib()
     then
       if [ "${dylib_path}" != "@rpath/${dylib_name}" ]
       then
-        
+
         chmod +w "${file_path}"
         run_verbose install_name_tool \
           -change "${dylib_path}" \
@@ -2616,8 +2616,8 @@ function clean_rpaths()
 function patch_linux_elf_origin()
 {
   if [ $# -lt 1 ]
-  then 
-    echo "patch_linux_elf_origin requires 1 args." 
+  then
+    echo "patch_linux_elf_origin requires 1 args."
     exit 1
   fi
 
@@ -2666,8 +2666,8 @@ function patch_linux_elf_origin()
 
     if [ "${patchelf_has_output}" == "y" ]
     then
-      echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" --output \"${file_path}\" \"${tmp_path}\"]" 
-      ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}" 
+      echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" --output \"${file_path}\" \"${tmp_path}\"]"
+      ${patchelf} --force-rpath --set-rpath "\$ORIGIN" --output "${file_path}" "${tmp_path}"
     else
       echo "[${patchelf} --force-rpath --set-rpath \"\$ORIGIN\" \"${file_path}\"]"
       ${patchelf} --force-rpath --set-rpath "\$ORIGIN" "${tmp_path}"
@@ -2693,8 +2693,8 @@ function patch_linux_elf_origin()
 function patch_linux_elf_set_rpath()
 {
   if [ $# -lt 2 ]
-  then 
-    echo "patch_linux_elf_set_rpath requires 2 args." 
+  then
+    echo "patch_linux_elf_set_rpath requires 2 args."
     exit 1
   fi
 
@@ -2743,8 +2743,8 @@ function patch_linux_elf_set_rpath()
 
     if [ "${patchelf_has_output}" == "y" ]
     then
-      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]" 
-      ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}" 
+      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]"
+      ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}"
     else
       echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
       ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
@@ -2770,8 +2770,8 @@ function patch_linux_elf_set_rpath()
 function patch_linux_elf_add_rpath()
 {
   if [ $# -lt 2 ]
-  then 
-    echo "patch_linux_elf_add_rpath requires 2 args." 
+  then
+    echo "patch_linux_elf_add_rpath requires 2 args."
     exit 1
   fi
 
@@ -2792,7 +2792,7 @@ function patch_linux_elf_add_rpath()
   else
     if [ -z "${new_rpath}" ]
     then
-      echo "patch_linux_elf_add_rpath new path cannot be empty." 
+      echo "patch_linux_elf_add_rpath new path cannot be empty."
       exit 1
     fi
 
@@ -2839,8 +2839,8 @@ function patch_linux_elf_add_rpath()
 
     if [ "${patchelf_has_output}" == "y" ]
     then
-      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]" 
-      ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}" 
+      echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" --output \"${file_path}\" \"${tmp_path}\"]"
+      ${patchelf} --force-rpath --set-rpath "${new_rpath}" --output "${file_path}" "${tmp_path}"
     else
       echo "[${patchelf} --force-rpath --set-rpath \"${new_rpath}\" \"${file_path}\"]"
       ${patchelf} --force-rpath --set-rpath "${new_rpath}" "${tmp_path}"
@@ -2849,7 +2849,7 @@ function patch_linux_elf_add_rpath()
         cp "${tmp_path}" "${file_path}"
       fi
     fi
-    
+
     if [ "${IS_DEVELOP}" == "y" ]
     then
       readelf -d "${tmp_path}" | egrep '(RUNPATH|RPATH)'
@@ -2867,8 +2867,8 @@ function patch_linux_elf_add_rpath()
 function compute_origin_relative_to_libexec()
 {
   if [ $# -lt 1 ]
-  then 
-    echo "compute_origin_relative_to_libexec requires 1 arg." 
+  then
+    echo "compute_origin_relative_to_libexec requires 1 arg."
     exit 1
   fi
 
@@ -2976,7 +2976,7 @@ function prepare_app_folder_libraries()
     then
 
       binaries=$(find_binaries "${folder_path}")
-      for bin in ${binaries} 
+      for bin in ${binaries}
       do
         echo
         echo "## Preparing $(basename "${bin}") ${bin} libraries..."
@@ -2987,7 +2987,7 @@ function prepare_app_folder_libraries()
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
       binaries=$(find_binaries "${folder_path}")
-      for bin in ${binaries} 
+      for bin in ${binaries}
       do
         if is_elf "${bin}"
         then
@@ -3001,7 +3001,7 @@ function prepare_app_folder_libraries()
     then
 
       binaries=$(find_binaries "${folder_path}")
-      for bin_path in ${binaries} 
+      for bin_path in ${binaries}
       do
         if is_elf_dynamic "${bin_path}"
         then
@@ -3009,7 +3009,7 @@ function prepare_app_folder_libraries()
           echo "## Preparing $(basename "${bin_path}") (${bin_path}) libraries..."
           copy_dependencies_recursive "${bin_path}" \
             "$(dirname "${bin_path}")"
- 
+
           # echo $(basename "${bin_path}") $(readelf -d "${bin_path}" | egrep '(RUNPATH|RPATH)')
         fi
       done
@@ -3083,8 +3083,8 @@ function replace_loader_path()
 function copy_dependencies_recursive()
 {
   if [ $# -lt 2 ]
-  then 
-    echo "copy_dependencies_recursive requires at least 2 arg." 
+  then
+    echo "copy_dependencies_recursive requires at least 2 arg."
     exit 1
   fi
 
@@ -3137,7 +3137,7 @@ function copy_dependencies_recursive()
 
         (
           cd "${destination_folder_path}"
-          run_verbose ln -s "${actual_source_file_name}" "${source_file_name}" 
+          run_verbose ln -s "${actual_source_file_name}" "${source_file_name}"
         )
 
       elif is_elf "${source_file_path}" || is_pe "${source_file_path}"
@@ -3182,7 +3182,7 @@ function copy_dependencies_recursive()
       readelf -d "${actual_destination_file_path}" | egrep '(NEEDED)' || true
 
       # patch_linux_elf_origin "${actual_destination_file_path}"
-      
+
       # echo "II. Processing ${source_file_path} dependencies..."
 
       # The file must be an elf. Get its shared libraries.
@@ -3328,7 +3328,7 @@ function copy_dependencies_recursive()
         # The path may be regular (absolute or relative), but may also be
         # relative to a special prefix (executable, loader, rpath).
         # The name usually is a link to more strictly versioned file.
-        
+
         echo_develop "processing ${lib_path} of ${actual_destination_file_path}"
 
         local from_path="${lib_path}"
@@ -3377,7 +3377,7 @@ function copy_dependencies_recursive()
               echo ">>> \"${lib_path}\" not found in rpath"
               exit 1
             else
-              from_path="${found_absolute_lib_path}" 
+              from_path="${found_absolute_lib_path}"
             fi
           fi
         fi
@@ -3391,7 +3391,7 @@ function copy_dependencies_recursive()
             then
               # Allowed system library, no need to copy it.
               echo_develop "${from_path} is allowed sys dylib"
-              continue 
+              continue
             elif [ "${lib_path:0:1}" == "/" ]
             then
               echo ">>> absolute \"${lib_path}\" not one of the allowed libs"
@@ -3421,11 +3421,11 @@ function copy_dependencies_recursive()
 
         copy_dependencies_recursive \
           "${from_path}" \
-          "${APP_PREFIX}/libexec" 
+          "${APP_PREFIX}/libexec"
 
         local lib_name="$(basename "${from_path}")"
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-        
+
         # chmod +w "${file_path}"
         if [ "${relative_folder_path}" == "." ]
         then
@@ -3504,7 +3504,7 @@ function copy_dependencies_recursive()
           cd "${destination_folder_path}"
 
           local link_relative_path="$(realpath --relative-to="${destination_folder_path}" "${copied_file_path}")"
-          run_verbose ln -s "${link_relative_path}" "${source_file_name}" 
+          run_verbose ln -s "${link_relative_path}" "${source_file_name}"
         )
       fi
 
@@ -3594,7 +3594,7 @@ function check_binaries()
 
   (
     xbb_activate
-    
+
     echo
     echo "Checking binaries for unwanted libraries..."
 
@@ -3606,7 +3606,7 @@ function check_binaries()
     then
 
       binaries=$(find_binaries "${folder_path}")
-      for bin in ${binaries} 
+      for bin in ${binaries}
       do
         check_binary "${bin}"
       done
@@ -3615,7 +3615,7 @@ function check_binaries()
     then
 
       binaries=$(find_binaries "${folder_path}")
-      for bin in ${binaries} 
+      for bin in ${binaries}
       do
         if is_elf "${bin}"
         then
@@ -3632,7 +3632,7 @@ function check_binaries()
     then
 
       binaries=$(find_binaries "${folder_path}")
-      for bin in ${binaries} 
+      for bin in ${binaries}
       do
         if is_elf_dynamic "${bin}"
         then
@@ -3656,7 +3656,7 @@ function check_binaries()
 
 # $1 - absolute path to input folder
 # $2 - name of output folder below INSTALL_FOLDER
-function copy_license() 
+function copy_license()
 {
   # Iterate all files in a folder and install some of them in the
   # destination folder
@@ -3742,7 +3742,7 @@ function copy_build_files()
   )
 }
 
-# Must be called in the build folder, like 
+# Must be called in the build folder, like
 # cd "${LIBS_BUILD_FOLDER_PATH}"
 # cd "${BUILD_FOLDER_PATH}"
 
@@ -3766,7 +3766,7 @@ function copy_cmake_logs()
 # -----------------------------------------------------------------------------
 
 # Copy one folder to another
-function copy_dir() 
+function copy_dir()
 {
   local from_path="$1"
   local to_path="$2"
@@ -3833,7 +3833,7 @@ function create_archive()
     mkdir -pv "${DEPLOY_FOLDER_PATH}"
 
     # The folder is temprarily moved into a versioned folder like
-    # xpack-<app-name>-<version>, or, in previous versions, 
+    # xpack-<app-name>-<version>, or, in previous versions,
     # in a more elaborate hierarchy like
     # xPacks/<app-name>/<version>.
     # After the archive is created, the folders are moved back.
@@ -3918,7 +3918,7 @@ function _check_application()
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.so.\* -type f)
     local lib
-    for lib in ${libs} 
+    for lib in ${libs}
     do
       check_binary_for_libraries "${lib}"
     done
@@ -3933,7 +3933,7 @@ function _check_application()
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.dylib -type f)
     local lib
-    for lib in ${libs} 
+    for lib in ${libs}
     do
       check_binary_for_libraries "${lib}"
     done
@@ -3948,7 +3948,7 @@ function _check_application()
 
     local libs=$(find "${APP_PREFIX}/bin" -name \*.dll -type f)
     local lib
-    for lib in ${libs} 
+    for lib in ${libs}
     do
       check_binary_for_libraries "${lib}"
     done
@@ -3963,7 +3963,7 @@ function _check_application()
 
 # -----------------------------------------------------------------------------
 
-function compute_sha() 
+function compute_sha()
 {
   # $1 shasum program
   # $2.. options

@@ -4,7 +4,7 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ rm -rf "${data_file_path}"
 # Note: __EOF__ is NOT quoted to allow substitutions.
 cat <<__EOF__ > "${data_file_path}"
 {
-  "ref": "${branch}", 
+  "ref": "${branch}",
   "inputs": {
     "version": "${version}"
   }

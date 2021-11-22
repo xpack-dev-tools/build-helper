@@ -3,17 +3,17 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
-# Helper script used in the second edition of the xPack build 
-# scripts. As the name implies, it should contain only functions and 
+# Helper script used in the second edition of the xPack build
+# scripts. As the name implies, it should contain only functions and
 # should be included with 'source' by the host build scripts.
 
 # -----------------------------------------------------------------------------
 
-function host_get_current_date() 
+function host_get_current_date()
 {
   # Use the UTC date as version in the name of the distribution file.
   DISTRIBUTION_FILE_DATE=${DISTRIBUTION_FILE_DATE:-$(date -u +%Y%m%d-%H%M)}
@@ -25,14 +25,14 @@ function host_get_current_date()
   echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\""
 }
 
-function host_start_timer() 
+function host_start_timer()
 {
   HOST_BEGIN_SECOND=$(date +%s)
   echo
   echo "Script \"$0\" started at $(date)."
 }
 
-function host_stop_timer() 
+function host_stop_timer()
 {
   local host_end_second=$(date +%s)
   echo
@@ -58,7 +58,7 @@ function host_notify_completed()
 # -----------------------------------------------------------------------------
 
 # Detect the machine the build runs on.
-function host_detect() 
+function host_detect()
 {
   echo
   uname -a
@@ -92,7 +92,7 @@ function host_detect()
       echo "Unknown uname -m ${HOST_MACHINE}"
       exit 1
     fi
-   
+
     HOST_NODE_PLATFORM="darwin"
 
   elif [ "${HOST_UNAME}" == "Linux" ]
@@ -152,7 +152,7 @@ function host_detect()
   TARGET_PLATFORM="${HOST_NODE_PLATFORM}"
   TARGET_MACHINE="${HOST_MACHINE}"
   TARGET_BITS="${HOST_BITS}"
-  
+
   IS_NATIVE=""
   IS_DEVELOP=""
   # Redefine it to "y" to run as root inside the container.
@@ -260,7 +260,7 @@ function host_options()
           DO_BUILD_LINUX_ARM64="${DO_BUILD_LINUX_ARM64:-"y"}"
         elif [ "${HOST_NODE_ARCH}" == "x64" ]
         then
-          if [ "$(uname)" == "Darwin" ] 
+          if [ "$(uname)" == "Darwin" ]
           then
             DO_BUILD_OSX="${DO_BUILD_OSX:-"y"}"
           else
@@ -603,7 +603,7 @@ function host_common()
   copy_build_git
 }
 
-function host_prepare_prerequisites() 
+function host_prepare_prerequisites()
 {
   if [ "${HOST_UNAME}" == "Darwin" ]
   then
@@ -633,7 +633,7 @@ function host_prepare_prerequisites()
       then
         must_install="y"
       fi
-      
+
     fi
 
     if [ -n "${must_install}" ]
@@ -642,7 +642,7 @@ function host_prepare_prerequisites()
       echo
       echo "Please install the macOS XBB and rerun."
       echo "https://github.com/xpack/xpack-build-box/tree/master/macos"
-      
+
       exit 1
 
     fi
@@ -705,7 +705,7 @@ function host_prepare_prerequisites()
 
 # -----------------------------------------------------------------------------
 
-function host_prepare_docker() 
+function host_prepare_docker()
 {
   echo
   echo "Checking Docker..."
@@ -721,14 +721,14 @@ function host_prepare_docker()
 
   echo
   echo "Pruning Docker..."
-  
+
   docker system prune -f
   set -e
 }
 
 # -----------------------------------------------------------------------------
 
-function host_build_target() 
+function host_build_target()
 {
   message="$1"
   shift
@@ -866,7 +866,7 @@ function host_build_target()
       --env-file "${env_file}" \
       --host-uname "${HOST_UNAME}" \
       -- \
-      "$@"    
+      "$@"
 
   fi
 
@@ -878,7 +878,7 @@ function host_build_target()
 
 # -----------------------------------------------------------------------------
 
-function host_run_native_script() 
+function host_run_native_script()
 {
   local local_script=""
   local env_file=""
@@ -916,7 +916,7 @@ function host_run_native_script()
   echo
   echo "Running script \"$(basename "${local_script}")\" natively..."
 
-  # Run the inner script in a local sub-shell, possibly with the 
+  # Run the inner script in a local sub-shell, possibly with the
   # custom environment.
   (
     if [ -n "${env_file}" -a -f "${env_file}" ]
@@ -929,7 +929,7 @@ function host_run_native_script()
 
 # -----------------------------------------------------------------------------
 
-function host_run_docker_script() 
+function host_run_docker_script()
 {
   local docker_script=""
   local docker_image=""
@@ -1018,23 +1018,23 @@ function host_run_docker_script()
     # including passing the extra args (in the middle of the string).
     #
     # From the [bash manual](https://www.gnu.org/software/bash/manual/bash.html):
-    # ($*) Expands to the positional parameters, starting from one. 
-    # When the expansion is not within double quotes, each positional 
-    # parameter expands to a separate word. In contexts where it is 
-    # performed, those words are subject to further word splitting and 
-    # pathname expansion. When the expansion occurs within double quotes, 
-    # it expands to a single word with the value of each parameter separated 
-    # by the first character of the IFS special variable. That is, "$*" 
-    # is equivalent to "$1c$2c…", where c is the first character of the 
-    # value of the IFS variable. If IFS is unset, the parameters are 
-    # separated by spaces. If IFS is null, the parameters are joined 
+    # ($*) Expands to the positional parameters, starting from one.
+    # When the expansion is not within double quotes, each positional
+    # parameter expands to a separate word. In contexts where it is
+    # performed, those words are subject to further word splitting and
+    # pathname expansion. When the expansion occurs within double quotes,
+    # it expands to a single word with the value of each parameter separated
+    # by the first character of the IFS special variable. That is, "$*"
+    # is equivalent to "$1c$2c…", where c is the first character of the
+    # value of the IFS variable. If IFS is unset, the parameters are
+    # separated by spaces. If IFS is null, the parameters are joined
     # without intervening separators.
     local ifs="${IFS}"
     IFS=" "
     # Without -m, wine fails to create .wine.
     local cmd_string="groupadd -g ${GROUP_ID} ${GROUP_NAME} && useradd -m -u ${USER_ID} -g ${GROUP_ID} ${USER_NAME} && su -c \"DEBUG=${DEBUG} bash ${docker_script} $*\" ${USER_NAME}"
     IFS="${ifs}"
- 
+
     docker run \
       --name="${docker_container_name}" \
       --tty \
@@ -1093,7 +1093,7 @@ function host_build_all() {
     fi
 
     # ----- Build the GNU/Linux 64-bit distribution. ----------------------------
-    
+
     if [ "${DO_BUILD_LINUX64}" == "y" ]
     then
       host_build_target "Creating the GNU/Linux 64-bit distribution..." \

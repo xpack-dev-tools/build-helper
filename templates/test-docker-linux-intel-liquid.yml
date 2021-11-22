@@ -8,7 +8,7 @@
 
 # https://github.com/docker-library/official-images#architectures-other-than-amd64
 
-# Debian versions: 
+# Debian versions:
 # - 8 jessie
 # - 9 stretch
 # - 10 buster
@@ -36,7 +36,7 @@ on:
         required: false
         default: 'current'
 
-# The scripts are executed in the Docker context by GitHub Actions, 
+# The scripts are executed in the Docker context by GitHub Actions,
 # so `native-test.sh` should be fine, it already takes care of updates.
 jobs:
 {% for platform in platforms -%}
@@ -366,7 +366,7 @@ jobs:
       - name: 'Debian testing ia32'
         uses: docker://i386/debian:testing
         with:
-          entrypoint: /usr/bin/linux32 
+          entrypoint: /usr/bin/linux32
           args: /bin/bash /github/workspace/scripts/helper/tests/native-test.sh --image i386/debian:testing --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   # centos:latest outdated

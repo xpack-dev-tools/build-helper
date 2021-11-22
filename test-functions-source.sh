@@ -3,7 +3,7 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
           ]
         },
         {
@@ -56,7 +56,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
           ]
         },
         {
@@ -68,7 +68,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
           ]
         },
         {
@@ -80,7 +80,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
           ]
         },
         {
@@ -92,7 +92,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
           ]
         },
         {
@@ -104,7 +104,7 @@ cat <<__EOF__ > "${data_file_path}"
           "script": [
             "env | sort",
             "pwd",
-            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}" 
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
           ]
         }
       ],
@@ -166,7 +166,7 @@ function trigger_github_workflow()
 
   echo
   echo "Response:"
-  
+
   curl \
     --request POST \
     --include \
@@ -266,7 +266,7 @@ function detect_architecture()
 # - TARGET
 # - IS_DEVELOP
 
-function prepare_env() 
+function prepare_env()
 {
   container_work_folder_path="/Host/Work"
   container_repo_folder_path="/Host/repo"
@@ -437,7 +437,7 @@ function install_archive()
   if [[ "${archive_name}" == *.zip ]]
   then
     unzip -q "${cache_folder_path}/${archive_name}"
-  else 
+  else
     tar xf "${cache_folder_path}/${archive_name}"
   fi
 
@@ -452,7 +452,7 @@ function install_archive()
 function install_xpm()
 {
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-  
+
   export NVM_DIR="${HOME}/.nvm"
   [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"  # This loads nvm
   [ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion"  # This loads nvm bash_completion
@@ -545,7 +545,7 @@ function show_libs()
   then
     app_path+='.exe'
   fi
-  
+
   if [ -f "${app_path}" ]
   then
     run_verbose ls -l "${app_path}"
