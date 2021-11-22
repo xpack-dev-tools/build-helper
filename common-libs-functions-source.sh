@@ -178,7 +178,7 @@ function test_zlib()
 
 # -----------------------------------------------------------------------------
 
-function build_gmp() 
+function build_gmp()
 {
   # https://gmplib.org
   # https://gmplib.org/download/gmp/
@@ -192,6 +192,7 @@ function build_gmp()
   # 14-Nov-2020, "6.2.1"
 
   local gmp_version="$1"
+  local name_suffix=${2-''}
 
   # The folder name as resulted after being extracted from the archive.
   local gmp_src_folder_name="gmp-${gmp_version}"
@@ -200,7 +201,7 @@ function build_gmp()
   local gmp_url="https://gmplib.org/download/gmp/${gmp_archive}"
 
   # The folder name for build, licenses, etc.
-  local gmp_folder_name="${gmp_src_folder_name}"
+  local gmp_folder_name="${gmp_src_folder_name}${name_suffix}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${gmp_folder_name}"
 
@@ -217,23 +218,40 @@ function build_gmp()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
 
-      xbb_activate_installed_dev
+      if [ -n "${name_suffix}" ]
+      then
 
-      # Exceptions used by Arm GCC script and by mingw-w64.
-      CPPFLAGS="${XBB_CPPFLAGS} -fexceptions"
-      # Test fail with -Ofast, revert to -O2
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      else
+
+        xbb_activate_installed_dev
+
+        # Exceptions used by Arm GCC script and by mingw-w64.
+        CPPFLAGS="${XBB_CPPFLAGS} -fexceptions"
+        # Test fail with -Ofast, revert to -O2
+        CFLAGS="${XBB_CFLAGS_NO_W}"
       CFLAGS="${XBB_CFLAGS_NO_W}" 
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
-      if [ "${TARGET_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        fi
       fi      
+        fi
 
-      if [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        export CC_FOR_BUILD="${NATIVE_CC}"
+        if [ "${TARGET_PLATFORM}" == "win32" ]
+        then
+          export CC_FOR_BUILD="${NATIVE_CC}"
+        fi
+
       fi
 
       export CPPFLAGS
@@ -249,7 +267,7 @@ function build_gmp()
       fi
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -257,7 +275,7 @@ function build_gmp()
           fi
 
           echo
-          echo "Running gmp configure..."
+          echo "Running gmp${name_suffix} configure..."
 
           # ABI is mandatory, otherwise configure fails on 32-bit.
           # (see https://gmplib.org/manual/ABI-and-ISA.html)
@@ -269,20 +287,31 @@ function build_gmp()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
-            
-          config_options+=("--enable-cxx")
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
-          if [ "${TARGET_PLATFORM}" == "win32" ]
+          if [ -n "${name_suffix}" ]
           then
-            # mpfr asks for this explicitly during configure.
-            # (although the message is confusing)
-            config_options+=("--enable-shared")
-            config_options+=("--disable-static")
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+
+          else
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
+
+            config_options+=("--enable-cxx")
+
+            if [ "${TARGET_PLATFORM}" == "win32" ]
+            then
+              # mpfr asks for this explicitly during configure.
+              # (although the message is confusing)
+              config_options+=("--enable-shared")
+              config_options+=("--disable-static")
+            fi
+
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
@@ -302,7 +331,7 @@ function build_gmp()
 
       (
         echo
-        echo "Running gmp make..."
+        echo "Running gmp${name_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -327,16 +356,19 @@ function build_gmp()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/make-output.txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}" \
-        "${gmp_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}" \
+          "${gmp_folder_name}"
+      fi
 
     )
 
     touch "${gmp_stamp_file_path}"
 
   else
-    echo "Library gmp already installed."
+    echo "Library gmp${name_suffix} already installed."
   fi
 }
 
@@ -355,6 +387,7 @@ function build_mpfr()
   # 10 July 2020 "4.1.0"
 
   local mpfr_version="$1"
+  local name_suffix=${2-''}
 
   # The folder name as resulted after being extracted from the archive.
   local mpfr_src_folder_name="mpfr-${mpfr_version}"
@@ -363,7 +396,7 @@ function build_mpfr()
   local mpfr_url="http://www.mpfr.org/${mpfr_src_folder_name}/${mpfr_archive}"
 
   # The folder name for build, licenses, etc.
-  local mpfr_folder_name="${mpfr_src_folder_name}"
+  local mpfr_folder_name="${mpfr_src_folder_name}${name_suffix}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${mpfr_folder_name}"
 
@@ -380,17 +413,32 @@ function build_mpfr()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
 
-      xbb_activate_installed_dev
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
-      if [ "${TARGET_PLATFORM}" == "linux" ]
+      if [ -n "${name_suffix}" ]
       then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      else
+
+        xbb_activate_installed_dev
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        fi
       fi      
+        fi
+
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -398,7 +446,7 @@ function build_mpfr()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -406,7 +454,7 @@ function build_mpfr()
           fi
 
           echo
-          echo "Running mpfr configure..."
+          echo "Running mpfr${name_suffix} configure..."
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -415,26 +463,37 @@ function build_mpfr()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
-          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
+          if [ -n "${name_suffix}" ]
+          then
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+
+          else
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
+
+          fi
+
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
           config_options+=("--disable-warnings")
-          
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
             "${config_options[@]}"
-             
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/configure-output.txt"
       fi
 
       (
         echo
-        echo "Running mpfr make..."
+        echo "Running mpfr${name_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -453,15 +512,18 @@ function build_mpfr()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpfr_folder_name}/make-output.txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}" \
-        "${mpfr_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}" \
+          "${mpfr_folder_name}"
+      fi
 
     )
     touch "${mpfr_stamp_file_path}"
 
   else
-    echo "Library mpfr already installed."
+    echo "Library mpfr${name_suffix} already installed."
   fi
 }
 
@@ -480,6 +542,7 @@ function build_mpc()
   # 2020-10 "1.2.1"
 
   local mpc_version="$1"
+  local name_suffix=${2-''}
 
   # The folder name as resulted after being extracted from the archive.
   local mpc_src_folder_name="mpc-${mpc_version}"
@@ -492,7 +555,7 @@ function build_mpc()
   fi
 
   # The folder name for build, licenses, etc.
-  local mpc_folder_name="${mpc_src_folder_name}"
+  local mpc_folder_name="${mpc_src_folder_name}${name_suffix}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${mpc_folder_name}"
 
@@ -509,17 +572,32 @@ function build_mpc()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
 
-      xbb_activate_installed_dev
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
-      if [ "${TARGET_PLATFORM}" == "linux" ]
+      if [ -n "${name_suffix}" ]
       then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      else
+
+        xbb_activate_installed_dev
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        fi
       fi      
+        fi
+
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -527,7 +605,7 @@ function build_mpc()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -535,8 +613,8 @@ function build_mpc()
           fi
 
           echo
-          echo "Running mpc configure..."
-        
+          echo "Running mpc${name_suffix} configure..."
+
           if [ "${IS_DEVELOP}" == "y" ]
           then
             run_verbose bash "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" --help
@@ -544,25 +622,36 @@ function build_mpc()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
-          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
-          config_options+=("--with-mpfr=${LIBS_INSTALL_FOLDER_PATH}")
+          if [ -n "${name_suffix}" ]
+          then
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+
+          else
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
+
+          fi
+
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--with-mpfr=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}/configure" \
             "${config_options[@]}"
-            
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${mpc_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/configure-output.txt"
       fi
 
       (
         echo
-        echo "Running mpc make..."
+        echo "Running mpc${name_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -581,15 +670,18 @@ function build_mpc()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpc_folder_name}/make-output.txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}" \
-        "${mpc_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${mpc_src_folder_name}" \
+          "${mpc_folder_name}"
+      fi
 
     )
     touch "${mpc_stamp_file_path}"
 
   else
-    echo "Library mpc already installed."
+    echo "Library mpc${name_suffix} already installed."
   fi
 }
 
@@ -610,6 +702,7 @@ function build_isl()
   # 2021-05-01 "0.24"
 
   local isl_version="$1"
+  local name_suffix=${2-''}
 
   # The folder name as resulted after being extracted from the archive.
   local isl_src_folder_name="isl-${isl_version}"
@@ -623,7 +716,7 @@ function build_isl()
   local isl_url="https://sourceforge.net/projects/libisl/files/${isl_archive}"
 
   # The folder name for build, licenses, etc.
-  local isl_folder_name="${isl_src_folder_name}"
+  local isl_folder_name="${isl_src_folder_name}${name_suffix}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${isl_folder_name}"
 
@@ -640,17 +733,33 @@ function build_isl()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
 
-      xbb_activate_installed_dev
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
-      if [ "${TARGET_PLATFORM}" == "linux" ]
+      if [ -n "${name_suffix}" ]
       then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+
+        # Otherwise `configure: error: gmp.h header not found`.`
+        CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+      else
+
+        xbb_activate_installed_dev
+
+        CPPFLAGS="${XBB_CPPFLAGS}"
+        CFLAGS="${XBB_CFLAGS_NO_W}"
+        CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+        LDFLAGS="${XBB_LDFLAGS_LIB}"
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
+          LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        fi
       fi      
+        fi
+
+      fi
 
       export CPPFLAGS
       export CFLAGS
@@ -658,7 +767,7 @@ function build_isl()
       export LDFLAGS
 
       if [ ! -f "config.status" ]
-      then 
+      then
         (
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -666,7 +775,7 @@ function build_isl()
           fi
 
           echo
-          echo "Running isl configure..."
+          echo "Running isl${name_suffix} configure..."
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -675,31 +784,42 @@ function build_isl()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
-          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}")
+          if [ -n "${name_suffix}" ]
+          then
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${BUILD}")
+            config_options+=("--target=${BUILD}")
+
+          else
+ 
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
+
+          fi
+
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
             "${config_options[@]}"
-            
+
           cp "config.log" "${LOGS_FOLDER_PATH}/${isl_folder_name}/config-log.txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/configure-output.txt"
       fi
 
       (
         echo
-        echo "Running isl make..."
+        echo "Running isl${name_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          if [ "${TARGET_PLATFORM}" == "linux" ] 
+          if [ "${TARGET_PLATFORM}" == "linux" ]
           then
             # /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x64/build/libs/isl-0.22/.libs/lt-isl_test_cpp: relocation error: /Host/Users/ilg/Work/gcc-8.4.0-1/linux-x64/build/libs/isl-0.22/.libs/lt-isl_test_cpp: symbol _ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEE9_M_createERmm, version GLIBCXX_3.4.21 not defined in file libstdc++.so.6 with link time reference
             # FAIL isl_test_cpp (exit status: 127)
@@ -723,15 +843,18 @@ function build_isl()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${isl_folder_name}/make-output.txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}" \
-        "${isl_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}" \
+          "${isl_folder_name}"
+      fi
 
     )
     touch "${isl_stamp_file_path}"
 
   else
-    echo "Library isl already installed."
+    echo "Library isl${name_suffix} already installed."
   fi
 }
 
