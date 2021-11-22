@@ -1261,7 +1261,7 @@ function build_binutils()
       "${binutils_src_folder_name}" "${binutils_patch_file_name}"
 
     local binutils_prerequisites_download_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${binutils_folder_name}-prerequisites-downloaded"
-    if [ ! -f "${binutils_prerequisites_download_stamp_file_path}" ]
+    if false # [ ! -f "${binutils_prerequisites_download_stamp_file_path}" ]
     then
       (
         cd "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}"
