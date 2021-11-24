@@ -1712,6 +1712,9 @@ case $os in
 	# Likewise for "kernel-abi"
 	eabi* | gnueabi*)
 		;;
+  # xPack
+  embed*)
+    ;;
 	# VxWorks passes extra cpu info in the 4th filed.
 	simlinux | simwindows | spe)
 		;;
