@@ -375,6 +375,13 @@ function set_xbb_env()
   WITH_HTML=${WITH_HTML:-""}
   WITH_TESTS=${WITH_TESTS:-"y"}
 
+  if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "arm64" ]
+  then
+    WITH_UPDATE_CONFIG_SUB=${WITH_UPDATE_CONFIG_SUB:-"y"}
+  else
+    WITH_UPDATE_CONFIG_SUB=${WITH_UPDATE_CONFIG_SUB:-""}
+  fi
+
   # Redefine this to "y" to create files that include the architecture.
   HAS_NAME_ARCH=${HAS_NAME_ARCH:-"y"}
 
@@ -1364,7 +1371,8 @@ function download_and_extract()
 
   chmod -R +w "${folder_name}" || true
 
-  if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "arm64" ]
+  local with_update_config_sub=${WITH_UPDATE_CONFIG_SUB:-""}
+  if [ "${with_update_config_sub}" == "y" ]
   then
     update_config_sub "${folder_name}"
   fi
