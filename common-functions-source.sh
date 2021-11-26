@@ -530,6 +530,10 @@ function set_xbb_extras()
     # libstdc++.6.dylib should be handled.
     XBB_LDFLAGS+=" -Wl,-macosx_version_min,${MACOSX_DEPLOYMENT_TARGET}"
 
+    # With GCC 11.2 path are longer, and post-processing may fail:
+    # error: /Library/Developer/CommandLineTools/usr/bin/install_name_tool: changing install names or rpaths can't be redone for: /Users/ilg/Work/gcc-11.2.0-2/darwin-x64/install/gcc/libexec/gcc/x86_64-apple-darwin17.7.0/11.2.0/g++-mapper-server (for architecture x86_64) because larger updated load commands do not fit (the program must be relinked, and you may need to use -headerpad or -headerpad_max_install_names)
+    XBB_LDFLAGS+=" -Wl,-headerpad_max_install_names"
+
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libstdc++"
