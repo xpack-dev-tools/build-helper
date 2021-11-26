@@ -19,7 +19,7 @@ jobs:
 {% for platform in platforms -%}
 {% if platform == "darwin-x64" %}
   macos-x64:
-    name: 'macOS Intel {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
+    name: 'macOS Intel - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 2880 # 2 days
     runs-on: [self-hosted, macos, intel]
     steps:
