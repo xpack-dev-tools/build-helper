@@ -268,7 +268,7 @@ jobs:
   {% when "linux-arm" %}
   # https://hub.docker.com/r/arm32v7/ubuntu/
   ubuntu-arm:
-    name: 'Arm - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu 18, 16, 14 stable'
+    name: 'arm {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Ubuntu 18, 16, 14 stable'
     runs-on: [self-hosted, linux, arm64]
     steps:
       - name: 'Machine'
@@ -292,7 +292,7 @@ jobs:
 
   # https://hub.docker.com/r/arm32v7/debian
   debian-arm:
-    name: 'Arm - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian 10, 9, 8 stable'
+    name: 'arm {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Debian 10, 9, 8 stable'
     runs-on: [self-hosted, linux, arm64]
     steps:
       - name: 'Machine'
@@ -321,7 +321,7 @@ jobs:
   # docker://arm32v7/debian:testing - fails to update
 
   raspbian-arm:
-    name: 'Arm - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Raspbian 9 stable'
+    name: 'arm {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} test on Raspbian 9 stable'
     runs-on: [self-hosted, linux, arm64]
     steps:
       - name: 'Machine'
