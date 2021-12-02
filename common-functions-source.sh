@@ -4147,6 +4147,11 @@ function copy_macos_sdk()
   run_verbose rm -rf "${sdk_dest_path}/usr/share/man/"
 }
 
+function ndate()
+{
+  date -u +%Y%m%d-%H%M%S
+}
+
 # -----------------------------------------------------------------------------
 
 # Use a file, to allow sub-shells to add functions.
