@@ -60,7 +60,7 @@ function build_patchelf()
         run_verbose bash ${DEBUG} "bootstrap.sh"
 
       fi
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/autogen-output.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/autogen-output-($ndate).txt"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${patchelf_folder_name}"
@@ -111,8 +111,8 @@ function build_patchelf()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}/configure" \
             "${config_options[@]}"
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/config-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/configure-output.txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/config-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/configure-output-($ndate).txt"
       fi
 
       (
@@ -131,7 +131,7 @@ function build_patchelf()
 
         show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/make-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/make-output-($ndate).txt"
 
       copy_license \
         "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}" \
@@ -141,7 +141,7 @@ function build_patchelf()
 
     (
       test_patchelf
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/test-output.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/test-output-($ndate).txt"
 
     touch "${patchelf_stamp_file_path}"
 
@@ -240,8 +240,8 @@ function build_automake()
             \
             --build="${BUILD}" \
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${automake_folder_name}/config-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/configure-output.txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${automake_folder_name}/config-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/configure-output-($ndate).txt"
       fi
 
       (
@@ -263,12 +263,12 @@ function build_automake()
           run_verbose make -j1 check
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/make-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/make-output-($ndate).txt"
     )
 
     (
       test_automake
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/test-output.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/test-output-($ndate).txt"
 
     hash -r
 
@@ -335,7 +335,7 @@ function build_findutils()
         run_verbose bash ${DEBUG} "bootstrap.sh"
 
       fi
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/autogen-output.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/autogen-output-($ndate).txt"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${findutils_folder_name}"
@@ -386,8 +386,8 @@ function build_findutils()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}/configure" \
             "${config_options[@]}"
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${findutils_folder_name}/config-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/configure-output.txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${findutils_folder_name}/config-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/configure-output-($ndate).txt"
       fi
 
       (
@@ -406,7 +406,7 @@ function build_findutils()
 
         show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/find"
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/make-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/make-output-($ndate).txt"
 
       copy_license \
         "${SOURCES_FOLDER_PATH}/${findutils_src_folder_name}" \
@@ -416,7 +416,7 @@ function build_findutils()
 
     (
       test_findutils
-    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/test-output.txt"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${findutils_folder_name}/test-output-($ndate).txt"
 
     touch "${findutils_stamp_file_path}"
 
@@ -623,8 +623,8 @@ function build_mingw_headers()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-headers/configure" \
             "${config_options[@]}"
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-headers-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-headers-output.txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-headers-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-headers-output-($ndate).txt"
       fi
 
       (
@@ -655,7 +655,7 @@ function build_mingw_headers()
           )
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-headers-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-headers-output-($ndate).txt"
 
       # No need to do it again for each component.
       if [ -z "${MINGW_NAME_SUFFIX}" ]
@@ -766,8 +766,8 @@ function build_mingw_crt()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-crt/configure" \
             "${config_options[@]}"
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-crt-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-crt-output.txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-crt-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-crt-output-($ndate).txt"
       fi
 
       (
@@ -779,7 +779,7 @@ function build_mingw_crt()
 
         run_verbose make install-strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-crt-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-crt-output-($ndate).txt"
     )
 
     touch "${mingw_crt_stamp_file_path}"
@@ -857,8 +857,8 @@ function build_mingw_winpthreads()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winpthreads/configure" \
             "${config_options[@]}"
 
-         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-winpthreads-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-winpthreads-output.txt"
+         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-winpthreads-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-winpthreads-output-($ndate).txt"
       fi
 
       (
@@ -870,7 +870,7 @@ function build_mingw_winpthreads()
 
         run_verbose make install-strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-winpthreads-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-winpthreads-output-($ndate).txt"
     )
 
     touch "${mingw_winpthreads_stamp_file_path}"
@@ -937,8 +937,8 @@ function build_mingw_winstorecompat()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/winstorecompat/configure" \
             "${config_options[@]}"
 
-         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-winstorecompat-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-winstorecompat-output.txt"
+         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-winstorecompat-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-winstorecompat-output-($ndate).txt"
       fi
 
       (
@@ -950,7 +950,7 @@ function build_mingw_winstorecompat()
 
         run_verbose make install-strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-winstorecompat-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-winstorecompat-output-($ndate).txt"
     )
 
     touch "${mingw_winstorecompat_stamp_file_path}"
@@ -1017,8 +1017,8 @@ function build_mingw_libmangle()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-libraries/libmangle/configure" \
             "${config_options[@]}"
 
-         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-libmangle-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-libmangle-output.txt"
+         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-libmangle-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-libmangle-output-($ndate).txt"
       fi
 
       (
@@ -1030,7 +1030,7 @@ function build_mingw_libmangle()
 
         run_verbose make install-strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-libmangle-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-libmangle-output-($ndate).txt"
     )
 
     touch "${mingw_libmangle_stamp_file_path}"
@@ -1098,8 +1098,8 @@ function build_mingw_gendef()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/gendef/configure" \
             "${config_options[@]}"
 
-         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-gendef-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-gendef-output.txt"
+         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-gendef-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-gendef-output-($ndate).txt"
       fi
 
       (
@@ -1111,7 +1111,7 @@ function build_mingw_gendef()
 
         run_verbose make install-strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-gendef-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-gendef-output-($ndate).txt"
     )
 
     touch "${mingw_gendef_stamp_file_path}"
@@ -1184,8 +1184,8 @@ function build_mingw_widl()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${MINGW_SRC_FOLDER_NAME}/mingw-w64-tools/widl/configure" \
             "${config_options[@]}"
 
-         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-widl-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-widl-output.txt"
+         cp "config.log" "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/config-widl-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/configure-widl-output-($ndate).txt"
       fi
 
       (
@@ -1197,7 +1197,7 @@ function build_mingw_widl()
 
         run_verbose make install-strip
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-widl-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${MINGW_FOLDER_NAME}/make-widl-output-($ndate).txt"
     )
 
     touch "${mingw_widl_stamp_file_path}"
@@ -1275,7 +1275,7 @@ function build_binutils()
         rm -rf gcc
 
         touch "${binutils_prerequisites_download_stamp_file_path}"
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/prerequisites-download-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/prerequisites-download-output-($ndate).txt"
     fi
 
     (
@@ -1462,8 +1462,8 @@ function build_binutils()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${binutils_src_folder_name}/configure" \
             ${config_options[@]}
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log.txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output.txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${binutils_folder_name}/config-log-($ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/configure-output-($ndate).txt"
       fi
 
       (
@@ -1532,7 +1532,7 @@ function build_binutils()
 
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output.txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${binutils_folder_name}/make-output-($ndate).txt"
 
       if [ -z "${name_suffix}" ]
       then
