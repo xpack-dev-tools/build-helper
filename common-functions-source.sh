@@ -2963,6 +2963,8 @@ function copy_dependencies_recursive()
   fi
 
   (
+    # set -x
+
     local source_file_path="$1"
     local destination_folder_path="$2"
 
