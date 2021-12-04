@@ -3231,6 +3231,10 @@ function copy_dependencies_recursive()
 
       clean_rpaths "${actual_destination_file_path}"
 
+      echo
+      echo "Processed ${actual_destination_file_path}:"
+      readelf_shared_libs "${actual_destination_file_path}"
+
       # echo "iterate ${destination_folder_path}/${source_file_name} done"
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
@@ -3390,6 +3394,21 @@ function copy_dependencies_recursive()
       done
 
       clean_rpaths "${actual_destination_file_path}"
+
+      (
+        set +e
+
+        lc_rpaths=$(get_darwin_lc_rpaths "${actual_destination_file_path}")
+        lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+
+        echo
+        if [ ! -z "${lc_rpaths_line}" ]
+        then
+          otool -L "${actual_destination_file_path}" | sed -e "1s|^|Processed |" -e "1s|:|: (LC_RPATH=${lc_rpaths_line})|"
+        else
+          otool -L "${actual_destination_file_path}" | sed -e "1s|^|Processed |"
+        fi
+      )
 
     elif [ "${TARGET_PLATFORM}" == "win32" ]
     then
