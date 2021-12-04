@@ -2950,7 +2950,7 @@ function _replace_loader_path()
 # Another complication is that the sources may be links, which must
 # be preserved, but also the destinations must be copied.
 #
-# If needed, set PATCHELF to a custom 0.12.
+# If needed, set PATCHELF to a newer version.
 
 # $1 = source file path
 # $2 = destination folder path
@@ -3195,8 +3195,6 @@ function copy_dependencies_recursive()
             )
       fi
 
-      local must_add_lc_rpath=""
-
       local executable_prefix="@executable_path/"
       local loader_prefix="@loader_path/"
       local rpath_prefix="@rpath/"
@@ -3223,8 +3221,7 @@ function copy_dependencies_recursive()
           then
             # Change library reference in the object to @rpath/name.dylib,
             # and add a LC_RPATH record.
-            local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-            must_add_lc_rpath="${loader_prefix}${relative_folder_path}"
+            :
           elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
           then
             # Cases like @rpath/libstdc++.6.dylib; compute the absolute path.
@@ -3232,12 +3229,20 @@ function copy_dependencies_recursive()
             local file_relative_path="${lib_path:${#rpath_prefix}}"
             for lc_rpath in ${lc_rpaths}
             do
-              if [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+              if [ "${lc_rpath}/" == "${loader_prefix}" ]
               then
-                local actual_source_folder_path="$(dirname "${actual_source_file_path}")"
-                if [ -f "${actual_source_folder_path}/${file_relative_path}" ]
+                if [ -f "${actual_destination_folder_path}/${file_relative_path}" ]
                 then
-                  found_absolute_lib_path="$(realpath ${actual_source_folder_path}/${file_relative_path})"
+                  found_absolute_lib_path="$(realpath ${actual_destination_folder_path}/${file_relative_path})"
+                  break
+                else
+                  continue
+                fi
+              elif [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+              then
+                if [ -f "${actual_destination_folder_path}/${lc_rpath:${#loader_prefix}}/${file_relative_path}" ]
+                then
+                  found_absolute_lib_path="$(realpath ${actual_destination_folder_path}/${lc_rpath:${#loader_prefix}}/${file_relative_path})"
                   break
                 else
                   continue
@@ -3245,7 +3250,7 @@ function copy_dependencies_recursive()
               fi
               if [ "${lc_rpath:0:1}" != "/" ]
               then
-                echo ">>> \"${lc_rpath}\" is not expected as rpath"
+                echo ">>> \"${lc_rpath}\" is not expected as LC_RPATH"
                 exit 1
               fi
               if [ -f "${lc_rpath}/${file_relative_path}" ]
@@ -3256,7 +3261,7 @@ function copy_dependencies_recursive()
             done
             if [ -z "${found_absolute_lib_path}" ]
             then
-              echo ">>> \"${lib_path}\" not found in rpath"
+              echo ">>> \"${lib_path}\" not found in LC_RPATH"
               exit 1
             else
               from_path="${found_absolute_lib_path}"
@@ -3276,7 +3281,7 @@ function copy_dependencies_recursive()
             then
               # Allowed system library, no need to copy it.
               echo_develop "${from_path} is allowed sys dylib"
-              continue
+              continue # Avoid recursive copy.
             elif [ "${lib_path:0:1}" == "/" ]
             then
               echo ">>> absolute \"${lib_path}\" not one of the allowed libs"
@@ -3284,8 +3289,6 @@ function copy_dependencies_recursive()
             fi
             # from_path already an actual absolute path.
           fi
-          local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-          must_add_lc_rpath="${loader_prefix}${relative_folder_path}"
         else
           ## Relative path.
           echo_develop "${lib_path} is a relative path"
@@ -3297,8 +3300,6 @@ function copy_dependencies_recursive()
             echo ">>> Relative path ${lib_path} not found in libs/lib"
             exit 1
           fi
-          local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-          must_add_lc_rpath="${loader_prefix}${relative_folder_path}"
         fi
 
         copy_dependencies_recursive \
@@ -3311,12 +3312,10 @@ function copy_dependencies_recursive()
           "@rpath/$(basename "${from_path}")" \
           "${actual_destination_file_path}"
 
-        if [ ! -z "${must_add_lc_rpath}" ]
-        then
-          patch_macos_elf_add_rpath \
-            "${actual_destination_file_path}" \
-            "${must_add_lc_rpath}"
-        fi
+        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+        patch_macos_elf_add_rpath \
+          "${actual_destination_file_path}" \
+          "${loader_prefix}${relative_folder_path}"
 
       done
 
