@@ -1606,19 +1606,23 @@ function check_binary_for_libraries()
             exit 1
           elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
           then
-            if [ ! -f "${folder_path}/${lib_path:${#loader_prefix}}" ]
-            then
-              echo ">>> \"${lib_path:${#loader_prefix}}\" is expected in \"${folder_path}\""
-              exit 1
-            fi
+            echo ">>> \"${lib_path}\" was not processed, bust be @rpath/xx"
+            exit 1
           elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
           then
-            # ???
+            # The normal case, the LC_RPATH must be set properly.
             local file_relative_path="${lib_path:${#rpath_prefix}}"
             local actual_folder_path
             for lc_rpath in ${lc_rpaths}
             do
-              if [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+              if [ "${lc_rpath:0:${#loader_prefix}}/" == "${loader_prefix}" ]
+              then
+                if [ ! "${folder_path}/${file_relative_path}" ]
+                then
+                  echo ">>> \"${lib_path:${#rpath_prefix}}\" is expected in \"${folder_path}\""
+                  exit 1
+                fi
+              elif [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
               then
                 actual_folder_path=${folder_path}/${lc_rpath:${#loader_prefix}}
                 if [ ! -f "${actual_folder_path}/${lib_path:${#rpath_prefix}}" ]
