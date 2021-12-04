@@ -2910,7 +2910,7 @@ function install_elf()
   fi
 }
 
-function replace_loader_path()
+function _replace_loader_path()
 {
   local source_file_path="$1"
   local destination_file_path="$2"
@@ -3039,7 +3039,7 @@ function copy_dependencies_recursive()
       echo_develop "already there ${destination_file_path}"
     fi
 
-    replace_loader_path "${actual_source_file_path}" "${actual_destination_file_path}"
+    # replace_loader_path "${actual_source_file_path}" "${actual_destination_file_path}"
 
     if [ "${WITH_STRIP}" == "y" -a ! -L "${actual_destination_file_path}" ]
     then
