@@ -3156,7 +3156,7 @@ function copy_dependencies_recursive()
 
         if [ -z "${linux_rpaths_line}" ]
         then
-          echo ">>> \"${actual_destination_file_path}\" has no rpath"
+          echo ">>> \"${actual_destination_file_path}\" has no rpath, patchelf may damage it!"
           linux_rpaths_line="${LIBS_INSTALL_FOLDER_PATH}/lib"
         fi
 
@@ -3267,6 +3267,8 @@ function copy_dependencies_recursive()
             )
       fi
 
+      local must_add_lc_rpath=""
+
       local executable_prefix="@executable_path/"
       local loader_prefix="@loader_path/"
       local rpath_prefix="@rpath/"
@@ -3291,8 +3293,10 @@ function copy_dependencies_recursive()
             exit 1
           elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
           then
-            echo_develop "${lib_path} was already processed"
-            continue
+            # Change library reference in the object to @rpath/name.dylib,
+            # and add a LC_RPATH record.
+            local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+            must_add_lc_rpath="${loader_prefix}${relative_folder_path}"
           elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
           then
             # Cases like @rpath/libstdc++.6.dylib; compute the absolute path.
@@ -3332,7 +3336,10 @@ function copy_dependencies_recursive()
           fi
         fi
 
-        if [ "${from_path:0:1}" == "/" ]
+        if [ "${from_path:0:1}" == "@" ]
+        then
+          : # Already processed.
+        elif [ "${from_path:0:1}" == "/" ]
         then
           # Regular absolute path, possibly a link.
           if is_darwin_sys_dylib "${from_path}"
@@ -3349,45 +3356,38 @@ function copy_dependencies_recursive()
             fi
             # from_path already an actual absolute path.
           fi
+          local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+          must_add_lc_rpath="${loader_prefix}${relative_folder_path}"
         else
           ## Relative path.
           echo_develop "${lib_path} is a relative path"
           if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}" ]
           then
-            # Make the from path absolute.
+            # Make the from_path absolute.
             from_path="${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}"
           else
             echo ">>> Relative path ${lib_path} not found in libs/lib"
             exit 1
           fi
+          local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+          must_add_lc_rpath="${loader_prefix}${relative_folder_path}"
         fi
-
-        # Copy to libexec and use @loader_path.
-
-        # Not optimised, since the library might already be in one
-        # of the LC_RPATH folders.
-
-        # TODO: add libexec to LC_RPATH and copy the libraries there.
 
         copy_dependencies_recursive \
           "${from_path}" \
           "${APP_PREFIX}/libexec"
 
-        local lib_name="$(basename "${from_path}")"
-        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+        chmod +w "${actual_destination_file_path}"
+        run_verbose install_name_tool \
+          -change "${lib_path}" \
+          "@rpath/$(basename "${from_path}")" \
+          "${actual_destination_file_path}"
 
-        # chmod +w "${file_path}"
-        if [ "${relative_folder_path}" == "." ]
+        if [ ! -z "${must_add_lc_rpath}" ]
         then
-          run_verbose install_name_tool \
-            -change "${lib_path}" \
-            "@loader_path/${lib_name}" \
-            "${actual_destination_file_path}"
-        else
-          run_verbose install_name_tool \
-            -change "${lib_path}" \
-            "@loader_path/${relative_folder_path}/${lib_name}" \
-            "${actual_destination_file_path}"
+          patch_macos_elf_add_rpath \
+            "${actual_destination_file_path}" \
+            "${must_add_lc_rpath}"
         fi
 
       done
