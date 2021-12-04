@@ -2434,57 +2434,6 @@ function is_ar()
 
 # -----------------------------------------------------------------------------
 
-# Deprecated, use copy_dependencies_recursive().
-function copy_win_gcc_dll()
-{
-  local dll_name="$1"
-
-  # Identify the current cross gcc version, to locate the specific dll folder.
-  local cross_gcc_version=$(${CROSS_COMPILE_PREFIX}-gcc --version | grep 'gcc' | sed -e 's/.*\s\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1.\2.\3/')
-  local cross_gcc_version_short=$(echo ${cross_gcc_version} | sed -e 's/\([0-9]*\)[.]\([0-9]*\)[.]\([0-9]*\).*/\1.\2/')
-  local SUBLOCATION="-win32"
-
-  # First try Ubuntu specific locations,
-  # then do a long full search.
-
-  if [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" ]
-  then
-    cp -v "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/lib/${dll_name}" \
-      "${APP_PREFIX}/bin"
-  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" ]
-  then
-    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version}/${dll_name}" \
-      "${APP_PREFIX}/bin"
-  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" ]
-  then
-    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}/${dll_name}" \
-      "${APP_PREFIX}/bin"
-  elif [ -f "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" ]
-  then
-    cp -v "/usr/lib/gcc/${CROSS_COMPILE_PREFIX}/${cross_gcc_version_short}${SUBLOCATION}/${dll_name}" \
-      "${APP_PREFIX}/bin"
-  else
-    echo "Searching /usr for ${dll_name}..."
-    SJLJ_PATH=$(find "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}" /usr \! -readable -prune -o -name ${dll_name} -print | grep ${CROSS_COMPILE_PREFIX})
-    cp -v ${SJLJ_PATH} "${APP_PREFIX}/bin"
-  fi
-}
-
-# Deprecated, use copy_dependencies_recursive().
-function copy_win_libwinpthread_dll()
-{
-  if [ -f "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" ]
-  then
-    cp "${XBB_FOLDER_PATH}/${CROSS_COMPILE_PREFIX}/bin/libwinpthread-1.dll" \
-      "${APP_PREFIX}/bin"
-  else
-    echo "No libwinpthread-1.dll"
-    exit 1
-  fi
-}
-
-# -----------------------------------------------------------------------------
-
 # https://wincent.com/wiki/%40executable_path%2C_%40load_path_and_%40rpath
 # @loader_path = the path of the elf refering it (like $ORIGIN) (since 10.4)
 # @rpath = one of the LC_RPATH array stored in the elf (since 10.5)
