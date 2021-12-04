@@ -3310,11 +3310,14 @@ function copy_dependencies_recursive()
           "${from_path}" \
           "${APP_PREFIX}/libexec"
 
-        chmod +w "${actual_destination_file_path}"
-        run_verbose install_name_tool \
-          -change "${lib_path}" \
-          "@rpath/$(basename "${from_path}")" \
-          "${actual_destination_file_path}"
+        if [ "${lib_path}" != "@rpath/$(basename "${from_path}")" ]
+        then
+          chmod +w "${actual_destination_file_path}"
+          run_verbose install_name_tool \
+            -change "${lib_path}" \
+            "@rpath/$(basename "${from_path}")" \
+            "${actual_destination_file_path}"
+        fi
 
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
         patch_macos_elf_add_rpath \
