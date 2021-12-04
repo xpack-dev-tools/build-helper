@@ -1612,30 +1612,34 @@ function check_binary_for_libraries()
           then
             # The normal case, the LC_RPATH must be set properly.
             local file_relative_path="${lib_path:${#rpath_prefix}}"
-            local actual_folder_path
+            local is_found=""
             for lc_rpath in ${lc_rpaths}
             do
               if [ "${lc_rpath:0:${#loader_prefix}}/" == "${loader_prefix}" ]
               then
-                if [ ! "${folder_path}/${file_relative_path}" ]
+                if [ "${folder_path}/${file_relative_path}" ]
                 then
-                  echo ">>> \"${lib_path:${#rpath_prefix}}\" is expected in \"${folder_path}\""
-                  exit 1
+                  is_found="y"
+                  break
                 fi
               elif [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
               then
-                actual_folder_path=${folder_path}/${lc_rpath:${#loader_prefix}}
-                if [ ! -f "${actual_folder_path}/${lib_path:${#rpath_prefix}}" ]
+                local actual_folder_path=${folder_path}/${lc_rpath:${#loader_prefix}}
+                if [ -f "${actual_folder_path}/${lib_path:${#rpath_prefix}}" ]
                 then
-                  echo ">>> \"${lib_path:${#rpath_prefix}}\" is expected in \"${actual_folder_path}\""
-                  exit 1
+                  is_found="y"
+                  break
                 fi
               else
                 echo ">>> LC_RPATH=${lc_rpath} syntax not supported"
                 exit 1
               fi
             done
-
+            if [ "${is_found}" != "y" ]
+            then
+              echo ">>> ${file_relative_path} not found in LC_RPATH"
+              exit 1
+            fi
           else
             echo ">>> special relative \"${lib_path}\" not supported"
             exit 1
