@@ -2520,6 +2520,49 @@ function change_dylib()
   fi
 }
 
+function patch_macos_elf_add_rpath()
+{
+  if [ $# -lt 2 ]
+  then
+    echo "patch_macos_elf_add_rpath requires 2 args."
+    exit 1
+  fi
+
+  local file_path="$1"
+  local new_rpath="$2"
+
+  if [ "${new_rpath:(-2)}" == "/." ]
+  then
+    let remaining=${#new_rpath}-2
+    new_rpath=${new_rpath:0:${remaining}}
+  fi
+
+  # On macOS there are no fully statical executables, so all must be processed.
+
+  if [ -z "${new_rpath}" ]
+  then
+    echo "patch_macos_elf_add_rpath new path cannot be empty."
+    exit 1
+  fi
+
+  local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
+  for lc_rpath in ${lc_rpaths}
+  do
+    if [ "${new_rpath}" == "${lc_rpath}" ]
+    then
+      # Already there.
+      return
+    fi
+  done
+
+  chmod +w "${file_path}"
+  run_verbose install_name_tool \
+    -add_rpath "${new_rpath}" \
+    "${file_path}"
+
+}
+
+
 # Remove non relative LC_RPATH entries.
 
 # $1 = file path
