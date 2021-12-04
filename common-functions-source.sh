@@ -1170,6 +1170,21 @@ function test_expect()
 
 # -----------------------------------------------------------------------------
 
+function readelf_shared_libs()
+{
+  local file_path="$1"
+  shift
+
+  (
+    set +e
+
+    readelf -d "${file_path}" | egrep '(SONAME)' || true
+    readelf -d "${file_path}" | egrep '(RUNPATH|RPATH)' || true
+    readelf -d "${file_path}" | egrep '(NEEDED)' || true
+  )
+}
+
+
 function show_libs()
 {
   # Does not include the .exe extension.
@@ -1186,9 +1201,7 @@ function show_libs()
       echo "[readelf -d ${app_path} | egrep ...]"
       # Ignore errors in case it is not using shared libraries.
       set +e
-      readelf -d "${app_path}" | egrep '(SONAME)' || true
-      readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
-      readelf -d "${app_path}" | egrep '(NEEDED)' || true
+      readelf_shared_libs "${app_path}"
       echo
       echo "[ldd -v ${app_path}]"
       ldd -v "${app_path}" || true
@@ -1218,9 +1231,7 @@ function show_libs()
         echo "[readelf -d ${app_path} | egrep ...]"
         # Ignore errors in case it is not using shared libraries.
         set +e
-        readelf -d "${app_path}" | egrep '(SONAME)' || true
-        readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
-        readelf -d "${app_path}" | egrep '(NEEDED)' || true
+        readelf_shared_libs "${app_path}"
         echo
         echo "[ldd -v ${app_path}]"
         ldd -v "${app_path}" || true
@@ -1263,9 +1274,7 @@ function show_native_libs()
     echo "[readelf -d ${app_path} | egrep ...]"
     # Ignore errors in case it is not using shared libraries.
     set +e
-    readelf -d "${app_path}" | egrep '(SONAME)' || true
-    readelf -d "${app_path}" | egrep '(RUNPATH|RPATH)' || true
-    readelf -d "${app_path}" | egrep '(NEEDED)' || true
+    readelf_shared_libs "${app_path}"
     echo
     echo "[ldd -v ${app_path}]"
     ldd -v "${app_path}" || true
@@ -1655,9 +1664,7 @@ function check_binary_for_libraries()
       echo
       echo "${file_name}: (${file_path})"
       set +e
-      readelf -d "${file_path}" | egrep '(SONAME)'
-      readelf -d "${file_path}" | egrep '(RUNPATH|RPATH)'
-      readelf -d "${file_path}" | egrep '(NEEDED)'
+      readelf_shared_libs "${file_name}"
 
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
@@ -3119,9 +3126,7 @@ function copy_dependencies_recursive()
 
       echo
       echo "${actual_destination_file_path}:"
-      readelf -d "${actual_destination_file_path}" | egrep '(SONAME)' || true
-      readelf -d "${actual_destination_file_path}" | egrep '(RUNPATH|RPATH)' || true
-      readelf -d "${actual_destination_file_path}" | egrep '(NEEDED)' || true
+      readelf_shared_libs "${actual_destination_file_path}"
 
       # patch_linux_elf_origin "${actual_destination_file_path}"
 
