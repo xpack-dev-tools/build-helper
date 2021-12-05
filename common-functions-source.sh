@@ -1217,7 +1217,7 @@ function show_libs()
       echo "[otool -L ${app_path}]"
       set +e
       local lc_rpaths=$(get_darwin_lc_rpaths "${app_path}")
-      local lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+      local lc_rpaths_line=$(echo "${lc_rpaths}" | tr '\n' ':' | sed -e 's|:$||')
       if [ ! -z "${lc_rpaths_line}" ]
       then
         echo "${app_path}: (LC_RPATH=${lc_rpaths_line})"
@@ -1548,7 +1548,7 @@ function check_binary_for_libraries()
       (
         set +e
         cd ${folder_path}
-        local lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+        local lc_rpaths_line=$(echo "${lc_rpaths}" | tr '\n' ':' | sed -e 's|:$||')
         if [ ! -z "${lc_rpaths_line}" ]
         then
           echo "${file_name}: (${file_path}, LC_RPATH=${lc_rpaths_line})"
@@ -3173,7 +3173,7 @@ function copy_dependencies_recursive()
       # echo "II. Processing ${source_file_path} dependencies..."
 
       local lc_rpaths=$(get_darwin_lc_rpaths "${actual_destination_file_path}")
-      local lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+      local lc_rpaths_line=$(echo "${lc_rpaths}" | tr '\n' ':' | sed -e 's|:$||')
 
       echo
       if [ ! -z "${lc_rpaths_line}" ]
@@ -3332,7 +3332,7 @@ function copy_dependencies_recursive()
         set +e
 
         lc_rpaths=$(get_darwin_lc_rpaths "${actual_destination_file_path}")
-        lc_rpaths_line=$(echo ${lc_rpaths} | tr '\n' ';' | sed -e 's|;$||')
+        lc_rpaths_line=$(echo "${lc_rpaths}" | tr '\n' ':' | sed -e 's|:$||')
 
         echo
         if [ ! -z "${lc_rpaths_line}" ]
