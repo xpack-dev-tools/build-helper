@@ -2522,23 +2522,52 @@ function clean_rpaths()
 
   if [ "${TARGET_PLATFORM}" == "darwin" ]
   then
-
-    local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
-    if [ -z "${lc_rpaths}" ]
-    then
-      return
-    fi
-
-    for rpath in ${lc_rpaths}
-    do
-      if [ "${rpath:0:1}" != "@" ]
+    (
+      local lc_rpaths=$(get_darwin_lc_rpaths "${file_path}")
+      if [ -z "${lc_rpaths}" ]
       then
-        run_verbose install_name_tool \
-          -delete_rpath "${rpath}" \
-          "${file_path}"
+        return
       fi
-    done
 
+      local loader_prefix="@loader_path/"
+      local rpath_prefix="@rpath/"
+
+      for lc_rpath in ${lc_rpaths}
+      do
+        if [ "${lc_rpath}/" == "${loader_prefix}" -o \
+          "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+        then
+          # May be empty.
+          local rpath_relative_path="${lc_rpath:${#loader_prefix}}"
+
+          local is_found=""
+          local lib_paths=$(get_darwin_dylibs "${file_path}")
+          for lib_path in ${lib_paths}
+          do
+            if [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
+            then
+              local file_name="${lib_path:${#rpath_prefix}}"
+
+              local maybe_file_path="$(dirname "${file_path}")/${rpath_relative_path}/${file_name}"
+              if [ -f "${maybe_file_path}" ]
+              then
+                is_found="y"
+                echo_develop "${maybe_file_path}, ${lc_rpath} retained"
+                break
+              fi
+            fi
+          done
+        fi
+
+        if [ "${is_found}" != "y" ]
+        then
+          # Not recognized, deleted.
+          run_verbose install_name_tool \
+            -delete_rpath "${lc_rpath}" \
+            "${file_path}"
+        fi
+      done
+    )
   elif [ "${TARGET_PLATFORM}" == "linux" ]
   then
 
