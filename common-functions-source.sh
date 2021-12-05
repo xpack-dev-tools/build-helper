@@ -1476,6 +1476,26 @@ function get_darwin_lc_rpaths()
   otool -l "${file_path}" | grep LC_RPATH -A2 | grep '(offset ' | sed -e 's|.*path \(.*\) (offset.*)|\1|'
 }
 
+function get_darwin_dylibs()
+{
+  local file_path="$1"
+
+  if is_darwin_dylib "${file_path}"
+  then
+    # Skip the extra line with the library name.
+    otool -L "${file_path}" \
+          | sed '1d' \
+          | sed '1d' \
+          | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+
+  else
+    otool -L "${file_path}" \
+          | sed '1d' \
+          | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
+
+  fi
+}
+
 function get_linux_rpaths_line()
 {
   local file_path="$1"
@@ -3183,21 +3203,7 @@ function copy_dependencies_recursive()
         otool -L "${actual_destination_file_path}"
       fi
 
-      local lib_paths
-      if is_darwin_dylib "${actual_destination_file_path}"
-      then
-        # Skip the extra line with the library name.
-        lib_paths=$(otool -L "${actual_destination_file_path}" \
-              | sed '1d' \
-              | sed '1d' \
-              | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
-            )
-      else
-        lib_paths=$(otool -L "${actual_destination_file_path}" \
-              | sed '1d' \
-              | sed -e 's|[[:space:]]*\(.*\) (.*)|\1|' \
-            )
-      fi
+      local lib_paths=$(get_darwin_dylibs "${actual_destination_file_path}")
 
       local executable_prefix="@executable_path/"
       local loader_prefix="@loader_path/"
