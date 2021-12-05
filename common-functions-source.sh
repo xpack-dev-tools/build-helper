@@ -3123,6 +3123,7 @@ function copy_dependencies_recursive()
       # On Linux the references are library names.
       for lib_name in ${lib_names}
       do
+        echo_develop
         echo_develop "processing ${lib_name} of ${actual_destination_file_path}"
 
         if is_linux_allowed_sys_so "${lib_name}"
@@ -3246,6 +3247,7 @@ function copy_dependencies_recursive()
         # relative to a special prefix (executable, loader, rpath).
         # The name usually is a link to more strictly versioned file.
 
+        echo_develop
         echo_develop "processing ${lib_path} of ${actual_destination_file_path}"
 
         local from_path="${lib_path}"
