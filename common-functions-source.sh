@@ -3258,9 +3258,14 @@ function copy_dependencies_recursive()
             exit 1
           elif [ "${lib_path:0:${#loader_prefix}}" == "${loader_prefix}" ]
           then
-            # Change library reference in the object to @rpath/name.dylib,
-            # and add a LC_RPATH record.
-            :
+            # Adjust to original location.
+            if [ -f "$(dirname "${actual_source_file_path}")/${lib_path:${#loader_prefix}}" ]
+            then
+              from_path="$(dirname "${actual_source_file_path}")/${lib_path:${#loader_prefix}}"
+            else
+              echo ">>> \"${lib_path}\" is not found in original folder"
+              exit 1
+            fi
           elif [ "${lib_path:0:${#rpath_prefix}}" == "${rpath_prefix}" ]
           then
             # Cases like @rpath/libstdc++.6.dylib; compute the absolute path.
@@ -3270,18 +3275,22 @@ function copy_dependencies_recursive()
             do
               if [ "${lc_rpath}/" == "${loader_prefix}" ]
               then
-                if [ -f "${actual_destination_folder_path}/${file_relative_path}" ]
+                # Use the original location.
+                local maybe_file_path="$(dirname ${actual_source_file_path})/${file_relative_path}"
+                if [ -f "${maybe_file_path}" ]
                 then
-                  found_absolute_lib_path="$(realpath ${actual_destination_folder_path}/${file_relative_path})"
+                  found_absolute_lib_path="$(realpath ${maybe_file_path})"
                   break
                 else
                   continue
                 fi
               elif [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
               then
-                if [ -f "${actual_destination_folder_path}/${lc_rpath:${#loader_prefix}}/${file_relative_path}" ]
+                # Use the original location.
+                local maybe_file_path="$(dirname "${actual_source_file_path}")/${lc_rpath:${#loader_prefix}}/${file_relative_path}"
+                if [ -f "${maybe_file_path}" ]
                 then
-                  found_absolute_lib_path="$(realpath ${actual_destination_folder_path}/${lc_rpath:${#loader_prefix}}/${file_relative_path})"
+                  found_absolute_lib_path="$(realpath ${maybe_file_path})"
                   break
                 else
                   continue
@@ -3298,12 +3307,12 @@ function copy_dependencies_recursive()
                 break
               fi
             done
-            if [ -z "${found_absolute_lib_path}" ]
+            if [ ! -z "${found_absolute_lib_path}" ]
             then
+              from_path="${found_absolute_lib_path}"
+            else
               echo ">>> \"${lib_path}\" not found in LC_RPATH"
               exit 1
-            else
-              from_path="${found_absolute_lib_path}"
             fi
           fi
         fi
