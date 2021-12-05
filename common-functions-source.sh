@@ -511,7 +511,7 @@ function set_xbb_extras()
 
     if [ "${TARGET_ARCH}" == "x64" ]
     then
-      export MACOSX_DEPLOYMENT_TARGET="10.10"
+      export MACOSX_DEPLOYMENT_TARGET="10.13"
     elif [ "${TARGET_ARCH}" == "arm64" ]
     then
       export MACOSX_DEPLOYMENT_TARGET="11.0"
@@ -1893,9 +1893,9 @@ function is_darwin_allowed_sys_dylib()
   local lib_name="$1"
 
   # Since there is no -static-libc++, the first attempt was to not
-  # define these here and have the 10.10 ones copied to the application.
+  # define these here and have the 10.x ones copied to the application.
   # Building CMake proved that this is ok with 10.11 and 10.12, but
-  # failes on 10.13 and 10.14 with:
+  # fails on 10.13 and 10.14 with:
   # dyld: Symbol not found: __ZNSt3__118shared_timed_mutex13unlock_sharedEv
   # Referenced from: /System/Library/Frameworks/CoreDisplay.framework/Versions/A/CoreDisplay
   # Expected in: /Users/travis/test-cmake/xpack-cmake-3.17.1-1/bin/libc++.1.dylib
