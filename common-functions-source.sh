@@ -2534,13 +2534,13 @@ function clean_rpaths()
 
       for lc_rpath in ${lc_rpaths}
       do
+        local is_found=""
         if [ "${lc_rpath}/" == "${loader_prefix}" -o \
           "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
         then
           # May be empty.
           local rpath_relative_path="${lc_rpath:${#loader_prefix}}"
 
-          local is_found=""
           local lib_paths=$(get_darwin_dylibs "${file_path}")
           for lib_path in ${lib_paths}
           do
