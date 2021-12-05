@@ -3275,28 +3275,24 @@ function copy_dependencies_recursive()
             local file_relative_path="${lib_path:${#rpath_prefix}}"
             for lc_rpath in ${lc_rpaths}
             do
-              if [ "${lc_rpath}/" == "${loader_prefix}" ]
-              then
-                # Use the original location.
-                local maybe_file_path="$(dirname ${actual_source_file_path})/${file_relative_path}"
-                if [ -f "${maybe_file_path}" ]
-                then
-                  found_absolute_lib_path="$(realpath ${maybe_file_path})"
-                  break
-                else
-                  continue
-                fi
-              elif [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" ]
+              if [ "${lc_rpath:0:${#loader_prefix}}" == "${loader_prefix}" -o "${lc_rpath}/" == "${loader_prefix}" ]
               then
                 # Use the original location.
                 local maybe_file_path="$(dirname "${actual_source_file_path}")/${lc_rpath:${#loader_prefix}}/${file_relative_path}"
+                echo_develop "maybe ${maybe_file_path}"
                 if [ -f "${maybe_file_path}" ]
                 then
                   found_absolute_lib_path="$(realpath ${maybe_file_path})"
                   break
-                else
-                  continue
                 fi
+                maybe_file_path="${actual_destination_folder_path}/${lc_rpath:${#loader_prefix}}/${file_relative_path}"
+                echo_develop "maybe ${maybe_file_path}"
+                if [ -f "${maybe_file_path}" ]
+                then
+                  found_absolute_lib_path="$(realpath ${maybe_file_path})"
+                  break
+                fi
+                continue
               fi
               if [ "${lc_rpath:0:1}" != "/" ]
               then
@@ -3312,6 +3308,7 @@ function copy_dependencies_recursive()
             if [ ! -z "${found_absolute_lib_path}" ]
             then
               from_path="${found_absolute_lib_path}"
+              echo_develop "found ${from_path}"
             else
               echo ">>> \"${lib_path}\" not found in LC_RPATH"
               exit 1
@@ -3321,7 +3318,7 @@ function copy_dependencies_recursive()
 
         if [ "${from_path:0:1}" == "@" ]
         then
-          : # Already processed.
+          echo_develop "already processed ${from_path}"
         elif [ "${from_path:0:1}" == "/" ]
         then
           # Regular absolute path, possibly a link.
@@ -3346,6 +3343,7 @@ function copy_dependencies_recursive()
           then
             # Make the from_path absolute.
             from_path="${LIBS_INSTALL_FOLDER_PATH}/lib/${lib_path}"
+            echo_develop "using LIBS_INSTALL_FOLDER_PATH ${from_path}"
           else
             echo ">>> Relative path ${lib_path} not found in libs/lib"
             exit 1
