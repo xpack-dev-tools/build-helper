@@ -2052,10 +2052,7 @@ function strip_binaries()
             then
               strip_binary "${bin}"
             else
-              if [ "${IS_DEVELOP}" == "y" ]
-              then
-                echo "$(file "${bin}") (not for target architecture)"
-              fi
+              echo_develop "$(file "${bin}") (not for target architecture)"
             fi
           fi
         done
@@ -2072,10 +2069,7 @@ function strip_binaries()
             then
               strip_binary "${bin}"
             else
-              if [ "${IS_DEVELOP}" == "y" ]
-              then
-                echo "$(file "${bin}") (not for target architecture)"
-              fi
+              echo_develop "$(file "${bin}") (not for target architecture)"
             fi
           fi
         done
@@ -2105,10 +2099,7 @@ function strip_binary2()
     then
       if has_origin "${bin}"
       then
-        if [ "${IS_DEVELOP}" == "y" ]
-        then
-          echo "${strip} ${bin} skipped (patched)"
-        fi
+        echo_develop "${strip} ${bin} skipped (patched)"
       else
         echo "${strip} ${bin}"
         # ${strip} ${bin} 2>/dev/null || true
@@ -3029,10 +3020,7 @@ function copy_dependencies_recursive()
 
     local destination_file_path="${destination_folder_path}/${source_file_name}"
 
-    if [ "${IS_DEVELOP}" == "y" ]
-    then
-      echo "copy_dependencies_recursive $@"
-    fi
+    echo_develop "copy_dependencies_recursive $@"
 
     # The first step is to copy the file to the destination,
     # if not already there.
@@ -3072,11 +3060,8 @@ function copy_dependencies_recursive()
       elif is_elf "${source_file_path}" || is_pe "${source_file_path}"
       then
 
-        if [ "${IS_DEVELOP}" == "y" ]
-        then
-          # The file is definitelly an elf, not a link.
-          echo "is_elf ${source_file_name}"
-        fi
+        # The file is definitelly an elf, not a link.
+        echo_develop "is_elf ${source_file_name}"
 
         install_elf "${source_file_path}" "${destination_file_path}"
 
@@ -3415,10 +3400,7 @@ function copy_dependencies_recursive()
         copied_file_path="${destination_folder_path}/${source_file_name}"
 
       else
-        if [ "${IS_DEVELOP}" == "y" ]
-        then
-          echo "${destination_folder_path}/${source_file_name} already there"
-        fi
+        echo_develop "${destination_folder_path}/${source_file_name} already there"
       fi
 
       if [ ! -z "${actual_source_file_path}" ]
@@ -3517,10 +3499,7 @@ function copy_dependencies_recursive()
       exit 1
     fi
 
-    if [ "${IS_DEVELOP}" == "y" ]
-    then
-      echo "done with ${source_file_path}"
-    fi
+    echo_develop "done with ${source_file_path}"
   )
 }
 
@@ -3564,10 +3543,7 @@ function check_binaries()
         then
           check_binary "${bin}"
         else
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            echo "$(file "${bin}") (not elf)"
-          fi
+          echo_develop "$(file "${bin}") (not elf)"
         fi
       done
 
@@ -3581,10 +3557,7 @@ function check_binaries()
         then
           check_binary "${bin}"
         else
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            echo "$(file "${bin}") (not dynamic elf)"
-          fi
+          echo_develop "$(file "${bin}") (not dynamic elf)"
         fi
       done
 
