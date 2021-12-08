@@ -151,7 +151,7 @@ jobs:
     {% when "darwin-x64" %}
       - name: 'Build macOS x64 binary'
         timeout-minutes: 1440
-        run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --osx
+        run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --macos
   {% endcase -%}
 {% endfor %}
       - name: 'Publish pre-release'
@@ -202,7 +202,7 @@ jobs:
     {% when "darwin-arm64" %}
       - name: 'Build macOS arm64 binary'
         timeout-minutes: 1440
-        run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --osx
+        run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --macos
   {% endcase -%}
 {% endfor %}
       - name: 'Publish pre-release'
