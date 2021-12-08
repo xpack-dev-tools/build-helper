@@ -40,7 +40,7 @@ script_folder_name="$(basename "${script_folder_path}")"
 
 # =============================================================================
 
-scripts_folder_path="$(dirname "${script_folder_path}")/scripts"
+scripts_folder_path="$(dirname $(dirname "${script_folder_path}"))/scripts"
 helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
@@ -54,21 +54,32 @@ helper_folder_path="${scripts_folder_path}/helper"
 
 # -----------------------------------------------------------------------------
 
-source "${script_folder_path}/defs-source.sh"
+source "${scripts_folder_path}/defs-source.sh"
 
 echo
 echo "${APP_DESCRIPTION} native build script."
 
 # Helper functions.
-source "${script_folder_path}/common-functions-source.sh"
+source "${helper_folder_path}/common-functions-source.sh"
 source "${helper_folder_path}/host-functions-source.sh"
+source "${helper_folder_path}/common-libs-functions-source.sh"
+source "${helper_folder_path}/common-apps-functions-source.sh"
 
 # The order is important, it may override helper defs.
-# source "${script_folder_path}/common-functions-source.sh"
+if [ -f "${scripts_folder_path}/common-functions-source.sh" ]
+then
+  source "${scripts_folder_path}/common-functions-source.sh"
+fi
+source "${scripts_folder_path}/common-libs-functions-source.sh"
+source "${scripts_folder_path}/common-apps-functions-source.sh"
+source "${scripts_folder_path}/common-versions-source.sh"
 
 host_detect
 
 # -----------------------------------------------------------------------------
+
+# Array where the remaining args will be stored.
+declare -a rest
 
 help_message="    bash $0 [--win] [--debug] [--develop] [--jobs N] [--help] [clean|cleanlibs|cleanall]"
 host_native_options "${help_message}" $@
@@ -77,23 +88,20 @@ host_common
 
 # -----------------------------------------------------------------------------
 
-prepare_xbb_env
+set_xbb_env
+
+if [ "${TARGET_PLATFORM}" == "darwin" ]
+then
+  prepare_clang_env "" ""
+else
+  prepare_gcc_env "" ""
+fi
+
+set_xbb_extras
 
 # -----------------------------------------------------------------------------
 
-# Helper functions.
-source "${helper_folder_path}/common-functions-source.sh"
-source "${helper_folder_path}/container-functions-source.sh"
-source "${helper_folder_path}/common-libs-functions-source.sh"
-source "${helper_folder_path}/common-apps-functions-source.sh"
-
-# The order is important, it may override helper defs.
-# source "${script_folder_path}/common-functions-source.sh"
-source "${script_folder_path}/common-libs-functions-source.sh"
-source "${script_folder_path}/common-apps-functions-source.sh"
-source "${script_folder_path}/common-versions-source.sh"
-
-# -----------------------------------------------------------------------------
+tests_initialize
 
 build_versions
 
