@@ -440,6 +440,8 @@ function host_native_options()
   WITH_TESTS="y"
   IS_NATIVE="y"
 
+  RELEASE_VERSION="${RELEASE_VERSION:-$(get_current_version)}"
+
   if [ "$(uname)" == "Linux" ]
   then
     JOBS="$(nproc)"
