@@ -649,6 +649,7 @@ function host_prepare_prerequisites()
 
     fi
 
+    (
       must_install=""
       local tl_folder=""
 
@@ -693,7 +694,7 @@ function host_prepare_prerequisites()
         exit 1
 
       fi
-
+    )
   fi # "${HOST_UNAME}" == "Darwin"
 
   host_prepare_cache
