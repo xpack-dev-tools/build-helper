@@ -4074,6 +4074,8 @@ function build_pixman()
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=pixman-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-pixman
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/pixman.rb
+
   # pixman_version="0.32.6"
   # pixman_version="0.34.0" # 2016-01-31
   # pixman_version="0.38.0" # 2019-02-11
@@ -4123,6 +4125,13 @@ function build_pixman()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
+
+      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        # TODO: chack again on Apple Silicon.
+        export CC=clang
+        export CXX=clang++
+      fi
 
       if [ ! -f "config.status" ]
       then
