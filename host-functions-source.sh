@@ -186,7 +186,7 @@ function host_options()
   DO_BUILD_LINUX64=""
   DO_BUILD_LINUX_ARM32=""
   DO_BUILD_LINUX_ARM64=""
-  DO_BUILD_OSX=""
+  DO_BUILD_MACOS=""
   ENV_FILE=""
 
   RELEASE_VERSION="${RELEASE_VERSION:-$(get_current_version)}"
@@ -245,8 +245,8 @@ function host_options()
         DO_BUILD_LINUX_ARM64="y"
         ;;
 
-      --osx)
-        DO_BUILD_OSX="y"
+      --macos|--macosx|--osx)
+        DO_BUILD_MACOS="y"
         ;;
 
       --sources)
@@ -262,7 +262,7 @@ function host_options()
         then
           if [ "$(uname)" == "Darwin" ]
           then
-            DO_BUILD_OSX="${DO_BUILD_OSX:-"y"}"
+            DO_BUILD_MACOS="${DO_BUILD_MACOS:-"y"}"
           else
             DO_BUILD_WIN32="${DO_BUILD_WIN32:-"y"}"
             DO_BUILD_WIN64="${DO_BUILD_WIN64:-"y"}"
@@ -312,7 +312,7 @@ function host_options()
 
   done
 
-  DO_BUILD_ANY="${DO_BUILD_OSX}${DO_BUILD_LINUX64}${DO_BUILD_LINUX_ARM64}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX_ARM32}${DO_BUILD_WIN32}${DO_BUILD_SOURCES}"
+  DO_BUILD_ANY="${DO_BUILD_MACOS}${DO_BUILD_LINUX64}${DO_BUILD_LINUX_ARM64}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX_ARM32}${DO_BUILD_WIN32}${DO_BUILD_SOURCES}"
 
   # The ${rest[@]} options will be passed to the inner script.
   if [ ! -z "${DEBUG}" ]
@@ -336,7 +336,7 @@ function host_options_windows()
   DO_BUILD_LINUX64=""
   DO_BUILD_LINUX_ARM32=""
   DO_BUILD_LINUX_ARM64=""
-  DO_BUILD_OSX=""
+  DO_BUILD_MACOS=""
 
   ENV_FILE=""
 
@@ -1076,7 +1076,7 @@ function host_build_all() {
 
     # ----- Build the OS X distribution. ----------------------------------------
 
-    if [ "${DO_BUILD_OSX}" == "y" ]
+    if [ "${DO_BUILD_MACOS}" == "y" ]
     then
       if [ "${HOST_UNAME}" == "Darwin" ]
       then

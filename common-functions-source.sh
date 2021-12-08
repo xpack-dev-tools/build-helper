@@ -745,7 +745,7 @@ function do_actions()
 
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build/${APP_LC_NAME}"
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install/${APP_LC_NAME}"
-    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
+    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_MACOS}" ]
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
@@ -779,7 +779,7 @@ function do_actions()
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/build/${APP_LC_NAME}"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/${APP_LC_NAME}"
       fi
-      if [ "${DO_BUILD_OSX}" == "y" ]
+      if [ "${DO_BUILD_MACOS}" == "y" ]
       then
         echo "Removing the darwin build and install ${APP_LC_NAME} folders..."
 
@@ -805,7 +805,7 @@ function do_actions()
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/build/libs"
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install/libs"
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/install"/stamp-*-installed
-    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
+    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_MACOS}" ]
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
@@ -845,7 +845,7 @@ function do_actions()
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install/libs"
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64/install"/stamp-*-installed
       fi
-      if [ "${DO_BUILD_OSX}" == "y" ]
+      if [ "${DO_BUILD_MACOS}" == "y" ]
       then
         echo "Removing the darwin build and install libs folders..."
 
@@ -870,7 +870,7 @@ function do_actions()
       echo "Removing the ${TARGET_FOLDER_NAME} folder..."
 
       rm -rf "${HOST_WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}"
-    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_OSX}" ]
+    elif [ ! -z "${DO_BUILD_WIN32}${DO_BUILD_WIN64}${DO_BUILD_LINUX32}${DO_BUILD_LINUX64}${DO_BUILD_MACOS}" ]
     then
       if [ "${DO_BUILD_WIN32}" == "y" ]
       then
@@ -898,7 +898,7 @@ function do_actions()
 
         rm -rf "${HOST_WORK_FOLDER_PATH}/linux-x64"
       fi
-      if [ "${DO_BUILD_OSX}" == "y" ]
+      if [ "${DO_BUILD_MACOS}" == "y" ]
       then
         echo "Removing the darwin folder..."
 
