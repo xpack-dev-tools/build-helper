@@ -92,7 +92,7 @@ set_xbb_env
 
 if [ "${TARGET_PLATFORM}" == "darwin" ]
 then
-  prepare_clang_env "" ""
+  set_compiler_env
 else
   prepare_gcc_env "" ""
 fi
