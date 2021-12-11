@@ -4372,12 +4372,15 @@ function build_glib()
   # 2021-Sep-17, "2.70.0"
 
   local glib_version="$1"
+  local glib_major_version=$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1|')
+  local glib_minor_version=$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\2|')
+  local glib_major_minor_version="$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
 
   local glib_src_folder_name="glib-${glib_version}"
 
   local glib_archive="${glib_src_folder_name}.tar.xz"
-  local glib_MAJOR_MINOR_version="$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
-  local glib_url="http://ftp.gnome.org/pub/GNOME/sources/glib/${glib_MAJOR_MINOR_version}/${glib_archive}"
+
+  local glib_url="http://ftp.gnome.org/pub/GNOME/sources/glib/${glib_major_minor_version}/${glib_archive}"
 
   local glib_folder_name="${glib_src_folder_name}"
 
@@ -4425,6 +4428,9 @@ function build_glib()
         export CXX=clang++
       fi
 
+      if [ ${glib_major_version} -eq 2 -a ${glib_minor_version} -le 56 ]
+      then
+        # Up to 2.56 use the old configure.
       if [ ! -f "config.status" ]
       then
         (
@@ -4498,6 +4504,10 @@ function build_glib()
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/make-output-$(ndate).txt"
+      else
+        echo "glib >2.56 not yet implemented"
+        exit 1
+      fi
 
       copy_license \
         "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}" \
