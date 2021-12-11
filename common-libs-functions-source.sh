@@ -5686,3 +5686,128 @@ function build_nettle()
 
 # -----------------------------------------------------------------------------
 
+function build_libusb()
+{
+  # https://libusb.info/
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libusb
+  # https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libusb.rb
+
+  # 2015-09-14, 1.0.20
+  # 2018-03-25, 1.0.22
+  # 2020-12-11, 1.0.24
+
+  local libusb_version="$1"
+
+  local libusb_src_folder_name="libusb-${libusb_version}"
+
+  local libusb_archive="${libusb_src_folder_name}.tar.bz2"
+  local libusb_url="https://github.com/libusb/libusb/releases/download/v${libusb_version}/${libusb_archive}"
+
+  local libusb_folder_name="${libusb_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libusb_folder_name}"
+
+  local libusb_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-libusb-${libusb_version}-installed"
+  if [ ! -f "${libusb_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libusb_url}" "${libusb_archive}" \
+      "${libusb_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libusb_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libusb_folder_name}"
+
+      xbb_activate_installed_dev
+
+      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        # GCC-7 fails to compile Darwin USB.h:
+        # error: too many #pragma options align=reset
+        export CC=clang
+      fi
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running libusb configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libusb_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-dependency-tracking")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libusb_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libusb_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libusb_folder_name}/configure-output-$(ndate).txt"
+
+      fi
+
+      (
+        echo
+        echo "Running libusb make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libusb_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libusb_src_folder_name}" \
+        "${libusb_folder_name}"
+    )
+
+    touch "${libusb_stamp_file_path}"
+
+  else
+    echo "Library libusb already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
