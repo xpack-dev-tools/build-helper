@@ -946,7 +946,7 @@ function build_zstd()
             \
             "${SOURCES_FOLDER_PATH}/${zstd_src_folder_name}/build/cmake"
 
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zstd_folder_name}/zstd-output-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zstd_folder_name}/cmake-output-$(ndate).txt"
       fi
 
       (
