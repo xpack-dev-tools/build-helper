@@ -865,11 +865,9 @@ function build_zstd()
   local zstd_src_folder_name="zstd-${zstd_version}"
 
   local zstd_archive="${zstd_src_folder_name}.tar.gz"
-
   # GitHub release archive.
   local zstd_github_archive="v${zstd_version}.tar.gz"
-
-  local zstd_url="https://github.com/facebook/zstd/archive/${zstd_github_archive}"
+  local zstd_github_url="https://github.com/facebook/zstd/archive/${zstd_github_archive}"
 
   # The folder name for build, licenses, etc.
   local zstd_folder_name="${zstd_src_folder_name}"
@@ -882,7 +880,7 @@ function build_zstd()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${zstd_url}" "${zstd_archive}" \
+    download_and_extract "${zstd_github_url}" "${zstd_archive}" \
       "${zstd_src_folder_name}"
 
     (
@@ -1382,9 +1380,9 @@ function build_libffi()
   local libffi_src_folder_name="libffi-${libffi_version}"
 
   local libffi_archive="${libffi_src_folder_name}.tar.gz"
-  # local libffi_url="ftp://sourceware.org/pub/libffi/${libffi_archive}"
   # GitHub release archive.
-  local libffi_url="https://github.com/libffi/libffi/archive/v${libffi_version}.tar.gz"
+  local libffi_github_archive="v${libffi_version}.tar.gz"
+  local libffi_github_url="https://github.com/libffi/libffi/archive/${libffi_github_archive}"
 
   local libffi_folder_name="${libffi_src_folder_name}"
 
@@ -1396,7 +1394,7 @@ function build_libffi()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${libffi_url}" "${libffi_archive}" \
+    download_and_extract "${libffi_github_url}" "${libffi_archive}" \
       "${libffi_src_folder_name}"
 
     (
@@ -2039,10 +2037,11 @@ function build_gpm()
   local gpm_version="$1"
 
   local gpm_src_folder_name="gpm-${gpm_version}"
-  local gpm_archive="${gpm_src_folder_name}.tar.gz"
-  local gpm_github_archive="${gpm_version}.tar.gz"
 
-  local gpm_url="https://github.com/telmich/gpm/archive/${gpm_github_archive}"
+  local gpm_archive="${gpm_src_folder_name}.tar.gz"
+  # GitHub release archive.
+  local gpm_github_archive="${gpm_version}.tar.gz"
+  local gpm_github_url="https://github.com/telmich/gpm/archive/${gpm_github_archive}"
 
   local gpm_folder_name="${gpm_src_folder_name}"
 
@@ -2061,7 +2060,7 @@ function build_gpm()
     then
       cd "${LIBS_BUILD_FOLDER_PATH}"
 
-      download_and_extract "${gpm_url}" "${gpm_archive}" \
+      download_and_extract "${gpm_github_url}" "${gpm_archive}" \
         "${gpm_src_folder_name}"
 
       if [ "${gpm_src_folder_name}" != "${gpm_folder_name}" ]
@@ -2344,7 +2343,8 @@ function build_libxcrypt()
 
   local libxcrypt_archive="${libxcrypt_src_folder_name}.tar.gz"
   # GitHub release archive.
-  local libxcrypt_url="https://github.com/besser82/libxcrypt/archive/v${libxcrypt_version}.tar.gz"
+  local libxcrypt_github_archive="v${libxcrypt_version}.tar.gz"
+  local libxcrypt_github_url="https://github.com/besser82/libxcrypt/archive/${libxcrypt_github_archive}"
 
   local libxcrypt_folder_name="${libxcrypt_src_folder_name}"
 
@@ -2358,7 +2358,7 @@ function build_libxcrypt()
     cd "${SOURCES_FOLDER_PATH}"
 
     set +e
-    download_and_extract "${libxcrypt_url}" "${libxcrypt_archive}" \
+    download_and_extract "${libxcrypt_github_url}" "${libxcrypt_archive}" \
       "${libxcrypt_src_folder_name}" "${libxcrypt_patch_file_path}"
     set -e
 
@@ -4649,7 +4649,8 @@ function build_xar()
 
   local xar_archive="xar-${xar_version}.tar.gz"
   # GitHub release archive.
-  local xar_url="https://github.com/mackyle/xar/archive/refs/tags/${xar_archive}"
+  local xar_github_archive="xar-${xar_version}.tar.gz"
+  local xar_github_url="https://github.com/mackyle/xar/archive/refs/tags/${xar_github_archive}"
 
   local xar_folder_name="xar-${xar_version}"
 
@@ -4668,7 +4669,7 @@ function build_xar()
     then
       cd "${LIBS_BUILD_FOLDER_PATH}"
 
-      download_and_extract "${xar_url}" "${xar_archive}" \
+      download_and_extract "${xar_github_url}" "${xar_archive}" \
         "${xar_src_folder_name}"
 
       if [ "${xar_src_folder_name}" != "${xar_folder_name}" ]
