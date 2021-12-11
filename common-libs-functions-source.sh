@@ -1128,6 +1128,9 @@ function build_libiconv()
 # Could not make it work on Windows.
 function build_ncurses()
 {
+  # https://ftp.gnu.org/gnu/ncurses/
+  # https://ftp.gnu.org/gnu/ncurses/ncurses-6.3.tar.gz
+
   # https://invisible-island.net/ncurses/
   # https://invisible-mirror.net/archives/ncurses/
   # https://invisible-mirror.net/archives/ncurses/ncurses-6.2.tar.gz
@@ -1160,7 +1163,8 @@ function build_ncurses()
   local ncurses_src_folder_name="ncurses-${ncurses_version}"
 
   local ncurses_archive="${ncurses_src_folder_name}.tar.gz"
-  local ncurses_url="https://invisible-mirror.net/archives/ncurses/${ncurses_archive}"
+  # local ncurses_url="https://invisible-mirror.net/archives/ncurses/${ncurses_archive}"
+  local ncurses_url="https://ftp.gnu.org/gnu/ncurses/${ncurses_archive}"
 
   # The folder name  for build, licenses, etc.
   local ncurses_folder_name="${ncurses_src_folder_name}"
