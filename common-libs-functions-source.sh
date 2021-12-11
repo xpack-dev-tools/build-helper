@@ -4916,3 +4916,624 @@ function build_xar()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_libgpg_error()
+{
+  # https://gnupg.org/ftp/gcrypt/libgpg-error
+
+  # https://archlinuxarm.org/packages/aarch64/libgpg-error/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libgpg-error.rb
+
+  # 2020-02-07, "1.37"
+  # 2021-03-22, "1.42"
+  # 2021-11-03, "1.43"
+
+  local libgpg_error_version="$1"
+
+  local libgpg_error_src_folder_name="libgpg-error-${libgpg_error_version}"
+
+  local libgpg_error_archive="${libgpg_error_src_folder_name}.tar.bz2"
+  local libgpg_error_url="https://gnupg.org/ftp/gcrypt/libgpg-error/${libgpg_error_archive}"
+
+  local libgpg_error_folder_name="${libgpg_error_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}"
+
+  local libgpg_error_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libgpg_error_folder_name}-installed"
+  if [ ! -f "${libgpg_error_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libgpg_error_url}" "${libgpg_error_archive}" \
+      "${libgpg_error_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libgpg_error_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libgpg_error_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running libgpg-error configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libgpg_error_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--enable-static")
+
+          config_options+=("--disable-dependency-tracking")
+          config_options+=("--disable-silent-rules")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libgpg_error_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+            run_verbose sed -i.bak \
+              -e 's|t-lock-single-posix$(EXEEXT)||' \
+              "tests/Makefile"
+          fi
+
+          # WARN-TEST
+          # FAIL: t-syserror (disabled)
+          # Interestingly enough, initially (before dismissing install-strip)
+          # it passed.
+          echo run_verbose sed -i.bak \
+            -e 's|t-syserror$(EXEEXT)||' \
+            "tests/Makefile"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running libgpg-error make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        run_verbose make install
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          # WARN-TEST
+          run_verbose make -j1 check
+        fi
+
+        run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/gpg-error-config" --libs
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/make-output-$(ndate).txt"
+    )
+
+    touch "${libgpg_error_stamp_file_path}"
+
+  else
+    echo "Library libgpg-error already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_libgcrypt()
+{
+  # https://gnupg.org/ftp/gcrypt/libgcrypt
+  # https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.5.tar.bz2
+
+  # https://archlinuxarm.org/packages/aarch64/libgcrypt/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libgcrypt.rb
+
+  # 2019-08-29, "1.8.5"
+  # 2021-06-02, "1.8.8"
+  # 2021-04-19, "1.9.3" Fails many tests on macOS 10.13
+  # 2021-08-22, "1.9.4"
+
+  local libgcrypt_version="$1"
+
+  local libgcrypt_src_folder_name="libgcrypt-${libgcrypt_version}"
+
+  local libgcrypt_archive="${libgcrypt_src_folder_name}.tar.bz2"
+  local libgcrypt_url="https://gnupg.org/ftp/gcrypt/libgcrypt/${libgcrypt_archive}"
+
+  local libgcrypt_folder_name="${libgcrypt_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libgcrypt_folder_name}"
+
+  local libgcrypt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libgcrypt_folder_name}-installed"
+  if [ ! -f "${libgcrypt_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libgcrypt_url}" "${libgcrypt_archive}" \
+      "${libgcrypt_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libgcrypt_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libgcrypt_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB} -v"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running libgcrypt configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libgcrypt_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--enable-static")
+
+          if [ "${TARGET_ARCH}" == "arm64" ]
+          then
+            config_options+=("--disable-neon-support")
+            config_options+=("--disable-arm-crypto-support")
+          fi
+
+          config_options+=("--disable-doc")
+          config_options+=("--disable-large-data-tests")
+
+          # For Darwin, there are problems with the assembly code.
+          config_options+=("--disable-asm")
+          config_options+=("--disable-amd64-as-feature-detection")
+
+          config_options+=("--disable-dependency-tracking")
+          config_options+=("--disable-silent-rules")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libgcrypt_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          if false # [ "${TARGET_ARCH}" == "arm64" ]
+          then
+            # fix screwed up capability detection
+            sed -i.bak -e '/HAVE_GCC_INLINE_ASM_AARCH32_CRYPTO 1/d' "config.h"
+            sed -i.bak -e '/HAVE_GCC_INLINE_ASM_NEON 1/d' "config.h"
+          fi
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libgcrypt_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgcrypt_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running libgcrypt make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        run_verbose make install
+
+        # Check after install, otherwise mac test fails:
+        # dyld: Library not loaded: /Users/ilg/opt/xbb/lib/libgcrypt.20.dylib
+        # Referenced from: /Users/ilg/Work/xbb-3.1-macosx-10.15.3-x86_64/build/libs/libgcrypt-1.8.5/tests/.libs/random
+
+        run_verbose make -j1 check
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgcrypt_folder_name}/make-output-$(ndate).txt"
+    )
+
+    touch "${libgcrypt_stamp_file_path}"
+
+  else
+    echo "Library libgcrypt already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_libassuan()
+{
+  # https://gnupg.org/ftp/gcrypt/libassuan
+  # https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.3.tar.bz2
+
+  # https://archlinuxarm.org/packages/aarch64/libassuan/files/PKGBUILD
+
+  # 2019-02-11, "2.5.3"
+  # 2021-03-22, "2.5.5"
+
+  local libassuan_version="$1"
+
+  local libassuan_src_folder_name="libassuan-${libassuan_version}"
+
+  local libassuan_archive="${libassuan_src_folder_name}.tar.bz2"
+  local libassuan_url="https://gnupg.org/ftp/gcrypt/libassuan/${libassuan_archive}"
+
+  local libassuan_folder_name="${libassuan_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libassuan_folder_name}"
+
+  local libassuan_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libassuan_folder_name}-installed"
+  if [ ! -f "${libassuan_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libassuan_url}" "${libassuan_archive}" \
+      "${libassuan_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libassuan_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libassuan_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running libassuan configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libassuan_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libassuan_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libassuan_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libassuan_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running libassuan make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        run_verbose make install
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libassuan_folder_name}/make-output-$(ndate).txt"
+    )
+
+    touch "${libassuan_stamp_file_path}"
+
+  else
+    echo "Library libassuan already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_libksba()
+{
+  # https://gnupg.org/ftp/gcrypt/libksba
+  # https://gnupg.org/ftp/gcrypt/libksba/libksba-1.3.5.tar.bz2
+
+  # https://archlinuxarm.org/packages/aarch64/libksba/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libksba.rb
+
+  # 2016-08-22, "1.3.5"
+  # 2021-06-10, "1.6.0"
+
+  local libksba_version="$1"
+
+  local libksba_src_folder_name="libksba-${libksba_version}"
+
+  local libksba_archive="${libksba_src_folder_name}.tar.bz2"
+  local libksba_url="https://gnupg.org/ftp/gcrypt/libksba/${libksba_archive}"
+
+  local libksba_folder_name="${libksba_src_folder_name}"
+
+  local libksba_patch_file_path="${helper_folder_path}/patches/${libksba_folder_name}.patch"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libksba_folder_name}"
+
+  local libksba_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libksba_folder_name}-installed"
+  if [ ! -f "${libksba_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libksba_url}" "${libksba_archive}" \
+      "${libksba_src_folder_name}" "${libksba_patch_file_path}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libksba_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libksba_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CC_FOR_BUILD="${CC}"
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running libksba configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${libksba_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libksba_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${libksba_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libksba_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running libksba make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        run_verbose make install
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libksba_folder_name}/make-output-$(ndate).txt"
+    )
+
+    touch "${libksba_stamp_file_path}"
+
+  else
+    echo "Library libksba already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+function build_npth()
+{
+  # https://gnupg.org/ftp/gcrypt/npth
+  # https://gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2
+
+  # https://archlinuxarm.org/packages/aarch64/npth/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/npth.rb
+
+  # 2018-07-16, "1.6"
+
+  local npth_version="$1"
+
+  local npth_src_folder_name="npth-${npth_version}"
+
+  local npth_archive="${npth_src_folder_name}.tar.bz2"
+  local npth_url="https://gnupg.org/ftp/gcrypt/npth/${npth_archive}"
+
+  local npth_folder_name="${npth_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${npth_folder_name}"
+
+  local npth_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${npth_folder_name}-installed"
+  if [ ! -f "${npth_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${npth_url}" "${npth_archive}" \
+      "${npth_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${npth_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${npth_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if false # is_darwin_not_clang
+      then
+        # /usr/include/os/base.h:113:20: error: missing binary operator before token "("
+        # #if __has_extension(attribute_overloadable)
+        prepare_clang_env ""
+      fi
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running npth configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${npth_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${npth_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${npth_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${npth_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running npth make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        run_verbose make install
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${npth_folder_name}/make-output-$(ndate).txt"
+    )
+
+    touch "${npth_stamp_file_path}"
+
+  else
+    echo "Library npth already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
