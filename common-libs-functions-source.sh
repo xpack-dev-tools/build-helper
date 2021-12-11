@@ -5811,3 +5811,129 @@ function build_libusb()
 
 # -----------------------------------------------------------------------------
 
+function build_vde()
+{
+  # Ethernet compliant virtual network
+  # https://vde.sourceforge.io/
+  # https://sourceforge.net/projects/vde/files/vde2/
+  # https://downloads.sourceforge.net/project/vde/vde2/2.3.2/vde2-2.3.2.tar.gz
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/vde2/trunk/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/vde.rb
+
+  # 2011-11-23 "2.3.2"
+
+  local vde_version="$1"
+
+  local vde_src_folder_name="vde2-${vde_version}"
+
+  local vde_archive="${vde_src_folder_name}.tar.gz"
+  local vde_url="https://downloads.sourceforge.net/project/vde/vde2/${vde_version}/${vde_archive}"
+
+  local vde_folder_name="${vde_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${vde_folder_name}"
+
+  local vde_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${vde_folder_name}-installed"
+  if [ ! -f "${vde_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${vde_url}" "${vde_archive}" \
+      "${vde_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${vde_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${vde_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running vde configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${vde_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-python")
+          # src/vde_cryptcab/cryptcab.c:25:23: error: tentative definition has type 'EVP_CIPHER_CTX' (aka 'struct evp_cipher_ctx_st') that is never completed
+          config_options+=("--disable-cryptcab")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${vde_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${vde_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${vde_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running vde make..."
+
+        # Build.
+        # *** No rule to make target '../../src/lib/libvdemgmt.la', needed by 'libvdesnmp.la'.  Stop.
+        run_verbose make # -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${vde_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${vde_src_folder_name}" \
+        "${vde_folder_name}"
+
+    )
+
+    touch "${vde_stamp_file_path}"
+
+  else
+    echo "Library vde already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
