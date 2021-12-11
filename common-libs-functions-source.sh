@@ -308,6 +308,10 @@ function build_gmp()
               # (although the message is confusing)
               config_options+=("--enable-shared")
               config_options+=("--disable-static")
+            elif [ "${TARGET_PLATFORM}" == "darwin" ]
+            then
+              # Enable --with-pic to avoid linking issues with the static library
+              config_options+=("--with-pic")
             fi
 
           fi
@@ -4472,79 +4476,79 @@ function build_glib()
       if [ ${glib_major_version} -eq 2 -a ${glib_minor_version} -le 56 ]
       then
         # Up to 2.56 use the old configure.
-      if [ ! -f "config.status" ]
-      then
-        (
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            env | sort
-          fi
-
-          echo
-          echo "Running glib configure..."
-
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            run_verbose bash "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" --help
-          fi
-
-          config_options=()
-
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-
-          config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
-          config_options+=("--target=${TARGET}")
-
-          # --with-libiconv=gnu required on Linux
-          config_options+=("--with-libiconv=gnu")
-          config_options+=("--without-pcre")
-
-          config_options+=("--disable-selinux")
-          config_options+=("--disable-fam")
-          config_options+=("--disable-xattr")
-          config_options+=("--disable-libelf")
-          config_options+=("--disable-libmount")
-          config_options+=("--disable-dtrace")
-          config_options+=("--disable-systemtap")
-          config_options+=("--disable-coverage")
-          config_options+=("--disable-Bsymbolic")
-          config_options+=("--disable-znodelete")
-          config_options+=("--disable-compile-warnings")
-          config_options+=("--disable-installed-tests")
-          config_options+=("--disable-always-build-tests")
-
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" \
-            "${config_options[@]}"
-
-          # Disable SPLICE, it fails on CentOS.
-          local gsed_path=$(which gsed)
-          if [ ! -z "${gsed_path}" ]
-          then
-            run_verbose gsed -i -e '/#define HAVE_SPLICE 1/d' config.h
-          else
-            run_verbose sed -i -e '/#define HAVE_SPLICE 1/d' config.h
-          fi
-
-          cp "config.log" "${LOGS_FOLDER_PATH}/${glib_folder_name}/config-log-$(ndate).txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/configure-output-$(ndate).txt"
-      fi
-
-      (
-        echo
-        echo "Running glib make..."
-
-        # Build.
-          run_verbose make -j ${JOBS}
-
-        if [ "${WITH_STRIP}" == "y" ]
+        if [ ! -f "config.status" ]
         then
-          run_verbose make install-strip
-        else
-          run_verbose make install
+          (
+            if [ "${IS_DEVELOP}" == "y" ]
+            then
+              env | sort
+            fi
+
+            echo
+            echo "Running glib configure..."
+
+            if [ "${IS_DEVELOP}" == "y" ]
+            then
+              run_verbose bash "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" --help
+            fi
+
+            config_options=()
+
+            config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+            config_options+=("--build=${BUILD}")
+            config_options+=("--host=${HOST}")
+            config_options+=("--target=${TARGET}")
+
+            # --with-libiconv=gnu required on Linux
+            config_options+=("--with-libiconv=gnu")
+            config_options+=("--without-pcre")
+
+            config_options+=("--disable-selinux")
+            config_options+=("--disable-fam")
+            config_options+=("--disable-xattr")
+            config_options+=("--disable-libelf")
+            config_options+=("--disable-libmount")
+            config_options+=("--disable-dtrace")
+            config_options+=("--disable-systemtap")
+            config_options+=("--disable-coverage")
+            config_options+=("--disable-Bsymbolic")
+            config_options+=("--disable-znodelete")
+            config_options+=("--disable-compile-warnings")
+            config_options+=("--disable-installed-tests")
+            config_options+=("--disable-always-build-tests")
+
+            run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}/configure" \
+              "${config_options[@]}"
+
+            # Disable SPLICE, it fails on CentOS.
+            local gsed_path=$(which gsed)
+            if [ ! -z "${gsed_path}" ]
+            then
+              run_verbose gsed -i -e '/#define HAVE_SPLICE 1/d' config.h
+            else
+              run_verbose sed -i -e '/#define HAVE_SPLICE 1/d' config.h
+            fi
+
+            cp "config.log" "${LOGS_FOLDER_PATH}/${glib_folder_name}/config-log-$(ndate).txt"
+          ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/configure-output-$(ndate).txt"
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/make-output-$(ndate).txt"
+        (
+          echo
+          echo "Running glib make..."
+
+          # Build.
+          run_verbose make -j ${JOBS}
+
+          if [ "${WITH_STRIP}" == "y" ]
+          then
+            run_verbose make install-strip
+          else
+            run_verbose make install
+          fi
+
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/make-output-$(ndate).txt"
       else
         echo "glib >2.56 not yet implemented"
         exit 1
