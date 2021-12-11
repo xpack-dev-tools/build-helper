@@ -315,7 +315,7 @@ function build_gmp()
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
             "${config_options[@]}"
 
-          if [ "${TARGET_PLATFORM}" == "darwin" ] # and clang
+          if false # [ "${TARGET_PLATFORM}" == "darwin" ] # and clang
           then
             # Disable failing `t-sqrlo` test.
             run_verbose sed -i.bak \
