@@ -3171,6 +3171,129 @@ function build_bzip2()
 
 # -----------------------------------------------------------------------------
 
+function build_lzo()
+{
+  # Real-time data compression library
+  # https://www.oberhumer.com/opensource/lzo/
+  # https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/lzo/trunk/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/lzo.rb
+
+  # 01 Mar 2017 "2.10"
+
+  local lzo_version="$1"
+
+  local lzo_src_folder_name="lzo-${lzo_version}"
+
+  local lzo_archive="${lzo_src_folder_name}.tar.gz"
+  local lzo_url="https://www.oberhumer.com/opensource/lzo/download/${lzo_archive}"
+
+  local lzo_folder_name="${lzo_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${lzo_folder_name}"
+
+  local lzo_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${lzo_folder_name}-installed"
+  if [ ! -f "${lzo_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${lzo_url}" "${lzo_archive}" \
+      "${lzo_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${lzo_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${lzo_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running lzo configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${lzo_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-dependency-tracking")
+          config_options+=("--enable-shared")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${lzo_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${lzo_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${lzo_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running lzo make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${lzo_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${lzo_src_folder_name}" \
+        "${lzo_folder_name}"
+
+    )
+
+    touch "${lzo_stamp_file_path}"
+
+  else
+    echo "Library lzo already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
 function build_python2()
 {
   # https://www.python.org
