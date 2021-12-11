@@ -1292,6 +1292,7 @@ function build_ncurses()
           # Do not use, it disables the wide libraries.
           # config_options+=("--disable-lib-suffixes")
 
+          # config_options+=("--disable-overwrite")
 
           NCURSES_DISABLE_WIDEC=${NCURSES_DISABLE_WIDEC:-""}
 
