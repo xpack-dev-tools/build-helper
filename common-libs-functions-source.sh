@@ -1192,8 +1192,8 @@ function build_ncurses()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -1445,8 +1445,8 @@ function build_libffi()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -1572,8 +1572,8 @@ function build_gettext()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -1723,8 +1723,8 @@ function build_libelf()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -1853,8 +1853,8 @@ function build_expat()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -1969,8 +1969,8 @@ function build_xz()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -2116,8 +2116,8 @@ function build_gpm()
       CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_BUILD_FOLDER_PATH}/${gpm_folder_name}/src/headers"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -2261,8 +2261,8 @@ function build_libmpdec()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -2421,8 +2421,8 @@ function build_libxcrypt()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -2865,8 +2865,8 @@ function build_sqlite()
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-      LDFLAGS="${XBB_LDFLAGS_LIB}"
 
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -3385,7 +3385,6 @@ function build_python2()
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
-
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
