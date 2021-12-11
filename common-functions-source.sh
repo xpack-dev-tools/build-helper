@@ -1925,6 +1925,10 @@ function is_darwin_allowed_sys_dylib()
     \
     /usr/lib/libutil.dylib \
     /usr/lib/libcompression.dylib \
+    /usr/lib/libpam.1.dylib \
+    /usr/lib/libpam.2.dylib \
+    /usr/lib/libsasl2.2.dylib \
+    /usr/lib/libresolv.9.dylib \
     \
   )
 
