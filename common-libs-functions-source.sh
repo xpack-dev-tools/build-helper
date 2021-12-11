@@ -862,6 +862,7 @@ function build_zstd()
 
   # 5 Nov 2019 "1.4.4"
   # 3 Mar 2021 "1.4.9"
+  # 14 May 2021 "1.5.0"
 
   local zstd_version="$1"
 
@@ -1149,6 +1150,7 @@ function build_ncurses()
   # 27 Jan 2018, "5.9" # build fails
   # 27 Jan 2018, "6.1"
   # 12 Feb 2020, "6.2"
+  # 2021-11-08, "6.3"
 
   local ncurses_version="$1"
   local ncurses_version_major="$(echo ${ncurses_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
@@ -4370,6 +4372,7 @@ function build_glib()
   # 2019-Sep-02, "2.60.7"
   # 2021-May-11, "2.68.4"
   # 2021-Sep-17, "2.70.0"
+  # 2021-Dec-03, "2.70.2"
 
   local glib_version="$1"
   local glib_major_version=$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1|')
