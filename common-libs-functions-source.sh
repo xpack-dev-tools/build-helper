@@ -917,7 +917,7 @@ function build_zstd()
         build_type=Release
       fi
 
-      if [ ! -f "CMakeCache-$(ndate).txt" ]
+      if [ ! -f "CMakeCache.txt" ]
       then
         (
           if [ "${IS_DEVELOP}" == "y" ]
