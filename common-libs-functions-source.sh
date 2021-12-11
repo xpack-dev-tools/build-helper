@@ -958,7 +958,8 @@ function build_zstd()
           --parallel ${JOBS} \
           --config "${build_type}" \
 
-        if [ "${WITH_TESTS}" == "y" ]
+        # It takes too long.
+        if false # [ "${WITH_TESTS}" == "y" ]
         then
           run_verbose ctest \
             -V \
