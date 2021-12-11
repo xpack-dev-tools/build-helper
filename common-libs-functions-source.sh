@@ -4494,7 +4494,7 @@ function build_glib()
         echo "Running glib make..."
 
         # Build.
-        run_verbose make # -j ${JOBS}
+          run_verbose make -j ${JOBS}
 
         if [ "${WITH_STRIP}" == "y" ]
         then
