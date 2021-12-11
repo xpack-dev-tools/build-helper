@@ -5537,3 +5537,152 @@ function build_npth()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_nettle()
+{
+  # https://www.lysator.liu.se/~nisse/nettle/
+  # https://ftp.gnu.org/gnu/nettle/
+
+  # https://archlinuxarm.org/packages/aarch64/nettle/files/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=nettle-git
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/nettle.rb
+
+  # 2017-11-19, "3.4"
+  # 2018-12-04, "3.4.1"
+  # 2019-06-27, "3.5.1"
+  # 2021-06-07, "3.7.3"
+
+  local nettle_version="$1"
+
+  local nettle_src_folder_name="nettle-${nettle_version}"
+
+  local nettle_archive="${nettle_src_folder_name}.tar.gz"
+  local nettle_url="ftp://ftp.gnu.org/gnu/nettle/${nettle_archive}"
+
+  local nettle_folder_name="${nettle_src_folder_name}"
+
+  local nettle_patch_file_path="${helper_folder_path}/patches/${nettle_folder_name}.patch"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${nettle_folder_name}"
+
+  local nettle_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${nettle_folder_name}-installed"
+  if [ ! -f "${nettle_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${nettle_url}" "${nettle_archive}" \
+      "${nettle_src_folder_name}" "${nettle_patch_file_path}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${nettle_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${nettle_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running nettle configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${nettle_src_folder_name}/configure" --help
+          fi
+
+          # -disable-static
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          # config_options+=("--enable-mini-gmp")
+          config_options+=("--enable-shared")
+
+          config_options+=("--disable-documentation")
+          config_options+=("--disable-arm-neon")
+          config_options+=("--disable-assembler")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${nettle_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          if false # is_darwin # && [ "${XBB_LAYER}" == "xbb-bootstrap" ]
+          then
+            # dlopen failed: dlopen(../libnettle.so, 2): image not found
+            # /Users/ilg/Work/xbb-3.1-macosx-x86_64/sources/nettle-3.5.1/run-tests: line 57: 46731 Abort trap: 6           "$1" $testflags
+            # darwin: FAIL: dlopen
+            run_verbose sed -i.bak \
+              -e 's| dlopen-test$(EXEEXT)||' \
+              "testsuite/Makefile"
+          fi
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${nettle_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${nettle_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running nettle make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        # make install-strip
+        # For unknown reasons, on 32-bits make install-info fails
+        # (`install-info --info-dir="/opt/xbb/share/info" nettle.info` returns 1)
+        # Make the other install targets.
+        run_verbose make install-headers install-static install-pkgconfig install-shared-nettle install-shared-hogweed
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          if false # is_darwin
+          then
+            # dlopen failed: dlopen(../libnettle.so, 2): image not found
+            # /Users/ilg/Work/xbb-3.1-macosx-x86_64/sources/nettle-3.5.1/run-tests: line 57: 46731 Abort trap: 6           "$1" $testflags
+            # darwin: FAIL: dlopen
+            # WARN-TEST
+            run_verbose make -j1 -k check
+          else
+            # Takes very long on armhf.
+            run_verbose make -j1 -k check
+          fi
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${nettle_folder_name}/make-output-$(ndate).txt"
+    )
+
+    touch "${nettle_stamp_file_path}"
+
+  else
+    echo "Library nettle already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
