@@ -314,6 +314,11 @@ function build_gmp()
               config_options+=("--with-pic")
             fi
 
+            if [ "${TARGET_ARCH}" == "ia32" -o "${TARGET_ARCH}" == "arm" ]
+            then
+              config_options+=("ABI=32")
+            fi
+
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gmp_src_folder_name}/configure" \
