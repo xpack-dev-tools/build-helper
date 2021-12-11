@@ -6051,3 +6051,121 @@ function build_libpcap()
 
 # -----------------------------------------------------------------------------
 
+function build_libssh()
+{
+  # C library SSHv1/SSHv2 client and server protocols
+  # https://www.libssh.org/
+  # https://www.libssh.org/files/
+  # https://www.libssh.org/files/0.9/libssh-0.9.6.tar.xz
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libssh/trunk/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libssh.rb
+
+  # 2021-08-26 "0.9.6"
+
+  local libssh_version="$1"
+  local libssh_major_minor_version="$(echo ${libssh_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
+
+  local libssh_src_folder_name="libssh-${libssh_version}"
+
+  local libssh_archive="${libssh_src_folder_name}.tar.xz"
+  local libssh_url="https://www.libssh.org/files/${libssh_major_minor_version}/${libssh_archive}"
+
+  local libssh_folder_name="${libssh_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libssh_folder_name}"
+
+  local libssh_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libssh_folder_name}-installed"
+  if [ ! -f "${libssh_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${libssh_url}" "${libssh_archive}" \
+      "${libssh_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libssh_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libssh_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      local build_type
+      if [ "${IS_DEBUG}" == "y" ]
+      then
+        build_type=Debug
+      else
+        build_type=Release
+      fi
+
+      if [ ! -f "CMakeCache.txt" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running libssh cmake..."
+
+          config_options=()
+
+          config_options+=("-DCMAKE_INSTALL_PREFIX=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("-DBUILD_STATIC_LIB=ON")
+          config_options+=("-DWITH_SYMBOL_VERSIONING=OFF")
+
+          # Since CMake insists on picking the system one.
+          config_options+=("-DWITH_ZLIB=OFF")
+
+          run_verbose cmake \
+            "${config_options[@]}" \
+            \
+            "${SOURCES_FOLDER_PATH}/${libssh_src_folder_name}"
+
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libssh_folder_name}/cmake-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running libssh make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        run_verbose make install
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libssh_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libssh_src_folder_name}" \
+        "${libssh_folder_name}"
+
+    )
+
+    touch "${libssh_stamp_file_path}"
+
+  else
+    echo "Library libssh already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
