@@ -852,9 +852,11 @@ function build_isl()
 
 function build_zstd()
 {
+  # Zstandard is a real-time compression algorithm
   # https://facebook.github.io/zstd/
   # https://github.com/facebook/zstd/releases
   # https://github.com/facebook/zstd/archive/v1.4.4.tar.gz
+  # https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/zstd/files/PKGBUILD
 
@@ -967,7 +969,7 @@ function build_zstd()
         fi
 
         (
-          # The install procedure runs some resulted exxecutables, which require
+          # The install procedure runs some resulted executables, which require
           # the libssl and libcrypt libraries from XBB.
           # xbb_activate_libs
 
