@@ -2722,6 +2722,8 @@ function build_openssl()
           run_verbose make -j1 test
         fi
 
+        show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/make-output-$(ndate).txt"
 
       (
