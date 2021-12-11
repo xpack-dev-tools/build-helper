@@ -186,6 +186,8 @@ function build_gmp()
   # https://archlinuxarm.org/packages/aarch64/gmp/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gmp-hg
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmp.rb
+
   # 01-Nov-2015 "6.1.0"
   # 16-Dec-2016 "6.1.2"
   # 17-Jan-2020 "6.2.0"
@@ -856,6 +858,8 @@ function build_zstd()
 
   # https://archlinuxarm.org/packages/aarch64/zstd/files/PKGBUILD
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/zstd.rb
+
   # 5 Nov 2019 "1.4.4"
   # 3 Mar 2021 "1.4.9"
 
@@ -1004,6 +1008,8 @@ function build_libiconv()
 
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libiconv
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libiconv.rb
+
   # 2011-08-07 1.14"
   # 2017-02-02 "1.15"
   # 2019-04-26 "1.16"
@@ -1132,6 +1138,8 @@ function build_ncurses()
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-ncurses/PKGBUILD
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-ncurses/001-use-libsystre.patch
   # https://github.com/msys2/MSYS2-packages/blob/master/ncurses/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/ncurses.rb
 
   # _4421.c:1364:15: error: expected ‘)’ before ‘int’
   # ../include/curses.h:1906:56: note: in definition of macro ‘mouse_trafo’
@@ -1371,6 +1379,8 @@ function build_libffi()
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libffi-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libffi
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libffi.rb
+
   # 12-Nov-2014, "3.2.1"
   # 23 Nov 2019, "3.3"
   # 29 Jun 2021, "3.4.2"
@@ -1509,6 +1519,8 @@ function build_gettext()
   # https://archlinuxarm.org/packages/aarch64/gettext/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gettext-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-gettext
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/gettext.rb
 
   # 2015-07-14 "0.19.5.1"
   # 2016-06-11 "0.19.8.1"
@@ -3043,6 +3055,8 @@ function build_bzip2()
 
   # https://archlinuxarm.org/packages/aarch64/bzip2/files/PKGBUILD
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/bzip2.rb
+
   # 2019-07-13 "1.0.8"
 
   local bzip2_version="$1"
@@ -3834,6 +3848,8 @@ function build_libpng()
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libpng-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libpng
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libpng.rb
+
   # libpng_version="1.2.53"
   # libpng_version="1.6.17"
   # libpng_version="1.6.23" # 2016-06-09
@@ -3957,6 +3973,8 @@ function build_jpeg()
   # http://www.ijg.org/files/
 
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libjpeg9
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/jpeg.rb
 
   # Jan 19 10:26 2014 "9a"
   # Jan 17 10:46 2016 "9b"
@@ -4217,6 +4235,8 @@ function build_glib()
   # http://ftp.gnome.org/pub/GNOME/sources/glib
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=glib2-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-glib2
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/glib.rb
 
   # 2015-May-13, "2.44.1"
   # 2017-Mar-13, "2.51.5"
