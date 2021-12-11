@@ -1289,8 +1289,9 @@ function build_ncurses()
           config_options+=("--enable-ext-colors")
           config_options+=("--enable-interop")
 
-          config_options+=("--disable-lib-suffixes")
-          config_options+=("--disable-overwrite")
+          # Do not use, it disables the wide libraries.
+          # config_options+=("--disable-lib-suffixes")
+
 
           NCURSES_DISABLE_WIDEC=${NCURSES_DISABLE_WIDEC:-""}
 
