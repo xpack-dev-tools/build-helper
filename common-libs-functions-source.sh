@@ -1299,6 +1299,8 @@ function build_ncurses()
           if [ "${NCURSES_DISABLE_WIDEC}" == "y" ]
           then
             config_options+=("--disable-widec")
+          else
+            config_options+=("--enable-widec")
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" \
