@@ -3294,6 +3294,14 @@ function copy_dependencies_recursive()
                 break
               fi
             done
+            if [ -z "${found_absolute_lib_path}" ]
+            then
+              # Not found in LC_RPATH, but is may be in LIBS_INSTALL.
+              if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/${file_relative_path}" ]
+              then
+                found_absolute_lib_path="${LIBS_INSTALL_FOLDER_PATH}/lib/${file_relative_path}"
+              fi
+            fi
             if [ ! -z "${found_absolute_lib_path}" ]
             then
               from_path="${found_absolute_lib_path}"
