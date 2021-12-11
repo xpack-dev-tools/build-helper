@@ -1266,6 +1266,9 @@ function build_ncurses()
             config_options+=("--enable-const")
             config_options+=("--enable-symlinks")
 
+            # HomeBrew
+            config_options+=("--enable-sigwinch")
+
           fi
 
           config_options+=("--with-shared")
