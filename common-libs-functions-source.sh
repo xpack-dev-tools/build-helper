@@ -5874,6 +5874,7 @@ function build_libusb()
 function build_vde()
 {
   # Ethernet compliant virtual network
+  # https://github.com/virtualsquare/vde-2
   # https://vde.sourceforge.io/
   # https://sourceforge.net/projects/vde/files/vde2/
   # https://downloads.sourceforge.net/project/vde/vde2/2.3.2/vde2-2.3.2.tar.gz
