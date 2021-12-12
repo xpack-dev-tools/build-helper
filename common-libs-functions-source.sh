@@ -6205,6 +6205,9 @@ function build_libssh()
           config_options+=("-DBUILD_STATIC_LIB=ON")
           config_options+=("-DWITH_SYMBOL_VERSIONING=OFF")
 
+          # From Arch.
+          config_options+=("-DWITH_GSSAPI=OFF")
+
           # Since CMake insists on picking the system one.
           config_options+=("-DWITH_ZLIB=OFF")
 
