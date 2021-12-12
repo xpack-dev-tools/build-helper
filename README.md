@@ -25,7 +25,11 @@ the following:
 cd sources/binutils
 
 patch -p0 < "binutils-2.31.patch"
+patch -p1 < "binutils-2.31.patch.diff"
 ```
+
+Note: the `.patch.diff` files have an extra level, like `a/` `b/` which
+must be skipped.
 
 The patch is applied from the library source folder, so it must be created
 with the library relative path.
