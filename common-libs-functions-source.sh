@@ -2601,6 +2601,12 @@ function build_openssl()
 
       # export CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_BUILD_FOLDER_PATH}/${openssl_folder_name}/include"
       CPPFLAGS="${XBB_CPPFLAGS}"
+      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      then
+        # /usr/include/CommonCrypto/CommonRandom.h:35:9: error: unknown type name 'CCCryptorStatus'
+        # typedef CCCryptorStatus CCRNGStatus;
+        CPPFLAGS+=" -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include"
+      fi
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
