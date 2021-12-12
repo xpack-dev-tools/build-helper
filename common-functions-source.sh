@@ -1370,7 +1370,7 @@ function download()
   fi
 }
 
-# $4 is the patch file name
+# $4 is the patch file name only, not the full path
 function download_and_extract()
 {
   local url="$1"
