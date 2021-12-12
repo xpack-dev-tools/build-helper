@@ -5893,6 +5893,7 @@ function build_vde()
   local vde_url="https://downloads.sourceforge.net/project/vde/vde2/${vde_version}/${vde_archive}"
 
   local vde_folder_name="${vde_src_folder_name}"
+  local vde_patch_file_patch="${vde_folder_name}.patch.diff"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${vde_folder_name}"
 
@@ -5903,7 +5904,7 @@ function build_vde()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${vde_url}" "${vde_archive}" \
-      "${vde_src_folder_name}"
+      "${vde_src_folder_name}" "${vde_patch_file_patch}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${vde_folder_name}"
