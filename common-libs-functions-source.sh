@@ -2387,7 +2387,7 @@ function build_libxcrypt()
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${libxcrypt_folder_name}"
 
-  local libxcrypt_patch_file_path="${BUILD_GIT_PATH}/patches/${libxcrypt_folder_name}.patch"
+  local libxcrypt_patch_file_path="${libxcrypt_folder_name}.patch"
   local libxcrypt_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libxcrypt_folder_name}-installed"
   if [ ! -f "${libxcrypt_stamp_file_path}" ]
   then
@@ -3570,7 +3570,7 @@ function download_python2_win()
       7za x -o"${PYTHON2_WIN_SRC_FOLDER_NAME}" "${DOWNLOAD_FOLDER_PATH}/${python2_win_pack}" -i@"${tmp_path}"
 
       # Patch to disable the macro that renames hypot.
-      local patch_path="${BUILD_GIT_PATH}/patches/${PYTHON2_WIN_SRC_FOLDER_NAME}.patch"
+      local patch_path="${PYTHON2_WIN_SRC_FOLDER_NAME}.patch"
       if [ -f "${patch_path}" ]
       then
         (
@@ -5384,7 +5384,7 @@ function build_libksba()
 
   local libksba_folder_name="${libksba_src_folder_name}"
 
-  local libksba_patch_file_path="${helper_folder_path}/patches/${libksba_folder_name}.patch"
+  local libksba_patch_file_path="${libksba_folder_name}.patch"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${libksba_folder_name}"
 
@@ -5622,7 +5622,7 @@ function build_nettle()
 
   local nettle_folder_name="${nettle_src_folder_name}"
 
-  local nettle_patch_file_path="${helper_folder_path}/patches/${nettle_folder_name}.patch"
+  local nettle_patch_file_path="${nettle_folder_name}.patch"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${nettle_folder_name}"
 
