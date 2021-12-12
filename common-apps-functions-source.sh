@@ -196,7 +196,7 @@ function build_automake()
   # help2man: can't get `--help' info from automake-1.16
   # Try `--no-discard-stderr' if option outputs to stderr
 
-  local automake_patch_file_path="${BUILD_GIT_PATH}/patches/${automake_folder_name}.patch"
+  local automake_patch_file_path="${automake_folder_name}.patch"
   local automake_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${automake_folder_name}-installed"
   if [ ! -f "${automake_stamp_file_path}" -o ! -d "${BUILD_FOLDER_PATH}/${automake_folder_name}" ]
   then
