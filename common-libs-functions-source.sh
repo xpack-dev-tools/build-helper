@@ -5843,6 +5843,14 @@ function build_libusb()
           config_options+=("--target=${TARGET}")
 
           config_options+=("--disable-dependency-tracking")
+          if [ "${TARGET_PLATFORM}" == "linux" ]
+          then
+            # On 32-bit Arm `/lib/arm-linux-gnueabihf/libudev.so.1` has
+            # a dependency on the system `libgcc_s.so.1` and makes
+            # life very difficult.
+            config_options+=("--disable-udev")
+          fi
+
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libusb_src_folder_name}/configure" \
             "${config_options[@]}"
