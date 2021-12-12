@@ -2778,7 +2778,7 @@ function build_openssl()
         then
           show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}"
         else
-        show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
+          show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/make-output-$(ndate).txt"
@@ -6210,6 +6210,15 @@ function build_libssh()
 
           # Since CMake insists on picking the system one.
           config_options+=("-DWITH_ZLIB=OFF")
+
+          if [ "${TARGET_PLATFORM}" == "linux" ]
+          then
+            # On Linux
+            # undefined reference to `__stack_chk_guard'
+            config_options+=("-DWITH_STACK_PROTECTOR=OFF")
+            config_options+=("-DWITH_STACK_PROTECTOR_STRONG=OFF")
+            # config_options+=("-DWITH_STACK_CLASH_PROTECTION=OFF")
+          fi
 
           run_verbose cmake \
             "${config_options[@]}" \
