@@ -3179,7 +3179,7 @@ function copy_dependencies_recursive()
             must_add_origin="\$ORIGIN"
           elif [ "${full_path}" != "${lib_name}" ]
           then
-            echo_develop "${lib_name} found as compiler file \"${full_path}\""
+            echo_develop "${lib_name} found as ${CC} compiler file \"${full_path}\""
             copy_dependencies_recursive \
               "${full_path}" \
               "${APP_PREFIX}/libexec"
