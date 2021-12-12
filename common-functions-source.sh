@@ -1695,7 +1695,7 @@ function check_binary_for_libraries()
       echo
       echo "${file_name}: (${file_path})"
       set +e
-      readelf_shared_libs "${file_name}"
+      readelf_shared_libs "${file_path}"
 
       local so_names=$(readelf -d "${file_path}" \
         | grep -i 'Shared library' \
