@@ -3225,6 +3225,8 @@ function build_bzip2()
         echo
         echo "Running bzip2 make..."
 
+        if [ "${TARGET_PLATFORM}" == "linux" ]
+        then
         # Build.
         run_verbose make all -j ${JOBS} \
           PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
@@ -3235,11 +3237,9 @@ function build_bzip2()
 
         run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
 
-        # TODO: add support for creating macOS dylib.
-        if [ "${TARGET_PLATFORM}" == "linux" ]
-        then
           run_verbose make clean
 
+          # Build the shared library.
           run_verbose make all -f Makefile-libbz2_so -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
             CC=${CC} \
@@ -3258,6 +3258,34 @@ function build_bzip2()
             ln -sv "libbz2.so.${bzip2_version}" libbz2.so.1
             ln -sv "libbz2.so.${bzip2_version}" libbz2.so
           )
+        elif [ "${TARGET_PLATFORM}" == "darwin" ]
+        then
+
+          # Build.
+          run_verbose make all -j ${JOBS} \
+            PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
+            CC=${CC} \
+            AR=${AR} \
+            RANLIB=${RANLIB} \
+            LDFLAGS=${LDFLAGS} \
+
+          run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+
+          # TODO: add support for creating macOS dylib.
+
+        elif [ "${TARGET_PLATFORM}" == "windows" ]
+        then
+
+          # Not yet functional.
+          run_verbose make libbz2.a bzip2 bzip2recover -j ${JOBS} \
+            PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
+            CC=${CC} \
+            AR=${AR} \
+            RANLIB=${RANLIB} \
+            LDFLAGS=${LDFLAGS} \
+
+          run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+
         fi
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${bzip2_folder_name}/make-output-$(ndate).txt"
 
