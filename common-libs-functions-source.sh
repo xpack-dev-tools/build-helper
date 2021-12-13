@@ -3160,6 +3160,8 @@ function build_bzip2()
 
   # https://archlinuxarm.org/packages/aarch64/bzip2/files/PKGBUILD
 
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-bzip2/PKGBUILD
+
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/bzip2.rb
 
   # 2019-07-13 "1.0.8"
@@ -3227,15 +3229,15 @@ function build_bzip2()
 
         if [ "${TARGET_PLATFORM}" == "linux" ]
         then
-        # Build.
-        run_verbose make all -j ${JOBS} \
-          PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
-          CC=${CC} \
-          AR=${AR} \
-          RANLIB=${RANLIB} \
-          LDFLAGS=${LDFLAGS} \
+          # Build.
+          run_verbose make all -j ${JOBS} \
+            PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
+            CC=${CC} \
+            AR=${AR} \
+            RANLIB=${RANLIB} \
+            LDFLAGS=${LDFLAGS} \
 
-        run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+          run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
 
           run_verbose make clean
 
@@ -6339,6 +6341,9 @@ function build_libssh()
   # https://www.libssh.org/files/0.9/libssh-0.9.6.tar.xz
 
   # https://github.com/archlinux/svntogit-packages/blob/packages/libssh/trunk/PKGBUILD
+  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libssh
+
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-libssh/PKGBUILD
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libssh.rb
 
