@@ -5960,6 +5960,133 @@ function build_libusb()
   fi
 }
 
+
+# Required by Windows.
+function build_libusb_w32()
+{
+  # https://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/
+  # 2012-01-17, 1.2.6.0
+  # libusb_w32_version="1.2.6.0" # +PATCH!
+
+  local libusb_w32_version="$1"
+
+  local libusb_w32_prefix="libusb-win32"
+  local libusb_w32_prefix_version="${libusb_w32_prefix}-${libusb_w32_version}"
+
+  local libusb_w32_src_folder_name="${libusb_w32_prefix}-src-${libusb_w32_version}"
+
+  local libusb_w32_archive="${libusb_w32_src_folder_name}.zip"
+  local libusb_w32_url="http://sourceforge.net/projects/libusb-win32/files/libusb-win32-releases/${libusb_w32_version}/${libusb_w32_archive}"
+
+  local libusb_w32_folder_name="${libusb_w32_prefix}-${libusb_w32_version}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${libusb_w32_folder_name}"
+
+  local libusb_w32_patch="libusb-win32-${libusb_w32_version}-mingw-w64.patch"
+
+  local libusb_w32_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-{libusb_w32_folder_name}-installed"
+  if [ ! -f "${libusb_w32_stamp_file_path}" ]
+  then
+
+    echo
+    echo "libusb_w32 in-source building"
+
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}" ]
+    then
+      cd "${LIBS_BUILD_FOLDER_PATH}"
+
+      # Do not add the patch here, it must be done after dos2unix.
+      download_and_extract "${libusb_w32_url}" "${libusb_w32_archive}" \
+        "${libusb_w32_src_folder_name}"
+
+      if [ "${libusb_w32_src_folder_name}" != "${libusb_w32_folder_name}" ]
+      then
+        mv -v "${libusb_w32_src_folder_name}" "${libusb_w32_folder_name}"
+      fi
+
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}"
+
+      # Patch from:
+      # https://gitorious.org/jtag-tools/openocd-mingw-build-scripts
+
+      # The conversions are needed to avoid errors like:
+      # 'Hunk #1 FAILED at 31 (different line endings).'
+      run_verbose dos2unix src/install.c
+      run_verbose dos2unix src/install_filter_win.c
+      run_verbose dos2unix src/registry.c
+
+      if [ -f "${BUILD_GIT_PATH}/patches/${libusb_w32_patch}" ]
+      then
+        run_verbose patch -p0 < "${BUILD_GIT_PATH}/patches/${libusb_w32_patch}"
+      fi
+    fi
+
+    (
+      echo
+      echo "Running libusb-win32 make..."
+
+      cd "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}"
+
+      xbb_activate_installed_dev
+
+      # Build.
+      (
+          CPPFLAGS="${XBB_CPPFLAGS}"
+          CFLAGS="${XBB_CFLAGS_NO_W}"
+          CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+          LDFLAGS="${XBB_LDFLAGS_LIB}"
+
+          export CPPFLAGS
+          export CFLAGS
+          export CXXFLAGS
+          export LDFLAGS
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          run_verbose make \
+            host_prefix=${CROSS_COMPILE_PREFIX} \
+            host_prefix_x86=i686-w64-mingw32 \
+            dll
+
+          # Manually install, could not find a make target.
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/bin"
+
+          # Skipping it does not remove the reference from openocd, so for the
+          # moment it is preserved.
+          cp -v "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}/libusb0.dll" \
+            "${LIBS_INSTALL_FOLDER_PATH}/bin"
+
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib"
+          cp -v "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}/libusb.a" \
+            "${LIBS_INSTALL_FOLDER_PATH}/lib"
+
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
+          sed -e "s|XXX|${LIBS_INSTALL_FOLDER_PATH}|" \
+            "${helper_folder_path}/pkgconfig/${libusb_w32_prefix_version}.pc" \
+            > "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/libusb.pc"
+
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/include/libusb"
+          cp -v "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}/src/lusb0_usb.h" \
+            "${LIBS_INSTALL_FOLDER_PATH}/include/libusb/usb.h"
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libusb_w32_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${LIBS_BUILD_FOLDER_PATH}/${libusb_w32_folder_name}" \
+        "${libusb_w32_folder_name}"
+    )
+
+    touch "${libusb_w32_stamp_file_path}"
+
+  else
+    echo "Library libusb-w32 already installed."
+  fi
+}
+
 # -----------------------------------------------------------------------------
 
 function build_vde()
