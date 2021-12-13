@@ -2697,7 +2697,8 @@ function build_openssl()
 
             fi
 
-          else # non-Darwin
+          elif [ "${TARGET_PLATFORM}" == "linux" ]
+          then
 
             config_options=()
             if [ "${TARGET_ARCH}" == "x64" ]
@@ -2738,6 +2739,49 @@ function build_openssl()
               run_verbose make depend
             fi
 
+          elif [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+
+            run_verbose "./Configure" --help || true
+
+            config_options=()
+
+            if [ "${TARGET_ARCH}" == "x64" ]
+            then
+              config_options+=("mingw64")
+            elif [ "${TARGET_ARCH}" == "ia32" ]
+            then
+              config_options+=("mingw")
+            else
+              echo "Unsupported TARGET_ARCH ${TARGET_ARCH}"
+              exit 1
+            fi
+
+            config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+            # Not needed, the CC/CXX macros already define the target.
+            # config_options+=("--cross-compile-prefix=${TARGET}")
+
+            config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
+
+            config_options+=("shared")
+            config_options+=("zlib-dynamic")
+            config_options+=("enable-camellia")
+            config_options+=("enable-capieng")
+            config_options+=("enable-idea")
+            config_options+=("enable-mdc2")
+            config_options+=("enable-rc5")
+            config_options+=("enable-rfc3779")
+            config_options+=("-D__MINGW_USE_VC2005_COMPAT")
+
+            run_verbose "./Configure" \
+              "${config_options[@]}"
+
+            run_verbose make -j ${JOBS}
+
+          else
+            echo "Unsupported TARGET_PLATFORM ${TARGET_PLATFORM}"
+            exit 1
           fi
 
           touch config.stamp
