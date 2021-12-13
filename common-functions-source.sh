@@ -555,6 +555,11 @@ function set_xbb_extras()
     # `if (sys::fs::access(LockFileName.c_str(), sys::fs::AccessMode::Exist) ==`
     XBB_CFLAGS+=" -D__USE_MINGW_ACCESS"
 
+    # Tp prevent "too many sections", "File too big" etc.
+    # TODO: check if the RISC-V toolchain no longer fails.
+    XBB_CFLAGS+=" -Wa,-mbig-obj"
+    XBB_CXXFLAGS+=" -Wa,-mbig-obj"
+
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll
     # -static-libgcc avoids libgcc_s_sjlj-1.dll
