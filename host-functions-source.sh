@@ -435,9 +435,9 @@ function host_native_options()
   IS_DEBUG=""
   IS_DEVELOP=""
   WITH_STRIP="y"
-  WITH_PDF="y"
+  WITH_PDF="n"
   WITH_HTML="n"
-  WITH_TESTS="y"
+  WITH_TESTS="n"
   IS_NATIVE="y"
 
   RELEASE_VERSION="${RELEASE_VERSION:-$(get_current_version)}"
