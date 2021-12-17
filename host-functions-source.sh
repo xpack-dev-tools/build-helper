@@ -221,16 +221,8 @@ function host_options()
         RELEASE_VERSION="${argv[$i]}"
         ;;
 
-      --win32|--windows32)
-        DO_BUILD_WIN32="y"
-        ;;
-
-      --win64|--windows64)
+      --win|--win64|--windows64)
         DO_BUILD_WIN64="y"
-        ;;
-
-      --linux32)
-        DO_BUILD_LINUX32="y"
         ;;
 
       --linux64)
@@ -264,9 +256,7 @@ function host_options()
           then
             DO_BUILD_MACOS="${DO_BUILD_MACOS:-"y"}"
           else
-            DO_BUILD_WIN32="${DO_BUILD_WIN32:-"y"}"
             DO_BUILD_WIN64="${DO_BUILD_WIN64:-"y"}"
-            DO_BUILD_LINUX32="${DO_BUILD_LINUX32:-"y"}"
             DO_BUILD_LINUX64="${DO_BUILD_LINUX64:-"y"}"
             DO_BUILD_SOURCES="y"
           fi
@@ -365,16 +355,11 @@ function host_options_windows()
         ACTION="${arg}"
         ;;
 
-      --win32|--windows32)
-        DO_BUILD_WIN32="y"
-        ;;
-
-      --win64|--windows64)
+      --win|--win64|--windows64)
         DO_BUILD_WIN64="y"
         ;;
 
       --all)
-        DO_BUILD_WIN32="y"
         DO_BUILD_WIN64="y"
         ;;
 
