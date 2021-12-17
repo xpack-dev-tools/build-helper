@@ -81,7 +81,7 @@ then
 fi
 
 WITH_STRIP=${WITH_STRIP:-"y"}
-WITH_PDF=${WITH_PDF:-"y"}
+WITH_PDF=${WITH_PDF:-"n"}
 WITH_HTML=${WITH_HTML:-"n"}
 
 WITH_TESTS="${WITH_TESTS:-"y"}"
