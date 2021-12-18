@@ -4184,7 +4184,8 @@ function build_libpng()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          # From Arch.
+          # config_options+=("--disable-static")
+          # From Arm Arch.
           config_options+=("--enable-arm-neon=no")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libpng_src_folder_name}/configure" \

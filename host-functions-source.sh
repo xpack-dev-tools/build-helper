@@ -155,8 +155,9 @@ function host_detect()
 
   IS_NATIVE=""
   IS_DEVELOP=""
-  # Redefine it to "y" to run as root inside the container.
-  CONTAINER_RUN_AS_ROOT=${CONTAINER_RUN_AS_ROOT:-""}
+
+  # Safer as root, with qemu-riscv fails with XBB v3.4.
+  CONTAINER_RUN_AS_ROOT=${CONTAINER_RUN_AS_ROOT:-"y"}
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
 }
 
