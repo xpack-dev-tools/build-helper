@@ -1915,8 +1915,8 @@ function is_darwin_allowed_sys_dylib()
   #
   # /usr/lib/libgcc_s.1.dylib \
 
-# /usr/lib/libz.1.dylib \
-# /usr/lib/libedit.3.dylib \
+  # /usr/lib/libz.1.dylib \
+  # /usr/lib/libedit.3.dylib \
 
   local sys_libs=(\
     /usr/lib/libgcc_s.1.dylib \
