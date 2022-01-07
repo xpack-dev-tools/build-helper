@@ -1446,7 +1446,7 @@ function copy_build_git()
   echo ${scripts_folder_path}
   (
     cd "$(dirname ${scripts_folder_path})"
-    find -L . -depth 1 \
+    find -L . -maxdepth 1 \
       -not \( -path './.*' -prune \) \
       -not \( -path './node_modules' -prune \) \
       -not \( -path './xpacks' -prune \) \
