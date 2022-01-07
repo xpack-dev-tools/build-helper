@@ -3741,17 +3741,13 @@ function build_python3()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
-        if [[ "${CC}" =~ gcc* ]]
-        then
-          # HACK! GCC chokes on dynamic sizes:
-          # error: variably modified ‘bytes’ at file scope
-          # char bytes[kAuthorizationExternalFormLength];
-          # -DkAuthorizationExternalFormLength=32 not working
-          export CC=clang
-          export CXX=clang++
-        fi
+        # HACK! GCC chokes on dynamic sizes:
+        # error: variably modified ‘bytes’ at file scope
+        # char bytes[kAuthorizationExternalFormLength];
+        # -DkAuthorizationExternalFormLength=32 not working
+        prepare_clang_env ""
       fi
 
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
@@ -4404,11 +4400,10 @@ function build_pixman()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # TODO: chack again on Apple Silicon.
-        export CC=clang
-        export CXX=clang++
+        prepare_clang_env ""
       fi
 
       if [ ! -f "config.status" ]
@@ -4558,12 +4553,11 @@ function build_glib()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # GCC fails with
         # error: unknown type name ‘dispatch_block_t
-        export CC=clang
-        export CXX=clang++
+        prepare_clang_env ""
       fi
 
       if [ ${glib_major_version} -eq 2 -a ${glib_minor_version} -le 56 ]
@@ -5620,7 +5614,7 @@ function build_npth()
       export CXXFLAGS
       export LDFLAGS
 
-      if false # is_darwin_not_clang
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # /usr/include/os/base.h:113:20: error: missing binary operator before token "("
         # #if __has_extension(attribute_overloadable)
@@ -5871,12 +5865,12 @@ function build_libusb()
 
       xbb_activate_installed_dev
 
-      if [[ "${CC}" != *clang* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c: In function 'darwin_handle_transfer_completion':
         # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c:2151:3: error: variable-sized object may not be initialized
         # 2151 |   const char *transfer_types[max_transfer_type + 1] = {"control", "isoc", "bulk", "interrupt", "bulk-stream"};
-        export CC=clang
+        prepare_clang_env ""
       fi
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -6525,7 +6519,7 @@ function build_sdl2()
       export CXXFLAGS
       export LDFLAGS
 
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # GNU GCC fails with
         #  CC     build/SDL_syspower.lo
@@ -6533,8 +6527,7 @@ function build_sdl2()
         #                 from //System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:55,
         #                 from /Users/ilg/Work/qemu-riscv-2.8.0-9/sources/SDL2-2.0.9/src/power/macosx/SDL_syspower.c:26:
         # //System/Library/Frameworks/CoreFoundation.framework/Headers/CFStream.h:249:59: error: unknown type name ‘dispatch_queue_t’
-        export CC=clang
-        export CXX=clang++
+        prepare_clang_env ""
       fi
 
       if [ ! -f "config.status" ]
