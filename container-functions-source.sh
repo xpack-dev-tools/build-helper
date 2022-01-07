@@ -157,7 +157,10 @@ function fix_ownership()
         chown -R ${USER_ID}:${GROUP_ID} ${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}
       fi
 
-      chown -R ${USER_ID}:${GROUP_ID} "${DEPLOY_FOLDER_PATH}"
+      if [ -d "${DEPLOY_FOLDER_PATH}" ]
+      then
+        chown -R ${USER_ID}:${GROUP_ID} "${DEPLOY_FOLDER_PATH}"
+      fi
     )
   fi
 }
