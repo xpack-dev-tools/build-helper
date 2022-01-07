@@ -1440,7 +1440,14 @@ function copy_build_git()
   fi
   mkdir -pv "${HOST_WORK_FOLDER_PATH}/build.git"
   echo ${scripts_folder_path}
-  cp -r "$(dirname ${scripts_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
+  (
+    cd "$(dirname ${scripts_folder_path})"
+    find -L . -depth 1 \
+      -not \( -path './.*' -prune \) \
+      -not \( -path './node_modules' -prune \) \
+      -not \( -path './xpacks' -prune \) \
+      -exec cp -r {} "${HOST_WORK_FOLDER_PATH}/build.git" \;
+  )
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/.git"
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/build-helper.sh"
 }
