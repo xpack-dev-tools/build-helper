@@ -978,7 +978,6 @@ function host_run_docker_script()
   echo
   echo "Running script \"$(basename "${docker_script}")\" inside docker image \"${docker_image}\"..."
 
-
   local env_file_option=""
   # Run the inner script in a fresh Docker container.
   if [ -n "${env_file}" -a -f "${env_file}" ]

@@ -5534,7 +5534,6 @@ function build_libksba()
 
           config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
 
-
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libksba_src_folder_name}/configure" \
             "${config_options[@]}"
 
@@ -5928,7 +5927,6 @@ function build_libusb()
             # life very difficult.
             config_options+=("--disable-udev")
           fi
-
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libusb_src_folder_name}/configure" \
             "${config_options[@]}"
