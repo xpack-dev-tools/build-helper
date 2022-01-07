@@ -5872,10 +5872,11 @@ function build_libusb()
 
       xbb_activate_installed_dev
 
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [[ "${CC}" != *clang* ]]
       then
-        # GCC-7 fails to compile Darwin USB.h:
-        # error: too many #pragma options align=reset
+        # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c: In function 'darwin_handle_transfer_completion':
+        # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c:2151:3: error: variable-sized object may not be initialized
+        # 2151 |   const char *transfer_types[max_transfer_type + 1] = {"control", "isoc", "bulk", "interrupt", "bulk-stream"};
         export CC=clang
       fi
 
