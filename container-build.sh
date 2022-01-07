@@ -197,6 +197,9 @@ fi
 
 # -----------------------------------------------------------------------------
 
+# Restore non-root rights at exit.
+trap fix_ownership EXIT
+
 start_timer
 
 detect_container
@@ -237,9 +240,6 @@ then
     check_binaries
 
     create_archive
-
-    # Change ownership to non-root Linux user.
-    fix_ownership
   )
 fi
 
