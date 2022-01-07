@@ -144,7 +144,7 @@ function fix_ownership()
       # the owner used by Docker is the same as the macOS user, so an
       # ownership change is not realy necessary.
       echo
-      echo "Changing ownership to non-root GNU/Linux user..."
+      echo "Changing ownership from root back to ${USER_ID}:${GROUP_ID}..."
 
       if [ -d "${BUILD_FOLDER_PATH}" ]
       then
