@@ -555,7 +555,7 @@ function set_xbb_extras()
     # `if (sys::fs::access(LockFileName.c_str(), sys::fs::AccessMode::Exist) ==`
     XBB_CFLAGS+=" -D__USE_MINGW_ACCESS"
 
-    if false
+    if true
     then
       # To prevent "too many sections", "File too big" etc.
       # Unfortunately some builds fail, so it must be used explictly.
