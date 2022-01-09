@@ -1658,10 +1658,6 @@ function build_qemu()
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
-      if [ "${IS_DEBUG}" == "y" ]
-      then
-        CPPFLAGS+=" -DDEBUG"
-      fi
 
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
