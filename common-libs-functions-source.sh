@@ -6128,9 +6128,17 @@ function build_vde()
 
       xbb_activate_installed_dev
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      # On debug, -O[01] fail with:
+      # Undefined symbols for architecture x86_64:
+      #   "_ltonstring", referenced from:
+      #       _fst_in_bpdu in fstp.o
+      #   "_nstringtol", referenced from:
+      #       _fst_in_bpdu in fstp.o
+      #       _fstprintactive in fstp.o
+
+      CPPFLAGS="$(echo "${XBB_CPPFLAGS}" | sed -e 's|-O0|-O2|')"
+      CFLAGS="$(echo "${XBB_CFLAGS_NO_W}" | sed -e 's|-O0|-O2|')"
+      CXXFLAGS="$(echo "${XBB_CXXFLAGS_NO_W}" | sed -e 's|-O0|-O2|')"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
