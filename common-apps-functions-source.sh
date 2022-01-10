@@ -1762,6 +1762,8 @@ function build_qemu()
               config_options+=("--enable-cocoa")
               config_options+=("--disable-sdl")
             fi
+            # Prevent codesign issues caused by including the Hypervisor.
+            config_options+=("--disable-hvf")
           else
             config_options+=("--enable-sdl")
           fi
