@@ -3363,9 +3363,11 @@ function copy_dependencies_recursive()
           fi
         fi
 
-        copy_dependencies_recursive \
-          "${from_path}" \
-          "${APP_PREFIX}/libexec"
+        # For consistency reasons, update rpath first, before dependencies.
+        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+        patch_macos_elf_add_rpath \
+          "${actual_destination_file_path}" \
+          "${loader_prefix}${relative_folder_path}"
 
         if [ "${lib_path}" != "@rpath/$(basename "${from_path}")" ]
         then
@@ -3376,10 +3378,9 @@ function copy_dependencies_recursive()
             "${actual_destination_file_path}"
         fi
 
-        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-        patch_macos_elf_add_rpath \
-          "${actual_destination_file_path}" \
-          "${loader_prefix}${relative_folder_path}"
+        copy_dependencies_recursive \
+          "${from_path}" \
+          "${APP_PREFIX}/libexec"
 
       done
 
