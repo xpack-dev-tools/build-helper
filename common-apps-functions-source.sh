@@ -1635,6 +1635,13 @@ function build_qemu()
 
   QEMU_GIT_URL=${QEMU_GIT_URL:-"https://github.com/xpack-dev-tools/qemu.git"}
 
+  if [ "${IS_DEVELOP}" == "y" ] # -a "${IS_DEBUG}" == "y" ]
+  then
+    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack-develop"}
+  else
+    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack"}
+  fi
+
   local qemu_folder_name="qemu-${qemu_version}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${qemu_folder_name}/"
