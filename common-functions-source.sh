@@ -952,10 +952,6 @@ function do_actions()
       echo
       docker run --interactive --tty "${docker_linux64_image}" \
         lsb_release --description --short
-
-      echo
-      docker run --interactive --tty "${docker_linux32_image}" \
-        lsb_release --description --short
     fi
 
     echo
