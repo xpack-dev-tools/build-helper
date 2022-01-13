@@ -1707,15 +1707,12 @@ function build_qemu()
 
           config_options+=("--prefix=${APP_PREFIX}")
 
+          config_options+=("--bindir=${APP_PREFIX}/bin")
+
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             config_options+=("--cross-prefix=${CROSS_COMPILE_PREFIX}-")
           fi
-
-          config_options+=("--bindir=${APP_PREFIX}/bin")
-          config_options+=("--docdir=${APP_PREFIX}/share/qemu/doc")
-          config_options+=("--mandir=${APP_PREFIX}/share/qemu/man")
-          config_options+=("--datadir=${APP_PREFIX}/share/qemu")
 
           config_options+=("--cc=${CC}")
           config_options+=("--cxx=${CXX}")
