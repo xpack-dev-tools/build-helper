@@ -21,7 +21,11 @@ jobs:
   macos-x64:
     name: 'macOS Intel - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 2880 # 2 days
+{% if MACOS_INTEL_VERSION %}
+    runs-on: [self-hosted, macos, intel, {{ MACOS_INTEL_VERSION }}]
+{% else %}
     runs-on: [self-hosted, macos, intel]
+{% endif %}
     steps:
       - name: 'Machine'
         run: uname -a
