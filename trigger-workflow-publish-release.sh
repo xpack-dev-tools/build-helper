@@ -64,6 +64,8 @@ message="Build ${APP_NAME}"
 branch="xpack-develop"
 version=${RELEASE_VERSION:-"$(get_current_version)"}
 workflow_id="publish-release.yml"
+macos_intel_version="10.13"
+macos_arm_version="11.6"
 
 while [ $# -gt 0 ]
 do
@@ -76,6 +78,16 @@ do
 
     --version)
       version="$2"
+      shift 2
+      ;;
+
+    --macos-intel-version)
+      macos_intel_version="${2}"
+      shift 2
+      ;;
+
+    --macos-arm-version)
+      macos_arm_version="${2}"
       shift 2
       ;;
 
@@ -95,7 +107,9 @@ cat <<__EOF__ > "${data_file_path}"
 {
   "ref": "${branch}",
   "inputs": {
-    "version": "${version}"
+    "version": "${version}",
+    "macos-intel-version": "${macos_intel_version}",
+    "macos-arm-version": "${macos_arm_version}"
   }
 }
 __EOF__
