@@ -1759,8 +1759,9 @@ function build_qemu()
           if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
             # For now, Cocoa builds fail on macOS 10.13.
-            if true
+            if [ "${ENABLE_QEMU_SDL:-"n"}" == "y" ]
             then
+              # In the first Arm release.
               config_options+=("--disable-cocoa")
               config_options+=("--enable-sdl")
             else
