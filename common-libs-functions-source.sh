@@ -4841,7 +4841,16 @@ function build_libedit()
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
-        CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
+        if [ -d "${LIBS_INSTALL_FOLDER_PATH}/include/ncursesw" ]
+        then
+          CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncursesw"
+        elif [ -d "${LIBS_INSTALL_FOLDER_PATH}/include/ncurses" ]
+        then
+          CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
+        else
+          echo "No include/ncurses folder."
+          exit 1
+        fi
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi
 
