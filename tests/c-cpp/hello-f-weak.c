@@ -7,7 +7,7 @@
  * for any purpose is hereby granted, under the terms of the MIT license.
  * -------------------------------------------------------------------------- */
 
-char* world()
+char* __attribute__((weak)) world()
 {
   return "World!";
 }
