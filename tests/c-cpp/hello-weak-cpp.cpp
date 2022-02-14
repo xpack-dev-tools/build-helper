@@ -9,9 +9,9 @@
 
 #include <iostream>
 
-extern char* hello();
+extern const char* hello();
 
-char* __attribute__((weak))
+const char* __attribute__((weak))
 world()
 {
   return "there";

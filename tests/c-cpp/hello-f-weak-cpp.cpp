@@ -7,13 +7,13 @@
  * for any purpose is hereby granted, under the terms of the MIT license.
  * -------------------------------------------------------------------------- */
 
-char* __attribute__((weak))
+const char* __attribute__((weak))
 hello()
 {
   return "Hello";
 }
 
-char*
+const char*
 world()
 {
   return "World!";
