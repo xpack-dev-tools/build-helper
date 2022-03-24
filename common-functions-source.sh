@@ -3660,16 +3660,25 @@ function copy_build_files()
   (
     cd "${BUILD_GIT_PATH}"
 
-    mkdir -pv patches
-
     # Ignore hidden folders/files (like .DS_Store).
-    find scripts patches -type d ! -iname '.*' \
+    find scripts -type d ! -iname '.*' \
       -exec install -d -m 0755 \
         "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
-    find scripts patches -type f ! -iname '.*' \
+    find scripts -type f ! -iname '.*' \
       -exec install -v -c -m 644 \
         '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+
+    if [ -d patches ]
+    then
+      find patches -type d ! -iname '.*' \
+        -exec install -d -m 0755 \
+          "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+
+      find patches -type f ! -iname '.*' \
+        -exec install -v -c -m 644 \
+          '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+    fi
 
     if [ -f CHANGELOG.txt ]
     then
