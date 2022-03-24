@@ -36,10 +36,22 @@ cat <<__EOF__ > "${data_file_path}"
       "merge_mode": "replace",
       "jobs": [
         {
+          "name": "x64 macOS 12.1",
+          "os": "osx",
+          "arch": "amd64",
+          "osx_image": "xcode13.2",
+          "language": "minimal",
+          "script": [
+            "env | sort",
+            "pwd",
+            "DEBUG=${DEBUG} bash scripts/helper/tests/native-test.sh --base-url ${base_url}"
+          ]
+        },
+        {
           "name": "x64 macOS 11.6",
           "os": "osx",
           "arch": "amd64",
-          "osx_image": "code13.1",
+          "osx_image": "xcode13.1",
           "language": "minimal",
           "script": [
             "env | sort",
@@ -84,10 +96,10 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "x64 macOS 10.15",
+          "name": "x64 macOS 10.15.7",
           "os": "osx",
           "arch": "amd64",
-          "osx_image": "xcode11.5",
+          "osx_image": "xcode12.2",
           "language": "minimal",
           "script": [
             "env | sort",
@@ -96,7 +108,7 @@ cat <<__EOF__ > "${data_file_path}"
           ]
         },
         {
-          "name": "x64 macOS 10.14",
+          "name": "x64 macOS 10.14.6",
           "os": "osx",
           "arch": "amd64",
           "osx_image": "xcode11.3",
