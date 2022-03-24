@@ -3691,6 +3691,8 @@ function build_python3()
   # https://www.python.org/ftp/python/
   # https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/python@3.10.rb
+
   # https://archlinuxarm.org/packages/aarch64/python/files/PKGBUILD
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-pip
@@ -3705,16 +3707,18 @@ function build_python3()
   # Aug. 30, 2021, "3.8.12"
   # Aug. 30, 2021, "3.9.7"
   # Sept. 4, 2021, "3.7.12"
+  # 24-Mar-2022, "3.9.12"
+  # 23-Mar-2022, "3.10.4"
 
   local python3_version="$1"
 
-  PYTHON3_VERSION_MAJOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
-  PYTHON3_VERSION_MINOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
-  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
+  local python3_version_major=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  local python3_version_minor=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  # local PYTHON3_VERSION_MAJOR_MINOR=${python3_version_major}${python3_version_minor}
 
-  PYTHON3_SRC_FOLDER_NAME="Python-${python3_version}"
+  local python3_src_folder_name="Python-${python3_version}"
 
-  local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
+  local python3_archive="${python3_src_folder_name}.tar.xz"
   local python3_url="https://www.python.org/ftp/python/${python3_version}/${python3_archive}"
 
   local python3_folder_name="python-${python3_version}"
@@ -3728,7 +3732,7 @@ function build_python3()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${python3_url}" "${python3_archive}" \
-      "${PYTHON3_SRC_FOLDER_NAME}"
+      "${python3_src_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
@@ -3782,7 +3786,7 @@ function build_python3()
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
-            run_verbose bash "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" --help
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}/configure" --help
           fi
 
           # Fail on macOS:
@@ -3801,7 +3805,7 @@ function build_python3()
           config_options+=("--with-computed-gotos")
           config_options+=("--with-dbmliborder=gdbm:ndbm")
 
-          # Better not, allow configure to choose.
+          # From Brew, but better not, allow configure to choose.
           # config_options+=("--with-system-expat")
           # config_options+=("--with-system-ffi")
           # config_options+=("--with-system-libmpdec")
@@ -3816,7 +3820,7 @@ function build_python3()
           # config_options+=("--enable-loadable-sqlite-extensions")
           config_options+=("--disable-loadable-sqlite-extensions")
 
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}/configure" \
             "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${python3_folder_name}/config-log-$(ndate).txt"
@@ -3849,7 +3853,7 @@ function build_python3()
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python3_folder_name}/test-output-$(ndate).txt"
 
     copy_license \
-      "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}" \
+      "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}" \
       "${python3_folder_name}"
 
     touch "${python3_stamp_file_path}"
@@ -3907,7 +3911,7 @@ function download_python3_win()
 
   PYTHON3_VERSION_MAJOR=$(echo ${python3_win_version} | sed -e 's|\([0-9]\)\..*|\1|')
   PYTHON3_VERSION_MINOR=$(echo ${python3_win_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
-  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
+  # PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
 
   # Version 3.7.2 uses a longer name, like python-3.7.2.post1-embed-amd64.zip.
   if [ "${TARGET_BITS}" == "32" ]
