@@ -1302,9 +1302,9 @@ function do_patch()
     if [ -f "${patch_path}" ]
     then
       echo "Applying \"${patch_path}\"..."
-      if [[ ${patch_path} == *.patch.diff ]]
+      if [[ ${patch_path} == *.patch.diff ]] || [[ ${patch_path} == *.git.patch ]]
       then
-        # Sourcetree creates patch.diff files, which require -p1.
+        # Fork & Sourcetree creates patch.diff files, which require -p1.
         run_verbose_develop patch -p1 < "${patch_path}"
       else
         # Manually created patches.
