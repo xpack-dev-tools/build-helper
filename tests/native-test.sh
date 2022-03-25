@@ -4,7 +4,7 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ script_folder_name="$(basename "${script_folder_path}")"
 
 scripts_folder_path="$(dirname $(dirname $(dirname "${script_folder_path}")))/scripts"
 helper_folder_path="${scripts_folder_path}/helper"
+tests_folder_path="$(dirname "${scripts_folder_path}")/tests"
 
 # -----------------------------------------------------------------------------
 

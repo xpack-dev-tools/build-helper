@@ -70,17 +70,17 @@ fi
 host_detect
 
 # For clarity, explicitly define the docker images here.
-docker_linux64_image=${docker_linux64_image:-"ilegeul/ubuntu:amd64-12.04-xbb-v3.3"}
-docker_linux32_image=${docker_linux32_image:-"ilegeul/ubuntu:i386-12.04-xbb-v3.3"}
-docker_linux_arm64_image=${docker_linux_arm64_image:-"ilegeul/ubuntu:arm64v8-16.04-xbb-v3.3"}
-docker_linux_arm32_image=${docker_linux_arm32_image:-"ilegeul/ubuntu:arm32v7-16.04-xbb-v3.3"}
+docker_linux64_image=${docker_linux64_image:-"ilegeul/ubuntu:amd64-18.04-xbb-v3.4"}
+# docker_linux32_image=${docker_linux32_image:-"ilegeul/ubuntu:i386-12.04-xbb-v3.3"}
+docker_linux_arm64_image=${docker_linux_arm64_image:-"ilegeul/ubuntu:arm64v8-18.04-xbb-v3.4"}
+docker_linux_arm32_image=${docker_linux_arm32_image:-"ilegeul/ubuntu:arm32v7-18.04-xbb-v3.4"}
 
 # -----------------------------------------------------------------------------
 
 # Array where the remaining args will be stored.
 declare -a rest
 
-help_message="    bash $0 [--win32] [--win64] [--linux32] [--linux64] [--arm32] [--arm64] [--macos] [--all] [clean|cleanlibs|cleanall|preload-images] [--env-file file] [--disable-strip] [--without-pdf] [--with-html] [--disable-multilib] [--develop] [--debug] [--use-gits] [--jobs N] [--help]"
+help_message="    bash $0 [--win64] [--linux64] [--arm32] [--arm64] [--macos] [--all] [clean|cleanlibs|cleanall|preload-images] [--env-file file] [--disable-strip] [--without-pdf] [--with-html] [--disable-multilib] [--develop] [--debug] [--use-gits] [--jobs N] [--help]"
 host_options "${help_message}" "$@"
 
 host_common

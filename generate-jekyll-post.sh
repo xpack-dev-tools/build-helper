@@ -86,7 +86,7 @@ if [ "${SKIP_XBBMI:-""}" == "y" ]
 then
   echo "Skiping xbbmi files..."
 else
-  scp -p xbbmi:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+  scp -p ${XBBMI_HOSTNAME:-xbbmi}:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 fi
 
 echo

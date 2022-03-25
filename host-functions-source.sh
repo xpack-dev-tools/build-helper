@@ -155,8 +155,9 @@ function host_detect()
 
   IS_NATIVE=""
   IS_DEVELOP=""
-  # Redefine it to "y" to run as root inside the container.
-  CONTAINER_RUN_AS_ROOT=${CONTAINER_RUN_AS_ROOT:-""}
+
+  # Safer as root, with qemu-riscv fails with XBB v3.4.
+  CONTAINER_RUN_AS_ROOT=${CONTAINER_RUN_AS_ROOT:-"y"}
   HAS_WINPTHREAD=${HAS_WINPTHREAD:-""}
 }
 
@@ -221,16 +222,8 @@ function host_options()
         RELEASE_VERSION="${argv[$i]}"
         ;;
 
-      --win32|--windows32)
-        DO_BUILD_WIN32="y"
-        ;;
-
-      --win64|--windows64)
+      --win|--win64|--windows64)
         DO_BUILD_WIN64="y"
-        ;;
-
-      --linux32)
-        DO_BUILD_LINUX32="y"
         ;;
 
       --linux64)
@@ -264,9 +257,7 @@ function host_options()
           then
             DO_BUILD_MACOS="${DO_BUILD_MACOS:-"y"}"
           else
-            DO_BUILD_WIN32="${DO_BUILD_WIN32:-"y"}"
             DO_BUILD_WIN64="${DO_BUILD_WIN64:-"y"}"
-            DO_BUILD_LINUX32="${DO_BUILD_LINUX32:-"y"}"
             DO_BUILD_LINUX64="${DO_BUILD_LINUX64:-"y"}"
             DO_BUILD_SOURCES="y"
           fi
@@ -365,16 +356,11 @@ function host_options_windows()
         ACTION="${arg}"
         ;;
 
-      --win32|--windows32)
-        DO_BUILD_WIN32="y"
-        ;;
-
-      --win64|--windows64)
+      --win|--win64|--windows64)
         DO_BUILD_WIN64="y"
         ;;
 
       --all)
-        DO_BUILD_WIN32="y"
         DO_BUILD_WIN64="y"
         ;;
 
@@ -991,7 +977,6 @@ function host_run_docker_script()
 
   echo
   echo "Running script \"$(basename "${docker_script}")\" inside docker image \"${docker_image}\"..."
-
 
   local env_file_option=""
   # Run the inner script in a fresh Docker container.

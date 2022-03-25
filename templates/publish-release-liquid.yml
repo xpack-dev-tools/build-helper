@@ -1,7 +1,7 @@
 {% render "scripts/helper/templates/copyright-liquid.yml" %}
 
 {% if platforms == "all" -%}
-  {% assign platforms = "linux-x64,linux-ia32,linux-arm64,linux-arm,darwin-x64,darwin-arm64,win32-x64,win32-ia32" -%}
+  {% assign platforms = "linux-x64,linux-arm64,linux-arm,darwin-x64,darwin-arm64,win32-x64" -%}
 {% endif -%}
 {% assign platforms = platforms | split: "," -%}
 
@@ -104,7 +104,11 @@ jobs:
 {% if platform == "darwin-x64" %}
   macos-x64:
     name: 'macOS Intel - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
+{% if MACOS_INTEL_VERSION %}
+    runs-on: [self-hosted, macos, intel, {{ MACOS_INTEL_VERSION }}]
+{% else %}
     runs-on: [self-hosted, macos, intel]
+{% endif %}
     steps:
       - name: 'Machine'
         run: uname -a
@@ -146,7 +150,11 @@ jobs:
 {% if platform == "darwin-arm64" %}
   macos-arm64:
     name: 'macOS Arm - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
+{% if MACOS_ARM_VERSION %}
+    runs-on: [self-hosted, macos, apple, {{ MACOS_ARM_VERSION }}]
+{% else %}
     runs-on: [self-hosted, macos, apple]
+{% endif %}
     defaults:
       run:
         shell: "/usr/bin/arch -arch arm64e /bin/bash -l {0}"

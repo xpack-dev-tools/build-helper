@@ -4,7 +4,7 @@
 #   (https://xpack.github.io)
 # Copyright (c) 2020 Liviu Ionescu.
 #
-# Permission to use, copy, modify, and/or distribute this software 
+# Permission to use, copy, modify, and/or distribute this software
 # for any purpose is hereby granted, under the terms of the MIT license.
 # -----------------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ script_folder_name="$(basename "${script_folder_path}")"
 
 scripts_folder_path="$(dirname $(dirname "${script_folder_path}"))"
 helper_folder_path="${scripts_folder_path}/helper"
+tests_folder_path="$(dirname "${scripts_folder_path}")/tests"
 
 # -----------------------------------------------------------------------------
 
@@ -117,7 +118,7 @@ then
     export NVM_DIR="/root/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    
+
     hash -r
   fi
 fi

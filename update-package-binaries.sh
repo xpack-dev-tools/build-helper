@@ -62,7 +62,7 @@ source "${helper_folder_path}/common-functions-source.sh"
 version=${RELEASE_VERSION:-"$(get_current_version)"}
 
 run_verbose xpm-dev binaries-update \
-  -C "${HOME}/Downloads/${APP_LC_NAME}-xpack.git" \
+  -C "${HOME}/Work/${APP_LC_NAME}-xpack.git" \
   "${version}" \
   "${HOME}/Downloads/xpack-binaries/${APP_LC_NAME}"
 

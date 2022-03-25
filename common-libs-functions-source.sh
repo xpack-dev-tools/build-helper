@@ -867,6 +867,7 @@ function build_zstd()
   # https://github.com/facebook/zstd/archive/v1.4.4.tar.gz
   # https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/zstd/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/zstd/files/PKGBUILD
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/zstd.rb
@@ -3690,6 +3691,8 @@ function build_python3()
   # https://www.python.org/ftp/python/
   # https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz
 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/python@3.10.rb
+
   # https://archlinuxarm.org/packages/aarch64/python/files/PKGBUILD
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-pip
@@ -3704,16 +3707,18 @@ function build_python3()
   # Aug. 30, 2021, "3.8.12"
   # Aug. 30, 2021, "3.9.7"
   # Sept. 4, 2021, "3.7.12"
+  # 24-Mar-2022, "3.9.12"
+  # 23-Mar-2022, "3.10.4"
 
   local python3_version="$1"
 
-  PYTHON3_VERSION_MAJOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
-  PYTHON3_VERSION_MINOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
-  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
+  local python3_version_major=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  local python3_version_minor=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  # local PYTHON3_VERSION_MAJOR_MINOR=${python3_version_major}${python3_version_minor}
 
-  PYTHON3_SRC_FOLDER_NAME="Python-${python3_version}"
+  local python3_src_folder_name="Python-${python3_version}"
 
-  local python3_archive="${PYTHON3_SRC_FOLDER_NAME}.tar.xz"
+  local python3_archive="${python3_src_folder_name}.tar.xz"
   local python3_url="https://www.python.org/ftp/python/${python3_version}/${python3_archive}"
 
   local python3_folder_name="python-${python3_version}"
@@ -3727,7 +3732,7 @@ function build_python3()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${python3_url}" "${python3_archive}" \
-      "${PYTHON3_SRC_FOLDER_NAME}"
+      "${python3_src_folder_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
@@ -3740,17 +3745,13 @@ function build_python3()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
-        if [[ "${CC}" =~ gcc* ]]
-        then
-          # HACK! GCC chokes on dynamic sizes:
-          # error: variably modified ‘bytes’ at file scope
-          # char bytes[kAuthorizationExternalFormLength];
-          # -DkAuthorizationExternalFormLength=32 not working
-          export CC=clang
-          export CXX=clang++
-        fi
+        # HACK! GCC chokes on dynamic sizes:
+        # error: variably modified ‘bytes’ at file scope
+        # char bytes[kAuthorizationExternalFormLength];
+        # -DkAuthorizationExternalFormLength=32 not working
+        prepare_clang_env ""
       fi
 
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
@@ -3785,7 +3786,7 @@ function build_python3()
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
-            run_verbose bash "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" --help
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}/configure" --help
           fi
 
           # Fail on macOS:
@@ -3804,7 +3805,7 @@ function build_python3()
           config_options+=("--with-computed-gotos")
           config_options+=("--with-dbmliborder=gdbm:ndbm")
 
-          # Better not, allow configure to choose.
+          # From Brew, but better not, allow configure to choose.
           # config_options+=("--with-system-expat")
           # config_options+=("--with-system-ffi")
           # config_options+=("--with-system-libmpdec")
@@ -3819,7 +3820,7 @@ function build_python3()
           # config_options+=("--enable-loadable-sqlite-extensions")
           config_options+=("--disable-loadable-sqlite-extensions")
 
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}/configure" \
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}/configure" \
             "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${python3_folder_name}/config-log-$(ndate).txt"
@@ -3852,7 +3853,7 @@ function build_python3()
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python3_folder_name}/test-output-$(ndate).txt"
 
     copy_license \
-      "${SOURCES_FOLDER_PATH}/${PYTHON3_SRC_FOLDER_NAME}" \
+      "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}" \
       "${python3_folder_name}"
 
     touch "${python3_stamp_file_path}"
@@ -4101,6 +4102,7 @@ function build_libpng()
   # https://sourceforge.net/projects/libpng/files/libpng16/
   # https://sourceforge.net/projects/libpng/files/libpng16/older-releases/
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libpng/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libpng/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libpng-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libpng
@@ -4182,7 +4184,8 @@ function build_libpng()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          # From Arch.
+          # config_options+=("--disable-static")
+          # From Arm Arch.
           config_options+=("--enable-arm-neon=no")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libpng_src_folder_name}/configure" \
@@ -4401,11 +4404,10 @@ function build_pixman()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # TODO: chack again on Apple Silicon.
-        export CC=clang
-        export CXX=clang++
+        prepare_clang_env ""
       fi
 
       if [ ! -f "config.status" ]
@@ -4555,12 +4557,11 @@ function build_glib()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # GCC fails with
         # error: unknown type name ‘dispatch_block_t
-        export CC=clang
-        export CXX=clang++
+        prepare_clang_env ""
       fi
 
       if [ ${glib_major_version} -eq 2 -a ${glib_minor_version} -le 56 ]
@@ -4844,7 +4845,16 @@ function build_libedit()
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
-        CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
+        if [ -d "${LIBS_INSTALL_FOLDER_PATH}/include/ncursesw" ]
+        then
+          CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncursesw"
+        elif [ -d "${LIBS_INSTALL_FOLDER_PATH}/include/ncurses" ]
+        then
+          CPPFLAGS+=" -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
+        else
+          echo "No include/ncurses folder."
+          exit 1
+        fi
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi
 
@@ -5531,7 +5541,6 @@ function build_libksba()
 
           config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
 
-
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libksba_src_folder_name}/configure" \
             "${config_options[@]}"
 
@@ -5618,7 +5627,7 @@ function build_npth()
       export CXXFLAGS
       export LDFLAGS
 
-      if false # is_darwin_not_clang
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # /usr/include/os/base.h:113:20: error: missing binary operator before token "("
         # #if __has_extension(attribute_overloadable)
@@ -5869,11 +5878,12 @@ function build_libusb()
 
       xbb_activate_installed_dev
 
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
-        # GCC-7 fails to compile Darwin USB.h:
-        # error: too many #pragma options align=reset
-        export CC=clang
+        # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c: In function 'darwin_handle_transfer_completion':
+        # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c:2151:3: error: variable-sized object may not be initialized
+        # 2151 |   const char *transfer_types[max_transfer_type + 1] = {"control", "isoc", "bulk", "interrupt", "bulk-stream"};
+        prepare_clang_env ""
       fi
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -5924,7 +5934,6 @@ function build_libusb()
             # life very difficult.
             config_options+=("--disable-udev")
           fi
-
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libusb_src_folder_name}/configure" \
             "${config_options[@]}"
@@ -6132,9 +6141,17 @@ function build_vde()
 
       xbb_activate_installed_dev
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      # On debug, -O[01] fail with:
+      # Undefined symbols for architecture x86_64:
+      #   "_ltonstring", referenced from:
+      #       _fst_in_bpdu in fstp.o
+      #   "_nstringtol", referenced from:
+      #       _fst_in_bpdu in fstp.o
+      #       _fstprintactive in fstp.o
+
+      CPPFLAGS="$(echo "${XBB_CPPFLAGS}" | sed -e 's|-O0|-O2|')"
+      CFLAGS="$(echo "${XBB_CFLAGS_NO_W}" | sed -e 's|-O0|-O2|')"
+      CXXFLAGS="$(echo "${XBB_CXXFLAGS_NO_W}" | sed -e 's|-O0|-O2|')"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
@@ -6523,7 +6540,7 @@ function build_sdl2()
       export CXXFLAGS
       export LDFLAGS
 
-      if false # [ "${TARGET_PLATFORM}" == "darwin" ]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
       then
         # GNU GCC fails with
         #  CC     build/SDL_syspower.lo
@@ -6531,8 +6548,7 @@ function build_sdl2()
         #                 from //System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:55,
         #                 from /Users/ilg/Work/qemu-riscv-2.8.0-9/sources/SDL2-2.0.9/src/power/macosx/SDL_syspower.c:26:
         # //System/Library/Frameworks/CoreFoundation.framework/Headers/CFStream.h:249:59: error: unknown type name ‘dispatch_queue_t’
-        export CC=clang
-        export CXX=clang++
+        prepare_clang_env ""
       fi
 
       if [ ! -f "config.status" ]
