@@ -555,10 +555,15 @@ function set_xbb_extras()
     # `if (sys::fs::access(LockFileName.c_str(), sys::fs::AccessMode::Exist) ==`
     XBB_CFLAGS+=" -D__USE_MINGW_ACCESS"
 
-    # Tp prevent "too many sections", "File too big" etc.
-    # TODO: check if the RISC-V toolchain no longer fails.
-    XBB_CFLAGS+=" -Wa,-mbig-obj"
-    XBB_CXXFLAGS+=" -Wa,-mbig-obj"
+    # llvm fails. Enable it only when needed.
+    if false
+    then
+      # To prevent "too many sections", "File too big" etc.
+      # Unfortunately some builds fail, so it must be used explictly.
+      # TODO: check if the RISC-V toolchain no longer fails.
+      XBB_CFLAGS+=" -Wa,-mbig-obj"
+      XBB_CXXFLAGS+=" -Wa,-mbig-obj"
+    fi
 
     # CRT_glob is from Arm script
     # -static avoids libwinpthread-1.dll
@@ -948,10 +953,6 @@ function do_actions()
       echo
       docker run --interactive --tty "${docker_linux64_image}" \
         lsb_release --description --short
-
-      echo
-      docker run --interactive --tty "${docker_linux32_image}" \
-        lsb_release --description --short
     fi
 
     echo
@@ -1301,9 +1302,9 @@ function do_patch()
     if [ -f "${patch_path}" ]
     then
       echo "Applying \"${patch_path}\"..."
-      if [[ ${patch_path} == *.patch.diff ]]
+      if [[ ${patch_path} == *.patch.diff ]] || [[ ${patch_path} == *.git.patch ]]
       then
-        # Sourcetree creates patch.diff files, which require -p1.
+        # Fork & Sourcetree creates patch.diff files, which require -p1.
         run_verbose_develop patch -p1 < "${patch_path}"
       else
         # Manually created patches.
@@ -1440,7 +1441,14 @@ function copy_build_git()
   fi
   mkdir -pv "${HOST_WORK_FOLDER_PATH}/build.git"
   echo ${scripts_folder_path}
-  cp -r "$(dirname ${scripts_folder_path})"/* "${HOST_WORK_FOLDER_PATH}/build.git"
+  (
+    cd "$(dirname ${scripts_folder_path})"
+    find -L . -maxdepth 1 \
+      -not \( -path './.*' -prune \) \
+      -not \( -path './node_modules' -prune \) \
+      -not \( -path './xpacks' -prune \) \
+      -exec cp -r {} "${HOST_WORK_FOLDER_PATH}/build.git" \;
+  )
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/.git"
   rm -rf "${HOST_WORK_FOLDER_PATH}/build.git/scripts/helper/build-helper.sh"
 }
@@ -3352,9 +3360,11 @@ function copy_dependencies_recursive()
           fi
         fi
 
-        copy_dependencies_recursive \
-          "${from_path}" \
-          "${APP_PREFIX}/libexec"
+        # For consistency reasons, update rpath first, before dependencies.
+        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
+        patch_macos_elf_add_rpath \
+          "${actual_destination_file_path}" \
+          "${loader_prefix}${relative_folder_path}"
 
         if [ "${lib_path}" != "@rpath/$(basename "${from_path}")" ]
         then
@@ -3365,10 +3375,9 @@ function copy_dependencies_recursive()
             "${actual_destination_file_path}"
         fi
 
-        local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
-        patch_macos_elf_add_rpath \
-          "${actual_destination_file_path}" \
-          "${loader_prefix}${relative_folder_path}"
+        copy_dependencies_recursive \
+          "${from_path}" \
+          "${APP_PREFIX}/libexec"
 
       done
 
@@ -3651,16 +3660,25 @@ function copy_build_files()
   (
     cd "${BUILD_GIT_PATH}"
 
-    mkdir -pv patches
-
     # Ignore hidden folders/files (like .DS_Store).
-    find scripts patches -type d ! -iname '.*' \
+    find scripts -type d ! -iname '.*' \
       -exec install -d -m 0755 \
         "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
-    find scripts patches -type f ! -iname '.*' \
+    find scripts -type f ! -iname '.*' \
       -exec install -v -c -m 644 \
         '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+
+    if [ -d patches ]
+    then
+      find patches -type d ! -iname '.*' \
+        -exec install -d -m 0755 \
+          "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+
+      find patches -type f ! -iname '.*' \
+        -exec install -v -c -m 644 \
+          '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+    fi
 
     if [ -f CHANGELOG.txt ]
     then

@@ -42,6 +42,7 @@ script_folder_name="$(basename "${script_folder_path}")"
 
 scripts_folder_path="$(dirname $(dirname "${script_folder_path}"))/scripts"
 helper_folder_path="${scripts_folder_path}/helper"
+tests_folder_path="$(dirname "${scripts_folder_path}")/tests"
 
 # -----------------------------------------------------------------------------
 
@@ -197,6 +198,9 @@ fi
 
 # -----------------------------------------------------------------------------
 
+# Restore non-root rights at exit.
+trap fix_ownership EXIT
+
 start_timer
 
 detect_container
@@ -237,9 +241,6 @@ then
     check_binaries
 
     create_archive
-
-    # Change ownership to non-root Linux user.
-    fix_ownership
   )
 fi
 
