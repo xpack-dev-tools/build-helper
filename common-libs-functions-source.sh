@@ -1217,6 +1217,10 @@ function build_ncurses()
       if [ ! -f "config.status" ]
       then
         (
+          # 6.3 fails with
+          # configure: error: expected a pathname, not ""
+          export PKG_CONFIG_LIBDIR="no"
+
           if [ "${IS_DEVELOP}" == "y" ]
           then
             env | sort
