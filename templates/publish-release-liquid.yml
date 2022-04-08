@@ -61,7 +61,7 @@ jobs:
 
 {% for platform in platforms -%}
 {% if platform == "linux-arm" %}
-  linux-arm64:
+  linux-arm:
     name: 'Linux Arm 32 - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} publish release'
     runs-on: [self-hosted, linux, arm, xbbla32]
     steps:
