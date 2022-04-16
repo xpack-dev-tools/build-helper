@@ -1368,7 +1368,7 @@ function download()
       echo "Downloading \"${archive_name}\" from \"${url}\"..."
       rm -f "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download"
       mkdir -pv "${DOWNLOAD_FOLDER_PATH}"
-      run_verbose curl --fail --location --output "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
+      run_verbose curl --insecure --fail --location --output "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${url}"
       mv "${DOWNLOAD_FOLDER_PATH}/${archive_name}.download" "${DOWNLOAD_FOLDER_PATH}/${archive_name}"
     )
   else
