@@ -1302,9 +1302,9 @@ function do_patch()
     if [ -f "${patch_path}" ]
     then
       echo "Applying \"${patch_path}\"..."
-      if [[ ${patch_path} == *.patch.diff ]]
+      if [[ ${patch_path} == *.patch.diff ]] || [[ ${patch_path} == *.git.patch ]]
       then
-        # Sourcetree creates patch.diff files, which require -p1.
+        # Fork & Sourcetree creates patch.diff files, which require -p1.
         run_verbose_develop patch -p1 < "${patch_path}"
       else
         # Manually created patches.
@@ -3660,16 +3660,25 @@ function copy_build_files()
   (
     cd "${BUILD_GIT_PATH}"
 
-    mkdir -pv patches
-
     # Ignore hidden folders/files (like .DS_Store).
-    find scripts patches -type d ! -iname '.*' \
+    find scripts -type d ! -iname '.*' \
       -exec install -d -m 0755 \
         "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
 
-    find scripts patches -type f ! -iname '.*' \
+    find scripts -type f ! -iname '.*' \
       -exec install -v -c -m 644 \
         '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+
+    if [ -d patches ]
+    then
+      find patches -type d ! -iname '.*' \
+        -exec install -d -m 0755 \
+          "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+
+      find patches -type f ! -iname '.*' \
+        -exec install -v -c -m 644 \
+          '{}' "${APP_PREFIX}/${DISTRO_INFO_NAME}"/'{}' ';'
+    fi
 
     if [ -f CHANGELOG.txt ]
     then

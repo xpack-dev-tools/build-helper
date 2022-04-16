@@ -58,7 +58,7 @@ jobs:
   {% when "linux-arm64" %}
   linux-arm64:
     name: 'Linux Arm 64-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-    runs-on: [self-hosted, linux, arm64]
+    runs-on: [self-hosted, linux, arm64, xbbla]
     steps:
       - name: 'Machine'
         run: uname -a
@@ -76,7 +76,7 @@ jobs:
   {% when "linux-arm" %}
   linux-arm32:
     name: 'Linux Arm 32-bit {{ APP_NAME }}@{% raw %}${{ github.event.inputs.version }}{% endraw %} test'
-    runs-on: [self-hosted, linux, arm64]
+    runs-on: [self-hosted, linux, arm64, xbbla]
     steps:
       - name: 'Machine'
         run: uname -a

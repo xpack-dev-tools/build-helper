@@ -65,6 +65,7 @@ jobs:
           draft: false
           name: 'Test binaries'
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
@@ -77,11 +78,11 @@ jobs:
 {% endfor %}
 
 {% for platform in platforms -%}
-{% if platform == "linux-arm64" or platform == "linux-arm" %}
-  linux-arm64:
-    name: 'Linux Arm - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
+{% if platform == "linux-arm" %}
+  linux-arm:
+    name: 'Linux Arm 32 - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
     timeout-minutes: 2880 # 2 days
-    runs-on: [self-hosted, linux, arm64]
+    runs-on: [self-hosted, linux, arm, xbbla32]
     steps:
       - name: 'Machine'
         run: uname -a
@@ -94,18 +95,9 @@ jobs:
 
       - name: 'Clean working area'
         run: rm -rf ~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
-{% for platform in platforms -%}
-  {% case platform -%}
-    {% when "linux-arm64" %}
-      - name: 'Build Linux arm64 binary'
-        timeout-minutes: 1440
-        run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --arm64
-   {% when "linux-arm" %}
       - name: 'Build Linux arm32 binary'
         timeout-minutes: 1440
         run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --arm32
-  {% endcase -%}
-{% endfor %}
       - name: 'Publish pre-release'
         # https://github.com/ncipollo/release-action
         uses: ncipollo/release-action@v1
@@ -117,6 +109,52 @@ jobs:
           draft: false
           name: 'Test binaries'
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
+          omitNameDuringUpdate: true
+          owner: 'xpack-dev-tools'
+          prerelease: true
+          replacesArtifacts: true
+          repo: 'pre-releases'
+          tag: 'test'
+          token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
+{% break -%}
+{% endif -%}
+{% endfor %}
+
+{% for platform in platforms -%}
+{% if platform == "linux-arm64" %}
+  linux-arm64:
+    name: 'Linux Arm 64 - {{ APP_NAME }} {% raw %}${{ github.event.inputs.version }}{% endraw %} build'
+    timeout-minutes: 2880 # 2 days
+    runs-on: [self-hosted, linux, arm64, xbbla64]
+    steps:
+      - name: 'Machine'
+        run: uname -a
+
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 3
+          submodules: true
+
+      - name: 'Clean working area'
+        run: rm -rf ~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}*
+      - name: 'Build Linux arm64 binary'
+        timeout-minutes: 1440
+        run: bash scripts/helper/build.sh --version "{% raw %}${{ github.event.inputs.version }}{% endraw %}" --arm64
+
+      - name: 'Publish pre-release'
+        # https://github.com/ncipollo/release-action
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: '~/Work/{{ APP_LC_NAME }}-{% raw %}${{ github.event.inputs.version }}{% endraw %}/deploy/*'
+          bodyFile: '.github/workflows/body-github-pre-releases-test.md'
+          commit: 'master'
+          draft: false
+          name: 'Test binaries'
+          omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
@@ -169,6 +207,7 @@ jobs:
           draft: false
           name: 'Test binaries'
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
@@ -224,6 +263,7 @@ jobs:
           draft: false
           name: 'Test binaries'
           omitBodyDuringUpdate: true
+          omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
