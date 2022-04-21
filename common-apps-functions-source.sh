@@ -516,6 +516,7 @@ function build_mingw_headers()
   # 2020-09-18, "8.0.0"
   # 2021-05-09, "8.0.2"
   # 2021-05-22, "9.0.0"
+  # 2022-04-04, "10.0.0"
 
   local mingw_archive="${MINGW_SRC_FOLDER_NAME}.tar.bz2"
   local mingw_url="https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/${mingw_archive}"

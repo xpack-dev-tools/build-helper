@@ -1832,6 +1832,7 @@ function build_expat()
   # 3 Oct 2020, "2.2.10"
   # 25 Mar 2021 "2.3.0"
   # 23 May 2021, "2.4.1"
+  # 29 Mar 2022, "2.4.8"
 
   local expat_version="$1"
 
