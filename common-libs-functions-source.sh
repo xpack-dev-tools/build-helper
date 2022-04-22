@@ -3721,7 +3721,14 @@ function build_python3()
   local python3_version_minor=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
   # local PYTHON3_VERSION_MAJOR_MINOR=${python3_version_major}${python3_version_minor}
 
+  PYTHON3_VERSION_MAJOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\..*|\1|')
+  PYTHON3_VERSION_MINOR=$(echo ${python3_version} | sed -e 's|\([0-9]\)\.\([0-9][0-9]*\)\..*|\2|')
+  PYTHON3_VERSION_MAJOR_MINOR=${PYTHON3_VERSION_MAJOR}${PYTHON3_VERSION_MINOR}
+
   local python3_src_folder_name="Python-${python3_version}"
+
+  # Used in add_python3_syslibs()
+  PYTHON3_SRC_FOLDER_NAME=${python3_src_folder_name}
 
   local python3_archive="${python3_src_folder_name}.tar.xz"
   local python3_url="https://www.python.org/ftp/python/${python3_version}/${python3_archive}"
