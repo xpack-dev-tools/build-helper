@@ -124,6 +124,8 @@ function build_zlib()
               run_verbose bash "configure" --help
             fi
 
+            # Hack needed for 1.2.12 on macOS
+            export cc="${CC}"
             run_verbose bash ${DEBUG} "configure" \
               --prefix="${LIBS_INSTALL_FOLDER_PATH}"
 
