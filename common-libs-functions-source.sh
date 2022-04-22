@@ -26,6 +26,7 @@ function build_zlib()
 
   # 2013-04-28 "1.2.8"
   # 2017-01-15 "1.2.11"
+  # 2022-03-27, "1.2.12"
 
   local zlib_version="$1"
 
@@ -2070,6 +2071,7 @@ function build_gpm()
   # General purpose mouse. Used by ncurses.
   # https://www.nico.schottelius.org/software/gpm/
   # https://github.com/telmich/gpm
+  # https://github.com/telmich/gpm/tags
   # https://github.com/telmich/gpm/releases/tag/1.20.7
   # https://github.com/telmich/gpm/archive/1.20.7.tar.gz
 
@@ -2379,6 +2381,7 @@ function build_libxcrypt()
   # 23 Aug 2020, "4.4.17"
   # 1 May 2021, "4.4.20"
   # 18 Sep 2021, "4.4.26"
+  # 02 Feb 2022, "4.4.28"
 
   local libxcrypt_version="$1"
 
@@ -2546,6 +2549,8 @@ function build_openssl()
   # https://www.openssl.org
   # https://www.openssl.org/source/
 
+  # https://www.openssl.org/source/openssl-1.1.1n.tar.gz
+
   # https://archlinuxarm.org/packages/aarch64/openssl/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-static
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-git
@@ -2563,6 +2568,7 @@ function build_openssl()
   # 2020-Sep-22, "1.1.1h"
   # 2021-Mar-25, "1.1.1k"
   # 2021-Aug-24, "1.1.1l"
+  # 2022-Mar-15, "1.1.1n"
 
   local openssl_version="$1"
   # Numbers
@@ -2885,12 +2891,14 @@ function build_sqlite()
   # https://www.sqlite.org/download.html
   # https://www.sqlite.org/2020/sqlite-src-3330000.zip
   # https://www.sqlite.org/2021/sqlite-src-3360000.zip
+  # https://www.sqlite.org/2022/sqlite-src-3380200.zip
   # https://www.sqlite.org/src/tarball/7ebdfa80/SQLite-7ebdfa80.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/sqlite/files/PKGBUILD
 
   # 2020-06-18 "3.32.3" 7ebdfa80
   # 2021-06-18 "3360000"
+  # 2022 "3380200"
 
   local sqlite_version="$1"
 
@@ -2898,7 +2906,11 @@ function build_sqlite()
   local sqlite_archive="${sqlite_src_folder_name}.zip"
   local sqlite_url
 
-  if [ "${sqlite_version}" == "3360000" ]
+  if [ "${sqlite_version}" == "3380200" ]
+  then
+    # 2022
+    sqlite_url="https://www.sqlite.org/2022/${sqlite_archive}"
+  elif [ "${sqlite_version}" == "3360000" ]
   then
     # 2021
     sqlite_url="https://www.sqlite.org/2021/${sqlite_archive}"
@@ -4418,7 +4430,7 @@ function build_pixman()
 
       if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
-        # TODO: chack again on Apple Silicon.
+        # TODO: check again on Apple Silicon.
         prepare_clang_env ""
       fi
 
