@@ -554,7 +554,7 @@ function build_mpc()
 
   local mpc_archive="${mpc_src_folder_name}.tar.gz"
   local mpc_url="ftp://ftp.gnu.org/gnu/mpc/${mpc_archive}"
-  if [[ "${mpc_version}" =~ 0\.* ]]
+  if [[ ${mpc_version} =~ 0\.* ]]
   then
     mpc_url="http://www.multiprecision.org/downloads/${mpc_archive}"
   fi
@@ -711,7 +711,7 @@ function build_isl()
   local isl_src_folder_name="isl-${isl_version}"
 
   local isl_archive="${isl_src_folder_name}.tar.xz"
-  if [[ "${isl_version}" =~ 0\.1[24]\.* ]]
+  if [[ ${isl_version} =~ 0\.1[24]\.* ]]
   then
     isl_archive="${isl_src_folder_name}.tar.gz"
   fi
@@ -1838,7 +1838,7 @@ function build_expat()
 
   local expat_src_folder_name="expat-${expat_version}"
   local expat_archive="${expat_src_folder_name}.tar.bz2"
-  if [[ "${expat_version}" =~ 2\.0\.* ]]
+  if [[ ${expat_version} =~ 2\.0\.* ]]
   then
     expat_archive="${expat_src_folder_name}.tar.gz"
   fi
@@ -3490,7 +3490,7 @@ function build_python2()
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi
 
-      if [[ "${CC}" =~ gcc* ]]
+      if [[ ${CC} =~ .*gcc.* ]]
       then
         # Inspired from Arch; not supported by clang.
         CFLAGS+=" -fno-semantic-interposition"
@@ -3757,7 +3757,7 @@ function build_python3()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # HACK! GCC chokes on dynamic sizes:
         # error: variably modified ‘bytes’ at file scope
@@ -3772,7 +3772,7 @@ function build_python3()
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
       fi
 
-      if [[ "${CC}" =~ gcc* ]]
+      if [[ ${CC} =~ .*gcc.* ]]
       then
         # Inspired from Arch; not supported by clang.
         CFLAGS+=" -fno-semantic-interposition"
@@ -4416,7 +4416,7 @@ function build_pixman()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # TODO: chack again on Apple Silicon.
         prepare_clang_env ""
@@ -4569,7 +4569,7 @@ function build_glib()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # GCC fails with
         # error: unknown type name ‘dispatch_block_t
@@ -5639,7 +5639,7 @@ function build_npth()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # /usr/include/os/base.h:113:20: error: missing binary operator before token "("
         # #if __has_extension(attribute_overloadable)
@@ -5890,7 +5890,7 @@ function build_libusb()
 
       xbb_activate_installed_dev
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c: In function 'darwin_handle_transfer_completion':
         # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c:2151:3: error: variable-sized object may not be initialized
@@ -6552,7 +6552,7 @@ function build_sdl2()
       export CXXFLAGS
       export LDFLAGS
 
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ "${CC}" =~ *gcc* ]]
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # GNU GCC fails with
         #  CC     build/SDL_syspower.lo

@@ -520,7 +520,7 @@ function set_xbb_extras()
       exit 1
     fi
 
-    if [[ "${CC}" =~ *clang* ]]
+    if [[ ${CC} =~ .*clang.* ]]
     then
       XBB_CFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
       XBB_CXXFLAGS+=" -mmacosx-version-min=${MACOSX_DEPLOYMENT_TARGET}"
@@ -537,7 +537,7 @@ function set_xbb_extras()
     XBB_LDFLAGS_LIB="${XBB_LDFLAGS}"
     XBB_LDFLAGS_APP="${XBB_LDFLAGS} -Wl,-dead_strip"
     XBB_LDFLAGS_APP_STATIC_GCC="${XBB_LDFLAGS_APP} -static-libstdc++"
-    if [[ "${CC}" =~ *gcc* ]]
+    if [[ ${CC} =~ .*gcc.* ]]
     then
       XBB_LDFLAGS_APP_STATIC_GCC+=" -static-libgcc"
     fi
@@ -3617,14 +3617,14 @@ function copy_license()
     do
       if [ -f "$f" ]
       then
-        if [[ "$f" =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|Copyright.*|COPYRIGHT.*|FAQ.*|DEPENDENCIES.*|THANKS.*|CHANGES.* ]]
+        if [[ $f =~ AUTHORS.*|NEWS.*|COPYING.*|README.*|LICENSE.*|Copyright.*|COPYRIGHT.*|FAQ.*|DEPENDENCIES.*|THANKS.*|CHANGES.* ]]
         then
           install -d -m 0755 \
             "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
           install -v -c -m 644 "$f" \
             "${APP_PREFIX}/${DISTRO_INFO_NAME}/licenses/$2"
         fi
-      elif [ -d "$f" ] && [[ "$f" =~ [Ll][Ii][Cc][Ee][Nn][Ss][Ee]* ]]
+      elif [ -d "$f" ] && [[ $f =~ [Ll][Ii][Cc][Ee][Nn][Ss][Ee]* ]]
       then
         (
           cd "$f"
