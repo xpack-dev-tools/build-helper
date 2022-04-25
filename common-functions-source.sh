@@ -1316,7 +1316,7 @@ function do_patch()
 
 function extract()
 {
-  local archive_name="$1"
+  local archive_file_path="$1"
   local folder_name="$2"
   # local patch_file_name="$3"
   local pwd="$(pwd)"
@@ -1327,18 +1327,18 @@ function extract()
       xbb_activate
 
       echo
-      echo "Extracting \"${archive_name}\" -> \"${pwd}/${folder_name}\"..."
-      if [[ "${archive_name}" == *zip ]]
+      echo "Extracting \"${archive_file_path}\" -> \"${pwd}/${folder_name}\"..."
+      if [[ "${archive_file_path}" == *zip ]]
       then
-        run_verbose_develop unzip "${archive_name}"
+        run_verbose_develop unzip "${archive_file_path}"
       else
         # On macOS Docker seems to have a problem and extracting symlinks
         # fails, but a second atempt is successful.
         if [ ! -z "${DEBUG}" ]
         then
-          run_verbose_develop tar -x -v -f "${archive_name}" --no-same-owner || tar -x -v -f "${archive_name}" --no-same-owner
+          run_verbose_develop tar -x -v -f "${archive_file_path}" --no-same-owner || tar -x -v -f "${archive_file_path}" --no-same-owner
         else
-          run_verbose_develop tar -x -f "${archive_name}" --no-same-owner || tar -x -f "${archive_name}" --no-same-owner
+          run_verbose_develop tar -x -f "${archive_file_path}" --no-same-owner || tar -x -f "${archive_file_path}" --no-same-owner
         fi
       fi
 
