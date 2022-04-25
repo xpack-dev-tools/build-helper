@@ -3959,10 +3959,12 @@ function download_python3_win()
   (
     if [ ! -d "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}" ]
     then
-      mkdir -pv "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
-      cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
+      download "${python3_win_embed_url}" "${python3_win_embed_pack}"
 
-      download_and_extract "${python3_win_embed_url}" "${python3_win_embed_pack}" "${PYTHON3_WIN_SRC_FOLDER_NAME}"
+      # The archive has no folders, so extract it manually.
+      mkdir -p "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
+      cd "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}"
+      run_verbose_develop unzip "${DOWNLOAD_FOLDER_PATH}/${python3_win_embed_pack}"
     else
       echo "Folder ${PYTHON3_WIN_SRC_FOLDER_NAME} already present."
     fi
@@ -4003,7 +4005,7 @@ function add_python3_win_syslibs()
     echo
     echo "Copying .pyd & .dll files from the embedded Python distribution..."
     mkdir -pv "${APP_PREFIX}/bin"
-    cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}/python37.zip"\
+    cp -v "${SOURCES_FOLDER_PATH}/${PYTHON3_WIN_SRC_FOLDER_NAME}/python${PYTHON3_VERSION_MAJOR_MINOR}.zip"\
       "${APP_PREFIX}/bin"
 
     mkdir -pv "${APP_PREFIX}/bin/DLLs"
