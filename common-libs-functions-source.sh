@@ -2076,10 +2076,12 @@ function build_gpm()
   # https://github.com/telmich/gpm/tags
   # https://github.com/telmich/gpm/releases/tag/1.20.7
   # https://github.com/telmich/gpm/archive/1.20.7.tar.gz
+  # https://github.com/xpack-dev-tools/gpm/archive/refs/tags/v1.20.7-1.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/gpm/files/PKGBUILD
 
   # 27 Oct 2012 "1.20.7"
+  # 25 Apr 2022 "1.20.7-1" xPack
 
   local gpm_version="$1"
 
@@ -2088,7 +2090,8 @@ function build_gpm()
   local gpm_archive="${gpm_src_folder_name}.tar.gz"
   # GitHub release archive.
   local gpm_github_archive="${gpm_version}.tar.gz"
-  local gpm_github_url="https://github.com/telmich/gpm/archive/${gpm_github_archive}"
+  # local gpm_github_url="https://github.com/telmich/gpm/archive/${gpm_github_archive}"
+  local gpm_github_url="https://github.com/xpack-dev-tools/gpm/archive/refs/tags/v${gpm_github_archive}"
 
   local gpm_folder_name="${gpm_src_folder_name}"
 
