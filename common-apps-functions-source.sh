@@ -1895,7 +1895,7 @@ function build_cross_binutils()
           fi
 
           echo
-          echo "Running binutils configure..."
+          echo "Running cross binutils configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${BINUTILS_SRC_FOLDER_NAME}/configure" --help
 
@@ -1904,6 +1904,13 @@ function build_cross_binutils()
           # --without-x --disable-gdbtk --without-tcl --without-tk
           # --enable-plugins --disable-gdb --without-gdb --target=arm-none-eabi
           # --prefix=/'
+
+          # 11.2-2022.02-darwin-x86_64-aarch64-none-elf-manifest.txt
+          # binutils_configure='--enable-64-bit-bfd
+          # --enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf
+          # --enable-initfini-array --disable-nls --without-x --disable-gdbtk
+          # --without-tcl --without-tk --enable-plugins --disable-gdb
+          # --without-gdb --target=aarch64-none-elf --prefix=/'
 
           # ? --without-python --without-curses, --with-expat
 
@@ -1919,22 +1926,28 @@ function build_cross_binutils()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          config_options+=("--disable-nls") # Arm
-          config_options+=("--disable-gdb") # Arm
-          config_options+=("--disable-gdbtk") # Arm
+          config_options+=("--disable-nls") # Arm, Aarch64
+          config_options+=("--disable-gdb") # Arm, Aarch64
+          config_options+=("--disable-gdbtk") # Arm, Aarch64
 
           config_options+=("--disable-sim") # ABE
           config_options+=("--disable-werror") # ABE
 
-          config_options+=("--enable-initfini-array") # Arm
+          config_options+=("--enable-initfini-array") # Arm, Aarch64
           config_options+=("--enable-lto") # ABE
-          config_options+=("--enable-plugins") # Arm
+          config_options+=("--enable-plugins") # Arm, Aarch64
           config_options+=("--enable-build-warnings=no")
 
-          config_options+=("--without-gdb") # Arm
-          config_options+=("--without-x") # Arm
-          config_options+=("--without-tcl") # Arm
-          config_options+=("--without-tk") # Arm
+          if [ "${GCC_TARGET}" == "aarch64-none-elf" ]
+          then
+            config_options+=("--enable-64-bit-bfd") # Aarch64
+            config_options+=("--enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf") # Aarch64
+          fi
+
+          config_options+=("--without-gdb") # Arm, Aarch64
+          config_options+=("--without-x") # Arm, Aarch64
+          config_options+=("--without-tcl") # Arm, Aarch64
+          config_options+=("--without-tk") # Arm, Aarch64
 
           config_options+=("--with-pkgversion=${BRANDING}")
           config_options+=("--with-system-zlib")
@@ -1948,7 +1961,7 @@ function build_cross_binutils()
 
       (
         echo
-        echo "Running binutils make..."
+        echo "Running cross binutils make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -1978,10 +1991,13 @@ function build_cross_binutils()
           fi
         )
 
-        # Without this copy, the build for the nano version of the GCC second
-        # step fails with unexpected errors, like "cannot compute suffix of
-        # object files: cannot compile".
-        copy_dir "${APP_PREFIX}" "${APP_PREFIX_NANO}"
+        if [ -n "${APP_PREFIX_NANO:-}" ]
+        then
+          # Without this copy, the build for the nano version of the GCC second
+          # step fails with unexpected errors, like "cannot compute suffix of
+          # object files: cannot compile".
+          copy_dir "${APP_PREFIX}" "${APP_PREFIX_NANO}"
+        fi
 
         show_libs "${APP_PREFIX}/bin/${GCC_TARGET}-ar"
         show_libs "${APP_PREFIX}/bin/${GCC_TARGET}-as"
@@ -2004,7 +2020,7 @@ function build_cross_binutils()
     touch "${binutils_stamp_file_path}"
 
   else
-    echo "Component binutils already installed."
+    echo "Component cross binutils already installed."
   fi
 
   tests_add "test_cross_binutils"
@@ -2150,7 +2166,7 @@ function build_cross_gcc_first()
           fi
 
           echo
-          echo "Running gcc first stage configure..."
+          echo "Running cross gcc first stage configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}/configure" --help
 
@@ -2165,6 +2181,17 @@ function build_cross_gcc_first()
           # --enable-checking=release --enable-languages=c --without-cloog
           # --without-isl --with-newlib --without-headers
           # --with-multilib-list=aprofile,rmprofile'
+
+          # 11.2-2022.02-darwin-x86_64-aarch64-none-elf-manifest.txt
+          # gcc1_configure='--target=aarch64-none-elf
+          # --prefix=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/install//
+          # --with-gmp=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+          # --with-mpfr=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+          # --with-mpc=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+          # --with-isl=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+          # --disable-shared --disable-nls --disable-threads --disable-tls
+          # --enable-checking=release --enable-languages=c --without-cloog
+          # --without-isl --with-newlib --without-headers'
 
           # From: https://gcc.gnu.org/install/configure.html
           # --enable-shared[=package[,…]] build shared versions of libraries
@@ -2194,32 +2221,36 @@ function build_cross_gcc_first()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          config_options+=("--disable-nls") # Arm
-          config_options+=("--disable-shared") # Arm
-          config_options+=("--disable-threads") # Arm
-          config_options+=("--disable-tls") # Arm
+          config_options+=("--disable-nls") # Arm, Aarch64
+          config_options+=("--disable-shared") # Arm, Aarch64
+          config_options+=("--disable-threads") # Arm, Aarch64
+          config_options+=("--disable-tls") # Arm, Aarch64
 
-          config_options+=("--enable-checking=release") # Arm
-          config_options+=("--enable-languages=c") # Arm
+          config_options+=("--enable-checking=release") # Arm, Aarch64
+          config_options+=("--enable-languages=c") # Arm, Aarch64
           # config_options+=("--enable-lto") # ABE
 
-          config_options+=("--without-cloog") # Arm
-          config_options+=("--without-headers") # Arm
-          config_options+=("--without-isl") # Arm
+          config_options+=("--without-cloog") # Arm, Aarch64
+          config_options+=("--without-headers") # Arm, Aarch64
+          config_options+=("--without-isl") # Arm, Aarch64
 
           # config_options+=("--with-gnu-as") # ABE
           # config_options+=("--with-gnu-ld") # ABE
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # Aarch64
           config_options+=("--with-pkgversion=${BRANDING}")
-          config_options+=("--with-newlib") # Arm
+          config_options+=("--with-newlib") # Arm, Aarch64
 
           config_options+=("--with-system-zlib")
 
-          if [ "${WITHOUT_MULTILIB}" == "y" ]
+          if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
-            config_options+=("--disable-multilib")
-          else
-            config_options+=("--enable-multilib") # Arm
-            config_options+=("--with-multilib-list=${GCC_MULTILIB_LIST}")  # Arm
+            if [ "${WITHOUT_MULTILIB}" == "y" ]
+            then
+              config_options+=("--disable-multilib")
+            else
+              config_options+=("--enable-multilib") # Arm
+              config_options+=("--with-multilib-list=${GCC_MULTILIB_LIST}")  # Arm
+            fi
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}/configure" \
@@ -2232,7 +2263,7 @@ function build_cross_gcc_first()
       (
         # Partial build, without documentation.
         echo
-        echo "Running gcc first stage make..."
+        echo "Running cross gcc first stage make..."
 
         # No need to make 'all', 'all-gcc' is enough to compile the libraries.
         # Parallel builds may fail.
@@ -2250,7 +2281,7 @@ function build_cross_gcc_first()
     touch "${gcc_first_stamp_file_path}"
 
   else
-    echo "Component gcc first stage already installed."
+    echo "Component cross gcc first stage already installed."
   fi
 }
 
@@ -2264,7 +2295,7 @@ function build_cross_gcc_first()
 
 # For the nano build, call it with "-nano".
 # $1="" or $1="-nano"
-function build_newlib()
+function build_cross_newlib()
 {
   local name_suffix=${1-''}
   local newlib_folder_name="newlib-${NEWLIB_VERSION}${name_suffix}"
@@ -2331,7 +2362,7 @@ function build_newlib()
           # --enable-newlib-retargetable-locking ???
 
           echo
-          echo "Running newlib${name_suffix} configure..."
+          echo "Running cross newlib${name_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${NEWLIB_SRC_FOLDER_NAME}/configure" --help
 
@@ -2346,6 +2377,12 @@ function build_newlib()
             # --enable-newlib-mb --enable-newlib-reent-check-verify
             # --target=arm-none-eabi --prefix=/'
 
+            # 11.2-2022.02-darwin-x86_64-aarch64-none-elf-manifest.txt
+            # newlib_configure=' --disable-newlib-supplied-syscalls
+            # --enable-newlib-io-long-long --enable-newlib-io-c99-formats
+            # --enable-newlib-mb --enable-newlib-reent-check-verify
+            # --target=aarch64-none-elf --prefix=/'
+
             config_options+=("--prefix=${APP_PREFIX}")
             config_options+=("--infodir=${APP_PREFIX_DOC}/info")
             config_options+=("--mandir=${APP_PREFIX_DOC}/man")
@@ -2356,13 +2393,13 @@ function build_newlib()
             config_options+=("--host=${HOST}")
             config_options+=("--target=${GCC_TARGET}")
 
-            config_options+=("--disable-newlib-supplied-syscalls") # Arm
+            config_options+=("--disable-newlib-supplied-syscalls") # Arm, Aarch64
 
-            config_options+=("--enable-newlib-io-c99-formats") # Arm
+            config_options+=("--enable-newlib-io-c99-formats") # Arm, Aarch64
 
-            config_options+=("--enable-newlib-io-long-long") # Arm
-            config_options+=("--enable-newlib-mb") # Arm
-            config_options+=("--enable-newlib-reent-check-verify") # Arm
+            config_options+=("--enable-newlib-io-long-long") # Arm, Aarch64
+            config_options+=("--enable-newlib-mb") # Arm, Aarch64
+            config_options+=("--enable-newlib-reent-check-verify") # Arm, Aarch64
 
             # Not used by Arm, but perhaps necessary?
             # config_options+=("--enable-newlib-register-fini")
@@ -2415,7 +2452,7 @@ function build_newlib()
               "${config_options[@]}"
 
           else
-            echo "Unsupported build_newlib arg ${name_suffix}"
+            echo "Unsupported build_cross_newlib name_suffix '${name_suffix}'"
             exit 1
           fi
 
@@ -2426,7 +2463,7 @@ function build_newlib()
       (
         # Partial build, without documentation.
         echo
-        echo "Running newlib${name_suffix} make..."
+        echo "Running cross newlib${name_suffix} make..."
 
         # Parallel builds may fail.
         run_verbose make -j ${JOBS}
@@ -2484,13 +2521,13 @@ function build_newlib()
 
     touch "${newlib_stamp_file_path}"
   else
-    echo "Component newlib$1 already installed."
+    echo "Component cross newlib$1 already installed."
   fi
 }
 
 # -----------------------------------------------------------------------------
 
-function copy_nano_libs()
+function copy_cross_nano_libs()
 {
   local src_folder="$1"
   local dst_folder="$2"
@@ -2509,7 +2546,7 @@ function copy_nano_libs()
 # $1=source
 # $2=destination
 # $3=target gcc
-function copy_multi_libs()
+function copy_cross_multi_libs()
 {
   local -a multilibs
   local multilib
@@ -2525,17 +2562,17 @@ function copy_multi_libs()
     for multilib in "${multilibs[@]}"
     do
       multi_folder="${multilib%%;*}"
-      copy_nano_libs "${src_folder}/${multi_folder}" \
+      copy_cross_nano_libs "${src_folder}/${multi_folder}" \
         "${dst_folder}/${multi_folder}"
     done
   else
-    copy_nano_libs "${src_folder}" "${dst_folder}"
+    copy_cross_nano_libs "${src_folder}" "${dst_folder}"
   fi
 }
 
 # -----------------------------------------------------------------------------
 
-function copy_linux_libs()
+function copy_cross_linux_libs()
 {
   local copy_linux_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-copy-linux-completed"
   if [ ! -f "${copy_linux_stamp_file_path}" ]
@@ -2568,7 +2605,7 @@ function copy_linux_libs()
 
 # -----------------------------------------------------------------------------
 
-function add_linux_install_path()
+function add_cross_linux_install_path()
 {
   # Verify that the compiler is there.
   "${WORK_FOLDER_PATH}/${LINUX_INSTALL_RELATIVE_PATH}/${APP_LC_NAME}/bin/${GCC_TARGET}-gcc" --version
@@ -2648,7 +2685,7 @@ function build_cross_gcc_final()
 
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
-        add_linux_install_path
+        add_cross_linux_install_path
 
         export AR_FOR_TARGET=${GCC_TARGET}-ar
         export NM_FOR_TARGET=${GCC_TARGET}-nm
@@ -2668,7 +2705,7 @@ function build_cross_gcc_final()
           fi
 
           echo
-          echo "Running gcc${name_suffix} final stage configure..."
+          echo "Running cross gcc${name_suffix} final stage configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}/configure" --help
 
@@ -2699,41 +2736,47 @@ function build_cross_gcc_final()
             config_options+=("--mandir=${APP_PREFIX_DOC}/man")
             config_options+=("--htmldir=${APP_PREFIX_DOC}/html")
             config_options+=("--pdfdir=${APP_PREFIX_DOC}/pdf")
-          else
+          elif [ "${name_suffix}" == "-nano" ]
+          then
             config_options+=("--prefix=${APP_PREFIX_NANO}")
+          else
+            echo "Unsupported name_suffix '${name_suffix}'"
+            exit 1
           fi
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          config_options+=("--disable-nls") # Arm
-          config_options+=("--disable-shared") # Arm
-          config_options+=("--disable-threads") # Arm
-          config_options+=("--disable-tls") # Arm
+          config_options+=("--disable-nls") # Arm, Aarch64
+          config_options+=("--disable-shared") # Arm, Aarch64
+          config_options+=("--disable-threads") # Arm, Aarch64
+          config_options+=("--disable-tls") # Arm, Aarch64
 
-          config_options+=("--enable-checking=release") # Arm
-          config_options+=("--enable-languages=c,c++,fortran") # Arm
+          config_options+=("--enable-checking=release") # Arm, Aarch64
+          config_options+=("--enable-languages=c,c++,fortran") # Arm, Aarch64
 
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             config_options+=("--enable-mingw-wildcard")
           fi
 
-          # config_options+=("--with-gnu-as") # ABE
-          # config_options+=("--with-gnu-ld") # ABE
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # Aarch64
 
-          config_options+=("--with-newlib") # Arm
+          config_options+=("--with-newlib") # Arm, Aarch64
           config_options+=("--with-pkgversion=${BRANDING}")
 
           config_options+=("--with-system-zlib")
 
-          if [ "${WITHOUT_MULTILIB}" == "y" ]
+          if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
-            config_options+=("--disable-multilib")
-          else
-            config_options+=("--enable-multilib") # Arm
-            config_options+=("--with-multilib-list=${GCC_MULTILIB_LIST}")  # Arm
+            if [ "${WITHOUT_MULTILIB}" == "y" ]
+            then
+              config_options+=("--disable-multilib")
+            else
+              config_options+=("--enable-multilib") # Arm
+              config_options+=("--with-multilib-list=${GCC_MULTILIB_LIST}")  # Arm
+            fi
           fi
 
           # Practically the same.
@@ -2750,6 +2793,17 @@ function build_cross_gcc_final()
             # --disable-shared --disable-nls --disable-threads --disable-tls
             # --enable-checking=release --enable-languages=c,c++,fortran
             # --with-newlib --with-multilib-list=aprofile,rmprofile'
+
+            # 11.2-2022.02-darwin-x86_64-aarch64-none-elf-manifest.txt
+            # gcc2_configure='--target=aarch64-none-elf
+            # --prefix=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/install//
+            # --with-gmp=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+            # --with-mpfr=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+            # --with-mpc=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+            # --with-isl=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+            # --disable-shared --disable-nls --disable-threads --disable-tls
+            # --enable-checking=release --enable-languages=c,c++,fortran
+            # --with-newlib 			 			 			'
 
             run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}/configure" \
               "${config_options[@]}"
@@ -2779,7 +2833,7 @@ function build_cross_gcc_final()
       (
         # Partial build, without documentation.
         echo
-        echo "Running gcc${name_suffix} final stage make..."
+        echo "Running cross gcc${name_suffix} final stage make..."
 
         if [ "${TARGET_PLATFORM}" != "win32" ]
         then
@@ -2833,7 +2887,7 @@ function build_cross_gcc_final()
 
             # Copy the libraries after appending the `_nano` suffix.
             # Iterate through all multilib names.
-            copy_multi_libs \
+            copy_cross_multi_libs \
               "${APP_PREFIX_NANO}/${GCC_TARGET}/lib" \
               "${APP_PREFIX}/${GCC_TARGET}/lib" \
               "${target_gcc}"
@@ -2900,7 +2954,7 @@ function build_cross_gcc_final()
     touch "${gcc_final_stamp_file_path}"
 
   else
-    echo "Component gcc${name_suffix} final stage already installed."
+    echo "Component cross gcc${name_suffix} final stage already installed."
   fi
 
   if [ "${name_suffix}" == "" ]
@@ -3110,7 +3164,7 @@ function build_cross_gdb()
           fi
 
           echo
-          echo "Running gdb${name_suffix} configure..."
+          echo "Running cross gdb${name_suffix} configure..."
 
           bash "${SOURCES_FOLDER_PATH}/${GDB_SRC_FOLDER_NAME}/gdb/configure" --help
 
@@ -3128,6 +3182,22 @@ function build_cross_gdb()
           # --with-libgmp-prefix=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-arm-none-eabi/host-tools
           # --with-libgmp-type=static'
 
+          # 11.2-2022.02-darwin-x86_64-aarch64-none-elf-manifest.txt
+          # gdb_configure='--enable-64-bit-bfd
+          # --enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf
+          # --enable-initfini-array --disable-nls --without-x --disable-gdbtk
+          # --without-tcl --without-tk --disable-werror --without-expat
+          # --without-libunwind-ia64 --without-lzma --without-babeltrace
+          # --without-intel-pt --without-xxhash  --without-debuginfod
+          # --without-guile --disable-source-highlight --disable-objc-gc
+          # --with-python=no --disable-binutils --disable-sim --disable-as
+          # --disable-ld --enable-plugins --target=aarch64-none-elf --prefix=/
+          # --with-mpfr
+          # --with-libmpfr-prefix=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+          # --with-libmpfr-type=static
+          # --with-libgmp-prefix=/Volumes/data/jenkins/workspace/GNU-toolchain/arm-11/build-aarch64-none-elf/host-tools
+          # --with-libgmp-type=static'
+
           config_options=()
 
           config_options+=("--prefix=${APP_PREFIX}")
@@ -3143,38 +3213,44 @@ function build_cross_gdb()
           config_options+=("--program-prefix=${GCC_TARGET}-")
           config_options+=("--program-suffix=${name_suffix}")
 
-          config_options+=("--disable-binutils") # Arm
-          config_options+=("--disable-as") # Arm
-          config_options+=("--disable-gdbtk") # Arm
-          config_options+=("--disable-gprof")
-          config_options+=("--disable-ld") # Arm
-          config_options+=("--disable-nls") # Arm
-          config_options+=("--disable-objc-gc") # Arm
-          config_options+=("--disable-sim") # Arm
-          config_options+=("--disable-source-highlight") # Arm
-          config_options+=("--disable-werror") # Arm
+          config_options+=("--disable-binutils") # Arm, Aarch64
+          config_options+=("--disable-as") # Arm, Aarch64
+          config_options+=("--disable-gdbtk") # Arm, Aarch64
+          # config_options+=("--disable-gprof")
+          config_options+=("--disable-ld") # Arm, Aarch64
+          config_options+=("--disable-nls") # Arm, Aarch64
+          config_options+=("--disable-objc-gc") # Arm, Aarch64
+          config_options+=("--disable-sim") # Arm, Aarch64
+          config_options+=("--disable-source-highlight") # Arm, Aarch64
+          config_options+=("--disable-werror") # Arm, Aarch64
 
-          config_options+=("--enable-initfini-array") # Arm
+          config_options+=("--enable-initfini-array") # Arm, Aarch64
           config_options+=("--enable-build-warnings=no")
-          config_options+=("--enable-plugins") # Arm
+          config_options+=("--enable-plugins") # Arm, Aarch64
 
-          config_options+=("--without-babeltrace") # Arm
-          config_options+=("--without-debuginfod") # Arm
-          config_options+=("--without-expat") # Arm
-          config_options+=("--without-guile") # Arm
-          config_options+=("--without-intel-pt") # Arm
-          config_options+=("--without-libunwind-ia64") # Arm
-          config_options+=("--without-lzma") # Arm
-          config_options+=("--without-tcl") # Arm
-          config_options+=("--without-tk") # Arm
-          config_options+=("--without-x") # Arm
-          config_options+=("--without-xxhash") # Arm
+          if [ "${GCC_TARGET}" == "aarch64-none-elf" ]
+          then
+            config_options+=("--enable-64-bit-bfd") # Aarch64
+            config_options+=("--enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf") # Aarch64
+          fi
+
+          config_options+=("--without-babeltrace") # Arm, Aarch64
+          config_options+=("--without-debuginfod") # Arm, Aarch64
+          config_options+=("--without-expat") # Arm, Aarch64
+          config_options+=("--without-guile") # Arm, Aarch64
+          config_options+=("--without-intel-pt") # Arm, Aarch64
+          config_options+=("--without-libunwind-ia64") # Arm, Aarch64
+          config_options+=("--without-lzma") # Arm, Aarch64
+          config_options+=("--without-tcl") # Arm, Aarch64
+          config_options+=("--without-tk") # Arm, Aarch64
+          config_options+=("--without-x") # Arm, Aarch64
+          config_options+=("--without-xxhash") # Arm, Aarch64
 
           config_options+=("--with-gdb-datadir=${APP_PREFIX}/${GCC_TARGET}/share/gdb")
 
           # No need to, we keep track of paths to shared libraries.
-          # config_options+=("--with-libgmp-type=static") # Arm
-          # config_options+=("--with-libmpfr-type=static") # Arm
+          # config_options+=("--with-libgmp-type=static") # Arm, Aarch64
+          # config_options+=("--with-libmpfr-type=static") # Arm, Aarch64
 
           config_options+=("--with-pkgversion=${BRANDING}")
           config_options+=("--with-system-gdbinit=${APP_PREFIX}/${GCC_TARGET}/lib/gdbinit")
@@ -3209,7 +3285,7 @@ function build_cross_gdb()
 
       (
         echo
-        echo "Running gdb${name_suffix} make..."
+        echo "Running cross gdb${name_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -3254,7 +3330,7 @@ function build_cross_gdb()
 
     touch "${gdb_stamp_file_path}"
   else
-    echo "Component gdb${name_suffix} already installed."
+    echo "Component cross gdb${name_suffix} already installed."
   fi
 
   tests_add "test_cross_gdb${name_suffix}"
