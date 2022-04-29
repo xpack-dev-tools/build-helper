@@ -2662,7 +2662,7 @@ function build_cross_gcc_final()
         CXXFLAGS+=" -D__USE_MINGW_ACCESS"
 
         # Hack to prevent "too many sections", "File too big" etc in insn-emit.c
-        CXXFLAGS=$(echo ${CXXFLAGS} | sed -e 's| -ffunction-sections -fdata-sections||')
+        CXXFLAGS=$(echo ${CXXFLAGS} | sed -e 's|-ffunction-sections -fdata-sections||')
       fi
 
       LDFLAGS="${XBB_LDFLAGS_APP}"
