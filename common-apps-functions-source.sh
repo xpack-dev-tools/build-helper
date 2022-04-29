@@ -1210,6 +1210,223 @@ function build_mingw_widl()
 
 # -----------------------------------------------------------------------------
 
+function build_qemu()
+{
+  # https://github.com/xpack-dev-tools/qemu
+  # https://github.com/xpack-dev-tools/qemu/archive/refs/tags/v6.1.94-xpack-riscv.tar.gz
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/qemu/trunk/PKGBUILD
+  # https://github.com/archlinux/svntogit-community/blob/packages/libvirt/trunk/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/qemu.rb
+
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qemu/PKGBUILD
+
+  local qemu_version="$1"
+  local qemu_target="$2" # arm, riscv, tools
+
+  qemu_src_folder_name="qemu-${qemu_version}.git"
+
+  QEMU_GIT_URL=${QEMU_GIT_URL:-"https://github.com/xpack-dev-tools/qemu.git"}
+
+  if [ "${IS_DEVELOP}" == "y" ] # -a "${IS_DEBUG}" == "y" ]
+  then
+    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack-develop"}
+  else
+    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack"}
+  fi
+
+  local qemu_folder_name="qemu-${qemu_version}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${qemu_folder_name}/"
+
+  local qemu_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${qemu_folder_name}-installed"
+  if [ ! -f "${qemu_stamp_file_path}" ] || [ "${IS_DEBUG}" == "y" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    if [ ! -d "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}" ]
+    then
+      git_clone "${QEMU_GIT_URL}" "${QEMU_GIT_BRANCH}" \
+          "${QEMU_GIT_COMMIT}" "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}"
+    fi
+
+    (
+      mkdir -p "${BUILD_FOLDER_PATH}/${qemu_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${qemu_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_APP}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      elif [ "${TARGET_PLATFORM}" == "win32" ]
+      then
+        LDFLAGS+=" -fstack-protector"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+
+      export LDFLAGS
+
+      (
+        if [ ! -f "config.status" ]
+        then
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running qemu ${qemu_target} configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            # Although it shouldn't, the script checks python before --help.
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}/configure" \
+              --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${APP_PREFIX}")
+
+          config_options+=("--bindir=${APP_PREFIX}/bin")
+
+          if [ "${TARGET_PLATFORM}" == "win32" ]
+          then
+            config_options+=("--cross-prefix=${CROSS_COMPILE_PREFIX}-")
+          fi
+
+          config_options+=("--cc=${CC}")
+          config_options+=("--cxx=${CXX}")
+
+          # CFLAGS, CXXFLAGS and LDFLAGS are used directly.
+          config_options+=("--extra-cflags=${CPPFLAGS}")
+          config_options+=("--extra-cxxflags=${CPPFLAGS}")
+
+          if [ "${qemu_target}" == "arm" ]
+          then
+            config_options+=("--target-list=arm-softmmu,aarch64-softmmu")
+            config_options+=("--disable-tools")
+          elif [ "${qemu_target}" == "riscv" ]
+          then
+            config_options+=("--target-list=riscv32-softmmu,riscv64-softmmu")
+            config_options+=("--disable-tools")
+          elif [ "${qemu_target}" == "tools" ]
+          then
+            config_options+=("--target-list=") # None
+            config_options+=("--enable-tools")
+          else
+            echo "Unsupported qemu_target ${qemu_target}"
+            exit 1
+          fi
+
+          if [ "${IS_DEBUG}" == "y" ]
+          then
+            config_options+=("--enable-debug")
+          fi
+
+          config_options+=("--enable-nettle")
+          config_options+=("--enable-lzo")
+
+          # Not toghether with nettle.
+          # config_options+=("--enable-gcrypt")
+
+          if [ "${TARGET_PLATFORM}" != "win32" ]
+          then
+            config_options+=("--enable-libssh")
+            config_options+=("--enable-curses")
+            config_options+=("--enable-vde")
+          fi
+
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
+          then
+            # For now, Cocoa builds fail on macOS 10.13.
+            if [ "${ENABLE_QEMU_SDL:-"n"}" == "y" ]
+            then
+              # In the first Arm release.
+              config_options+=("--disable-cocoa")
+              config_options+=("--enable-sdl")
+            else
+              config_options+=("--enable-cocoa")
+              config_options+=("--disable-sdl")
+            fi
+            # Prevent codesign issues caused by including the Hypervisor.
+            config_options+=("--disable-hvf")
+          else
+            config_options+=("--enable-sdl")
+          fi
+
+          config_options+=("--disable-bsd-user")
+          config_options+=("--disable-guest-agent")
+          config_options+=("--disable-gtk")
+
+          if [ "${WITH_STRIP}" != "y" ]
+          then
+            config_options+=("--disable-strip")
+          fi
+
+          config_options+=("--disable-werror")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}/configure" \
+            ${config_options[@]}
+
+        fi
+        cp "config.log" "${LOGS_FOLDER_PATH}/${qemu_folder_name}/configure-log-$(ndate).txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${qemu_folder_name}/configure-output-$(ndate).txt"
+
+      (
+        echo
+        echo "Running qemu ${qemu_target} make..."
+
+        # Build.
+        run_verbose make -j ${JOBS} # V=1
+
+        run_verbose make install
+
+        if [ "${qemu_target}" == "arm" ]
+        then
+          show_libs "${APP_PREFIX}/bin/qemu-system-aarch64"
+        elif [ "${qemu_target}" == "riscv" ]
+        then
+          show_libs "${APP_PREFIX}/bin/qemu-system-riscv64"
+        elif [ "${qemu_target}" == "tools" ]
+        then
+          show_libs "${APP_PREFIX}/bin/qemu-img"
+        else
+          echo "Unsupported qemu_target ${qemu_target}"
+          exit 1
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${qemu_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}" \
+        "qemu-${QEMU_VERSION}"
+    )
+
+    touch "${qemu_stamp_file_path}"
+  else
+    echo "Component qemu ${qemu_target} already installed."
+  fi
+
+  # Define this function at package level.
+  tests_add "test_qemu_${qemu_target}"
+}
+
+# -----------------------------------------------------------------------------
+
 # binutils should not be used on Darwin, the build is ok, but
 # there are functional issues, due to the different ld/as/etc.
 
@@ -1615,223 +1832,6 @@ function test_native_binutils()
 
   echo
   echo "Local binutils tests completed successfuly."
-}
-
-# -----------------------------------------------------------------------------
-
-function build_qemu()
-{
-  # https://github.com/xpack-dev-tools/qemu
-  # https://github.com/xpack-dev-tools/qemu/archive/refs/tags/v6.1.94-xpack-riscv.tar.gz
-
-  # https://github.com/archlinux/svntogit-packages/blob/packages/qemu/trunk/PKGBUILD
-  # https://github.com/archlinux/svntogit-community/blob/packages/libvirt/trunk/PKGBUILD
-
-  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/qemu.rb
-
-  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-qemu/PKGBUILD
-
-  local qemu_version="$1"
-  local qemu_target="$2" # arm, riscv, tools
-
-  qemu_src_folder_name="qemu-${qemu_version}.git"
-
-  QEMU_GIT_URL=${QEMU_GIT_URL:-"https://github.com/xpack-dev-tools/qemu.git"}
-
-  if [ "${IS_DEVELOP}" == "y" ] # -a "${IS_DEBUG}" == "y" ]
-  then
-    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack-develop"}
-  else
-    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack"}
-  fi
-
-  local qemu_folder_name="qemu-${qemu_version}"
-
-  mkdir -pv "${LOGS_FOLDER_PATH}/${qemu_folder_name}/"
-
-  local qemu_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${qemu_folder_name}-installed"
-  if [ ! -f "${qemu_stamp_file_path}" ] || [ "${IS_DEBUG}" == "y" ]
-  then
-
-    cd "${SOURCES_FOLDER_PATH}"
-
-    if [ ! -d "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}" ]
-    then
-      git_clone "${QEMU_GIT_URL}" "${QEMU_GIT_BRANCH}" \
-          "${QEMU_GIT_COMMIT}" "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}"
-    fi
-
-    (
-      mkdir -p "${BUILD_FOLDER_PATH}/${qemu_folder_name}"
-      cd "${BUILD_FOLDER_PATH}/${qemu_folder_name}"
-
-      xbb_activate_installed_dev
-
-      CPPFLAGS="${XBB_CPPFLAGS}"
-
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
-      LDFLAGS="${XBB_LDFLAGS_APP}"
-      if [ "${TARGET_PLATFORM}" == "linux" ]
-      then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
-      elif [ "${TARGET_PLATFORM}" == "win32" ]
-      then
-        LDFLAGS+=" -fstack-protector"
-      fi
-
-      export CPPFLAGS
-      export CFLAGS
-      export CXXFLAGS
-
-      export LDFLAGS
-
-      (
-        if [ ! -f "config.status" ]
-        then
-
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            env | sort
-          fi
-
-          echo
-          echo "Running qemu ${qemu_target} configure..."
-
-          if [ "${IS_DEVELOP}" == "y" ]
-          then
-            # Although it shouldn't, the script checks python before --help.
-            run_verbose bash "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}/configure" \
-              --help
-          fi
-
-          config_options=()
-
-          config_options+=("--prefix=${APP_PREFIX}")
-
-          config_options+=("--bindir=${APP_PREFIX}/bin")
-
-          if [ "${TARGET_PLATFORM}" == "win32" ]
-          then
-            config_options+=("--cross-prefix=${CROSS_COMPILE_PREFIX}-")
-          fi
-
-          config_options+=("--cc=${CC}")
-          config_options+=("--cxx=${CXX}")
-
-          # CFLAGS, CXXFLAGS and LDFLAGS are used directly.
-          config_options+=("--extra-cflags=${CPPFLAGS}")
-          config_options+=("--extra-cxxflags=${CPPFLAGS}")
-
-          if [ "${qemu_target}" == "arm" ]
-          then
-            config_options+=("--target-list=arm-softmmu,aarch64-softmmu")
-            config_options+=("--disable-tools")
-          elif [ "${qemu_target}" == "riscv" ]
-          then
-            config_options+=("--target-list=riscv32-softmmu,riscv64-softmmu")
-            config_options+=("--disable-tools")
-          elif [ "${qemu_target}" == "tools" ]
-          then
-            config_options+=("--target-list=") # None
-            config_options+=("--enable-tools")
-          else
-            echo "Unsupported qemu_target ${qemu_target}"
-            exit 1
-          fi
-
-          if [ "${IS_DEBUG}" == "y" ]
-          then
-            config_options+=("--enable-debug")
-          fi
-
-          config_options+=("--enable-nettle")
-          config_options+=("--enable-lzo")
-
-          # Not toghether with nettle.
-          # config_options+=("--enable-gcrypt")
-
-          if [ "${TARGET_PLATFORM}" != "win32" ]
-          then
-            config_options+=("--enable-libssh")
-            config_options+=("--enable-curses")
-            config_options+=("--enable-vde")
-          fi
-
-          if [ "${TARGET_PLATFORM}" == "darwin" ]
-          then
-            # For now, Cocoa builds fail on macOS 10.13.
-            if [ "${ENABLE_QEMU_SDL:-"n"}" == "y" ]
-            then
-              # In the first Arm release.
-              config_options+=("--disable-cocoa")
-              config_options+=("--enable-sdl")
-            else
-              config_options+=("--enable-cocoa")
-              config_options+=("--disable-sdl")
-            fi
-            # Prevent codesign issues caused by including the Hypervisor.
-            config_options+=("--disable-hvf")
-          else
-            config_options+=("--enable-sdl")
-          fi
-
-          config_options+=("--disable-bsd-user")
-          config_options+=("--disable-guest-agent")
-          config_options+=("--disable-gtk")
-
-          if [ "${WITH_STRIP}" != "y" ]
-          then
-            config_options+=("--disable-strip")
-          fi
-
-          config_options+=("--disable-werror")
-
-          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}/configure" \
-            ${config_options[@]}
-
-        fi
-        cp "config.log" "${LOGS_FOLDER_PATH}/${qemu_folder_name}/configure-log-$(ndate).txt"
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${qemu_folder_name}/configure-output-$(ndate).txt"
-
-      (
-        echo
-        echo "Running qemu ${qemu_target} make..."
-
-        # Build.
-        run_verbose make -j ${JOBS} # V=1
-
-        run_verbose make install
-
-        if [ "${qemu_target}" == "arm" ]
-        then
-          show_libs "${APP_PREFIX}/bin/qemu-system-aarch64"
-        elif [ "${qemu_target}" == "riscv" ]
-        then
-          show_libs "${APP_PREFIX}/bin/qemu-system-riscv64"
-        elif [ "${qemu_target}" == "tools" ]
-        then
-          show_libs "${APP_PREFIX}/bin/qemu-img"
-        else
-          echo "Unsupported qemu_target ${qemu_target}"
-          exit 1
-        fi
-
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${qemu_folder_name}/make-output-$(ndate).txt"
-
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}" \
-        "qemu-${QEMU_VERSION}"
-    )
-
-    touch "${qemu_stamp_file_path}"
-  else
-    echo "Component qemu ${qemu_target} already installed."
-  fi
-
-  # Define this function at package level.
-  tests_add "test_qemu_${qemu_target}"
 }
 
 # -----------------------------------------------------------------------------
