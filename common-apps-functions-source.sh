@@ -1937,8 +1937,6 @@ function build_cross_binutils()
           config_options+=("--without-tk") # Arm
 
           config_options+=("--with-pkgversion=${BRANDING}")
-          # In the ABE script.
-          config_options+=("--with-sysroot=${APP_PREFIX}/${GCC_TARGET}")
           config_options+=("--with-system-zlib")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${BINUTILS_SRC_FOLDER_NAME}/configure" \
@@ -2214,8 +2212,6 @@ function build_cross_gcc_first()
           config_options+=("--with-pkgversion=${BRANDING}")
           config_options+=("--with-newlib") # Arm
 
-          # config_options+=("--with-python-dir=share/gcc-${GCC_TARGET}")
-          config_options+=("--with-sysroot=${APP_PREFIX}/${GCC_TARGET}") # Arm
           config_options+=("--with-system-zlib")
 
           if [ "${WITHOUT_MULTILIB}" == "y" ]
