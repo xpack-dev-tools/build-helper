@@ -1213,7 +1213,7 @@ function build_mingw_widl()
 # binutils should not be used on Darwin, the build is ok, but
 # there are functional issues, due to the different ld/as/etc.
 
-function build_binutils()
+function build_native_binutils()
 {
   # https://www.gnu.org/software/binutils/
   # https://ftp.gnu.org/gnu/binutils/
@@ -1555,11 +1555,11 @@ function build_binutils()
   then
     :
   else
-    tests_add "test_binutils"
+    tests_add "test_native_binutils"
   fi
 }
 
-function test_binutils()
+function test_native_binutils()
 {
   (
     if [ -d "xpacks/.bin" ]
