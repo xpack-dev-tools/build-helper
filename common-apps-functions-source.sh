@@ -2660,6 +2660,9 @@ function build_cross_gcc_final()
         # The CFLAGS are set in XBB_CFLAGS, but for C++ it must be selective.
         # Without it gcc cannot identify cc1 and other binaries
         CXXFLAGS+=" -D__USE_MINGW_ACCESS"
+
+        # Hack to prevent "too many sections", "File too big" etc in insn-emit.c
+        CXXFLAGS=$(echo ${CXXFLAGS} | sed -e 's| -ffunction-sections -fdata-sections||')
       fi
 
       LDFLAGS="${XBB_LDFLAGS_APP}"
