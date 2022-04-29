@@ -56,7 +56,10 @@ source "${helper_folder_path}/common-apps-functions-source.sh"
 source "${helper_folder_path}/test-functions-source.sh"
 
 # Reuse the test functions defined in the build scripts.
-source "${scripts_folder_path}/common-apps-functions-source.sh"
+if [ -f "${scripts_folder_path}/common-apps-functions-source.sh" ]
+then
+  source "${scripts_folder_path}/common-apps-functions-source.sh"
+fi
 
 # Common native & docker functions (like run_tests()).
 source "${scripts_folder_path}/tests/common-functions-source.sh"

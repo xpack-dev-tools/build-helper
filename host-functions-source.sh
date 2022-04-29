@@ -548,8 +548,17 @@ function host_common()
   then
     source "${scripts_folder_path}/common-functions-source.sh"
   fi
-  source "${scripts_folder_path}/common-libs-functions-source.sh"
-  source "${scripts_folder_path}/common-apps-functions-source.sh"
+
+  if [ -f "${scripts_folder_path}/common-libs-functions-source.sh" ]
+  then
+    source "${scripts_folder_path}/common-libs-functions-source.sh"
+  fi
+
+  if [ -f "${scripts_folder_path}/common-apps-functions-source.sh" ]
+  then
+    source "${scripts_folder_path}/common-apps-functions-source.sh"
+  fi
+
   source "${scripts_folder_path}/common-versions-source.sh"
 
   # ---------------------------------------------------------------------------
