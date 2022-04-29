@@ -490,6 +490,7 @@ function build_mpfr()
 
           config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
+          config_options+=("--disable-maintainer-mode")
           config_options+=("--disable-warnings")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
@@ -644,6 +645,8 @@ function build_mpc()
             config_options+=("--target=${TARGET}")
 
           fi
+
+          config_options+=("--disable-maintainer-mode")
 
           config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
           config_options+=("--with-mpfr=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
