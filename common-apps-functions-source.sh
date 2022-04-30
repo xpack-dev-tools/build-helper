@@ -2264,6 +2264,17 @@ function build_cross_gcc_first()
               config_options+=("--enable-multilib") # Arm
               config_options+=("--with-multilib-list=${GCC_MULTILIB_LIST}")  # Arm
             fi
+          elif [ "${GCC_TARGET}" == "riscv-none-elf" ]
+          then
+            config_options+=("--with-abi=${GCC_ABI}")
+            config_options+=("--with-arch=${GCC_ARCH}")
+
+            if [ "${WITHOUT_MULTILIB}" == "y" ]
+            then
+              config_options+=("--disable-multilib")
+            else
+              config_options+=("--enable-multilib")
+            fi
           fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}/configure" \
@@ -2711,8 +2722,6 @@ function build_cross_gcc_final()
       export CXXFLAGS_FOR_TARGET
       export LDFLAGS_FOR_TARGET
 
-      local mingw_wildcard="--disable-mingw-wildcard"
-
       if [ "${TARGET_PLATFORM}" == "win32" ]
       then
         add_cross_linux_install_path
@@ -2806,6 +2815,17 @@ function build_cross_gcc_final()
             else
               config_options+=("--enable-multilib") # Arm
               config_options+=("--with-multilib-list=${GCC_MULTILIB_LIST}")  # Arm
+            fi
+          elif [ "${GCC_TARGET}" == "riscv-none-elf" ]
+          then
+            config_options+=("--with-abi=${GCC_ABI}")
+            config_options+=("--with-arch=${GCC_ARCH}")
+
+            if [ "${WITHOUT_MULTILIB}" == "y" ]
+            then
+              config_options+=("--disable-multilib")
+            else
+              config_options+=("--enable-multilib")
             fi
           fi
 
