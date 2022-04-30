@@ -2103,6 +2103,20 @@ function define_flags_for_target()
 
 # -----------------------------------------------------------------------------
 
+function download_cross_gcc()
+{
+  if [ ! -d "${SOURCES_FOLDER_PATH}/${GCC_SRC_FOLDER_NAME}" ]
+  then
+    (
+      cd "${SOURCES_FOLDER_PATH}"
+
+      download_and_extract "${GCC_ARCHIVE_URL}" \
+        "${GCC_ARCHIVE_NAME}" "${GCC_SRC_FOLDER_NAME}" \
+        "${GCC_PATCH_FILE_NAME}"
+    )
+  fi
+}
+
 # Environment variables:
 # GCC_VERSION
 # GCC_SRC_FOLDER_NAME
@@ -2122,8 +2136,7 @@ function build_cross_gcc_first()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${GCC_ARCHIVE_URL}" "${GCC_ARCHIVE_NAME}" \
-      "${GCC_SRC_FOLDER_NAME}" "${GCC_PATCH_FILE_NAME}"
+    download_cross_gcc
 
     (
       mkdir -pv "${BUILD_FOLDER_PATH}/${gcc_first_folder_name}"
@@ -2637,8 +2650,7 @@ function build_cross_gcc_final()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${GCC_ARCHIVE_URL}" "${GCC_ARCHIVE_NAME}" \
-      "${GCC_SRC_FOLDER_NAME}" "${GCC_PATCH_FILE_NAME}"
+    download_cross_gcc
 
     (
       mkdir -pv "${BUILD_FOLDER_PATH}/${gcc_final_folder_name}"
