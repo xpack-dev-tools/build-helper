@@ -1249,7 +1249,14 @@ function build_qemu()
     then
       git_clone "${QEMU_GIT_URL}" "${QEMU_GIT_BRANCH}" \
           "${QEMU_GIT_COMMIT}" "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}"
+
+      # Simple way to customise the greeting message, instead of
+      # managing a patch, or a fork.
+      run_verbose sed -i.bak \
+        -e 's|printf("QEMU emulator version "|printf("xPack QEMU emulator version "|' \
+        "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}/softmmu/vl.c"
     fi
+    # exit 1
 
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${qemu_folder_name}"
