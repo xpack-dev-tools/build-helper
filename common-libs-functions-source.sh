@@ -4707,11 +4707,14 @@ function build_libxml2()
   # May 13 2021, "2.9.11"
 
   local libxml2_version="$1"
+  local libxml2_version_major_minor="$(echo ${libxml2_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
+
 
   local libxml2_src_folder_name="libxml2-${libxml2_version}"
 
-  local libxml2_archive="${libxml2_src_folder_name}.tar.gz"
-  local libxml2_url="ftp://xmlsoft.org/libxml2/${libxml2_archive}"
+  local libxml2_archive="${libxml2_src_folder_name}.tar.xz"
+  # local libxml2_url="ftp://xmlsoft.org/libxml2/${libxml2_archive}"
+  local libxml2_url="https://download.gnome.org/sources/libxml2/${libxml2_version_major_minor}/${libxml2_archive}"
 
   local libxml2_folder_name="${libxml2_src_folder_name}"
 
