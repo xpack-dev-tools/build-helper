@@ -1309,6 +1309,10 @@ function build_qemu()
 
           config_options+=("--bindir=${APP_PREFIX}/bin")
 
+          # This seems redundant, but without it the greeting
+          # string is suffixed by -dirty.
+          config_options+=("--with-pkgversion=${QEMU_GIT_COMMIT}")
+
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             config_options+=("--cross-prefix=${CROSS_COMPILE_PREFIX}-")
