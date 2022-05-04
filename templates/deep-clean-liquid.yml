@@ -5,7 +5,7 @@
 {% endif -%}
 {% assign platforms = platforms | split: "," -%}
 
-name: 'Build xPack {{ APP_NAME }}'
+name: 'Deep clean xPack {{ APP_NAME }}'
 
 on:
   workflow_dispatch:
