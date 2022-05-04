@@ -215,6 +215,7 @@ jobs:
           repo: 'pre-releases'
           tag: 'test'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
+{% break -%}
 {% endif -%}
 {% endfor %}
 
@@ -271,6 +272,7 @@ jobs:
           repo: 'pre-releases'
           tag: 'test'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
+{% break -%}
 {% endif -%}
 {% endfor %}
 
