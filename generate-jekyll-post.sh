@@ -74,11 +74,19 @@ else
 fi
 
 echo
-if [ "${SKIP_XBBLA:-""}" == "y" ]
+if [ "${SKIP_XBBLA64:-""}" == "y" ]
 then
-  echo "Skiping xbbla files..."
+  echo "Skiping xbbla64 files..."
 else
-  scp -p xbbla:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+  scp -p xbbla64:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
+fi
+
+echo
+if [ "${SKIP_XBBLA32:-""}" == "y" ]
+then
+  echo "Skiping xbbla32 files..."
+else
+  scp -p xbbla32:"Work/${APP_LC_NAME}-${version}/deploy/*" "${dest_folder_path}"
 fi
 
 echo

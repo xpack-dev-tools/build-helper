@@ -1210,10 +1210,18 @@ function build_mingw_widl()
 
 # -----------------------------------------------------------------------------
 
+# Environment variables:
+# QEMU_GIT_URL
+# QEMU_GIT_BRANCH
+# QEMU_GIT_COMMIT
+
 function build_qemu()
 {
+  # Stick to upstream as long as possible.
+  # https://github.com/qemu/qemu/tags
+
+  # The second choice is the xPack fork.
   # https://github.com/xpack-dev-tools/qemu
-  # https://github.com/xpack-dev-tools/qemu/archive/refs/tags/v6.1.94-xpack-riscv.tar.gz
 
   # https://github.com/archlinux/svntogit-packages/blob/packages/qemu/trunk/PKGBUILD
   # https://github.com/archlinux/svntogit-community/blob/packages/libvirt/trunk/PKGBUILD
@@ -1225,16 +1233,7 @@ function build_qemu()
   local qemu_version="$1"
   local qemu_target="$2" # arm, riscv, tools
 
-  qemu_src_folder_name="qemu-${qemu_version}.git"
-
-  QEMU_GIT_URL=${QEMU_GIT_URL:-"https://github.com/xpack-dev-tools/qemu.git"}
-
-  if [ "${IS_DEVELOP}" == "y" ] # -a "${IS_DEBUG}" == "y" ]
-  then
-    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack-develop"}
-  else
-    QEMU_GIT_BRANCH=${QEMU_GIT_BRANCH:-"xpack"}
-  fi
+  qemu_src_folder_name="${QEMU_SRC_FOLDER_NAME:-qemu-${qemu_version}.git}"
 
   local qemu_folder_name="qemu-${qemu_version}"
 
@@ -1250,7 +1249,14 @@ function build_qemu()
     then
       git_clone "${QEMU_GIT_URL}" "${QEMU_GIT_BRANCH}" \
           "${QEMU_GIT_COMMIT}" "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}"
+
+      # Simple way to customise the greeting message, instead of
+      # managing a patch, or a fork.
+      run_verbose sed -i.bak \
+        -e 's|printf("QEMU emulator version "|printf("xPack QEMU emulator version "|' \
+        "${SOURCES_FOLDER_PATH}/${qemu_src_folder_name}/softmmu/vl.c"
     fi
+    # exit 1
 
     (
       mkdir -p "${BUILD_FOLDER_PATH}/${qemu_folder_name}"
@@ -1302,6 +1308,10 @@ function build_qemu()
           config_options+=("--prefix=${APP_PREFIX}")
 
           config_options+=("--bindir=${APP_PREFIX}/bin")
+
+          # This seems redundant, but without it the greeting
+          # string is suffixed by -dirty.
+          config_options+=("--with-pkgversion=${QEMU_GIT_COMMIT}")
 
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then

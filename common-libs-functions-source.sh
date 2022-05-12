@@ -880,6 +880,7 @@ function build_zstd()
   # 5 Nov 2019 "1.4.4"
   # 3 Mar 2021 "1.4.9"
   # 14 May 2021 "1.5.0"
+  # 20 Jan 2022 "1.5.2"
 
   local zstd_version="$1"
 
@@ -1408,6 +1409,7 @@ function build_libffi()
   # http://www.sourceware.org/libffi/
   # ftp://sourceware.org/pub/libffi/
   # https://github.com/libffi/libffi
+  # https://github.com/libffi/libffi/releases
   # https://github.com/libffi/libffi/archive/v3.2.1.tar.gz
 
   # https://archlinuxarm.org/packages/aarch64/libffi/files/PKGBUILD
@@ -4272,6 +4274,7 @@ function build_jpeg()
   # Jan 17 10:46 2016 "9b"
   # Jan 14 10:10 2018 "9c"
   # Jan 12 10:07 2020 "9d"
+  # Jan 16 10:12 2022 "9e"
 
   local jpeg_version="$1"
 
@@ -4539,6 +4542,7 @@ function build_glib()
   # 2021-May-11, "2.68.4"
   # 2021-Sep-17, "2.70.0"
   # 2021-Dec-03, "2.70.2"
+  # 2022-Apr-14, "2.72.1"
 
   local glib_version="$1"
   local glib_major_version=$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1|')
@@ -4696,6 +4700,11 @@ function build_libxml2()
 {
   # http://www.xmlsoft.org
   # ftp://xmlsoft.org/libxml2/
+  # https://download.gnome.org/sources/libxml2
+  # https://download.gnome.org/sources/libxml2/2.9/libxml2-2.9.14.tar.xz
+
+  # https://gitlab.gnome.org/GNOME/libxml2/-/releases
+  # https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.9.14/libxml2-v2.9.14.tar.bz2
 
   # https://archlinuxarm.org/packages/aarch64/libxml2/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libxml2-git
@@ -4705,13 +4714,17 @@ function build_libxml2()
   # Jan 03 2019, "2.9.9"
   # Oct 30 2019, "2.9.10"
   # May 13 2021, "2.9.11"
+  # May 2, 2022, "2.9.14"
 
   local libxml2_version="$1"
+  local libxml2_version_major_minor="$(echo ${libxml2_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
+
 
   local libxml2_src_folder_name="libxml2-${libxml2_version}"
 
-  local libxml2_archive="${libxml2_src_folder_name}.tar.gz"
-  local libxml2_url="ftp://xmlsoft.org/libxml2/${libxml2_archive}"
+  local libxml2_archive="${libxml2_src_folder_name}.tar.xz"
+  # local libxml2_url="ftp://xmlsoft.org/libxml2/${libxml2_archive}"
+  local libxml2_url="https://download.gnome.org/sources/libxml2/${libxml2_version_major_minor}/${libxml2_archive}"
 
   local libxml2_folder_name="${libxml2_src_folder_name}"
 
@@ -5875,6 +5888,7 @@ function build_nettle()
 function build_libusb()
 {
   # https://libusb.info/
+  # https://github.com/libusb/libusb/releases/
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libusb
   # https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2
 
@@ -5883,6 +5897,7 @@ function build_libusb()
   # 2015-09-14, 1.0.20
   # 2018-03-25, 1.0.22
   # 2020-12-11, 1.0.24
+  # 2022-04-10, "1.0.26"
 
   local libusb_version="$1"
 
@@ -6529,7 +6544,8 @@ function build_sdl2()
   # sdl2_version="2.0.3" # 2014-03-16
   # sdl2_version="2.0.5" # 2016-10-20
   # sdl2_version="2.0.9" # 2018-10-31
-  # 2021-11-30, 2.0.18
+  # 2021-11-30, "2.0.18"
+  # 2022-04-25, "2.0.22"
 
   local sdl2_version="$1"
 
