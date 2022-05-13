@@ -3284,6 +3284,7 @@ function build_cross_gdb()
           config_options+=("--disable-source-highlight") # Arm, Aarch64
           config_options+=("--disable-werror") # Arm, Aarch64
 
+          config_options+=("--enable-gdb")
           config_options+=("--enable-initfini-array") # Arm, Aarch64
           config_options+=("--enable-build-warnings=no")
           config_options+=("--enable-plugins") # Arm, Aarch64
