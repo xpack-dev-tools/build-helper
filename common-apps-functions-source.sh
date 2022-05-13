@@ -1936,28 +1936,28 @@ function build_cross_binutils()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          config_options+=("--disable-nls") # Arm, Aarch64
-          config_options+=("--disable-gdb") # Arm, Aarch64
-          config_options+=("--disable-gdbtk") # Arm, Aarch64
+          config_options+=("--disable-nls") # Arm, AArch64
+          config_options+=("--disable-gdb") # Arm, AArch64
+          config_options+=("--disable-gdbtk") # Arm, AArch64
 
           config_options+=("--disable-sim") # ABE
           config_options+=("--disable-werror") # ABE
 
-          config_options+=("--enable-initfini-array") # Arm, Aarch64
+          config_options+=("--enable-initfini-array") # Arm, AArch64
           config_options+=("--enable-lto") # ABE
-          config_options+=("--enable-plugins") # Arm, Aarch64
+          config_options+=("--enable-plugins") # Arm, AArch64
           config_options+=("--enable-build-warnings=no")
 
           if [ "${GCC_TARGET}" == "aarch64-none-elf" ]
           then
-            config_options+=("--enable-64-bit-bfd") # Aarch64
-            config_options+=("--enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf") # Aarch64
+            config_options+=("--enable-64-bit-bfd") # AArch64
+            config_options+=("--enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf") # AArch64
           fi
 
-          config_options+=("--without-gdb") # Arm, Aarch64
-          config_options+=("--without-x") # Arm, Aarch64
-          config_options+=("--without-tcl") # Arm, Aarch64
-          config_options+=("--without-tk") # Arm, Aarch64
+          config_options+=("--without-gdb") # Arm, AArch64
+          config_options+=("--without-x") # Arm, AArch64
+          config_options+=("--without-tcl") # Arm, AArch64
+          config_options+=("--without-tk") # Arm, AArch64
 
           config_options+=("--with-pkgversion=${BRANDING}")
           config_options+=("--with-system-zlib")
@@ -2244,24 +2244,24 @@ function build_cross_gcc_first()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          config_options+=("--disable-nls") # Arm, Aarch64
-          config_options+=("--disable-shared") # Arm, Aarch64
-          config_options+=("--disable-threads") # Arm, Aarch64
-          config_options+=("--disable-tls") # Arm, Aarch64
+          config_options+=("--disable-nls") # Arm, AArch64
+          config_options+=("--disable-shared") # Arm, AArch64
+          config_options+=("--disable-threads") # Arm, AArch64
+          config_options+=("--disable-tls") # Arm, AArch64
 
-          config_options+=("--enable-checking=release") # Arm, Aarch64
-          config_options+=("--enable-languages=c") # Arm, Aarch64
+          config_options+=("--enable-checking=release") # Arm, AArch64
+          config_options+=("--enable-languages=c") # Arm, AArch64
           # config_options+=("--enable-lto") # ABE
 
-          config_options+=("--without-cloog") # Arm, Aarch64
-          config_options+=("--without-headers") # Arm, Aarch64
-          config_options+=("--without-isl") # Arm, Aarch64
+          config_options+=("--without-cloog") # Arm, AArch64
+          config_options+=("--without-headers") # Arm, AArch64
+          config_options+=("--without-isl") # Arm, AArch64
 
           # config_options+=("--with-gnu-as") # ABE
           # config_options+=("--with-gnu-ld") # ABE
-          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # Aarch64
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # AArch64
           config_options+=("--with-pkgversion=${BRANDING}")
-          config_options+=("--with-newlib") # Arm, Aarch64
+          config_options+=("--with-newlib") # Arm, AArch64
 
           config_options+=("--with-system-zlib")
 
@@ -2427,13 +2427,13 @@ function build_cross_newlib()
             config_options+=("--host=${HOST}")
             config_options+=("--target=${GCC_TARGET}")
 
-            config_options+=("--disable-newlib-supplied-syscalls") # Arm, Aarch64
+            config_options+=("--disable-newlib-supplied-syscalls") # Arm, AArch64
 
-            config_options+=("--enable-newlib-io-c99-formats") # Arm, Aarch64
+            config_options+=("--enable-newlib-io-c99-formats") # Arm, AArch64
 
-            config_options+=("--enable-newlib-io-long-long") # Arm, Aarch64
-            config_options+=("--enable-newlib-mb") # Arm, Aarch64
-            config_options+=("--enable-newlib-reent-check-verify") # Arm, Aarch64
+            config_options+=("--enable-newlib-io-long-long") # Arm, AArch64
+            config_options+=("--enable-newlib-mb") # Arm, AArch64
+            config_options+=("--enable-newlib-reent-check-verify") # Arm, AArch64
 
             # Not used by Arm, but perhaps necessary?
             # config_options+=("--enable-newlib-register-fini")
@@ -2797,22 +2797,22 @@ function build_cross_gcc_final()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          config_options+=("--disable-nls") # Arm, Aarch64
-          config_options+=("--disable-shared") # Arm, Aarch64
-          config_options+=("--disable-threads") # Arm, Aarch64
-          config_options+=("--disable-tls") # Arm, Aarch64
+          config_options+=("--disable-nls") # Arm, AArch64
+          config_options+=("--disable-shared") # Arm, AArch64
+          config_options+=("--disable-threads") # Arm, AArch64
+          config_options+=("--disable-tls") # Arm, AArch64
 
-          config_options+=("--enable-checking=release") # Arm, Aarch64
-          config_options+=("--enable-languages=c,c++,fortran") # Arm, Aarch64
+          config_options+=("--enable-checking=release") # Arm, AArch64
+          config_options+=("--enable-languages=c,c++,fortran") # Arm, AArch64
 
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             config_options+=("--enable-mingw-wildcard")
           fi
 
-          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # Aarch64
+          config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # AArch64
 
-          config_options+=("--with-newlib") # Arm, Aarch64
+          config_options+=("--with-newlib") # Arm, AArch64
           config_options+=("--with-pkgversion=${BRANDING}")
 
           config_options+=("--with-system-zlib")
@@ -3276,45 +3276,45 @@ function build_cross_gdb()
           config_options+=("--program-prefix=${GCC_TARGET}-")
           config_options+=("--program-suffix=${name_suffix}")
 
-          config_options+=("--disable-binutils") # Arm, Aarch64
-          config_options+=("--disable-as") # Arm, Aarch64
-          config_options+=("--disable-gdbtk") # Arm, Aarch64
+          config_options+=("--disable-binutils") # Arm, AArch64
+          config_options+=("--disable-as") # Arm, AArch64
+          config_options+=("--disable-gdbtk") # Arm, AArch64
           # config_options+=("--disable-gprof")
-          config_options+=("--disable-ld") # Arm, Aarch64
-          config_options+=("--disable-nls") # Arm, Aarch64
-          config_options+=("--disable-objc-gc") # Arm, Aarch64
-          config_options+=("--disable-sim") # Arm, Aarch64
-          config_options+=("--disable-source-highlight") # Arm, Aarch64
-          config_options+=("--disable-werror") # Arm, Aarch64
+          config_options+=("--disable-ld") # Arm, AArch64
+          config_options+=("--disable-nls") # Arm, AArch64
+          config_options+=("--disable-objc-gc") # Arm, AArch64
+          config_options+=("--disable-sim") # Arm, AArch64
+          config_options+=("--disable-source-highlight") # Arm, AArch64
+          config_options+=("--disable-werror") # Arm, AArch64
 
           config_options+=("--enable-gdb")
-          config_options+=("--enable-initfini-array") # Arm, Aarch64
+          config_options+=("--enable-initfini-array") # Arm, AArch64
           config_options+=("--enable-build-warnings=no")
-          config_options+=("--enable-plugins") # Arm, Aarch64
+          config_options+=("--enable-plugins") # Arm, AArch64
 
           if [ "${GCC_TARGET}" == "aarch64-none-elf" ]
           then
-            config_options+=("--enable-64-bit-bfd") # Aarch64
-            config_options+=("--enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf") # Aarch64
+            config_options+=("--enable-64-bit-bfd") # AArch64
+            config_options+=("--enable-targets=arm-none-eabi,aarch64-none-linux-gnu,aarch64-none-elf") # AArch64
           fi
 
-          config_options+=("--without-babeltrace") # Arm, Aarch64
-          config_options+=("--without-debuginfod") # Arm, Aarch64
-          config_options+=("--without-expat") # Arm, Aarch64
-          config_options+=("--without-guile") # Arm, Aarch64
-          config_options+=("--without-intel-pt") # Arm, Aarch64
-          config_options+=("--without-libunwind-ia64") # Arm, Aarch64
-          config_options+=("--without-lzma") # Arm, Aarch64
-          config_options+=("--without-tcl") # Arm, Aarch64
-          config_options+=("--without-tk") # Arm, Aarch64
-          config_options+=("--without-x") # Arm, Aarch64
-          config_options+=("--without-xxhash") # Arm, Aarch64
+          config_options+=("--without-babeltrace") # Arm, AArch64
+          config_options+=("--without-debuginfod") # Arm, AArch64
+          config_options+=("--without-expat") # Arm, AArch64
+          config_options+=("--without-guile") # Arm, AArch64
+          config_options+=("--without-intel-pt") # Arm, AArch64
+          config_options+=("--without-libunwind-ia64") # Arm, AArch64
+          config_options+=("--without-lzma") # Arm, AArch64
+          config_options+=("--without-tcl") # Arm, AArch64
+          config_options+=("--without-tk") # Arm, AArch64
+          config_options+=("--without-x") # Arm, AArch64
+          config_options+=("--without-xxhash") # Arm, AArch64
 
           config_options+=("--with-gdb-datadir=${APP_PREFIX}/${GCC_TARGET}/share/gdb")
 
           # No need to, we keep track of paths to shared libraries.
-          # config_options+=("--with-libgmp-type=static") # Arm, Aarch64
-          # config_options+=("--with-libmpfr-type=static") # Arm, Aarch64
+          # config_options+=("--with-libgmp-type=static") # Arm, AArch64
+          # config_options+=("--with-libmpfr-type=static") # Arm, AArch64
 
           config_options+=("--with-pkgversion=${BRANDING}")
           config_options+=("--with-system-gdbinit=${APP_PREFIX}/${GCC_TARGET}/lib/gdbinit")
