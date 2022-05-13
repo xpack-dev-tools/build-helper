@@ -3135,6 +3135,7 @@ function build_cross_gdb()
       download_and_extract "${GDB_ARCHIVE_URL}" "${GDB_ARCHIVE_NAME}" \
           "${GDB_SRC_FOLDER_NAME}" "${GDB_PATCH_FILE_NAME}"
     fi
+    # exit 1
 
     (
       mkdir -pv "${BUILD_FOLDER_PATH}/${gdb_folder_name}"
@@ -3211,9 +3212,11 @@ function build_cross_gdb()
       # python -c 'from distutils import sysconfig;print(sysconfig.PREFIX)'
       # python -c 'from distutils import sysconfig;print(sysconfig.EXEC_PREFIX)'
 
-      # Default PYTHONHOME on macOS
-      # /System/Library/Frameworks/Python.framework/Versions/2.7
-      # /Library/Frameworks/Python.framework/Versions/3.7
+      # The patch to `gdb/python/python-config.py` uses CONFIG_PYTHON_PREFIX,
+      # otherwise the resulting python is not relocatable:
+      # Fatal Python error: init_fs_encoding: failed to get the Python codec of the filesystem encoding
+      # Python runtime state: core initialized
+      # ModuleNotFoundError: No module named 'encodings'
 
       if [ ! -f "config.status" ]
       then
