@@ -15,3 +15,7 @@ To get it:
 - go to `C:\Users\ilg\AppData\Local\Programs\Python\Python3X\include`
 - copy `pyconfig.h`
 - rename
+
+## python3-config-win.sh
+
+A script used to help configure the Windows build.
