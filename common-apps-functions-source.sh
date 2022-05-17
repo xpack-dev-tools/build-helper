@@ -2342,8 +2342,36 @@ function build_cross_newlib()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${NEWLIB_ARCHIVE_URL}" "${NEWLIB_ARCHIVE_NAME}" \
-     "${NEWLIB_SRC_FOLDER_NAME}"
+    if [ ! -d "${NEWLIB_SRC_FOLDER_NAME}" ]
+    then
+      download_and_extract "${NEWLIB_ARCHIVE_URL}" "${NEWLIB_ARCHIVE_NAME}" \
+      "${NEWLIB_SRC_FOLDER_NAME}"
+
+      if [ "${ENABLE_NEWLIB_RISCV_NANO_CXX_PATCH:-""}" == "y" ]
+      then
+        echo
+        echo "Patching nano.specs..."
+
+        local nano_specs_file_path="${NEWLIB_SRC_FOLDER_NAME}/libgloss/riscv/nano.specs"
+        if grep "%(nano_link)" "${nano_specs_file_path}" | grep -q "%:replace-outfile(-lstdc++ -lstdc++_nano)"
+        then
+          echo "-lstdc++_nano already in"
+        else
+          run_verbose sed -i.bak \
+            -e 's|^\(%(nano_link) .*\)$|\1 %:replace-outfile(-lstdc++ -lstdc++_nano)|' \
+            "${nano_specs_file_path}"
+        fi
+        if grep "%(nano_link)" "${nano_specs_file_path}" | grep -q "%:replace-outfile(-lsupc++ -lsupc++_nano)"
+        then
+          echo "-lsupc++_nano already in"
+        else
+          run_verbose sed -i.bak \
+            -e 's|^\(%(nano_link) .*\)$|\1 %:replace-outfile(-lsupc++ -lsupc++_nano)|' \
+            "${nano_specs_file_path}"
+        fi
+      fi
+      # exit 1
+    fi
 
     (
       mkdir -pv "${BUILD_FOLDER_PATH}/${newlib_folder_name}"
