@@ -2264,6 +2264,8 @@ function build_cross_gcc_first()
           config_options+=("--with-newlib") # Arm, AArch64
 
           config_options+=("--with-system-zlib")
+          config_options+=("--with-sysroot=${APP_PREFIX}/${GCC_TARGET}")
+          config_options+=("--with-native-system-header-dir=/include")
 
           if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
@@ -2844,6 +2846,8 @@ function build_cross_gcc_final()
           config_options+=("--with-pkgversion=${BRANDING}")
 
           config_options+=("--with-system-zlib")
+          config_options+=("--with-sysroot=${APP_PREFIX}/${GCC_TARGET}")
+          config_options+=("--with-native-system-header-dir=/include")
 
           if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
