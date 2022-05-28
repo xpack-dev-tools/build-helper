@@ -3300,7 +3300,7 @@ function build_cross_gdb()
 
           config_options+=("--without-babeltrace") # Arm, AArch64
           config_options+=("--without-debuginfod") # Arm, AArch64
-          config_options+=("--without-expat") # Arm, AArch64
+          # config_options+=("--without-expat") # Arm, AArch64
           config_options+=("--without-guile") # Arm, AArch64
           config_options+=("--without-intel-pt") # Arm, AArch64
           config_options+=("--without-libunwind-ia64") # Arm, AArch64
@@ -3310,6 +3310,7 @@ function build_cross_gdb()
           config_options+=("--without-x") # Arm, AArch64
           config_options+=("--without-xxhash") # Arm, AArch64
 
+          config_options+=("--with-expat")
           config_options+=("--with-gdb-datadir=${APP_PREFIX}/${GCC_TARGET}/share/gdb")
 
           # No need to, we keep track of paths to shared libraries.
