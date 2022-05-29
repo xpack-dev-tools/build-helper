@@ -2845,6 +2845,13 @@ function build_cross_gcc_final()
 
           config_options+=("--with-system-zlib")
 
+          # `${with_sysroot}${native_system_header_dir}/stdio.h`
+          # is checked for presence; if not present `inhibit_libc=true` and
+          # libgcov.a is compiled with empty functions.
+          # https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/issues/1
+          config_options+=("--with-sysroot=${APP_PREFIX}/${GCC_TARGET}")
+          config_options+=("--with-native-system-header-dir=/include")
+
           if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
             if [ "${WITHOUT_MULTILIB}" == "y" ]
@@ -3122,6 +3129,8 @@ __EOF__
 
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello.cpp.o -c -flto hello.cpp
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-lto.elf -specs=nosys.specs -flto -v hello.cpp.o
+
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-gcov.elf -specs=nosys.specs -fprofile-arcs -ftest-coverage hello.cpp
 
     cd ..
     rm -rf "${tmp}"
