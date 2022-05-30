@@ -47,6 +47,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
           replacesArtifacts: false
@@ -90,6 +91,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
           replacesArtifacts: false
@@ -133,6 +135,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
           replacesArtifacts: false
@@ -180,6 +183,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
           replacesArtifacts: false
@@ -232,6 +236,7 @@ jobs:
           omitBodyDuringUpdate: true
           omitDraftDuringUpdate: true
           omitNameDuringUpdate: true
+          omitPrereleaseDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
           replacesArtifacts: false
