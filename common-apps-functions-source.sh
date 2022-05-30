@@ -3130,7 +3130,7 @@ __EOF__
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello.cpp.o -c -flto hello.cpp
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-lto.elf -specs=nosys.specs -flto -v hello.cpp.o
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-gcov.elf -specs=nosys.specs -fprofile-arcs -ftest-coverage hello.cpp
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-gcov.elf -specs=nosys.specs -fprofile-arcs -ftest-coverage -lgcov hello.cpp
 
     cd ..
     rm -rf "${tmp}"
