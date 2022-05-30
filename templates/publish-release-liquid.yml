@@ -49,7 +49,7 @@ jobs:
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
-          replacesArtifacts: true
+          replacesArtifacts: false
           repo: '{{ APP_LC_NAME }}-xpack'
           tag: 'v{% raw %}${{ github.event.inputs.version }}{% endraw %}'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
@@ -92,7 +92,7 @@ jobs:
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
-          replacesArtifacts: true
+          replacesArtifacts: false
           repo: '{{ APP_LC_NAME }}-xpack'
           tag: 'v{% raw %}${{ github.event.inputs.version }}{% endraw %}'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
@@ -135,7 +135,7 @@ jobs:
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
-          replacesArtifacts: true
+          replacesArtifacts: false
           repo: '{{ APP_LC_NAME }}-xpack'
           tag: 'v{% raw %}${{ github.event.inputs.version }}{% endraw %}'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
@@ -182,7 +182,7 @@ jobs:
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
-          replacesArtifacts: true
+          replacesArtifacts: false
           repo: '{{ APP_LC_NAME }}-xpack'
           tag: 'v{% raw %}${{ github.event.inputs.version }}{% endraw %}'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
@@ -234,7 +234,7 @@ jobs:
           omitNameDuringUpdate: true
           owner: 'xpack-dev-tools'
           prerelease: true
-          replacesArtifacts: true
+          replacesArtifacts: false
           repo: '{{ APP_LC_NAME }}-xpack'
           tag: 'v{% raw %}${{ github.event.inputs.version }}{% endraw %}'
           token: {% raw %}${{ secrets.PUBLISH_TOKEN }}{% endraw %}
