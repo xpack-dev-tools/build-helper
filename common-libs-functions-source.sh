@@ -1033,6 +1033,7 @@ function build_libiconv()
   # 2011-08-07 1.14"
   # 2017-02-02 "1.15"
   # 2019-04-26 "1.16"
+  # 2022-05-15, "1.17"
 
   local libiconv_version="$1"
 
@@ -1962,6 +1963,7 @@ function build_xz()
   # 2016-12-30 "5.2.3"
   # 2018-04-29 "5.2.4"
   # 2020-03-17 "5.2.5"
+  # 2022-08-12 "5.2.6"
 
   local xz_version="$1"
 
@@ -4715,6 +4717,7 @@ function build_libxml2()
   # Oct 30 2019, "2.9.10"
   # May 13 2021, "2.9.11"
   # May 2, 2022, "2.9.14"
+  # 2022-Aug-17, "2.10.0"
 
   local libxml2_version="$1"
   local libxml2_version_major_minor="$(echo ${libxml2_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"

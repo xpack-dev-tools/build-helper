@@ -1468,6 +1468,7 @@ function build_native_binutils()
   # 2021-02-06, "2.36.1"
   # 2021-07-18, "2.37"
   # 2022-02-09, "2.38"
+  # 2022-08-05, "2.39"
 
   local binutils_version="$1"
   local name_suffix=${2-''}
