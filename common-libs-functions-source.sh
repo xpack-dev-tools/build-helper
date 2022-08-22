@@ -1914,6 +1914,9 @@ function build_expat()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
+          config_options+=("--without-docbook")
+          config_options+=("--without-xmlwf")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${expat_src_folder_name}/configure" \
             "${config_options[@]}"
 
