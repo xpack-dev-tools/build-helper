@@ -303,6 +303,8 @@ function build_gmp()
             config_options+=("--target=${TARGET}")
 
             config_options+=("--enable-cxx")
+            # From Arm.
+            config_options+=("--enable-fft")
 
             if [ "${TARGET_PLATFORM}" == "win32" ]
             then
