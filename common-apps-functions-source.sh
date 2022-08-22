@@ -1979,7 +1979,13 @@ function build_cross_binutils()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          run_verbose make check
+          if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "x64" ]
+          then
+            # /bin/bash: DSYMUTIL@: command not found
+            :
+          else
+            run_verbose make check
+          fi
         fi
 
         # Avoid strip here, it may interfere with patchelf.
