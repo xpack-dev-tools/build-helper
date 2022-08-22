@@ -2844,15 +2844,7 @@ function build_openssl()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "x64" ]
-          then
-            # ../test/recipes/80-test_ssl_new.t ..................
-            # Dubious, test returned 1 (wstat 256, 0x100)
-            # Failed 1/29 subtests
-            :
-          else
-            run_verbose make -j1 test
-          fi
+          run_verbose make -j1 test
         fi
 
         if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}" ]
