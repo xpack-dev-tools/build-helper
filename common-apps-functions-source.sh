@@ -1979,7 +1979,7 @@ function build_cross_binutils()
 
         if [ "${WITH_TESTS}" == "y" ]
         then
-          if [ "${TARGET_PLATFORM}" == "darwin" -a "${TARGET_ARCH}" == "x64" ]
+          if [ "${TARGET_PLATFORM}" == "darwin" ]
           then
             # /bin/bash: DSYMUTIL@: command not found
             :
