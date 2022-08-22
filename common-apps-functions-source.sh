@@ -1941,11 +1941,11 @@ function build_cross_binutils()
           config_options+=("--disable-gdb") # Arm, AArch64
           config_options+=("--disable-gdbtk") # Arm, AArch64
 
-          config_options+=("--disable-sim") # ABE
-          config_options+=("--disable-werror") # ABE
+          config_options+=("--disable-sim")
+          config_options+=("--disable-werror")
 
           config_options+=("--enable-initfini-array") # Arm, AArch64
-          config_options+=("--enable-lto") # ABE
+          config_options+=("--enable-lto")
           config_options+=("--enable-plugins") # Arm, AArch64
           config_options+=("--enable-build-warnings=no")
 
@@ -2251,6 +2251,13 @@ function build_cross_gcc_first()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
+          # config_options+=("--disable-libatomic") # ABE
+          # config_options+=("--disable-libsanitizer") # ABE
+          # config_options+=("--disable-libssp") # ABE
+          # config_options+=("--disable-libgomp") # ABE
+          # config_options+=("--disable-libmudflap") # ABE
+          # config_options+=("--disable-libquadmath") # ABE
+
           config_options+=("--disable-nls") # Arm, AArch64
           config_options+=("--disable-shared") # Arm, AArch64
           config_options+=("--disable-threads") # Arm, AArch64
@@ -2264,8 +2271,9 @@ function build_cross_gcc_first()
           config_options+=("--without-headers") # Arm, AArch64
           config_options+=("--without-isl") # Arm, AArch64
 
-          # config_options+=("--with-gnu-as") # ABE
-          # config_options+=("--with-gnu-ld") # ABE
+          config_options+=("--with-gnu-as") # Arm, ABE
+          config_options+=("--with-gnu-ld") # Arm, ABE
+
           config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # AArch64
           config_options+=("--with-pkgversion=${BRANDING}")
           config_options+=("--with-newlib") # Arm, AArch64
@@ -2470,10 +2478,9 @@ function build_cross_newlib()
             config_options+=("--enable-newlib-mb") # Arm, AArch64
             config_options+=("--enable-newlib-reent-check-verify") # Arm, AArch64
 
-            # Not used by Arm, but perhaps necessary?
-            # config_options+=("--enable-newlib-register-fini")
+            config_options+=("--enable-newlib-register-fini") # Arm
 
-            # config_options+=("--enable-newlib-retargetable-locking")
+            config_options+=("--enable-newlib-retargetable-locking") # Arm
 
             run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${NEWLIB_SRC_FOLDER_NAME}/configure" \
               "${config_options[@]}"
@@ -2515,7 +2522,7 @@ function build_cross_newlib()
             config_options+=("--enable-newlib-reent-check-verify") # Arm
             config_options+=("--enable-newlib-reent-small") # Arm
 
-            # config_options+=("--enable-newlib-retargetable-locking")
+            config_options+=("--enable-newlib-retargetable-locking") # Arm
 
             run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${NEWLIB_SRC_FOLDER_NAME}/configure" \
               "${config_options[@]}"
@@ -2849,6 +2856,9 @@ function build_cross_gcc_final()
 
           config_options+=("--with-newlib") # Arm, AArch64
           config_options+=("--with-pkgversion=${BRANDING}")
+
+          config_options+=("--with-gnu-as") # Arm ABE
+          config_options+=("--with-gnu-ld") # Arm ABE
 
           config_options+=("--with-system-zlib")
 
@@ -3344,7 +3354,6 @@ function build_cross_gdb()
 
           config_options+=("--without-babeltrace") # Arm, AArch64
           config_options+=("--without-debuginfod") # Arm, AArch64
-          # config_options+=("--without-expat") # Arm, AArch64
           config_options+=("--without-guile") # Arm, AArch64
           config_options+=("--without-intel-pt") # Arm, AArch64
           config_options+=("--without-libunwind-ia64") # Arm, AArch64
@@ -3354,7 +3363,8 @@ function build_cross_gdb()
           config_options+=("--without-x") # Arm, AArch64
           config_options+=("--without-xxhash") # Arm, AArch64
 
-          config_options+=("--with-expat")
+          config_options+=("--with-expat") # Arm
+          config_options+=("--with-libexpat-type=static") # Arm
           config_options+=("--with-gdb-datadir=${APP_PREFIX}/${GCC_TARGET}/share/gdb")
 
           # No need to, we keep track of paths to shared libraries.
