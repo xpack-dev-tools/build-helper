@@ -41,9 +41,15 @@ function host_stop_timer()
   if [ ${delta_seconds} -lt 100 ]
   then
     echo "Duration: ${delta_seconds} seconds."
-  else
+  elif [ ${delta_seconds} -lt 3600 ]
+  then
     local delta_minutes=$(((delta_seconds+30)/60))
     echo "Duration: ${delta_minutes} minutes."
+  else
+    local delta_minutes=$(((delta_seconds+30)/60))
+    local delta_hours=$((delta_minutes/60))
+    local delta_hour_minutes=$((delta_minutes-(delta_hours*60)))
+    printf "Duration: %dh%02dm.\n" ${delta_hours} ${delta_hour_minutes}
   fi
 }
 
