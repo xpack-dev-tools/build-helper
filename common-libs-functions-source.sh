@@ -2910,6 +2910,7 @@ function build_sqlite()
   # 2020-06-18 "3.32.3" 7ebdfa80
   # 2021-06-18 "3360000"
   # 2022 "3380200"
+  # "3390200"
 
   local sqlite_version="$1"
 
@@ -3059,6 +3060,7 @@ function build_readline()
 
   # 2019-01-07, "8.0"
   # 2020-12-06, "8.1"
+  # 2022-01-05, "8.1.2"
 
   local readline_version="$1"
   local readline_version_major="$(echo ${readline_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)|\1|')"
