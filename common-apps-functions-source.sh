@@ -2271,8 +2271,11 @@ function build_cross_gcc_first()
           config_options+=("--without-headers") # Arm, AArch64
           config_options+=("--without-isl") # Arm, AArch64
 
-          config_options+=("--with-gnu-as") # Arm, ABE
-          config_options+=("--with-gnu-ld") # Arm, ABE
+          if [ "${TARGET_PLATFORM}" != "win32" ]
+          then
+            config_options+=("--with-gnu-as") # Arm, ABE
+            config_options+=("--with-gnu-ld") # Arm, ABE
+          fi
 
           config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}") # AArch64
           config_options+=("--with-pkgversion=${BRANDING}")
@@ -2857,8 +2860,11 @@ function build_cross_gcc_final()
           config_options+=("--with-newlib") # Arm, AArch64
           config_options+=("--with-pkgversion=${BRANDING}")
 
-          config_options+=("--with-gnu-as") # Arm ABE
-          config_options+=("--with-gnu-ld") # Arm ABE
+          if [ "${TARGET_PLATFORM}" != "win32" ]
+          then
+            config_options+=("--with-gnu-as") # Arm ABE
+            config_options+=("--with-gnu-ld") # Arm ABE
+          fi
 
           config_options+=("--with-system-zlib")
 
