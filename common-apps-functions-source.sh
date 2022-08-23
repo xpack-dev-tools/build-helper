@@ -3134,10 +3134,10 @@ main(int argc, char* argv[])
 }
 __EOF__
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello-c.elf "${specs}" hello.c -v
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -pipe -o hello-c.elf "${specs}" hello.c -v
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello.c.o -c -flto hello.c
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello-c-lto.elf "${specs}" -flto -v hello.c.o
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -pipe -o hello.c.o -c -flto hello.c
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -pipe -o hello-c-lto.elf "${specs}" -flto -v hello.c.o
 
     # Note: __EOF__ is quoted to prevent substitutions here.
     cat <<'__EOF__' > hello.cpp
@@ -3157,12 +3157,12 @@ __sync_synchronize()
 }
 __EOF__
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp.elf "${specs}" hello.cpp
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -pipe -o hello-cpp.elf "${specs}" hello.cpp
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello.cpp.o -c -flto hello.cpp
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-lto.elf "${specs}" -flto -v hello.cpp.o
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -pipe -o hello.cpp.o -c -flto hello.cpp
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -pipe -o hello-cpp-lto.elf "${specs}" -flto -v hello.cpp.o
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-gcov.elf "${specs}" -fprofile-arcs -ftest-coverage -lgcov hello.cpp
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -pipe -o hello-cpp-gcov.elf "${specs}" -fprofile-arcs -ftest-coverage -lgcov hello.cpp
 
     cd ..
     rm -rf "${tmp}"
