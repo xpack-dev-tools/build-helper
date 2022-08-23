@@ -3116,6 +3116,13 @@ function test_cross_gcc()
     mkdir -pv "${tmp}"
     cd "${tmp}"
 
+    if [ "${GCC_TARGET}" == "arm-none-eabi" ]
+    then
+      specs="-specs=rdimon.specs"
+    else
+      specs="-specs=nosys.specs"
+    fi
+
     # Note: __EOF__ is quoted to prevent substitutions here.
     cat <<'__EOF__' > hello.c
 #include <stdio.h>
@@ -3126,10 +3133,11 @@ main(int argc, char* argv[])
   printf("Hello World\n");
 }
 __EOF__
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello-c.elf -specs=nosys.specs hello.c -v
+
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello-c.elf "${specs}" hello.c -v
 
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello.c.o -c -flto hello.c
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello-c-lto.elf -specs=nosys.specs -flto -v hello.c.o
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -o hello-c-lto.elf "${specs}" -flto -v hello.c.o
 
     # Note: __EOF__ is quoted to prevent substitutions here.
     cat <<'__EOF__' > hello.cpp
@@ -3148,12 +3156,13 @@ __sync_synchronize()
 {
 }
 __EOF__
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp.elf -specs=nosys.specs hello.cpp
+
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp.elf "${specs}" hello.cpp
 
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello.cpp.o -c -flto hello.cpp
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-lto.elf -specs=nosys.specs -flto -v hello.cpp.o
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-lto.elf "${specs}" -flto -v hello.cpp.o
 
-    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-gcov.elf -specs=nosys.specs -fprofile-arcs -ftest-coverage -lgcov hello.cpp
+    run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -o hello-cpp-gcov.elf "${specs}" -fprofile-arcs -ftest-coverage -lgcov hello.cpp
 
     cd ..
     rm -rf "${tmp}"
