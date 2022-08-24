@@ -3097,11 +3097,15 @@ function test_cross_gcc()
 
     show_libs "${TEST_BIN_PATH}/${GCC_TARGET}-gcc"
     show_libs "${TEST_BIN_PATH}/${GCC_TARGET}-g++"
-    show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=cc1)"
-    show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=cc1plus)"
-    show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=collect2)"
-    show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=lto-wrapper)"
-    show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=lto1)"
+
+    if [ "${TARGET_PLATFORM}" != "win32" ]
+    then
+      show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=cc1)"
+      show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=cc1plus)"
+      show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=collect2)"
+      show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=lto-wrapper)"
+      show_libs "$(${TEST_BIN_PATH}/${GCC_TARGET}-gcc -print-prog-name=lto1)"
+    fi
 
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" --help
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-gcc" -dumpversion
