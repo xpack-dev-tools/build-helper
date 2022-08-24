@@ -3119,6 +3119,9 @@ function test_cross_gcc()
     if [ "${GCC_TARGET}" == "arm-none-eabi" ]
     then
       specs="-specs=rdimon.specs"
+    elif [ "${GCC_TARGET}" == "aarch64-none-elf" ]
+    then
+      specs="-specs=rdimon.specs"
     else
       specs="-specs=nosys.specs"
     fi
