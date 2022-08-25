@@ -3114,6 +3114,8 @@ function test_cross_gcc()
     mkdir -pv "${tmp}"
     cd "${tmp}"
 
+if [ "${TARGET_PLATFORM}" != "win32" ]
+then
     if [ "${GCC_TARGET}" == "arm-none-eabi" ]
     then
       specs="-specs=rdimon.specs"
@@ -3164,7 +3166,7 @@ __EOF__
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -pipe -o hello-cpp-lto.elf "${specs}" -flto -v hello.cpp.o
 
     run_app "${TEST_BIN_PATH}/${GCC_TARGET}-g++" -pipe -o hello-cpp-gcov.elf "${specs}" -fprofile-arcs -ftest-coverage -lgcov hello.cpp
-
+fi
     cd ..
     rm -rf "${tmp}"
   )
