@@ -3114,7 +3114,7 @@ function test_cross_gcc()
     mkdir -pv "${tmp}"
     cd "${tmp}"
 
-    if [ "${TARGET_PLATFORM}" == "win32" -a -n ${XBB_FOLDER_PATH+x} ]
+    if [ "${TARGET_PLATFORM}" == "win32" -a -z ${CI+x} ]
     then
       : # Skip Windows when running on Wine.
     else
