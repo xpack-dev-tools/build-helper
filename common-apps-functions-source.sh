@@ -2258,12 +2258,11 @@ function build_cross_gcc_first()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
-          # config_options+=("--disable-libatomic") # ABE
-          # config_options+=("--disable-libsanitizer") # ABE
-          # config_options+=("--disable-libssp") # ABE
-          # config_options+=("--disable-libgomp") # ABE
-          # config_options+=("--disable-libmudflap") # ABE
-          # config_options+=("--disable-libquadmath") # ABE
+          config_options+=("--disable-libgomp") # ABE
+          config_options+=("--disable-libmudflap") # ABE
+          config_options+=("--disable-libquadmath") # ABE
+          config_options+=("--disable-libsanitizer") # ABE
+          config_options+=("--disable-libssp") # ABE
 
           config_options+=("--disable-nls") # Arm, AArch64
           config_options+=("--disable-shared") # Arm, AArch64
@@ -2289,6 +2288,8 @@ function build_cross_gcc_first()
 
           if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
+            config_options+=("--disable-libatomic") # ABE
+
             if [ "${WITHOUT_MULTILIB}" == "y" ]
             then
               config_options+=("--disable-multilib")
@@ -2849,6 +2850,12 @@ function build_cross_gcc_final()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${GCC_TARGET}")
 
+          config_options+=("--disable-libgomp") # ABE
+          config_options+=("--disable-libmudflap") # ABE
+          config_options+=("--disable-libquadmath") # ABE
+          config_options+=("--disable-libsanitizer") # ABE
+          config_options+=("--disable-libssp") # ABE
+
           config_options+=("--disable-nls") # Arm, AArch64
           config_options+=("--disable-shared") # Arm, AArch64
           config_options+=("--disable-threads") # Arm, AArch64
@@ -2881,6 +2888,8 @@ function build_cross_gcc_final()
 
           if [ "${GCC_TARGET}" == "arm-none-eabi" ]
           then
+            config_options+=("--disable-libatomic") # ABE
+
             if [ "${WITHOUT_MULTILIB}" == "y" ]
             then
               config_options+=("--disable-multilib")
