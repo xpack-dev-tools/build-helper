@@ -3114,9 +3114,9 @@ function test_cross_gcc()
     mkdir -pv "${tmp}"
     cd "${tmp}"
 
-    if [ "${TARGET_PLATFORM}" == "win32" -a -z ${IS_NATIVE_TEST+x} ]
+    if [ "${TARGET_PLATFORM}" == "win32" -a -n ${IS_NATIVE_TEST+x} ]
     then
-      : # Skip Windows when non tative (running on Wine).
+      : # Skip Windows when non native (running on Wine).
     else
 
       if [ "${GCC_TARGET}" == "arm-none-eabi" ]
