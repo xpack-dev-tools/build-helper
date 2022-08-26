@@ -2090,8 +2090,9 @@ function define_flags_for_target()
   then
     # For newlib, optimize for speed.
     optimize="$(echo ${optimize} | sed -e 's/-O[123]/-O2/g')"
-    # Normally this is the default, but for just in case.
-    optimize+=" -fexceptions"
+    # DO NOT make this explicit, since exceptions references will always be
+    # inserted in the `extab` section.
+    # optimize+=" -fexceptions"
   elif [ "$1" == "-nano" ]
   then
     # For newlib-nano optimize for size and disable exceptions.
