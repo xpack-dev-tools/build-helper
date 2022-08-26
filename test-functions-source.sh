@@ -289,6 +289,7 @@ function detect_architecture()
 # - HOST
 # - TARGET
 # - IS_DEVELOP
+# - IS_NATIVE_TEST=true
 
 function prepare_env()
 {
@@ -296,6 +297,7 @@ function prepare_env()
   container_repo_folder_path="/Host/repo"
 
   export CI=${CI:-"false"}
+  export IS_NATIVE_TEST="true"
 
   if [ -f "/.dockerenv" -a -d "${container_work_folder_path}" ]
   then
