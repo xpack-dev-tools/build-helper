@@ -1853,6 +1853,9 @@ function test_native_binutils()
 # BINUTILS_ARCHIVE_NAME
 # BINUTILS_URL
 
+# https://github.com/archlinux/svntogit-community/blob/packages/arm-none-eabi-binutils/trunk/PKGBUILD
+# https://github.com/archlinux/svntogit-community/blob/packages/riscv32-elf-binutils/trunk/PKGBUILD
+
 function build_cross_binutils()
 {
   # https://ftp.gnu.org/gnu/binutils/
@@ -2142,6 +2145,9 @@ function download_cross_gcc()
 # GCC_ARCHIVE_NAME
 # GCC_PATCH_FILE_NAME
 
+# https://github.com/archlinux/svntogit-community/blob/packages/arm-none-eabi-gcc/trunk/PKGBUILD
+# https://github.com/archlinux/svntogit-community/blob/packages/riscv64-elf-gcc/trunk/PKGBUILD
+
 function build_cross_gcc_first()
 {
   local gcc_first_folder_name="gcc-${GCC_VERSION}-first"
@@ -2342,6 +2348,9 @@ function build_cross_gcc_first()
 # NEWLIB_SRC_FOLDER_NAME
 # NEWLIB_ARCHIVE_URL
 # NEWLIB_ARCHIVE_NAME
+
+# https://github.com/archlinux/svntogit-community/blob/packages/arm-none-eabi-newlib/trunk/PKGBUILD
+# https://github.com/archlinux/svntogit-community/blob/packages/riscv32-elf-newlib/trunk/PKGBUILD
 
 # For the nano build, call it with "-nano".
 # $1="" or $1="-nano"
@@ -3185,6 +3194,9 @@ __EOF__
 # GDB_ARCHIVE_URL
 # GDB_ARCHIVE_NAME
 # GDB_PATCH_FILE_NAME
+
+# https://github.com/archlinux/svntogit-community/blob/packages/arm-none-eabi-gdb/trunk/PKGBUILD
+# https://github.com/archlinux/svntogit-community/blob/packages/riscv32-elf-gdb/trunk/PKGBUILD
 
 # Called multile times, with and without python support.
 # $1="" or $1="-py" or $1="-py3"
