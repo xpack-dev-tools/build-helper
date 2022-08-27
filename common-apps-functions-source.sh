@@ -3456,6 +3456,9 @@ function build_cross_gdb()
         # install-strip fails, not only because of readline has no install-strip
         # but even after patching it tries to strip a non elf file
         # strip:.../install/riscv-none-gcc/bin/_inst.672_: file format not recognized
+
+        # The explicit `-gdb` fixes a bug noticed with gdb 12, that builds
+        # a defective `as.exe` even if instructed not to do so.
         run_verbose make install-gdb
 
         if [ "${name_suffix}" == "" ]
