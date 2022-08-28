@@ -3411,10 +3411,20 @@ function build_cross_gdb()
           config_options+=("--without-xxhash") # Arm, AArch64
 
           config_options+=("--with-expat") # Arm
-          config_options+=("--with-libexpat-type=static") # Arm
           config_options+=("--with-gdb-datadir=${APP_PREFIX}/${GCC_TARGET}/share/gdb")
 
           # No need to, we keep track of paths to shared libraries.
+          # Plus that if fails the build:
+          # /opt/xbb/bin/ld: /usr/lib/x86_64-linux-gnu/libm-2.27.a(e_log.o): warning: relocation against `_dl_x86_cpu_features' in read-only section `.text'
+          # /opt/xbb/bin/ld: /usr/lib/x86_64-linux-gnu/libm-2.27.a(e_pow.o): in function `__ieee754_pow_ifunc':
+          # (.text+0x12b2): undefined reference to `_dl_x86_cpu_features'
+          # /opt/xbb/bin/ld: /usr/lib/x86_64-linux-gnu/libm-2.27.a(e_exp.o): in function `__ieee754_exp_ifunc':
+          # (.text+0x5d2): undefined reference to `_dl_x86_cpu_features'
+          # /opt/xbb/bin/ld: /usr/lib/x86_64-linux-gnu/libm-2.27.a(e_log.o): in function `__ieee754_log_ifunc':
+          # (.text+0x1602): undefined reference to `_dl_x86_cpu_features'
+          # /opt/xbb/bin/ld: warning: creating DT_TEXTREL in a PIE
+
+          # config_options+=("--with-libexpat-type=static") # Arm
           # config_options+=("--with-libgmp-type=static") # Arm, AArch64
           # config_options+=("--with-libmpfr-type=static") # Arm, AArch64
 
