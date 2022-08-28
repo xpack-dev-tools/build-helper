@@ -3144,6 +3144,9 @@ function test_cross_gcc()
       elif [ "${GCC_TARGET}" == "aarch64-none-elf" ]
       then
         specs="-specs=rdimon.specs"
+      elif [ "${GCC_TARGET}" == "riscv-none-elf" ]
+      then
+        specs="-specs=semihost.specs"
       else
         specs="-specs=nosys.specs"
       fi
