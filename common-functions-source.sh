@@ -1292,6 +1292,29 @@ function show_native_libs()
 
 # -----------------------------------------------------------------------------
 
+function check_patch()
+{
+  if [ -z "$1" ]
+  then
+    echo "Missing patch file name."
+    exit 1
+  fi
+
+  local patch_file_name="$1"
+  local patch_path="${BUILD_GIT_PATH}/patches/${patch_file_name}"
+  if [ ! -f "${patch_path}" ]
+  then
+    # If not local in the project, try in the common helper.
+    patch_path="${helper_folder_path}/patches/${patch_file_name}"
+  fi
+
+  if [ ! -f "${patch_path}" ]
+  then
+    echo "Mandatory patch file \"${patch_path}\" not found."
+    exit 1
+  fi
+}
+
 function do_patch()
 {
   if [ ! -z "$1" ]
