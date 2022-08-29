@@ -24,7 +24,10 @@ jobs:
     runs-on: [self-hosted, linux, x64]
     steps:
       - name: 'Machine'
-        run: uname -a
+        run: |
+          uname -a
+          node --version
+          npm --version
 
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -85,7 +88,10 @@ jobs:
     runs-on: [self-hosted, linux, arm, xbbla32]
     steps:
       - name: 'Machine'
-        run: uname -a
+        run: |
+          uname -a
+          node --version
+          npm --version
 
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -129,7 +135,10 @@ jobs:
     runs-on: [self-hosted, linux, arm64, xbbla64]
     steps:
       - name: 'Machine'
-        run: uname -a
+        run: |
+          uname -a
+          node --version
+          npm --version
 
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -178,7 +187,10 @@ jobs:
 {% endif %}
     steps:
       - name: 'Machine'
-        run: uname -a
+        run: |
+          uname -a
+          node --version
+          npm --version
 
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -235,7 +247,10 @@ jobs:
 
     steps:
       - name: 'Machine'
-        run: uname -a
+        run: |
+          uname -a
+          node --version
+          npm --version
 
       - name: 'Checkout'
         uses: actions/checkout@v2
