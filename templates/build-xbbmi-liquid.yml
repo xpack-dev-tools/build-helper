@@ -28,7 +28,10 @@ jobs:
 {% endif %}
     steps:
       - name: 'Machine'
-        run: uname -a
+        run: |
+          uname -a
+          node --version
+          npm --version
 
       - name: 'Checkout'
         uses: actions/checkout@v2
