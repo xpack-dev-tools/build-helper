@@ -166,12 +166,16 @@ jobs:
         with:
           fetch-depth: 3
           submodules: true
-      # 15.3 File 'repomd.xml' from repository 'Update repository of openSUSE Backports' is unsigned, continue? [yes/no]
-      - name: 'OpenSUSE 15 arm64'
+      - name: 'OpenSUSE 15.4 arm64'
         uses: docker://opensuse/leap:15.4
         with:
           entrypoint: /bin/bash
           args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/leap:15.4 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
+      - name: 'OpenSUSE 15.3 arm64'
+        uses: docker://opensuse/leap:15.3
+        with:
+          entrypoint: /bin/bash
+          args: /github/workspace/scripts/helper/tests/native-test.sh --image opensuse/leap:15.3 --version {% raw %}${{ github.event.inputs.version }}{% endraw %} --base-url {% raw %}${{ github.event.inputs.base_url }}{% endraw %}
 
   # ---------------------------------------------------------------------------
 
