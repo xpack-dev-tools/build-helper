@@ -2924,7 +2924,11 @@ function build_sqlite()
   local sqlite_archive="${sqlite_src_folder_name}.zip"
   local sqlite_url
 
-  if [ "${sqlite_version}" == "3380200" ]
+  if [ "${sqlite_version}" == "3390200" ]
+  then
+    # 2022
+    sqlite_url="https://www.sqlite.org/2022/${sqlite_archive}"
+  elif [ "${sqlite_version}" == "3380200" ]
   then
     # 2022
     sqlite_url="https://www.sqlite.org/2022/${sqlite_archive}"
@@ -2939,7 +2943,7 @@ function build_sqlite()
     sqlite_archive="${sqlite_src_folder_name}.tar.gz"
     sqlite_url="https://www.sqlite.org/src/tarball/${sqlite_commit}/${sqlite_archive}"
   else
-    echo "Unsupported version ${sqlite_version}. Quit."
+    echo "Unsupported sqlite version ${sqlite_version}. Quit."
     exit 1
   fi
 
