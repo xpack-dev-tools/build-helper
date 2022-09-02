@@ -4692,8 +4692,38 @@ function build_glib()
 
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/make-output-$(ndate).txt"
       else
-        echo "glib >2.56 not yet implemented"
-        exit 1
+        if [ ! -f "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}/build.ninja" ]
+        then
+          (
+            if [ "${IS_DEVELOP}" == "y" ]
+            then
+              env | sort
+            fi
+
+            echo
+            echo "Running glib meson setup..."
+
+            cd "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}"
+            run_verbose meson setup \
+              --prefix "${LIBS_INSTALL_FOLDER_PATH}" \
+              --backend ninja \
+              "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
+
+          ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/meson-setup-output-$(ndate).txt"
+        fi
+
+        (
+          echo
+          echo "Running glib meson compile..."
+
+          # Build.
+          run_verbose meson compile -C "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
+
+          run_verbose meson install -C "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
+
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/meson-compile-output-$(ndate).txt"
+
+        # exit 1
       fi
 
       copy_license \
