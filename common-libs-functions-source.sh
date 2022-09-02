@@ -4707,9 +4707,19 @@ function build_glib()
             echo "Running glib meson setup..."
 
             cd "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}"
+
+            config_options=()
+            config_options+=("--prefix" "${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--backend" "ninja")
+
+            if [ "${TARGET_PLATFORM}" == "win32" ]
+            then
+              echo "meson build of glib not yet implemented"
+              exit 1
+            fi
+            
             run_verbose meson setup \
-              --prefix "${LIBS_INSTALL_FOLDER_PATH}" \
-              --backend ninja \
+              "${config_options[@]}" \
               "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
 
           ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${glib_folder_name}/meson-setup-output-$(ndate).txt"
