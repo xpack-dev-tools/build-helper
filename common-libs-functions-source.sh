@@ -6899,3 +6899,130 @@ function build_sdl2_image()
 }
 
 # -----------------------------------------------------------------------------
+
+function build_pcre2()
+{
+  # https://github.com/PCRE2Project/pcre2
+  # https://github.com/PCRE2Project/pcre2/releases
+  # https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.40/pcre2-10.40.tar.bz2
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/pcre2/trunk/PKGBUILD
+  # https://archlinuxarm.org/packages/aarch64/pcre2/files/PKGBUILD
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/pcre2.rb
+
+  # 15 Apr 2022, "10.40"
+
+  local pcre2_version="$1"
+
+  local pcre2_src_folder_name="pcre2-${pcre2_version}"
+
+  local pcre2_archive="${pcre2_src_folder_name}.tar.bz2"
+  local pcre2_url="https://github.com/PCRE2Project/pcre2/releases/download/pcre2-${pcre2_version}/${pcre2_archive}"
+
+  local pcre2_folder_name="${pcre2_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${pcre2_folder_name}"
+
+  local pcre2_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${pcre2_folder_name}-installed"
+  if [ ! -f "${pcre2_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    download_and_extract "${pcre2_url}" "${pcre2_archive}" \
+      "${pcre2_src_folder_name}"
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${pcre2_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${pcre2_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running pcre2 configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${pcre2_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          config_options+=("--enable-pcre2-16")
+          config_options+=("--enable-pcre2-32")
+          config_options+=("--enable-jit")
+          config_options+=("--enable-pcre2grep-libz")
+          config_options+=("--enable-pcre2grep-libbz2")
+          # config_options+=("--enable-pcre2test-libreadline")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${pcre2_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${pcre2_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${pcre2_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running pcre2 make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${pcre2_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${pcre2_src_folder_name}" \
+        "${pcre2_folder_name}"
+
+    )
+
+    touch "${pcre2_stamp_file_path}"
+
+  else
+    echo "Library pcre2 already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
