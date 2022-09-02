@@ -1035,7 +1035,7 @@ function build_libiconv()
   # 2011-08-07 1.14"
   # 2017-02-02 "1.15"
   # 2019-04-26 "1.16"
-  # 2022-05-15, "1.17"
+  # 2022-05-15 "1.17"
 
   local libiconv_version="$1"
 
@@ -4557,6 +4557,7 @@ function build_glib()
   # 2021-Sep-17, "2.70.0"
   # 2021-Dec-03, "2.70.2"
   # 2022-Apr-14, "2.72.1"
+  # 2022-Aug-05, "2.73.3"
 
   local glib_version="$1"
   local glib_major_version=$(echo ${glib_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1|')
@@ -4729,7 +4730,7 @@ function build_libxml2()
   # Oct 30 2019, "2.9.10"
   # May 13 2021, "2.9.11"
   # May 2, 2022, "2.9.14"
-  # 2022-Aug-17, "2.10.0"
+  # Aug 29, 2022, "2.10.2"
 
   local libxml2_version="$1"
   local libxml2_version_major_minor="$(echo ${libxml2_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
@@ -5766,6 +5767,7 @@ function build_nettle()
   # 2018-12-04, "3.4.1"
   # 2019-06-27, "3.5.1"
   # 2021-06-07, "3.7.3"
+  # 2022-07-27, "3.8.1"
 
   local nettle_version="$1"
 
@@ -6427,6 +6429,7 @@ function build_libssh()
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libssh.rb
 
   # 2021-08-26 "0.9.6"
+  # 2022-08-30, "0.10.1"
 
   local libssh_version="$1"
   local libssh_major_minor_version="$(echo ${libssh_version} | sed -e 's|\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.[0-9].*|\1.\2|')"
@@ -6561,6 +6564,7 @@ function build_sdl2()
   # sdl2_version="2.0.9" # 2018-10-31
   # 2021-11-30, "2.0.18"
   # 2022-04-25, "2.0.22"
+  # 2022-08-19, "2.24.0"
 
   local sdl2_version="$1"
 
@@ -6703,6 +6707,7 @@ function build_sdl2_image()
   # sdl2_image_version="2.0.3" # 2018-03-01
   # sdl2_image_version="2.0.4" # 2018-10-31
   # 2019-07-01, "2.0.5"
+  # 2022-08-19, "2.6.2"
 
   local sdl2_image_version="$1"
 
