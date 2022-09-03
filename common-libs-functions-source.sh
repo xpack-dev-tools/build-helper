@@ -4728,7 +4728,7 @@ function build_glib()
               echo "meson build of glib not yet implemented"
               exit 1
             fi
-            
+
             run_verbose meson setup \
               "${config_options[@]}" \
               "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
@@ -4778,6 +4778,9 @@ function build_libxml2()
   # https://archlinuxarm.org/packages/aarch64/libxml2/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libxml2-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libxml2
+
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-libxml2/PKGBUILD
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-readline/PKGBUILD
 
   # Mar 05 2018, "2.9.8"
   # Jan 03 2019, "2.9.9"
@@ -4871,10 +4874,12 @@ function build_libxml2()
           config_options+=("--target=${TARGET}")
 
           config_options+=("--without-python")
-          # Not functional on Windows anyway
+
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
+            config_options+=("--with-threads=win32")
             config_options+=("--without-catalog")
+            config_options+=("--disable-shared")
           fi
 
           run_verbose bash ${DEBUG} "configure" \
@@ -7033,6 +7038,127 @@ function build_pcre2()
 
   else
     echo "Library pcre2 already installed."
+  fi
+}
+
+# -----------------------------------------------------------------------------
+
+
+function build_termcap()
+{
+  # https://www.gnu.org/software/termutils/
+  # https://ftp.gnu.org/gnu/termcap/
+  # https://ftp.gnu.org/gnu/termcap/termcap-1.3.1.tar.gz
+
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-termcap/PKGBUILD
+
+  # 2002-03-13, "1.3.1"
+
+  local termcap_version="$1"
+
+  local termcap_src_folder_name="termcap-${termcap_version}"
+
+  local termcap_archive="${termcap_src_folder_name}.tar.gz"
+  local termcap_url="https://ftp.gnu.org/gnu/termcap/${termcap_archive}"
+
+  local termcap_folder_name="${termcap_src_folder_name}"
+
+  mkdir -pv "${LOGS_FOLDER_PATH}/${termcap_folder_name}"
+
+  local termcap_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${termcap_folder_name}-installed"
+  if [ ! -f "${termcap_stamp_file_path}" ]
+  then
+
+    cd "${SOURCES_FOLDER_PATH}"
+
+    if [ ! -d "${termcap_src_folder_name}" ]
+    then
+      download_and_extract "${termcap_url}" "${termcap_archive}" \
+        "${termcap_src_folder_name}"
+
+      run_verbose sed -i -e 's|char PC;|static char PC;|' \
+        "${termcap_src_folder_name}/termcap.c"
+    fi
+
+    (
+      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${termcap_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${termcap_folder_name}"
+
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
+
+      if [ ! -f "config.status" ]
+      then
+        (
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            env | sort
+          fi
+
+          echo
+          echo "Running termcap configure..."
+
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose bash "${SOURCES_FOLDER_PATH}/${termcap_src_folder_name}/configure" --help
+          fi
+
+          config_options=()
+
+          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
+          run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${termcap_src_folder_name}/configure" \
+            "${config_options[@]}"
+
+          cp "config.log" "${LOGS_FOLDER_PATH}/${termcap_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${termcap_folder_name}/configure-output-$(ndate).txt"
+      fi
+
+      (
+        echo
+        echo "Running termcap make..."
+
+        # Build.
+        run_verbose make -j ${JOBS}
+
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
+
+        run_verbose make install
+
+
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${termcap_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${termcap_src_folder_name}" \
+        "${termcap_folder_name}"
+
+    )
+
+    touch "${termcap_stamp_file_path}"
+
+  else
+    echo "Library termcap already installed."
   fi
 }
 
