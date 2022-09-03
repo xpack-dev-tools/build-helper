@@ -3068,6 +3068,8 @@ function build_readline()
   # depends=(glibc gcc-libs)
   # https://archlinuxarm.org/packages/aarch64/readline/files/PKGBUILD
 
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-readline/PKGBUILD
+
   # 2019-01-07, "8.0"
   # 2020-12-06, "8.1"
   # 2022-01-05, "8.1.2"
@@ -3085,6 +3087,8 @@ function build_readline()
   # The folder name  for build, licenses, etc.
   local readline_folder_name="${readline_src_folder_name}"
 
+  local readline_patch_file_path="${readline_folder_name}.patch"
+
   mkdir -pv "${LOGS_FOLDER_PATH}/${readline_folder_name}"
 
   local readline_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${readline_folder_name}-installed"
@@ -3094,7 +3098,7 @@ function build_readline()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${readline_url}" "${readline_archive}" \
-      "${readline_src_folder_name}"
+      "${readline_src_folder_name}" "${readline_patch_file_path}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${readline_folder_name}"
@@ -3140,6 +3144,8 @@ function build_readline()
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
+
+          config_options+=("--without-curses")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${readline_src_folder_name}/configure" \
             "${config_options[@]}"

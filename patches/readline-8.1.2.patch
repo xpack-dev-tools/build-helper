@@ -1,0 +1,58 @@
+--- signals-orig.c	2022-09-03 22:03:49.716129462 +0300
++++ signals.c	2022-09-03 22:04:31.097067062 +0300
+@@ -3,7 +3,7 @@
+ /* Copyright (C) 1987-2017 Free Software Foundation, Inc.
+ 
+    This file is part of the GNU Readline Library (Readline), a library
+-   for reading lines of text with interactive input and history editing.      
++   for reading lines of text with interactive input and history editing.
+ 
+    Readline is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+@@ -84,7 +84,7 @@
+ 
+ static RETSIGTYPE rl_signal_handler PARAMS((int));
+ static RETSIGTYPE _rl_handle_signal PARAMS((int));
+-     
++
+ /* Exported variables for use by applications. */
+ 
+ /* If non-zero, readline will install its own signal handlers for
+@@ -266,8 +266,10 @@
+     case SIGQUIT:
+ #endif
+ 
++#if defined (HAVE_POSIX_SIGNALS)
+       if (block_sig)
+ 	sigprocmask (SIG_BLOCK, &set, &oset);
++#endif
+ 
+       rl_echo_signal_char (sig);
+       rl_cleanup_after_signal ();
+@@ -320,7 +322,7 @@
+ #endif /* !HAVE_POSIX_SIGNALS */
+ #endif
+ 
+-      rl_reset_after_signal ();      
++      rl_reset_after_signal ();
+     }
+ 
+   RL_UNSETSTATE(RL_STATE_SIGHANDLER);
+@@ -465,7 +467,7 @@
+       sigaddset (&bset, SIGTTOU);
+ #endif
+       sigmask_set = 1;
+-    }      
++    }
+ #endif /* HAVE_POSIX_SIGNALS */
+ 
+   if (rl_catch_signals && signals_set_flag == 0)
+@@ -610,7 +612,7 @@
+ /* Free up the readline variable line state for the current line (undo list,
+    any partial history entry, any keyboard macros in progress, and any
+    numeric arguments in process) after catching a signal, before calling
+-   rl_cleanup_after_signal(). */ 
++   rl_cleanup_after_signal(). */
+ void
+ rl_free_line_state (void)
+ {
