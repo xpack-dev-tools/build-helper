@@ -3322,10 +3322,9 @@ function build_bzip2()
 
           # TODO: add support for creating macOS dylib.
 
-        elif [ "${TARGET_PLATFORM}" == "windows" ]
+        elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
 
-          # Not yet functional.
           run_verbose make libbz2.a bzip2 bzip2recover -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
             CC=${CC} \
@@ -3333,7 +3332,13 @@ function build_bzip2()
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
 
-          run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+          mkdir -p "${LIBS_INSTALL_FOLDER_PATH}/include"
+          run_verbose cp bzlib.h "${LIBS_INSTALL_FOLDER_PATH}/include"
+          mkdir -p "${LIBS_INSTALL_FOLDER_PATH}/lib"
+          run_verbose cp libbz2.a "${LIBS_INSTALL_FOLDER_PATH}/lib"
+          mkdir -p "${LIBS_INSTALL_FOLDER_PATH}/bin"
+          run_verbose cp bzip2.exe "${LIBS_INSTALL_FOLDER_PATH}/bin"
+          run_verbose cp bzip2recover.exe "${LIBS_INSTALL_FOLDER_PATH}/bin"
 
         fi
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${bzip2_folder_name}/make-output-$(ndate).txt"
