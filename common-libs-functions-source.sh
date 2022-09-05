@@ -4721,6 +4721,8 @@ function build_glib()
 
             config_options=()
             config_options+=("--prefix" "${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--includedir" "${LIBS_INSTALL_FOLDER_PATH}/include")
+            config_options+=("--libdir" "${LIBS_INSTALL_FOLDER_PATH}/lib")
             config_options+=("--backend" "ninja")
 
             if [ "${TARGET_PLATFORM}" == "win32" ]
