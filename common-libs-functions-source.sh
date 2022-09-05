@@ -4552,6 +4552,8 @@ function build_pixman()
 function build_glib()
 {
   # http://ftp.gnome.org/pub/GNOME/sources/glib
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/glib2/trunk/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=glib2-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-glib2
 
@@ -4719,6 +4721,7 @@ function build_glib()
 
             cd "${SOURCES_FOLDER_PATH}/${glib_src_folder_name}"
 
+            # https://mesonbuild.com/Commands.html#setup
             config_options=()
             config_options+=("--prefix" "${LIBS_INSTALL_FOLDER_PATH}")
             config_options+=("--includedir" "${LIBS_INSTALL_FOLDER_PATH}/include")
