@@ -4549,7 +4549,7 @@ function build_pixman()
 # -----------------------------------------------------------------------------
 
 
-function build_glib()
+function build_glib2()
 {
   # http://ftp.gnome.org/pub/GNOME/sources/glib
 
