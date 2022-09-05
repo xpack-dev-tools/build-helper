@@ -4559,6 +4559,8 @@ function build_glib2()
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/glib.rb
 
+  # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-glib2/PKGBUILD
+
   # 2015-May-13, "2.44.1"
   # 2017-Mar-13, "2.51.5"
   # 2018-Sep-21, "2.56.3"
@@ -4730,8 +4732,7 @@ function build_glib2()
 
             if [ "${TARGET_PLATFORM}" == "win32" ]
             then
-              echo "meson build of glib not yet implemented"
-              exit 1
+              config_options+=("--cross" "${helper_folder_path}/extras/meson/mingw-w64-gcc.ini")
             fi
 
             run_verbose meson setup \
