@@ -3027,6 +3027,10 @@ function build_sqlite()
           config_options+=("--target=${TARGET}")
 
           config_options+=("--enable-tcl=no")
+          config_options+=("--enable-editline=no")
+
+          # For readline, see CPPFLAGS.
+
           # Fails on macOS & Linux.
           # config_options+=("--disable-tcl")
           # Fail on macOS.
