@@ -22,6 +22,8 @@ function xbb_activate()
 
 function xbb_activate_dev()
 {
+  echo "xbb_activate_dev"
+
   # Add XBB include in front of XBB_CPPFLAGS.
   XBB_CPPFLAGS="-I${XBB_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
 
@@ -76,6 +78,8 @@ function xbb_activate_dev()
 
 function xbb_activate_libs()
 {
+  echo "xbb_activate_libs"
+
   LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-""}
 
   if [ -d "${XBB_FOLDER_PATH}/lib" ]
@@ -104,6 +108,8 @@ function xbb_activate_libs()
 # Add the freshly built binaries.
 function xbb_activate_installed_bin()
 {
+  echo "xbb_activate_installed_bin"
+
   # Add the XBB bin to the PATH.
   PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
 
@@ -113,6 +119,8 @@ function xbb_activate_installed_bin()
 # Add the freshly built headers and libraries.
 function xbb_activate_installed_dev()
 {
+  echo "xbb_activate_installed_dev"
+
   # Add XBB include in front of XBB_CPPFLAGS.
   XBB_CPPFLAGS="-I${LIBS_INSTALL_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
 
