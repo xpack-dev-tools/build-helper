@@ -125,8 +125,16 @@ function build_zlib()
 
             # Hack needed for 1.2.12 on macOS
             export cc="${CC}"
+
+            config_options=()
+
+            config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            config_options+=("--sharedlibdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+
             run_verbose bash ${DEBUG} "configure" \
-              --prefix="${LIBS_INSTALL_FOLDER_PATH}"
+              "${config_options[@]}"
 
             cp "configure.log" "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-log-$(ndate).txt"
           ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/configure-output-$(ndate).txt"
@@ -287,7 +295,11 @@ function build_gmp()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -483,7 +495,11 @@ function build_mpfr()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -641,7 +657,11 @@ function build_mpc()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -803,7 +823,11 @@ function build_isl()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -1109,7 +1133,11 @@ function build_libiconv()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1256,7 +1284,11 @@ function build_ncurses()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1510,7 +1542,11 @@ function build_libffi()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1639,7 +1675,11 @@ function build_gettext()
           # the full package fail with a CXX='no' problem.
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1788,7 +1828,11 @@ function build_libelf()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -1919,7 +1963,11 @@ function build_expat()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -2039,7 +2087,11 @@ function build_xz()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -2191,7 +2243,11 @@ function build_gpm()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -2338,7 +2394,11 @@ function build_libmpdec()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -2496,7 +2556,11 @@ function build_libxcrypt()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -2897,12 +2961,12 @@ function test_openssl()
     echo
     echo "Testing if the openssl binaries start properly..."
 
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl" version
+    run_app "${BINS_INSTALL_FOLDER_PATH}/bin/openssl" version
 
     echo
     echo "Checking the openssl shared libraries..."
 
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl"
+    show_libs "${BINS_INSTALL_FOLDER_PATH}/bin/openssl"
 
     if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}" ]
     then
@@ -3020,7 +3084,11 @@ function build_sqlite()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -3164,7 +3232,11 @@ function build_readline()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -3489,7 +3561,11 @@ function build_lzo()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -3635,7 +3711,12 @@ function build_python2()
           # --enable-optimizations takes too long
 
           config_options=()
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--with-dbmliborder=gdbm:ndbm")
 
@@ -3916,7 +3997,12 @@ function build_python3()
           # --enable-optimizations takes too long
 
           config_options=()
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--with-universal-archs=${TARGET_BITS}-bit")
           config_options+=("--with-computed-gotos")
@@ -4297,7 +4383,11 @@ function build_libpng()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -4420,7 +4510,11 @@ function build_jpeg()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -4548,7 +4642,11 @@ function build_pixman()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -4714,7 +4812,11 @@ function build_glib2()
 
             config_options=()
 
-            config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+            # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+            config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
             config_options+=("--build=${BUILD}")
             config_options+=("--host=${HOST}")
@@ -4785,7 +4887,8 @@ function build_glib2()
 
             # https://mesonbuild.com/Commands.html#setup
             config_options=()
-            config_options+=("--prefix" "${LIBS_INSTALL_FOLDER_PATH}")
+
+            config_options+=("--prefix" "${BINS_INSTALL_FOLDER_PATH}")
             config_options+=("--includedir" "${LIBS_INSTALL_FOLDER_PATH}/include")
             config_options+=("--libdir" "${LIBS_INSTALL_FOLDER_PATH}/lib")
             config_options+=("--backend" "ninja")
@@ -4933,7 +5036,11 @@ function build_libxml2()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5067,7 +5174,11 @@ function build_libedit()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5209,7 +5320,11 @@ function build_xar()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5329,7 +5444,11 @@ function build_libgpg_error()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5465,7 +5584,11 @@ function build_libgcrypt()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5602,7 +5725,11 @@ function build_libassuan()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5719,7 +5846,11 @@ function build_libksba()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5838,7 +5969,11 @@ function build_npth()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -5957,7 +6092,11 @@ function build_nettle()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -6109,7 +6248,11 @@ function build_libusb()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -6371,7 +6514,11 @@ function build_vde()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -6497,7 +6644,11 @@ function build_libpcap()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -6619,6 +6770,7 @@ function build_libssh()
 
           config_options=()
 
+          # TODO: add separate BINS/LIBS.
           config_options+=("-DCMAKE_INSTALL_PREFIX=${LIBS_INSTALL_FOLDER_PATH}")
 
           config_options+=("-DBUILD_STATIC_LIB=ON")
@@ -6762,7 +6914,11 @@ function build_sdl2()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -6912,7 +7068,11 @@ function build_sdl2_image()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -7053,7 +7213,11 @@ function build_pcre2()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
@@ -7185,7 +7349,11 @@ function build_termcap()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
