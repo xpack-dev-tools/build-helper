@@ -3320,7 +3320,28 @@ function build_bzip2()
 
           run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
 
-          # TODO: add support for creating macOS dylib.
+          run_verbose make clean
+
+          # Build the shared library.
+          cp "${helper_folder_path}/extras/Makefile-libbz2_dylib" .
+          run_verbose make all -f Makefile-libbz2_dylib -j ${JOBS} \
+            PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
+            CC=${CC} \
+            AR=${AR} \
+            RANLIB=${RANLIB} \
+            LDFLAGS=${LDFLAGS} \
+
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+          install -v -c -m 644 "libbz2.${bzip2_version}.dylib" "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+
+          (
+            cd "${LIBS_INSTALL_FOLDER_PATH}/lib/"
+
+            rm -rfv libbz2.dylib libbz2.1.dylib libbz2.1.0.dylib
+            ln -sv "libbz2.${bzip2_version}.dylib" libbz2.1.0.dylib
+            ln -sv "libbz2.${bzip2_version}.dylib" libbz2.1.dylib
+            ln -sv "libbz2.${bzip2_version}.dylib" libbz2.dylib
+          )
 
         elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
