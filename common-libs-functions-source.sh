@@ -2987,7 +2987,7 @@ function build_sqlite()
 
       xbb_activate_installed_dev
 
-      CPPFLAGS="${XBB_CPPFLAGS}"
+      CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}/include/readline"
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
