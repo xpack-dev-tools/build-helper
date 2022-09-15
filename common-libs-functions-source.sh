@@ -365,6 +365,17 @@ function build_gmp()
           run_verbose make install
         fi
 
+        if [ "${LIBS_INSTALL_FOLDER_PATH}" != "${BINS_INSTALL_FOLDER_PATH}" ]
+        then
+          if [ -f "${BINS_INSTALL_FOLDER_PATH}/include/gmp.h" ]
+          then
+            # For unknow reasons, this file is stored in the wrong location.
+            mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/include"
+            mv -fv "${BINS_INSTALL_FOLDER_PATH}/include/gmp.h" \
+              "${LIBS_INSTALL_FOLDER_PATH}/include"
+          fi
+        fi
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gmp_folder_name}/make-output-$(ndate).txt"
 
       if [ -z "${name_suffix}" ]
