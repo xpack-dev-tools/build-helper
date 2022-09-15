@@ -3145,7 +3145,7 @@ function build_readline()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--without-curses")
+          config_options+=("--with-curses")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${readline_src_folder_name}/configure" \
             "${config_options[@]}"
