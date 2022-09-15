@@ -2839,6 +2839,16 @@ function build_openssl()
 
         run_verbose make install_sw
 
+        # Copy openssl to APP_INSTALL
+        if [ "${LIBS_INSTALL_FOLDER_PATH}" != "${BINS_INSTALL_FOLDER_PATH}" ]
+        then
+          mkdir -pv "${BINS_INSTALL_FOLDER_PATH}/bin"
+          cp -v "${LIBS_INSTALL_FOLDER_PATH}/bin/openssl" \
+            "${BINS_INSTALL_FOLDER_PATH}/bin"
+          cp -v "${LIBS_INSTALL_FOLDER_PATH}/bin/c_rehash" \
+            "${BINS_INSTALL_FOLDER_PATH}/bin"
+        fi
+
         mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/openssl"
 
         if [ -f "${XBB_FOLDER_PATH}/openssl/cert.pem" ]
