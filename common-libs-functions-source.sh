@@ -1379,6 +1379,8 @@ function build_ncurses()
             config_options+=("--enable-widec")
           fi
 
+          config_options+=("--program-prefix=")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${ncurses_src_folder_name}/configure" \
             "${config_options[@]}"
 
