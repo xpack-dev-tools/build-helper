@@ -3795,13 +3795,6 @@ function build_python3()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
 
-      # To pick the new libraries
-      xbb_activate_installed_dev
-
-      CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
-      CFLAGS="${XBB_CFLAGS_NO_W}"
-      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
-
       if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # HACK! GCC chokes on dynamic sizes:
@@ -3810,6 +3803,13 @@ function build_python3()
         # -DkAuthorizationExternalFormLength=32 not working
         prepare_clang_env ""
       fi
+
+      # To pick the new libraries
+      xbb_activate_installed_dev
+
+      CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}/include/ncurses"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
@@ -4447,6 +4447,12 @@ function build_pixman()
       # Windows libtool chaks for it.
       mkdir -pv test/lib
 
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
+      then
+        # TODO: check again on Apple Silicon.
+        prepare_clang_env ""
+      fi
+
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -4463,12 +4469,6 @@ function build_pixman()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
-      then
-        # TODO: check again on Apple Silicon.
-        prepare_clang_env ""
-      fi
 
       if [ ! -f "config.status" ]
       then
@@ -4603,6 +4603,13 @@ function build_glib2()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"/gio/lib
       cd "${LIBS_BUILD_FOLDER_PATH}/${glib_folder_name}"
 
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
+      then
+        # GCC fails with
+        # error: unknown type name ‘dispatch_block_t
+        prepare_clang_env ""
+      fi
+
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -4625,13 +4632,6 @@ function build_glib2()
       export CXXFLAGS
       export LDFLAGS
       export LIBS
-
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
-      then
-        # GCC fails with
-        # error: unknown type name ‘dispatch_block_t
-        prepare_clang_env ""
-      fi
 
       if [ ${glib_major_version} -eq 2 -a ${glib_minor_version} -le 56 ]
       then
@@ -5736,6 +5736,13 @@ function build_npth()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${npth_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${npth_folder_name}"
 
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
+      then
+        # /usr/include/os/base.h:113:20: error: missing binary operator before token "("
+        # #if __has_extension(attribute_overloadable)
+        prepare_clang_env ""
+      fi
+
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -5752,13 +5759,6 @@ function build_npth()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
-      then
-        # /usr/include/os/base.h:113:20: error: missing binary operator before token "("
-        # #if __has_extension(attribute_overloadable)
-        prepare_clang_env ""
-      fi
 
       if [ ! -f "config.status" ]
       then
@@ -6005,8 +6005,6 @@ function build_libusb()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libusb_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${libusb_folder_name}"
 
-      xbb_activate_installed_dev
-
       if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
         # /Users/ilg/Work/qemu-arm-6.2.0-1/darwin-x64/sources/libusb-1.0.24/libusb/os/darwin_usb.c: In function 'darwin_handle_transfer_completion':
@@ -6014,6 +6012,8 @@ function build_libusb()
         # 2151 |   const char *transfer_types[max_transfer_type + 1] = {"control", "isoc", "bulk", "interrupt", "bulk-stream"};
         prepare_clang_env ""
       fi
+
+      xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       CFLAGS="${XBB_CFLAGS_NO_W}"
@@ -6655,6 +6655,17 @@ function build_sdl2()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${sdl2_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${sdl2_folder_name}"
 
+      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
+      then
+        # GNU GCC fails with
+        #  CC     build/SDL_syspower.lo
+        # In file included from //System/Library/Frameworks/CoreFoundation.framework/Headers/CFPropertyList.h:13,
+        #                 from //System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:55,
+        #                 from /Users/ilg/Work/qemu-riscv-2.8.0-9/sources/SDL2-2.0.9/src/power/macosx/SDL_syspower.c:26:
+        # //System/Library/Frameworks/CoreFoundation.framework/Headers/CFStream.h:249:59: error: unknown type name ‘dispatch_queue_t’
+        prepare_clang_env ""
+      fi
+
       xbb_activate_installed_dev
 
       CPPFLAGS="${XBB_CPPFLAGS}"
@@ -6671,17 +6682,6 @@ function build_sdl2()
       export CFLAGS
       export CXXFLAGS
       export LDFLAGS
-
-      if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
-      then
-        # GNU GCC fails with
-        #  CC     build/SDL_syspower.lo
-        # In file included from //System/Library/Frameworks/CoreFoundation.framework/Headers/CFPropertyList.h:13,
-        #                 from //System/Library/Frameworks/CoreFoundation.framework/Headers/CoreFoundation.h:55,
-        #                 from /Users/ilg/Work/qemu-riscv-2.8.0-9/sources/SDL2-2.0.9/src/power/macosx/SDL_syspower.c:26:
-        # //System/Library/Frameworks/CoreFoundation.framework/Headers/CFStream.h:249:59: error: unknown type name ‘dispatch_queue_t’
-        prepare_clang_env ""
-      fi
 
       if [ ! -f "config.status" ]
       then
