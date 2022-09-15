@@ -3309,7 +3309,14 @@ function build_bzip2()
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
 
-          run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+          run_verbose make install PREFIX="${LIBS_INSTALL_FOLDER_PATH}"
+
+          if [ "${LIBS_INSTALL_FOLDER_PATH}" != "${BINS_INSTALL_FOLDER_PATH}" ]
+          then
+            run_verbose make install PREFIX="${BINS_INSTALL_FOLDER_PATH}"
+            rm -rfv "${BINS_INSTALL_FOLDER_PATH}/lib/libbz2.a"
+            rm -rfv "${BINS_INSTALL_FOLDER_PATH}/include/bzlib.h"
+          fi
 
           run_verbose make clean
 
@@ -3343,7 +3350,14 @@ function build_bzip2()
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
 
-          run_verbose make install PREFIX=${LIBS_INSTALL_FOLDER_PATH}
+          run_verbose make install PREFIX="${LIBS_INSTALL_FOLDER_PATH}"
+
+          if [ "${LIBS_INSTALL_FOLDER_PATH}" != "${BINS_INSTALL_FOLDER_PATH}" ]
+          then
+            run_verbose make install PREFIX="${BINS_INSTALL_FOLDER_PATH}"
+            rm -rfv "${BINS_INSTALL_FOLDER_PATH}/lib/libbz2.a"
+            rm -rfv "${BINS_INSTALL_FOLDER_PATH}/include/bzlib.h"
+          fi
 
           run_verbose make clean
 
