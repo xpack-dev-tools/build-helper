@@ -6329,7 +6329,7 @@ function build_libusb_w32()
 
   local libusb_w32_patch="libusb-win32-${libusb_w32_version}-mingw-w64.patch"
 
-  local libusb_w32_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-{libusb_w32_folder_name}-installed"
+  local libusb_w32_stamp_file_path="${INSTALL_FOLDER_PATH}/stamp-${libusb_w32_folder_name}-installed"
   if [ ! -f "${libusb_w32_stamp_file_path}" ]
   then
 
