@@ -111,7 +111,7 @@ function xbb_activate_installed_bin()
   echo "xbb_activate_installed_bin"
 
   # Add the XBB bin to the PATH.
-  PATH="${APP_PREFIX}/bin:${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
+  PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
 
   export PATH
 }
