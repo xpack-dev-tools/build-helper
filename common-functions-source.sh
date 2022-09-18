@@ -4148,14 +4148,14 @@ function ndate()
 
 function tests_initialize()
 {
-  export TEST_FUNCTION_NAMES_FILE_PATH="${INSTALL_FOLDER_PATH}/test-function-names"
-  rm -rf "${TEST_FUNCTION_NAMES_FILE_PATH}"
-  touch "${TEST_FUNCTION_NAMES_FILE_PATH}"
+  export TEST_FUNCTION_CALLS_FILE_PATH="${INSTALL_FOLDER_PATH}/test-commands"
+  rm -rf "${TEST_FUNCTION_CALLS_FILE_PATH}"
+  touch "${TEST_FUNCTION_CALLS_FILE_PATH}"
 }
 
 function tests_add()
 {
-  echo "$1" >> "${TEST_FUNCTION_NAMES_FILE_PATH}"
+  echo "$@" >> "${TEST_FUNCTION_CALLS_FILE_PATH}"
 }
 
 function tests_run()
@@ -4164,14 +4164,16 @@ function tests_run()
     echo
     echo "Runnng final tests..."
 
-    for test_function in $(cat ${TEST_FUNCTION_NAMES_FILE_PATH})
+    for line in $(cat ${TEST_FUNCTION_CALLS_FILE_PATH})
     do
-      if [ "${test_function}" != "" ]
+      if [ "${line}" != "" ]
       then
-        echo
-        local func=$(echo ${test_function} | sed -e 's|-|_|g')
-        echo "Running ${func}..."
-        ${func}
+        # local func=$(echo ${line} | sed -e s'| .*||' | sed -e 's|-|_|g')
+
+        IFS=' '
+        read -a cmd_array <<< "${line}"
+        echo "Running ${cmd_array[@]}..."
+        "${cmd_array[@]}"
       fi
     done
   ) 2>&1 | tee "${LOGS_FOLDER_PATH}/tests-output-$(date -u +%Y%m%d-%H%M).txt"
