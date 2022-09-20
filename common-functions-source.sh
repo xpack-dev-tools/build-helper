@@ -1328,6 +1328,32 @@ function show_native_libs()
   )
 }
 
+function show_dlls()
+{
+  # Does not include the .exe extension.
+  local objdump_path="$1"
+  local exe_path="$2"
+
+  (
+    xbb_activate
+
+    if [ -f "${exe_path}" ]
+    then
+      run_verbose ls -l "${exe_path}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        run_verbose file "${exe_path}"
+      fi
+      echo
+      echo "[${objdump_path} -x ${exe_path}]"
+      "${objdump_path}" -x "${exe_path}" | grep -i 'DLL Name' || true
+    else
+      echo
+      file "${exe_path}"
+    fi
+  )
+}
+
 # -----------------------------------------------------------------------------
 
 function check_patch()
