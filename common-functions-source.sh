@@ -1225,6 +1225,10 @@ function show_libs()
     if [ "${TARGET_PLATFORM}" == "linux" ]
     then
       run_verbose ls -l "${app_path}"
+      if [ "${IS_DEVELOP}" == "y" ]
+      then
+        run_verbose file "${app_path}"
+      fi
       echo
       echo "[readelf -d ${app_path} | egrep ...]"
       # Ignore errors in case it is not using shared libraries.
@@ -1258,6 +1262,10 @@ function show_libs()
       if is_elf "${app_path}"
       then
         run_verbose ls -l "${app_path}"
+        if [ "${IS_DEVELOP}" == "y" ]
+        then
+          run_verbose file "${app_path}"
+        fi
         echo
         echo "[readelf -d ${app_path} | egrep ...]"
         # Ignore errors in case it is not using shared libraries.
@@ -1271,18 +1279,25 @@ function show_libs()
         if [ -f "${app_path}" ]
         then
           run_verbose ls -l "${app_path}"
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose file "${app_path}"
+          fi
           echo
           echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}]"
           ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path} | grep -i 'DLL Name' || true
         elif [ -f "${app_path}.exe" ]
         then
           run_verbose ls -l "${app_path}.exe"
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            run_verbose file "${app_path}.exe"
+          fi
           echo
           echo "[${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe]"
           ${CROSS_COMPILE_PREFIX}-objdump -x ${app_path}.exe | grep -i 'DLL Name' || true
         else
-          echo
-          echo "${app_path} "
+          run_verbose file "${app_path}"
         fi
       fi
     else
