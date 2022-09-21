@@ -1,5 +1,7 @@
 # Patches
 
+Note: prefer `.git.patch`.
+
 ## gdb-X.Y.patch.diff
 
 Patches `gdb/python/python-config.py` to return `CONFIG_PYTHON_PREFIX`
