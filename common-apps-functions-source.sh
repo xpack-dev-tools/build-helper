@@ -1168,7 +1168,7 @@ function build_mingw_widl()
           if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
             config_options+=("--build=${BUILD}")
-            config_options+=("--host=${BUILD}") # Native!
+            config_options+=("--host=${Host}") # Native!
             config_options+=("--target=${TARGET}")
 
           else
