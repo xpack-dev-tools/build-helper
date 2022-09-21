@@ -177,12 +177,18 @@ function build_zlib()
 function test_zlib()
 {
   (
-    xbb_activate
+    # xbb_activate
 
-    echo
-    echo "Checking the zlib shared libraries..."
+    if [ "${TARGET_PLATFORM}" == "win32" ]
+    then
+      echo
+      echo "No checking for the zlib shared libraries..."
+    else
+      echo
+      echo "Checking the zlib shared libraries..."
 
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libz.${SHLIB_EXT}"
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libz.${SHLIB_EXT}"
+    fi
   )
 }
 
@@ -575,7 +581,7 @@ function build_mpc()
 
   # https://github.com/archlinux/svntogit-packages/blob/packages/mpc/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/mpc/files/PKGBUILD
- 
+
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpc.rb
 
   # 20 Feb 2015 "1.0.3"
