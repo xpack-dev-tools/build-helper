@@ -776,7 +776,9 @@ function build_mingw_crt()
         echo "Running mingw-w64-crt${MINGW_NAME_SUFFIX} make..."
 
         # Build.
-        run_verbose make -j ${JOBS}
+        # On Linux it fails with weird messages.
+        # run_verbose make -j ${JOBS}
+        run_verbose make -j1
 
         run_verbose make install-strip
 
@@ -1168,7 +1170,7 @@ function build_mingw_widl()
           if [ -n "${MINGW_NAME_SUFFIX}" ]
           then
             config_options+=("--build=${BUILD}")
-            config_options+=("--host=${Host}") # Native!
+            config_options+=("--host=${HOST}") # Native!
             config_options+=("--target=${TARGET}")
 
           else
