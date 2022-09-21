@@ -301,11 +301,11 @@ function build_gmp()
 
           config_options=()
 
-          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
-          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
-          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -503,11 +503,11 @@ function build_mpfr()
 
           config_options=()
 
-          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
-          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
-          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -668,11 +668,11 @@ function build_mpc()
 
           config_options=()
 
-          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
-          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
-          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
@@ -837,11 +837,11 @@ function build_isl()
 
           config_options=()
 
-          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
-          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
-          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
           if [ -n "${name_suffix}" ]
           then
