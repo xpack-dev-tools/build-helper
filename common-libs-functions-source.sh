@@ -18,10 +18,10 @@ function build_zlib()
   # http://zlib.net
   # http://zlib.net/fossils/
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/zlib/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/zlib/files/PKGBUILD
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=zlib-static
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=zlib-git
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-zlib
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/zlib.rb
 
   # 2013-04-28 "1.2.8"
   # 2017-01-15 "1.2.11"
@@ -193,8 +193,8 @@ function build_gmp()
   # https://gmplib.org
   # https://gmplib.org/download/gmp/
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/gmp/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/gmp/files/PKGBUILD
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=gmp-hg
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmp.rb
 
@@ -412,8 +412,10 @@ function build_mpfr()
   # http://www.mpfr.org
   # http://www.mpfr.org/history.html
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/mpfr/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/mpfr/files/PKGBUILD
-  # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/mpfr
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpfr.rb
 
   # 6 March 2016 "3.1.4"
   # 7 September 2017 "3.1.6"
@@ -570,8 +572,10 @@ function build_mpc()
   # http://www.multiprecision.org/
   # ftp://ftp.gnu.org/gnu/mpc
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/mpc/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/mpc/files/PKGBUILD
-  # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/libmpc
+ 
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpc.rb
 
   # 20 Feb 2015 "1.0.3"
   # 2018-01-11 "1.1.0"
@@ -732,7 +736,9 @@ function build_isl()
   # http://isl.gforge.inria.fr - deprecated
   # https://sourceforge.net/projects/libisl/files/
 
-  # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=isl
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libisl/trunk/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/isl.rb
 
   # 2015-06-12 "0.15"
   # 2016-01-15 "0.16.1"
@@ -741,6 +747,7 @@ function build_isl()
   # 2020-01-16 "0.22"
   # 2020-11-11 "0.23"
   # 2021-05-01 "0.24"
+  # 2022-07-02 "0.25"
 
   local isl_version="$1"
   local name_suffix=${2-''}
