@@ -214,8 +214,8 @@ start_timer
 
 detect_container
 
+SAVED_PATH="${PATH}"
 set_xbb_env
-
 set_compiler_env
 
 # -----------------------------------------------------------------------------
