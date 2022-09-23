@@ -830,10 +830,11 @@ function host_build_target()
 
   echo "DISTRIBUTION_FILE_DATE=\"${DISTRIBUTION_FILE_DATE}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
-  echo "TARGET_PLATFORM=\"${target_platform}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
-  echo "TARGET_ARCH=\"${target_arch}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
-  echo "TARGET_MACHINE=\"${target_machine}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
-  echo "TARGET_BITS=\"${target_bits}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "REQUESTED_TARGET_PLATFORM=\"${target_platform}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "REQUESTED_TARGET_ARCH=\"${target_arch}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "REQUESTED_TARGET_MACHINE=\"${target_machine}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+  echo "REQUESTED_TARGET_BITS=\"${target_bits}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
+
 
   echo "HOST_UNAME=\"${HOST_UNAME}\"" >>"${HOST_DEFINES_SCRIPT_PATH}"
 
