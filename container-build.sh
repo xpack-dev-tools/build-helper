@@ -200,7 +200,7 @@ then
   WITH_STRIP="n"
 fi
 
-if [ "${TARGET_PLATFORM}" == "win32" ]
+if [ "${REQUESTED_TARGET_PLATFORM}" == "win32" ]
 then
   export WITH_TESTS="n"
 fi
