@@ -119,48 +119,50 @@ function xbb_activate_installed_bin()
 # Add the freshly built headers and libraries.
 function xbb_activate_installed_dev()
 {
-  echo "xbb_activate_installed_dev"
+  local name_suffix=${1-''}
+
+  echo "xbb_activate_installed_dev${name_suffix}"
 
   # Add XBB include in front of XBB_CPPFLAGS.
-  XBB_CPPFLAGS="-I${LIBS_INSTALL_FOLDER_PATH}/include ${XBB_CPPFLAGS}"
+  XBB_CPPFLAGS="-I${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include ${XBB_CPPFLAGS}"
 
-  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib" ]
+  if [ -d "${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib" ]
   then
     # Add XBB lib in front of XBB_LDFLAGS.
-    XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS}"
-    XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_LIB}"
-    XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP}"
-    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
+    XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib ${XBB_LDFLAGS}"
+    XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib ${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
     # Add XBB lib in front of PKG_CONFIG_PATH.
-    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig:${PKG_CONFIG_PATH}"
+    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib/pkgconfig:${PKG_CONFIG_PATH}"
 
     # Needed by internal binaries, like the bootstrap compiler, which do not
     # have a rpath.
     if [ -z "${LD_LIBRARY_PATH}" ]
     then
-      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib"
     else
-      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib:${LD_LIBRARY_PATH}"
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib:${LD_LIBRARY_PATH}"
     fi
   fi
 
   # Used by libffi, for example.
-  if [ -d "${LIBS_INSTALL_FOLDER_PATH}/lib64" ]
+  if [ -d "${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64" ]
   then
     # For 64-bit systems, add XBB lib64 in front of paths.
-    XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
-    XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_LIB}"
-    XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP}"
-    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
+    XBB_LDFLAGS="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64 ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_LIB="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64 ${XBB_LDFLAGS_LIB}"
+    XBB_LDFLAGS_APP="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64 ${XBB_LDFLAGS_APP}"
+    XBB_LDFLAGS_APP_STATIC_GCC="-L${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64 ${XBB_LDFLAGS_APP_STATIC_GCC}"
 
-    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
+    PKG_CONFIG_PATH="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64/pkgconfig:${PKG_CONFIG_PATH}"
 
     if [ -z "${LD_LIBRARY_PATH}" ]
     then
-      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64"
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64"
     else
-      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib64:${LD_LIBRARY_PATH}"
+      LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib64:${LD_LIBRARY_PATH}"
     fi
   fi
 
