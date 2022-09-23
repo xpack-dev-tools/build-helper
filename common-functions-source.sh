@@ -227,7 +227,7 @@ function set_xbb_env()
 {
   # Defaults, to ensure the variables are defined.
   PATH="${SAVED_PATH}"
-  LD_LIBRARY_PATH="${LD_LIBRARY_PATH:-""}"
+  LD_LIBRARY_PATH=""
 
   if [ -f "${HOME}/.local/xbb/xbb-source.sh" ]
   then
