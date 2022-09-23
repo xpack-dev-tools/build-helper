@@ -225,6 +225,16 @@ function do_config_guess()
 
 function set_xbb_env()
 {
+  local is_native=${1:-''}
+
+  if [ ! -z "${is_native}" -a "${is_native}" != "native" ]
+  then
+    echo "set_xbb_env() accepts only 'native' as argument"
+    exit 1
+  fi
+
+  echo "set_xbb_env" "${is_native}"
+
   # Defaults, to ensure the variables are defined.
   PATH="${SAVED_PATH}"
   LD_LIBRARY_PATH=""
@@ -258,6 +268,11 @@ function set_xbb_env()
     XBB_FOLDER_PATH=""
   fi
 
+  TARGET_PLATFORM="${REQUESTED_TARGET_PLATFORM}"
+  TARGET_ARCH="${REQUESTED_TARGET_ARCH}"
+  TARGET_MACHINE="${REQUESTED_TARGET_MACHINE}"
+  TARGET_BITS="${REQUESTED_TARGET_BITS}"
+
   HOST_MACHINE="$(uname -m)"
 
   TARGET_FOLDER_NAME="${TARGET_PLATFORM}-${TARGET_ARCH}"
@@ -266,40 +281,47 @@ function set_xbb_env()
 
   # Compute the BUILD/HOST/TARGET for configure.
   CROSS_COMPILE_PREFIX=""
-  if [ "${TARGET_PLATFORM}" == "win32" ]
+  if [ "${REQUESTED_TARGET_PLATFORM}" == "win32" ]
   then
 
-    # Disable test when cross compiling for Windows.
-    WITH_TESTS="n"
+    if [ "${is_native}" == "native" ]
+    then
+      # For windows cross builds that require a native bootstrap,
+      # start with the host environemnt, and later call `set_xbb_env`
+      TARGET_PLATFORM="${HOST_PLATFORM}"
+      TARGET_ARCH="${HOST_ARCH}"
+      TARGET_MACHINE="${HOST_MACHINE}"
+      TARGET_BITS="${HOST_BITS}"
 
-    # For Windows targets, decide which cross toolchain to use.
-    if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
-    then
-      CROSS_COMPILE_PREFIX="i686-w64-mingw32"
-    elif [ "${TARGET_ARCH}" == "x64" ]
-    then
-      CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
+      do_config_guess
+
+      HOST="${BUILD}"
+      TARGET="${HOST}"
     else
-      echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
-      exit 1
+      # Disable test when cross compiling for Windows.
+      WITH_TESTS="n"
+
+      # For Windows targets, decide which cross toolchain to use.
+      if [ "${TARGET_ARCH}" == "x32" -o "${TARGET_ARCH}" == "ia32" ]
+      then
+        CROSS_COMPILE_PREFIX="i686-w64-mingw32"
+      elif [ "${TARGET_ARCH}" == "x64" ]
+      then
+        CROSS_COMPILE_PREFIX="x86_64-w64-mingw32"
+      else
+        echo "Oops! Unsupported TARGET_ARCH=${TARGET_ARCH}."
+        exit 1
+      fi
+
+      do_config_guess
+
+      DOT_EXE=".exe"
+
+      HOST="${CROSS_COMPILE_PREFIX}"
+      TARGET="${HOST}"
     fi
 
-    do_config_guess
-
-    DOT_EXE=".exe"
-
-    HOST="${CROSS_COMPILE_PREFIX}"
-    TARGET="${HOST}"
-
-  elif [ "${TARGET_PLATFORM}" == "darwin" ]
-  then
-
-    do_config_guess
-
-    HOST="${BUILD}"
-    TARGET="${HOST}"
-
-  elif [ "${TARGET_PLATFORM}" == "linux" ]
+  elif [ "${REQUESTED_TARGET_PLATFORM}" == "darwin" -o "${TARGET_PLATFORM}" == "linux" ]
   then
 
     do_config_guess
