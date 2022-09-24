@@ -28,6 +28,7 @@ function build_zlib()
   # 2022-03-27, "1.2.12"
 
   local zlib_version="$1"
+  local name_suffix=${2-''}
 
   # The folder name as resulted after being extracted from the archive.
   local zlib_src_folder_name="zlib-${zlib_version}"
@@ -36,7 +37,7 @@ function build_zlib()
   local zlib_url="http://zlib.net/fossils/${zlib_archive}"
 
   # The folder name for build, licenses, etc.
-  local zlib_folder_name="${zlib_src_folder_name}"
+  local zlib_folder_name="${zlib_src_folder_name}${name_suffix}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${zlib_folder_name}"
 
@@ -45,7 +46,7 @@ function build_zlib()
   then
 
     echo
-    echo "zlib in-source building"
+    echo "zlib${name_suffix} in-source building"
 
     if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" ]
     then
@@ -74,16 +75,16 @@ function build_zlib()
           fi
 
           echo
-          echo "Running zlib make..."
+          echo "Running zlib${name_suffix} make..."
 
           # Build.
           run_verbose make -f win32/Makefile.gcc \
             PREFIX=${CROSS_COMPILE_PREFIX}- \
-            prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+            prefix="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}" \
             CFLAGS="${XBB_CFLAGS_NO_W} -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4"
 
           run_verbose make -f win32/Makefile.gcc install \
-            DESTDIR="${LIBS_INSTALL_FOLDER_PATH}/" \
+            DESTDIR="${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/" \
             INCLUDE_PATH="include" \
             LIBRARY_PATH="lib" \
             BINARY_PATH="bin"
@@ -128,10 +129,10 @@ function build_zlib()
 
             config_options=()
 
-            config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-            config_options+=("--sharedlibdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-            config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+            config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}${name_suffix}")
+            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+            config_options+=("--sharedlibdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+            config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include")
 
             run_verbose bash ${DEBUG} "configure" \
               "${config_options[@]}"
@@ -142,7 +143,7 @@ function build_zlib()
 
         (
           echo
-          echo "Running zlib make..."
+          echo "Running zlib${name_suffix} make..."
 
           # Build.
           run_verbose make -j ${JOBS}
@@ -157,37 +158,41 @@ function build_zlib()
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/make-output-$(ndate).txt"
       fi
 
-      copy_license \
-        "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" \
-        "${zlib_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" \
+          "${zlib_folder_name}"
+      fi
 
     )
 
     (
-      test_zlib
+      test_zlib "${name_suffix}"
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/test-output-$(ndate).txt"
 
     touch "${zlib_stamp_file_path}"
 
   else
-    echo "Library zlib already installed."
+    echo "Library zlib${name_suffix} already installed."
   fi
 }
 
 function test_zlib()
 {
+  local name_suffix=${1-''}
   (
     # xbb_activate
 
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       echo
-      echo "No checking for the zlib shared libraries..."
+      echo "No checking for the zlib${name_suffix} shared libraries..."
     else
       echo
-      echo "Checking the zlib shared libraries..."
+      echo "Checking the zlib${name_suffix} shared libraries..."
 
-      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libz.${SHLIB_EXT}"
+      show_libs "${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib/libz.${SHLIB_EXT}"
     fi
   )
 }
