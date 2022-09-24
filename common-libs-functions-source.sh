@@ -1092,13 +1092,14 @@ function build_libiconv()
   # 2022-05-15 "1.17"
 
   local libiconv_version="$1"
+  local name_suffix=${2-''}
 
   local libiconv_src_folder_name="libiconv-${libiconv_version}"
 
   local libiconv_archive="${libiconv_src_folder_name}.tar.gz"
   local libiconv_url="https://ftp.gnu.org/pub/gnu/libiconv/${libiconv_archive}"
 
-  local libiconv_folder_name="${libiconv_src_folder_name}"
+  local libiconv_folder_name="${libiconv_src_folder_name}${name_suffix}"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${libiconv_folder_name}"
 
@@ -1143,7 +1144,7 @@ function build_libiconv()
           fi
 
           echo
-          echo "Running libiconv configure..."
+          echo "Running libiconv${name_suffix} configure..."
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -1152,14 +1153,20 @@ function build_libiconv()
 
           config_options=()
 
-          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
-          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
-          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
-          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}${name_suffix}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
           config_options+=("--build=${BUILD}")
-          config_options+=("--host=${HOST}")
+          if [ "${name_suffix}" == "-bootstrap" ]
+          then
+            # The bootstrap binaries will run on the build machine.
+            config_options+=("--host=${BUILD}")
+          else
+            config_options+=("--host=${HOST}")
+          fi
           config_options+=("--target=${TARGET}")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
@@ -1171,7 +1178,7 @@ function build_libiconv()
 
       (
         echo
-        echo "Running libiconv make..."
+        echo "Running libiconv${name_suffix} make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -1190,16 +1197,19 @@ function build_libiconv()
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libiconv_folder_name}/make-output-$(ndate).txt"
 
-      copy_license \
-        "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}" \
-        "${libiconv_folder_name}"
+      if [ -z "${name_suffix}" ]
+      then
+        copy_license \
+          "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}" \
+          "${libiconv_folder_name}"
+      fi
 
     )
 
     touch "${libiconv_stamp_file_path}"
 
   else
-    echo "Library libiconv already installed."
+    echo "Library libiconv${name_suffix} already installed."
   fi
 }
 
