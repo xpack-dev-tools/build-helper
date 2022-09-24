@@ -3000,6 +3000,23 @@ function compute_origin_relative_to_libexec()
   echo "\$ORIGIN/${relative_folder_path}"
 }
 
+# Compute the $ORIGIN from the given folder path to the reference.
+function compute_origin_relative_to_path()
+{
+  if [ $# -lt 2 ]
+  then
+    echo "compute_origin_relative_to_path requires 2 args."
+    exit 1
+  fi
+
+  local reference_folder_path="$1"
+  local folder_path="$2"
+
+  local relative_folder_path="$(realpath --relative-to="${folder_path}" "${reference_folder_path}")"
+
+  echo "\$ORIGIN/${relative_folder_path}"
+}
+
 # -----------------------------------------------------------------------------
 
 # Process all elf files in a folder (executables and shared libraries).
@@ -3062,6 +3079,18 @@ function prepare_app_folder_libraries()
             "$(dirname "${bin_path}")"
 
           # echo $(basename "${bin_path}") $(readelf -d "${bin_path}" | egrep '(RUNPATH|RPATH)')
+        fi
+      done
+
+      # rpaths are not cleaned on the spot, to allow hard links to be
+      # processed later, and add new $ORIGINs for the new locations.
+      for bin_path in ${binaries}
+      do
+        if is_elf_dynamic "${bin_path}"
+        then
+          echo
+          echo "## Cleaning ${bin_path} rpath..."
+          clean_rpaths "${bin_path}"
         fi
       done
 
@@ -3271,11 +3300,22 @@ function copy_dependencies_recursive()
             then
               echo_develop "${lib_name} found in ${rpath}"
               # Library present in the absolute path
-              copy_dependencies_recursive \
-                "${rpath}/${lib_name}" \
-                "${APP_PREFIX}/libexec"
 
-              must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
+              # If outside APP_PREFIX, copy it to libexec,
+              # otherwise leave it in place and add a new $ORIGIN.
+              local rpath_relative_to_app_prefix="$(realpath --relative-to="${APP_PREFIX}" "${rpath}")"
+              echo_develop "relative to APP_PREFIX ${rpath_relative_to_app_prefix}"
+              # If the relative path starts with `..`, it is outside.
+              if [ "${rpath_relative_to_app_prefix:0:2}" == ".." ]
+              then
+                copy_dependencies_recursive \
+                  "${rpath}/${lib_name}" \
+                  "${APP_PREFIX}/libexec"
+
+                must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
+              else
+                must_add_origin="$(compute_origin_relative_to_path ${rpath} "${actual_destination_folder_path}")"
+              fi
               was_processed="y"
               break
             fi
@@ -3327,8 +3367,6 @@ function copy_dependencies_recursive()
             "${must_add_origin}"
         fi
       done
-
-      clean_rpaths "${actual_destination_file_path}"
 
       echo
       echo "Processed ${actual_destination_file_path}:"
