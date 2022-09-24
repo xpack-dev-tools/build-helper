@@ -241,7 +241,7 @@ function build_gmp()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${gmp_folder_name}"
 
-      if [ -n "${name_suffix}" ]
+      if [ "${name_suffix}" == "-bootstrap" ]
       then
 
         CPPFLAGS="${XBB_CPPFLAGS}"
@@ -312,7 +312,7 @@ function build_gmp()
           # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
           config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
-          if [ -n "${name_suffix}" ]
+          if [ "${name_suffix}" == "-bootstrap" ]
           then
 
             config_options+=("--build=${BUILD}")
@@ -460,7 +460,7 @@ function build_mpfr()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpfr_folder_name}"
 
-      if [ -n "${name_suffix}" ]
+      if [ "${name_suffix}" == "-bootstrap" ]
       then
 
         CPPFLAGS="${XBB_CPPFLAGS}"
@@ -514,7 +514,7 @@ function build_mpfr()
           # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
           config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
-          if [ -n "${name_suffix}" ]
+          if [ "${name_suffix}" == "-bootstrap" ]
           then
 
             config_options+=("--build=${BUILD}")
@@ -625,7 +625,7 @@ function build_mpc()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${mpc_folder_name}"
 
-      if [ -n "${name_suffix}" ]
+      if [ "${name_suffix}" == "-bootstrap" ]
       then
 
         CPPFLAGS="${XBB_CPPFLAGS}"
@@ -679,7 +679,7 @@ function build_mpc()
           # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
           config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
-          if [ -n "${name_suffix}" ]
+          if [ "${name_suffix}" == "-bootstrap" ]
           then
 
             config_options+=("--build=${BUILD}")
@@ -793,7 +793,7 @@ function build_isl()
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
       cd "${LIBS_BUILD_FOLDER_PATH}/${isl_folder_name}"
 
-      if [ -n "${name_suffix}" ]
+      if [ "${name_suffix}" == "-bootstrap" ]
       then
 
         # Otherwise `configure: error: gmp.h header not found`.`
@@ -848,7 +848,7 @@ function build_isl()
           # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share")
           config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/share/man")
 
-          if [ -n "${name_suffix}" ]
+          if [ "${name_suffix}" == "-bootstrap" ]
           then
 
             config_options+=("--build=${BUILD}")

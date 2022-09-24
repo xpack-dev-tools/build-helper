@@ -1515,7 +1515,7 @@ function build_native_binutils()
       mkdir -p "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
       cd "${BUILD_FOLDER_PATH}/${binutils_folder_name}"
 
-      if [ -n "${name_suffix}" ]
+      if [ "${name_suffix}" == "-bootstrap" ]
       then
 
         CPPFLAGS="${XBB_CPPFLAGS} -I${LIBS_INSTALL_FOLDER_PATH}${name_suffix}/include"
@@ -1579,7 +1579,7 @@ function build_native_binutils()
           # ? --without-python --without-curses, --with-expat
           config_options=()
 
-          if [ -n "${name_suffix}" ]
+          if [ "${name_suffix}" == "-bootstrap" ]
           then
 
             config_options+=("--prefix=${APP_PREFIX}${name_suffix}")
@@ -1715,7 +1715,7 @@ function build_native_binutils()
         # make install-strip
         run_verbose make install
 
-        if [ -n "${name_suffix}" ]
+        if [ "${name_suffix}" == "-bootstrap" ]
         then
 
           show_native_libs "${APP_PREFIX}${name_suffix}/bin/${CROSS_COMPILE_PREFIX}-ar"
@@ -1781,7 +1781,7 @@ function build_native_binutils()
     echo "Component binutils${name_suffix} already installed."
   fi
 
-  if [ -n "${name_suffix}" ]
+  if [ "${name_suffix}" == "-bootstrap" ]
   then
     :
   else
