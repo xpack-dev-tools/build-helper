@@ -495,6 +495,19 @@ function install_archive()
   ls -lL "${app_folder_path}"
 
   export APP_PREFIX="${app_folder_path}"
+
+  if [ -d "xpacks/.bin" ]
+  then
+    TEST_BIN_PATH="$(pwd)/xpacks/.bin"
+  elif [ -d "${APP_PREFIX}${name_suffix}/bin" ]
+  then
+    TEST_BIN_PATH="${app_folder_path}/bin"
+  else
+    echo "Wrong folder."
+    exit 1
+  fi
+
+  export TEST_BIN_PATH
 }
 
 # -----------------------------------------------------------------------------
