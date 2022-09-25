@@ -230,7 +230,7 @@ build_versions
 
 # -----------------------------------------------------------------------------
 
-if [ ! "${TEST_ONLY}" == "y" ]
+if [ "${TEST_ONLY}" != "y" ]
 then
   (
     if [ "${TARGET_PLATFORM}" == "win32" ]
@@ -267,8 +267,20 @@ tests_run
 
 # -----------------------------------------------------------------------------
 
-run_verbose ls -l "${APP_PREFIX}"
-run_verbose ls -l "${APP_PREFIX}/bin"
+if [ "${TEST_ONLY}" != "y" ]
+then
+
+  run_verbose ls -l "${APP_PREFIX}"
+  run_verbose ls -l "${APP_PREFIX}/bin"
+
+  (
+    cd "${APP_PREFIX}/bin"
+    echo
+    echo "package.json xpack.bin definitions:"
+    ls -1 | sed -e 's|\.exe$||' | sed -e '/\.dll$/d' | sort | sed -e 's|\(.*\)|      "\1": "./content/bin/\1",|'
+  )
+
+fi
 
 # -----------------------------------------------------------------------------
 
