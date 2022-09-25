@@ -151,6 +151,8 @@ else
   run_verbose xpm install ${NPM_PACKAGE}
 fi
 
+export TEST_BIN_PATH="$(pwd)/xpacks/.bin"
+
 # -----------------------------------------------------------------------------
 
 run_tests
