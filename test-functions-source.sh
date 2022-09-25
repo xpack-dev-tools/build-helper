@@ -499,7 +499,7 @@ function install_archive()
   if [ -d "xpacks/.bin" ]
   then
     TEST_BIN_PATH="$(pwd)/xpacks/.bin"
-  elif [ -d "${APP_PREFIX}${name_suffix}/bin" ]
+  elif [ -d "${APP_PREFIX}/bin" ]
   then
     TEST_BIN_PATH="${app_folder_path}/bin"
   else
