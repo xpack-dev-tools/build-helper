@@ -34,7 +34,7 @@ jobs:
           npm --version
 
       - name: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v1 # Stick to v1, macOS 10.13 has git 1.17
         with:
           fetch-depth: 3
           submodules: true
