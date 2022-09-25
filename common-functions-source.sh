@@ -3314,6 +3314,7 @@ function copy_dependencies_recursive()
 
                 must_add_origin="$(compute_origin_relative_to_libexec "${actual_destination_folder_path}")"
               else
+                echo_develop "no need to copy to libexec"
                 must_add_origin="$(compute_origin_relative_to_path ${rpath} "${actual_destination_folder_path}")"
               fi
               was_processed="y"
