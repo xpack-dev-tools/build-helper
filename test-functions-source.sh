@@ -413,7 +413,7 @@ function install_archive()
   archive_name="${DISTRO_LC_NAME}-${APP_LC_NAME}-${RELEASE_VERSION}-${node_platform}-${archive_architecture}.${archive_extension}"
   archive_folder_name="${DISTRO_LC_NAME}-${APP_LC_NAME}-${RELEASE_VERSION}"
 
-  mkdir -pv "${cache_folder_path}"
+  run_verbose mkdir -pv "${cache_folder_path}"
 
   if [ -f "${cache_folder_path}/${archive_name}" -a "${CI:-""}" != "true" ]
   then
@@ -422,29 +422,29 @@ function install_archive()
   else
     echo
     echo "Downloading ${archive_name}..."
-    curl --fail --location --output "${cache_folder_path}/${archive_name}" \
+    run_verbose curl --fail --location --output "${cache_folder_path}/${archive_name}" \
       "${BASE_URL}/${archive_name}"
     echo
   fi
 
   app_folder_path="${test_xpacks_folder_path}/${archive_folder_name}"
 
-  rm -rf "${app_folder_path}"
+  run_verbose rm -rf "${app_folder_path}"
 
-  mkdir -pv "${test_xpacks_folder_path}"
-  cd "${test_xpacks_folder_path}"
+  run_verbose mkdir -pv "${test_xpacks_folder_path}"
+  run_verbose cd "${test_xpacks_folder_path}"
 
   echo
   echo "Extracting ${archive_name}..."
   if [[ "${archive_name}" == *.zip ]]
   then
-    unzip -q "${cache_folder_path}/${archive_name}"
+    run_verbose unzip -q "${cache_folder_path}/${archive_name}"
   else
-    tar xf "${cache_folder_path}/${archive_name}"
+    run_verbose tar xf "${cache_folder_path}/${archive_name}"
   fi
 
-  echo ls -lL "${app_folder_path}"
-  ls -lL "${app_folder_path}"
+  run_verbose echo ls -lL "${app_folder_path}"
+  run_verbose ls -lL "${app_folder_path}"
 
   export APP_PREFIX="${app_folder_path}"
 
