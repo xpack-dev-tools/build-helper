@@ -277,7 +277,7 @@ then
     cd "${APP_PREFIX}/bin"
     echo
     echo "package.json xpack.bin definitions:"
-    ls -1 | sed -e 's|\.exe$||' | sed -e '/\.dll$/d' | sort | sed -e 's|\(.*\)|      "\1": "./content/bin/\1",|'
+    ls -1 | sed -e 's|\.exe$||' | sed -e '/\.dll$/d' | sort | sed -e 's|\(.*\)|      "\1": "./.content/bin/\1",|'
   )
 
 fi
