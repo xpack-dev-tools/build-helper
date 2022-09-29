@@ -3230,7 +3230,14 @@ function build_sqlite()
           # config_options+=("--disable-static") # Arch
 
           config_options+=("--enable-tcl=no")
-          config_options+=("--enable-editline=no")
+          config_options+=("--enable-dynamic-extensions") # HB
+          # config_options+=("--enable-readline") # HB
+          config_options+=("--enable-session") # HB
+
+          config_options+=("--enable-fts3") # Arch
+          config_options+=("--enable-fts4") # Arch
+          config_options+=("--enable-fts5") # Arch
+          config_options+=("--enable-rtree") # Arch
 
           # For readline, see CPPFLAGS.
 
