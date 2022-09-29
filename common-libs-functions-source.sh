@@ -3518,7 +3518,7 @@ function build_bzip2()
           # Build.
           run_verbose make all -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
-            CC=${CC} \
+            CC="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" \
             AR=${AR} \
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
@@ -3543,7 +3543,7 @@ function build_bzip2()
           # Build the shared library.
           run_verbose make all -f Makefile-libbz2_so -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
-            CC=${CC} \
+            CC="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" \
             AR=${AR} \
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
@@ -3565,7 +3565,7 @@ function build_bzip2()
           # Build.
           run_verbose make all -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
-            CC=${CC} \
+            CC="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" \
             AR=${AR} \
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
@@ -3591,7 +3591,7 @@ function build_bzip2()
           cp "${helper_folder_path}/extras/Makefile-libbz2_dylib" .
           run_verbose make all -f Makefile-libbz2_dylib -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
-            CC=${CC} \
+            CC="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" \
             AR=${AR} \
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
@@ -3613,7 +3613,7 @@ function build_bzip2()
 
           run_verbose make libbz2.a bzip2 bzip2recover -j ${JOBS} \
             PREFIX=${LIBS_INSTALL_FOLDER_PATH} \
-            CC=${CC} \
+            CC="${CC} ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}" \
             AR=${AR} \
             RANLIB=${RANLIB} \
             LDFLAGS=${LDFLAGS} \
