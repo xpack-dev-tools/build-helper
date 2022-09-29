@@ -2892,22 +2892,28 @@ function build_openssl()
               # be obvious to everyone, so explicitly state it for now to
               # help debug inevitable breakage.
 
+              config_options=()
+
+              config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+                  \
+              config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
+              config_options+=("shared")
+              config_options+=("enable-md2")
+              config_options+=("enable-rc5")
+              config_options+=("enable-tls")
+              config_options+=("enable-tls1_3")
+              config_options+=("enable-tls1_2")
+              config_options+=("enable-tls1_1")
+              config_options+=("no-ssl3")
+              config_options+=("no-ssl3-method")
+              config_options+=("zlib")
+              config_options+=("${CPPFLAGS}")
+              config_options+=("${CFLAGS}")
+              config_options+=("${LDFLAGS}")
+
               export KERNEL_BITS=64
               run_verbose "./config" \
-                --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-                \
-                --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
-                shared \
-                enable-md2 \
-                enable-rc5 \
-                enable-tls \
-                enable-tls1_3 \
-                enable-tls1_2 \
-                enable-tls1_1 \
-                no-ssl3 \
-                no-ssl3-method \
-                zlib \
-                "${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+                "${config_options[@]}"
 
             fi
 
@@ -2915,6 +2921,21 @@ function build_openssl()
           then
 
             config_options=()
+
+            config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+            config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
+            config_options+=("shared")
+            config_options+=("enable-md2")
+            config_options+=("enable-rc5")
+            config_options+=("enable-tls")
+            config_options+=("enable-tls1_3")
+            config_options+=("enable-tls1_2")
+            config_options+=("enable-tls1_1")
+            config_options+=("no-ssl3")
+            config_options+=("no-ssl3-method")
+            config_options+=("zlib")
+
             if [ "${TARGET_ARCH}" == "x64" ]
             then
               config_options+=("enable-ec_nistp_64_gcc_128")
@@ -2923,6 +2944,12 @@ function build_openssl()
               config_options+=("no-afalgeng")
             fi
 
+            config_options+=("${CPPFLAGS}")
+            config_options+=("${CFLAGS}")
+            config_options+=("${LDFLAGS}")
+
+            config_options+=("-Wa,--noexecstack ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}")
+
             set +u
 
             # undefined reference to EVP_md2
@@ -2930,21 +2957,7 @@ function build_openssl()
 
             # perl, do not start with bash.
             run_verbose "./config" \
-              --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-              \
-              --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
-              shared \
-              enable-md2 \
-              enable-rc5 \
-              enable-tls \
-              enable-tls1_3 \
-              enable-tls1_2 \
-              enable-tls1_1 \
-              no-ssl3 \
-              no-ssl3-method \
-              zlib \
-              "${config_options[@]}" \
-              "-Wa,--noexecstack ${CPPFLAGS} ${CFLAGS} ${LDFLAGS}"
+              "${config_options[@]}"
 
             set -u
 
@@ -2987,6 +3000,10 @@ function build_openssl()
             config_options+=("enable-rc5")
             config_options+=("enable-rfc3779")
             config_options+=("-D__MINGW_USE_VC2005_COMPAT")
+
+            config_options+=("${CPPFLAGS}")
+            config_options+=("${CFLAGS}")
+            config_options+=("${LDFLAGS}")
 
             run_verbose "./Configure" \
               "${config_options[@]}"
