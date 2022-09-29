@@ -2188,7 +2188,8 @@ function build_xz()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          # config_options+=("--disable-nls")
+          config_options+=("--disable-nls")
+
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" \
             "${config_options[@]}"
