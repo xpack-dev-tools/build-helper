@@ -1761,6 +1761,12 @@ function build_gettext()
             config_options+=("--enable-threads=posix")
           fi
 
+          config_options+=("--without-git") # HB
+          config_options+=("--without-cvs") # HB
+          config_options+=("--without-xz") # HB
+          config_options+=("--without-included-gettext") # Arch
+
+          config_options+=("--with-included-glib") # HB
           config_options+=("--disable-debug") # HB
           config_options+=("--disable-dependency-tracking") # HB
           if [ "${IS_DEVELOP}" == "y" ]
