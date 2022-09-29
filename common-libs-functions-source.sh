@@ -1615,6 +1615,7 @@ function build_libffi()
           config_options+=("--enable-pax_emutramp")
 
           config_options+=("--disable-static") # Arch
+          config_options+=("--disable-multi-os-directory") # Arch
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" \
             "${config_options[@]}"
 
