@@ -2667,6 +2667,15 @@ function build_libxcrypt()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
+          # config_options+=("--enable-obsolete-api=glibc") # Arch
+          config_options+=("--disable-obsolete-api") # HB
+
+          config_options+=("--disable-static") # HB, Arch
+          config_options+=("--disable-xcrypt-compat-files") # HB
+          config_options+=("--disable-failure-tokens") # HB
+          config_options+=("--disable-valgrind") # HB
+
+          config_options+=("--enable-hashes=strong,glibc") # Arch
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" \
             "${config_options[@]}"
 
