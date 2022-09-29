@@ -1196,6 +1196,8 @@ function build_libiconv()
           config_options+=("--enable-static") # HB
           config_options+=("--enable-extra-encodings") # Arch
 
+          config_options+=("--enable-relocatable")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
             "${config_options[@]}"
 
