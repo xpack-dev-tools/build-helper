@@ -789,6 +789,11 @@ function prepare_clang_env()
   set_xbb_extras
 }
 
+function set_bins_install()
+{
+  export BINS_INSTALL_FOLDER_PATH="$1"
+}
+
 # -----------------------------------------------------------------------------
 
 function do_actions()
