@@ -324,6 +324,8 @@ function build_gmp()
             config_options+=("--target=${TARGET}")
 
             config_options+=("--enable-cxx")
+            config_options+=("--enable-fat") # Arch
+
             # From Arm.
             config_options+=("--enable-fft")
 
