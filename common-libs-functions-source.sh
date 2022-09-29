@@ -1767,6 +1767,13 @@ function build_gettext()
           config_options+=("--without-included-gettext") # Arch
 
           config_options+=("--with-included-glib") # HB
+          config_options+=("--with-included-libcroco") # HB
+          config_options+=("--with-included-libunistring") # HB
+          config_options+=("--with-included-libxml") # HB
+          config_options+=("--with-included-gettext") # HB
+
+          # config_options+=("--with-emacs") # HB
+
           config_options+=("--disable-debug") # HB
           config_options+=("--disable-dependency-tracking") # HB
           if [ "${IS_DEVELOP}" == "y" ]
