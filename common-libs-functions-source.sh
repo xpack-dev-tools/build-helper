@@ -1184,6 +1184,13 @@ function build_libiconv()
           fi
           config_options+=("--target=${TARGET}")
 
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
             "${config_options[@]}"
 
