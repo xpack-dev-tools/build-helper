@@ -1614,7 +1614,7 @@ function build_libffi()
 
           config_options+=("--enable-pax_emutramp")
 
-          # --enable-pax_emutramp is inspired by AUR
+          config_options+=("--disable-static") # Arch
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libffi_src_folder_name}/configure" \
             "${config_options[@]}"
 
