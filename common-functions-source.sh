@@ -1201,30 +1201,47 @@ function run_app_exit()
 
 function test_expect()
 {
-  local app_name="$1"
-  local expected="$2"
+  local expected="$1"
+  local app_path="$2"
+  shift 2
 
-  show_libs "${app_name}"
+  (
+    set +e
 
-  # Remove the trailing CR present on Windows.
-  local output
-  if [ "${app_name:0:1}" == "/" ]
-  then
-    output="$(run_app_silent "${app_name}" "$@" | sed 's/\r$//')"
-  else
-    output="$(run_app_silent "./${app_name}" "$@" | sed 's/\r$//')"
-  fi
+    # Remove the trailing CR present on Windows.
+    local output
+    if [ "${app_path:0:1}" == "/" ]
+    then
+      show_libs "${app_path}"
+      output="$(run_app_silent "${app_path}" "$@" | sed 's/\r$//')"
+    elif [ "${app_path:0:2}" == "./" ]
+    then
+      show_libs "${app_path}"
+      output="$(run_app_silent "${app_path}" "$@" | sed 's/\r$//')"
+    else
+      if [ -x "${app_path}" ]
+      then
+        show_libs "${app_path}"
+        output="$(run_app_silent "./${app_path}" "$@" | sed 's/\r$//')"
+      else
+        # bash case
+        output="$(run_app_silent "${app_path}" "$@" | sed 's/\r$//')"
+      fi
+    fi
 
-  if [ "x${output}x" == "x${expected}x" ]
-  then
-    echo
-    echo "Test \"${app_name}\" passed :-)"
-  else
-    echo "expected ${#expected}: \"${expected}\""
-    echo "got ${#output}: \"${output}\""
-    echo
-    exit 1
-  fi
+    if [ "x${output}x" == "x${expected}x" ]
+    then
+      echo
+      echo "Test \"${app_path} $@\" passed, got \"${expected}\" :-)"
+    else
+      echo
+      echo "Test \"${app_path} $@\" failed :-("
+      echo "expected ${#expected}: \"${expected}\""
+      echo "got ${#output}: \"${output}\""
+      echo
+      exit 1
+    fi
+  )
 }
 
 # -----------------------------------------------------------------------------
