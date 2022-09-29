@@ -1098,6 +1098,7 @@ function build_libiconv()
   # https://www.gnu.org/software/libiconv/
   # https://ftp.gnu.org/pub/gnu/libiconv/
 
+  # https://github.com/archlinux/svntogit-community/blob/packages/libiconv/trunk/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libiconv
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libiconv.rb
@@ -1255,6 +1256,7 @@ function build_ncurses()
   # https://invisible-mirror.net/archives/ncurses/
   # https://invisible-mirror.net/archives/ncurses/ncurses-6.2.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/ncurses/trunk/PKGBUILD
   # depends=(glibc gcc-libs)
   # https://archlinuxarm.org/packages/aarch64/ncurses/files/PKGBUILD
   # http://deb.debian.org/debian/pool/main/n/ncurses/ncurses_6.1+20181013.orig.tar.gz.asc
@@ -1519,6 +1521,7 @@ function build_libffi()
   # https://github.com/libffi/libffi/releases
   # https://github.com/libffi/libffi/archive/v3.2.1.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libffi/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libffi/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libffi-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libffi
@@ -1980,8 +1983,11 @@ function build_expat()
   # https://libexpat.github.io
   # https://github.com/libexpat/libexpat/releases
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/expat/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/expat/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=expat-git
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/expat.rb
 
   # Oct 21, 2017 "2.1.1"
   # Nov 1, 2017 "2.2.5"
@@ -2115,6 +2121,8 @@ function build_xz()
 
   # https://archlinuxarm.org/packages/aarch64/xz/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=xz-git
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/xz.rb
 
   # 2016-12-30 "5.2.3"
   # 2018-04-29 "5.2.4"
@@ -2418,7 +2426,10 @@ function build_libmpdec()
   # https://www.bytereef.org/mpdecimal/download.html
   # https://www.bytereef.org/software/mpdecimal/releases/mpdecimal-2.4.2.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/mpdecimal/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/mpdecimal/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/mpdecimal.rb
 
   # 2016-02-28, "2.4.2"
   # 2020-06-28, "2.5.0"
@@ -2560,6 +2571,9 @@ function build_libxcrypt()
 
   # https://github.com/besser82/libxcrypt
   # https://github.com/besser82/libxcrypt/archive/v4.4.15.tar.gz
+
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libxcrypt/trunk/PKGBUILD
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libxcrypt.rb
 
   # 26 Jul 2018, "4.1.1"
   # 26 Oct 2018, "4.2.3"
@@ -2753,9 +2767,13 @@ function build_openssl()
 
   # https://www.openssl.org/source/openssl-1.1.1n.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/openssl/trunk/PKGBUILD
+
   # https://archlinuxarm.org/packages/aarch64/openssl/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-static
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=openssl-git
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/openssl@1.1.rb
 
   # 2017-Nov-02
   # XBB_OPENSSL_VERSION="1.1.0g"
@@ -3122,7 +3140,11 @@ function build_sqlite()
   # https://www.sqlite.org/2022/sqlite-src-3380200.zip
   # https://www.sqlite.org/src/tarball/7ebdfa80/SQLite-7ebdfa80.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/sqlite/trunk/PKGBUILD
+
   # https://archlinuxarm.org/packages/aarch64/sqlite/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/sqlite.rb
 
   # 2020-06-18 "3.32.3" 7ebdfa80
   # 2021-06-18 "3360000"
@@ -3301,10 +3323,14 @@ function build_readline()
   # https://ftp.gnu.org/gnu/readline/
   # https://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/readline/trunk/PKGBUILD
+
   # depends=(glibc gcc-libs)
   # https://archlinuxarm.org/packages/aarch64/readline/files/PKGBUILD
 
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-readline/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/readline.rb
 
   # 2019-01-07, "8.0"
   # 2020-12-06, "8.1"
@@ -3445,6 +3471,7 @@ function build_bzip2()
   # https://sourceware.org/pub/bzip2/
   # https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/bzip2/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/bzip2/files/PKGBUILD
 
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-bzip2/PKGBUILD
@@ -5120,12 +5147,15 @@ function build_libxml2()
   # https://gitlab.gnome.org/GNOME/libxml2/-/releases
   # https://gitlab.gnome.org/GNOME/libxml2/-/archive/v2.9.14/libxml2-v2.9.14.tar.bz2
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libxml2/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libxml2/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=libxml2-git
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=mingw-w64-libxml2
 
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-libxml2/PKGBUILD
   # https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-readline/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libxml2.rb
 
   # Mar 05 2018, "2.9.8"
   # Jan 03 2019, "2.9.9"
@@ -6199,6 +6229,7 @@ function build_nettle()
   # https://www.lysator.liu.se/~nisse/nettle/
   # https://ftp.gnu.org/gnu/nettle/
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/nettle/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/nettle/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=nettle-git
 
