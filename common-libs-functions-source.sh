@@ -3532,6 +3532,12 @@ function build_bzip2()
             rm -rfv "${BINS_INSTALL_FOLDER_PATH}/include/bzlib.h"
           fi
 
+          if [ "${WITH_TESTS}" == "y" ]
+          then
+            run_verbose make test
+          fi
+
+          # Once again for the shared library.
           run_verbose make clean
 
           # Build the shared library.
@@ -3573,6 +3579,12 @@ function build_bzip2()
             rm -rfv "${BINS_INSTALL_FOLDER_PATH}/include/bzlib.h"
           fi
 
+          if [ "${WITH_TESTS}" == "y" ]
+          then
+            run_verbose make test
+          fi
+
+          # Once again for the shared library.
           run_verbose make clean
 
           # Build the shared library.
