@@ -531,6 +531,7 @@ function build_mpfr()
 
           config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
+          config_options+=("--enable-shared") # Arch
           config_options+=("--enable-thread-safe") # Arch
           config_options+=("--disable-maintainer-mode")
           config_options+=("--disable-warnings")
