@@ -5221,6 +5221,9 @@ function build_libxml2()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
+          config_options+=("--without-python") # HB
+          # config_options+=("--with-python=/usr/bin/python") # Arch
+
           # config_options+=("--without-lzma") # HB
 
           config_options+=("--with-icu") # Arch
