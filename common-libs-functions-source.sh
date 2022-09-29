@@ -338,7 +338,7 @@ function build_gmp()
             elif [ "${TARGET_PLATFORM}" == "darwin" ]
             then
               # Enable --with-pic to avoid linking issues with the static library
-              config_options+=("--with-pic")
+              config_options+=("--with-pic") # HB
             fi
 
             if [ "${TARGET_ARCH}" == "ia32" -o "${TARGET_ARCH}" == "arm" ]
@@ -533,6 +533,7 @@ function build_mpfr()
 
           config_options+=("--enable-shared") # Arch
           config_options+=("--enable-thread-safe") # Arch
+
           config_options+=("--disable-maintainer-mode")
           config_options+=("--disable-warnings")
 
@@ -1393,35 +1394,34 @@ function build_ncurses()
             config_options+=("--with-terminfo-dirs=/etc/terminfo")
             config_options+=("--with-default-terminfo-dir=/etc/terminfo:/lib/terminfo:/usr/share/terminfo")
             config_options+=("--with-gpm")
-            config_options+=("--with-versioned-syms")
+            config_options+=("--with-versioned-syms") # Arch
             config_options+=("--with-xterm-kbs=del")
 
             config_options+=("--enable-termcap")
             config_options+=("--enable-const")
-            config_options+=("--enable-symlinks")
+            config_options+=("--enable-symlinks") # HB
 
-            # HomeBrew
-            config_options+=("--enable-sigwinch")
+            config_options+=("--enable-sigwinch") # HB
 
           fi
 
-          config_options+=("--with-shared")
+          config_options+=("--with-shared") # HB, Arch
           config_options+=("--with-normal")
           config_options+=("--with-cxx")
-          config_options+=("--with-cxx-binding")
-          config_options+=("--with-cxx-shared")
+          config_options+=("--with-cxx-binding") # Arch
+          config_options+=("--with-cxx-shared") # HB
           config_options+=("--with-pkg-config-libdir=${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig")
 
           # Fails on Linux, with missing _nc_cur_term, which is there.
           config_options+=("--without-pthread")
 
-          config_options+=("--without-ada")
+          config_options+=("--without-ada") # HB, Arch
           config_options+=("--without-debug")
           config_options+=("--without-manpages")
           config_options+=("--without-tack")
           config_options+=("--without-tests")
 
-          config_options+=("--enable-pc-files")
+          config_options+=("--enable-pc-files") # HB, Arch
           config_options+=("--enable-sp-funcs")
           config_options+=("--enable-ext-colors")
           config_options+=("--enable-interop")
@@ -1616,7 +1616,7 @@ function build_libffi()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--enable-pax_emutramp")
+          config_options+=("--enable-pax_emutramp") # Arch
 
           config_options+=("--disable-static") # Arch
           config_options+=("--disable-multi-os-directory") # Arch
@@ -1787,6 +1787,7 @@ function build_gettext()
 
           config_options+=("--disable-installed-tests")
           config_options+=("--disable-always-build-tests")
+
           # config_options+=("--enable-nls")
           config_options+=("--disable-nls")
 
@@ -2691,6 +2692,7 @@ function build_libxcrypt()
           config_options+=("--disable-valgrind") # HB
 
           config_options+=("--enable-hashes=strong,glibc") # Arch
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libxcrypt_src_folder_name}/configure" \
             "${config_options[@]}"
 
@@ -2749,8 +2751,6 @@ function build_libxcrypt()
 function test_libxcrypt()
 {
   (
-    xbb_activate
-
     echo
     echo "Checking the libxcrypt shared libraries..."
 
@@ -3253,6 +3253,7 @@ function build_sqlite()
           # config_options+=("--disable-static") # Arch
 
           config_options+=("--enable-tcl=no")
+
           config_options+=("--enable-dynamic-extensions") # HB
           # config_options+=("--enable-readline") # HB
           config_options+=("--enable-session") # HB
@@ -3640,6 +3641,7 @@ function build_bzip2()
           )
 
           create_bzip2_pc
+
         elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
 
@@ -5257,8 +5259,11 @@ function build_libxml2()
 
           # config_options+=("--without-lzma") # HB
 
+          # config_options+=("--with-history") # Arch
           config_options+=("--with-icu") # Arch
-          
+
+          # config_options+=("--disable-static") # Arch
+
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             config_options+=("--with-threads=win32")
@@ -6315,7 +6320,9 @@ function build_nettle()
           config_options+=("--target=${TARGET}")
 
           # config_options+=("--enable-mini-gmp")
-          config_options+=("--enable-shared")
+          config_options+=("--enable-shared") # HB
+
+          # config_options+=("--disable-shared") # Arch
 
           config_options+=("--disable-documentation")
           config_options+=("--disable-arm-neon")
