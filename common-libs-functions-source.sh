@@ -536,6 +536,13 @@ function build_mpfr()
           config_options+=("--disable-maintainer-mode")
           config_options+=("--disable-warnings")
 
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${mpfr_src_folder_name}/configure" \
             "${config_options[@]}"
 
