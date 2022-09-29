@@ -1795,6 +1795,8 @@ function build_gettext()
           # config_options+=("--disable-c++")
           config_options+=("--disable-libasprintf")
 
+          config_options+=("--enable-relocatable")
+
           #  --enable-nls needed to include libintl
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" \
             "${config_options[@]}"
