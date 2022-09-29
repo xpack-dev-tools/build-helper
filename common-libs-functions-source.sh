@@ -1784,9 +1784,15 @@ function build_gettext()
           config_options+=("--disable-installed-tests")
           config_options+=("--disable-always-build-tests")
           # config_options+=("--enable-nls")
-          config_options+=("--disable-java")
+          config_options+=("--disable-nls")
+
+          config_options+=("--disable-java") # HB
           config_options+=("--disable-native-java")
-          config_options+=("--disable-c++")
+
+          config_options+=("--disable-csharp") # HB
+          # config_options+=("--enable-csharp") # Arch
+
+          # config_options+=("--disable-c++")
           config_options+=("--disable-libasprintf")
 
           #  --enable-nls needed to include libintl
