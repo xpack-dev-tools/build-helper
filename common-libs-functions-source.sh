@@ -3559,6 +3559,9 @@ function build_bzip2()
             ln -sv "libbz2.so.${bzip2_version}" libbz2.so.1
             ln -sv "libbz2.so.${bzip2_version}" libbz2.so
           )
+
+          create_bzip2_pc
+
         elif [ "${TARGET_PLATFORM}" == "darwin" ]
         then
 
@@ -3608,6 +3611,7 @@ function build_bzip2()
             ln -sv "libbz2.${bzip2_version}.dylib" libbz2.dylib
           )
 
+          create_bzip2_pc
         elif [ "${TARGET_PLATFORM}" == "win32" ]
         then
 
@@ -3640,6 +3644,27 @@ function build_bzip2()
   else
     echo "Library bzip2 already installed."
   fi
+}
+
+function create_bzip2_pc()
+{
+  mkdir -p "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig"
+  # Note: __EOF__ is NOT quoted to allow substitutions.
+  cat <<__EOF__ >"${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/bzip2.pc"
+prefix=${LIBS_INSTALL_FOLDER_PATH}
+exec_prefix=${LIBS_INSTALL_FOLDER_PATH}
+bindir=\${exec_prefix}/bin
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: bzip2
+Description: A file compression library
+Version: ${bzip2_version}
+Libs: -L\${libdir} -lbz2
+Cflags: -I\${includedir}
+__EOF__
+
+  run_verbose cat "${LIBS_INSTALL_FOLDER_PATH}/lib/pkgconfig/bzip2.pc"
 }
 
 # -----------------------------------------------------------------------------
