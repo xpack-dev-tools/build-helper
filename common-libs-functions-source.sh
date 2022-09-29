@@ -1191,6 +1191,8 @@ function build_libiconv()
             config_options+=("--disable-silent-rules") # HB
           fi
 
+          config_options+=("--disable-nls")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
             "${config_options[@]}"
 
