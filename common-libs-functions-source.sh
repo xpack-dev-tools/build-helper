@@ -2197,6 +2197,8 @@ function build_xz()
 
           config_options+=("--disable-nls")
 
+          # config_options+=("--enable-werror") # Arch
+          config_options+=("--disable-werror")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${xz_src_folder_name}/configure" \
             "${config_options[@]}"
