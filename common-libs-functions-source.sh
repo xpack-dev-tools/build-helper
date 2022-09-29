@@ -164,11 +164,10 @@ function build_zlib()
           "${LIBS_BUILD_FOLDER_PATH}/${zlib_folder_name}" \
           "${zlib_folder_name}"
       fi
-
     )
 
     (
-      test_zlib "${name_suffix}"
+      test_zlib_libs "${name_suffix}"
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${zlib_folder_name}/test-output-$(ndate).txt"
 
     touch "${zlib_stamp_file_path}"
@@ -178,12 +177,11 @@ function build_zlib()
   fi
 }
 
-function test_zlib()
+function test_zlib_libs()
 {
   local name_suffix=${1-''}
-  (
-    # xbb_activate
 
+  (
     if [ "${TARGET_PLATFORM}" == "win32" ]
     then
       echo
@@ -2973,7 +2971,7 @@ function build_openssl()
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/make-output-$(ndate).txt"
 
       (
-        test_openssl
+        test_openssl_libs
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/test-output-$(ndate).txt"
     )
 
@@ -2984,11 +2982,9 @@ function build_openssl()
   fi
 }
 
-function test_openssl()
+function test_openssl_libs()
 {
   (
-    xbb_activate_installed_bin
-
     echo
     echo "Testing if the openssl binaries start properly..."
 
@@ -3811,8 +3807,6 @@ function build_python2()
 function test_python2()
 {
   (
-    # xbb_activate_installed_bin
-
     echo
     echo "Checking the python2 binary shared libraries..."
 
@@ -4100,8 +4094,6 @@ function build_python3()
 function test_python3()
 {
   (
-    # xbb_activate_installed_bin
-
     echo
     echo "Checking the python3 binary shared libraries..."
 
