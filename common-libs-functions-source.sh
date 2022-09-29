@@ -873,6 +873,13 @@ function build_isl()
 
           config_options+=("--with-gmp=${LIBS_INSTALL_FOLDER_PATH}${name_suffix}")
 
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${isl_src_folder_name}/configure" \
             "${config_options[@]}"
 
