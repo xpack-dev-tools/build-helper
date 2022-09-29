@@ -3227,6 +3227,8 @@ function build_sqlite()
           fi
 
           config_options+=("--disable-editline") # HB
+          # config_options+=("--disable-static") # Arch
+
           config_options+=("--enable-tcl=no")
           config_options+=("--enable-editline=no")
 
