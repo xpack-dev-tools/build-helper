@@ -2188,6 +2188,13 @@ function build_xz()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
+
           config_options+=("--disable-nls")
 
 
