@@ -399,6 +399,8 @@ function set_xbb_env()
   # Do it later, only if needed.
   # mkdir -pv "${DEPLOY_FOLDER_PATH}"
 
+  TESTS_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
+
   DISTRO_INFO_NAME=${DISTRO_INFO_NAME:-"distro-info"}
 
   BUILD_GIT_PATH="${WORK_FOLDER_PATH}/build.git"
