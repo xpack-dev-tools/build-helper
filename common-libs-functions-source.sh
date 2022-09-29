@@ -3490,7 +3490,7 @@ function build_bzip2()
 
       CPPFLAGS="${XBB_CPPFLAGS}"
       # libbz2.a(bzlib.o): relocation R_X86_64_PC32 against symbol `BZ2_crc32Table' can not be used when making a shared object; recompile with -fPIC
-      CFLAGS="${XBB_CFLAGS_NO_W} -fPIC"
+      CFLAGS="${XBB_CFLAGS_NO_W} -fPIC --param max-inline-insns-single=500"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
       LDFLAGS="${XBB_LDFLAGS_LIB}"
