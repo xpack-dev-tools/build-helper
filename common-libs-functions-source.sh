@@ -5223,6 +5223,8 @@ function build_libxml2()
 
           # config_options+=("--without-lzma") # HB
 
+          config_options+=("--with-icu") # Arch
+          
           if [ "${TARGET_PLATFORM}" == "win32" ]
           then
             config_options+=("--with-threads=win32")
