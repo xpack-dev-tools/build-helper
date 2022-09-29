@@ -2420,7 +2420,7 @@ function build_gpm()
 
 # -----------------------------------------------------------------------------
 
-function build_libmpdec()
+function build_mpdecimal()
 {
   # http://www.bytereef.org/mpdecimal/index.html
   # https://www.bytereef.org/mpdecimal/download.html
@@ -2435,39 +2435,39 @@ function build_libmpdec()
   # 2020-06-28, "2.5.0"
   # 2021-01-28, "2.5.1"
 
-  local libmpdec_version="$1"
+  local mpdecimal_version="$1"
 
-  local libmpdec_src_folder_name="mpdecimal-${libmpdec_version}"
+  local mpdecimal_src_folder_name="mpdecimal-${mpdecimal_version}"
 
-  local libmpdec_archive="${libmpdec_src_folder_name}.tar.gz"
-  local libmpdec_url="https://www.bytereef.org/software/mpdecimal/releases/${libmpdec_archive}"
+  local mpdecimal_archive="${mpdecimal_src_folder_name}.tar.gz"
+  local mpdecimal_url="https://www.bytereef.org/software/mpdecimal/releases/${mpdecimal_archive}"
 
-  local libmpdec_folder_name="${libmpdec_src_folder_name}"
+  local mpdecimal_folder_name="${mpdecimal_src_folder_name}"
 
-  mkdir -pv "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}"
+  mkdir -pv "${LOGS_FOLDER_PATH}/${mpdecimal_folder_name}"
 
-  local libmpdec_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${libmpdec_folder_name}-installed"
-  if [ ! -f "${libmpdec_stamp_file_path}" ]
+  local mpdecimal_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${mpdecimal_folder_name}-installed"
+  if [ ! -f "${mpdecimal_stamp_file_path}" ]
   then
 
     echo
-    echo "libmpdec in-source building"
+    echo "mpdecimal in-source building"
 
-    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_folder_name}" ]
+    if [ ! -d "${LIBS_BUILD_FOLDER_PATH}/${mpdecimal_folder_name}" ]
     then
       cd "${LIBS_BUILD_FOLDER_PATH}"
 
-      download_and_extract "${libmpdec_url}" "${libmpdec_archive}" \
-        "${libmpdec_src_folder_name}"
+      download_and_extract "${mpdecimal_url}" "${mpdecimal_archive}" \
+        "${mpdecimal_src_folder_name}"
 
-      if [ "${libmpdec_src_folder_name}" != "${libmpdec_folder_name}" ]
+      if [ "${mpdecimal_src_folder_name}" != "${mpdecimal_folder_name}" ]
       then
-        mv -v "${libmpdec_src_folder_name}" "${libmpdec_folder_name}"
+        mv -v "${mpdecimal_src_folder_name}" "${mpdecimal_folder_name}"
       fi
     fi
 
     (
-      cd "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_src_folder_name}"
+      cd "${LIBS_BUILD_FOLDER_PATH}/${mpdecimal_src_folder_name}"
 
       xbb_activate_installed_dev
 
@@ -2498,7 +2498,7 @@ function build_libmpdec()
           fi
 
           echo
-          echo "Running libmpdec configure..."
+          echo "Running mpdecimal configure..."
 
           if [ "${IS_DEVELOP}" == "y" ]
           then
@@ -2524,13 +2524,13 @@ function build_libmpdec()
           run_verbose bash ${DEBUG} "configure" \
             "${config_options[@]}"
 
-          cp "config.log" "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/config-log-$(ndate).txt"
-        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/configure-output-$(ndate).txt"
+          cp "config.log" "${LOGS_FOLDER_PATH}/${mpdecimal_folder_name}/config-log-$(ndate).txt"
+        ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpdecimal_folder_name}/configure-output-$(ndate).txt"
       fi
 
       (
         echo
-        echo "Running libmpdec make..."
+        echo "Running mpdecimal make..."
 
         # Build.
         run_verbose make -j ${JOBS}
@@ -2548,18 +2548,18 @@ function build_libmpdec()
           fi
         fi
 
-      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libmpdec_folder_name}/make-output-$(ndate).txt"
+      ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${mpdecimal_folder_name}/make-output-$(ndate).txt"
 
       copy_license \
-        "${LIBS_BUILD_FOLDER_PATH}/${libmpdec_folder_name}" \
-        "${libmpdec_folder_name}"
+        "${LIBS_BUILD_FOLDER_PATH}/${mpdecimal_folder_name}" \
+        "${mpdecimal_folder_name}"
 
     )
 
-    touch "${libmpdec_stamp_file_path}"
+    touch "${mpdecimal_stamp_file_path}"
 
   else
-    echo "Library libmpdec already installed."
+    echo "Library mpdecimal already installed."
   fi
 }
 
