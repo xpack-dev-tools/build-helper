@@ -560,6 +560,7 @@ function build_mpfr()
         if [ "${WITH_TESTS}" == "y" ]
         then
           run_verbose make -j1 check
+          run_verbose make -j1 check-exported-symbols
         fi
 
         if [ "${WITH_STRIP}" == "y" ]
