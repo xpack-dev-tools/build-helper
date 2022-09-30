@@ -3078,6 +3078,7 @@ function prepare_app_folder_libraries()
 
     elif [ "${TARGET_PLATFORM}" == "darwin" ]
     then
+
       binaries=$(find_binaries "${folder_path}")
       for bin in ${binaries}
       do
@@ -3086,6 +3087,18 @@ function prepare_app_folder_libraries()
           echo
           echo "## Preparing $(basename "${bin}") ${bin} libraries..."
           copy_dependencies_recursive "${bin}" "$(dirname "${bin}")"
+        fi
+      done
+
+      # rpaths are not cleaned on the spot, to allow hard links to be
+      # processed later, and add new $ORIGINs for the new locations.
+      for bin_path in ${binaries}
+      do
+        if is_elf_dynamic "${bin_path}"
+        then
+          echo
+          echo "## Cleaning ${bin_path} rpath..."
+          clean_rpaths "${bin_path}"
         fi
       done
 
@@ -3539,6 +3552,8 @@ function copy_dependencies_recursive()
           fi
         fi
 
+        # TODO check if relative to APP_PREFIX, to avoid copying to libexec.
+
         # For consistency reasons, update rpath first, before dependencies.
         local relative_folder_path="$(realpath --relative-to="${actual_destination_folder_path}" "${APP_PREFIX}/libexec")"
         patch_macos_elf_add_rpath \
@@ -3559,8 +3574,6 @@ function copy_dependencies_recursive()
           "${APP_PREFIX}/libexec"
 
       done
-
-      clean_rpaths "${actual_destination_file_path}"
 
       (
         set +e
