@@ -1802,7 +1802,8 @@ function build_gettext()
           # config_options+=("--disable-c++")
           config_options+=("--disable-libasprintf")
 
-          config_options+=("--enable-relocatable")
+          # DO NOT USE, on macOS the LC_RPATH looses GCC references.
+          # config_options+=("--enable-relocatable")
 
           #  --enable-nls needed to include libintl
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${gettext_src_folder_name}/gettext-runtime/configure" \
@@ -1839,11 +1840,32 @@ function build_gettext()
 
     )
 
+    (
+      test_gettext "${BINS_INSTALL_FOLDER_PATH}/bin"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${gettext_folder_name}/test-output-$(ndate).txt"
+
     touch "${gettext_stamp_file_path}"
 
   else
     echo "Library gettext already installed."
   fi
+
+  tests_add "test_gettext" "${BINS_INSTALL_FOLDER_PATH}/bin"
+}
+
+function test_gettext()
+{
+  local test_bin_folder_path="$1"
+
+  echo
+  echo "Checking the gettext shared libraries..."
+
+  show_libs "${test_bin_folder_path}/gettext"
+  show_libs "${test_bin_folder_path}/ngettext"
+  show_libs "${test_bin_folder_path}/envsubst"
+
+  run_app "${test_bin_folder_path}/gettext" --version
+  test_expect "test" "${test_bin_folder_path}/gettext" test
 }
 
 # -----------------------------------------------------------------------------
