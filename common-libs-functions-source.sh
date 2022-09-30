@@ -1199,7 +1199,9 @@ function build_libiconv()
           config_options+=("--enable-static") # HB
           config_options+=("--enable-extra-encodings") # Arch
 
-          config_options+=("--enable-relocatable")
+          # Fails on macOS:
+          # /bin/bash: /Users/ilg/Work/xbb-bootstrap-4.0.0/darwin-arm64/sources/libiconv-1.16/libcharset/build-aux/libtool-reloc: No such file or directory
+          # config_options+=("--enable-relocatable")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libiconv_src_folder_name}/configure" \
             "${config_options[@]}"
