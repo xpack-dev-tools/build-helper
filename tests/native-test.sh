@@ -149,6 +149,8 @@ detect_architecture
 
 prepare_env "$(dirname "${scripts_folder_path}")"
 
+TESTS_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
+
 if [ "${BASE_URL}" == "release" ]
 then
   BASE_URL=https://github.com/xpack-dev-tools/${APP_LC_NAME}-xpack/releases/download/${RELEASE_VERSION}/
