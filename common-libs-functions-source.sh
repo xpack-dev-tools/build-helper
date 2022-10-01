@@ -5671,6 +5671,7 @@ function build_libgpg_error()
 {
   # https://gnupg.org/ftp/gcrypt/libgpg-error
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libgpg-error/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libgpg-error/files/PKGBUILD
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libgpg-error.rb
@@ -5738,6 +5739,7 @@ function build_libgpg_error()
 
           config_options=()
 
+          # Exception: use LIBS_INSTALL_*.
           config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
           config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
@@ -5748,28 +5750,19 @@ function build_libgpg_error()
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
 
-          config_options+=("--enable-static")
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
 
-          config_options+=("--disable-dependency-tracking")
-          config_options+=("--disable-silent-rules")
+          config_options+=("--disable-nls")
+
+          config_options+=("--enable-static") # HB
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libgpg_error_src_folder_name}/configure" \
             "${config_options[@]}"
-
-          if [ "${TARGET_PLATFORM}" == "darwin" ]
-          then
-            run_verbose sed -i.bak \
-              -e 's|t-lock-single-posix$(EXEEXT)||' \
-              "tests/Makefile"
-          fi
-
-          # WARN-TEST
-          # FAIL: t-syserror (disabled)
-          # Interestingly enough, initially (before dismissing install-strip)
-          # it passed.
-          echo run_verbose sed -i.bak \
-            -e 's|t-syserror$(EXEEXT)||' \
-            "tests/Makefile"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/config-log-$(ndate).txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/configure-output-$(ndate).txt"
@@ -5782,8 +5775,12 @@ function build_libgpg_error()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -5791,16 +5788,30 @@ function build_libgpg_error()
           run_verbose make -j1 check
         fi
 
-        run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/gpg-error-config" --libs
-
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libgpg_error_src_folder_name}" \
+        "${libgpg_error_folder_name}"
     )
+
+    (
+      test_libgpg_error_libs
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgpg_error_folder_name}/test-output-$(ndate).txt"
 
     touch "${libgpg_error_stamp_file_path}"
 
   else
     echo "Library libgpg-error already installed."
   fi
+}
+
+function test_libgpg_error_libs()
+{
+  echo
+  echo "Checking the libpng_error shared libraries..."
+
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libgpg-error.${SHLIB_EXT}"
 }
 
 # -----------------------------------------------------------------------------
@@ -5810,6 +5821,7 @@ function build_libgcrypt()
   # https://gnupg.org/ftp/gcrypt/libgcrypt
   # https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.5.tar.bz2
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libgcrypt/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libgcrypt/files/PKGBUILD
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libgcrypt.rb
@@ -5849,7 +5861,7 @@ function build_libgcrypt()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_LIB} -v"
+      LDFLAGS="${XBB_LDFLAGS_LIB}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -5878,6 +5890,7 @@ function build_libgcrypt()
 
           config_options=()
 
+          # Exception: use LIBS_INSTALL_*.
           config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
           config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
@@ -5890,28 +5903,34 @@ function build_libgcrypt()
 
           config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
 
-          config_options+=("--enable-static")
+          config_options+=("--disable-doc")
+          config_options+=("--disable-large-data-tests")
 
-          if [ "${TARGET_ARCH}" == "arm64" ]
+          # For Darwin, there are problems with the assembly code.
+          config_options+=("--disable-asm") # HB
+          config_options+=("--disable-amd64-as-feature-detection")
+
+          config_options+=("--disable-padlock-support") # Arch
+
+          if [ "${HOST_MACHINE}" != "aarch64" ]
           then
             config_options+=("--disable-neon-support")
             config_options+=("--disable-arm-crypto-support")
           fi
 
-          config_options+=("--disable-doc")
-          config_options+=("--disable-large-data-tests")
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
 
-          # For Darwin, there are problems with the assembly code.
-          config_options+=("--disable-asm")
-          config_options+=("--disable-amd64-as-feature-detection")
-
-          config_options+=("--disable-dependency-tracking")
-          config_options+=("--disable-silent-rules")
+          config_options+=("--enable-static") # HB
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libgcrypt_src_folder_name}/configure" \
             "${config_options[@]}"
 
-          if false # [ "${TARGET_ARCH}" == "arm64" ]
+          if false # [ "${HOST_MACHINE}" != "aarch64" ]
           then
             # fix screwed up capability detection
             sed -i.bak -e '/HAVE_GCC_INLINE_ASM_AARCH32_CRYPTO 1/d' "config.h"
@@ -5929,23 +5948,87 @@ function build_libgcrypt()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         # Check after install, otherwise mac test fails:
         # dyld: Library not loaded: /Users/ilg/opt/xbb/lib/libgcrypt.20.dylib
         # Referenced from: /Users/ilg/Work/xbb-3.1-macosx-10.15.3-x86_64/build/libs/libgcrypt-1.8.5/tests/.libs/random
 
-        run_verbose make -j1 check
+        if [ "${WITH_TESTS}" == "y" ]
+        then
+          run_verbose make -j1 check
+        fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgcrypt_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libgcrypt_src_folder_name}" \
+        "${libgcrypt_folder_name}"
     )
+
+    (
+      test_libgcrypt_libs
+      test_libgcrypt "${BINS_INSTALL_FOLDER_PATH}/bin"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libgcrypt_folder_name}/test-output-$(ndate).txt"
 
     touch "${libgcrypt_stamp_file_path}"
 
   else
     echo "Library libgcrypt already installed."
   fi
+
+  tests_add "test_libgcrypt" "${BINS_INSTALL_FOLDER_PATH}/bin"
+}
+
+function test_libgcrypt_libs()
+{
+  echo
+  echo "Checking the libgcrypt shared libraries..."
+
+  # show_libs "${INSTALL_FOLDER_PATH}/bin/libgcrypt-config"
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/dumpsexp"
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/hmac256"
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/mpicalc"
+
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libgcrypt.${SHLIB_EXT}"
+}
+
+function test_libgcrypt()
+{
+  local test_bin_folder_path="$1"
+
+  (
+    echo
+    echo "Checking the libgcrypt shared libraries..."
+
+    # show_libs "${INSTALL_FOLDER_PATH}/bin/libgcrypt-config"
+    show_libs "${test_bin_folder_path}/dumpsexp"
+    show_libs "${test_bin_folder_path}/hmac256"
+    show_libs "${test_bin_folder_path}/mpicalc"
+
+    echo
+    echo "Testing if libgcrypt binaries start properly..."
+
+    run_app "${test_bin_folder_path}/libgcrypt-config" --version
+    run_app "${test_bin_folder_path}/dumpsexp" --version
+    run_app "${test_bin_folder_path}/hmac256" --version
+    run_app "${test_bin_folder_path}/mpicalc" --version
+
+    # --help not available
+    # run_app "${test_bin_folder_path}/hmac256" --help
+
+    rm -rf "${TESTS_FOLDER_PATH}/libgcrypt"
+    mkdir -pv "${TESTS_FOLDER_PATH}/libgcrypt"; cd "${TESTS_FOLDER_PATH}/libgcrypt"
+
+    touch test.in
+    test_expect "0e824ce7c056c82ba63cc40cffa60d3195b5bb5feccc999a47724cc19211aef6  test.in"  "${test_bin_folder_path}/hmac256" "testing" test.in
+
+  )
 }
 
 # -----------------------------------------------------------------------------
@@ -5955,7 +6038,10 @@ function build_libassuan()
   # https://gnupg.org/ftp/gcrypt/libassuan
   # https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.3.tar.bz2
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libassuan/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libassuan/files/PKGBUILD
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libassuan.rb
 
   # 2019-02-11, "2.5.3"
   # 2021-03-22, "2.5.5"
@@ -6019,6 +6105,7 @@ function build_libassuan()
 
           config_options=()
 
+          # Exception: use LIBS_INSTALL_*.
           config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
           config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
@@ -6030,6 +6117,15 @@ function build_libassuan()
           config_options+=("--target=${TARGET}")
 
           config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
+
+          config_options+=("--enable-static") # HB
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libassuan_src_folder_name}/configure" \
             "${config_options[@]}"
@@ -6045,8 +6141,12 @@ function build_libassuan()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -6054,13 +6154,46 @@ function build_libassuan()
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libassuan_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libassuan_src_folder_name}" \
+        "${libassuan_folder_name}"
     )
+
+    (
+      test_libassuan_libs
+      test_libassuan "${BINS_INSTALL_FOLDER_PATH}/bin"
+
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libassuan_folder_name}/test-output-$(ndate).txt"
 
     touch "${libassuan_stamp_file_path}"
 
   else
     echo "Library libassuan already installed."
   fi
+
+  tests_add "test_libassuan" "${BINS_INSTALL_FOLDER_PATH}/bin"
+}
+
+function test_libassuan_libs()
+{
+  echo
+  echo "Checking the libassuan shared libraries..."
+
+  # show_libs "${INSTALL_FOLDER_PATH}/bin/libassuan-config"
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libassuan.${SHLIB_EXT}"
+}
+
+function test_libassuan()
+{
+  local test_bin_folder_path="$1"
+
+  (
+    echo
+    echo "Testing if libassuan binaries start properly..."
+
+    run_app "${test_bin_folder_path}/libassuan-config" --version
+  )
 }
 
 # -----------------------------------------------------------------------------
@@ -6070,6 +6203,7 @@ function build_libksba()
   # https://gnupg.org/ftp/gcrypt/libksba
   # https://gnupg.org/ftp/gcrypt/libksba/libksba-1.3.5.tar.bz2
 
+  # https://github.com/archlinux/svntogit-packages/blob/packages/libksba/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/libksba/files/PKGBUILD
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/libksba.rb
@@ -6086,7 +6220,7 @@ function build_libksba()
 
   local libksba_folder_name="${libksba_src_folder_name}"
 
-  local libksba_patch_file_path="${libksba_folder_name}.patch"
+  local libksba_patch_file_name="${libksba_folder_name}.patch"
 
   mkdir -pv "${LOGS_FOLDER_PATH}/${libksba_folder_name}"
 
@@ -6097,7 +6231,7 @@ function build_libksba()
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${libksba_url}" "${libksba_archive}" \
-      "${libksba_src_folder_name}" "${libksba_patch_file_path}"
+      "${libksba_src_folder_name}" "${libksba_patch_file_name}"
 
     (
       mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${libksba_folder_name}"
@@ -6140,6 +6274,7 @@ function build_libksba()
 
           config_options=()
 
+          # Exception: use LIBS_INSTALL_*.
           config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
           config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
@@ -6151,6 +6286,13 @@ function build_libksba()
           config_options+=("--target=${TARGET}")
 
           config_options+=("--with-libgpg-error-prefix=${LIBS_INSTALL_FOLDER_PATH}")
+
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${libksba_src_folder_name}/configure" \
             "${config_options[@]}"
@@ -6166,8 +6308,12 @@ function build_libksba()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -6175,13 +6321,45 @@ function build_libksba()
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libksba_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${libksba_src_folder_name}" \
+        "${libksba_folder_name}"
     )
+
+    (
+      test_libksba_libs
+      test_libksba "${BINS_INSTALL_FOLDER_PATH}/bin"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${libksba_folder_name}/test-output-$(ndate).txt"
 
     touch "${libksba_stamp_file_path}"
 
   else
     echo "Library libksba already installed."
   fi
+
+  tests_add "test_libksba" "${BINS_INSTALL_FOLDER_PATH}/bin"
+}
+
+function test_libksba_libs()
+{
+  echo
+  echo "Checking the libksba shared libraries..."
+
+  # show_libs "${INSTALL_FOLDER_PATH}/bin/ksba-config"
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libksba.${SHLIB_EXT}"
+}
+
+function test_libksba()
+{
+  local test_bin_folder_path="$1"
+
+  (
+    echo
+    echo "Testing if libksba binaries start properly..."
+
+    run_app "${test_bin_folder_path}/ksba-config" --version
+  )
 }
 
 # -----------------------------------------------------------------------------
@@ -6263,6 +6441,7 @@ function build_npth()
 
           config_options=()
 
+          # Exception: use LIBS_INSTALL_*.
           config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
           config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
@@ -6272,6 +6451,13 @@ function build_npth()
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${npth_src_folder_name}/configure" \
             "${config_options[@]}"
@@ -6287,8 +6473,12 @@ function build_npth()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         if [ "${WITH_TESTS}" == "y" ]
         then
@@ -6296,13 +6486,44 @@ function build_npth()
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${npth_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${npth_src_folder_name}" \
+        "${npth_folder_name}"
     )
+
+    (
+      test_npth_libs
+      test_npth "${BINS_INSTALL_FOLDER_PATH}/bin"
+    ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${npth_folder_name}/test-output-$(ndate).txt"
 
     touch "${npth_stamp_file_path}"
 
   else
     echo "Library npth already installed."
   fi
+
+  tests_add "test_npth" "${BINS_INSTALL_FOLDER_PATH}/bin"
+}
+
+function test_npth_libs()
+{
+  echo
+  echo "Checking the npth shared libraries..."
+
+  show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libnpth.${SHLIB_EXT}"
+}
+
+function test_npth()
+{
+  local test_bin_folder_path="$1"
+
+  (
+    echo
+    echo "Checking the npth shared libraries..."
+
+    run_app "${test_bin_folder_path}/npth-config" --version
+  )
 }
 
 # -----------------------------------------------------------------------------
