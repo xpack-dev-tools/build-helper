@@ -4150,9 +4150,12 @@ function build_python3()
 
   # https://github.com/Homebrew/homebrew-core/blob/master/Formula/python@3.10.rb
 
+  ## https://github.com/archlinux/svntogit-packages/blob/packages/python/trunk/PKGBUILD
   # https://archlinuxarm.org/packages/aarch64/python/files/PKGBUILD
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python
   # https://git.archlinux.org/svntogit/packages.git/tree/trunk/PKGBUILD?h=packages/python-pip
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/python@3.9.rb
 
   # 2018-12-24, "3.7.2"
   # March 25, 2019, "3.7.3"
@@ -4198,8 +4201,8 @@ function build_python3()
       "${python3_src_folder_name}"
 
     (
-      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
-      cd "${LIBS_BUILD_FOLDER_PATH}/${python3_folder_name}"
+      mkdir -pv "${BUILD_FOLDER_PATH}/${python3_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${python3_folder_name}"
 
       if [ "${TARGET_PLATFORM}" == "darwin" ] && [[ ${CC} =~ .*gcc.* ]]
       then
@@ -4217,10 +4220,11 @@ function build_python3()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
-        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}:${BINS_INSTALL_FOLDER_PATH}/lib"
       fi
 
       if [[ ${CC} =~ .*gcc.* ]]
@@ -4264,28 +4268,40 @@ function build_python3()
           config_options=()
 
           config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
-          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          # Exception: use BINS_INSTALL_*.
+          config_options+=("--libdir=${BINS_INSTALL_FOLDER_PATH}/lib")
           config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
           # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
           config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
-          config_options+=("--with-universal-archs=${TARGET_BITS}-bit")
-          config_options+=("--with-computed-gotos")
-          config_options+=("--with-dbmliborder=gdbm:ndbm")
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
 
-          # From Brew, but better not, allow configure to choose.
-          # config_options+=("--with-system-expat")
-          # config_options+=("--with-system-ffi")
-          # config_options+=("--with-system-libmpdec")
+          config_options+=("--without-ensurepip") # HB, Arch
+
+          config_options+=("--with-universal-archs=${TARGET_BITS}-bit")
+          config_options+=("--with-computed-gotos") # Arch
+          config_options+=("--with-dbmliborder=gdbm:ndbm") # HB, Arch
+
+          config_options+=("--with-lto") # HB, Arch
+
+          config_options+=("--with-system-expat") # HB, Arch
+          config_options+=("--with-system-ffi") # HB, Arch
+          config_options+=("--with-system-libmpdec") # HB, Arch
+
+          # config_options+=("--with-dtrace") # HB
 
           # config_options+=("--with-openssl=${INSTALL_FOLDER_PATH}")
-          config_options+=("--without-ensurepip")
-          config_options+=("--without-lto")
 
           # Create the PythonX.Y.so.
-          config_options+=("--enable-shared")
+          config_options+=("--enable-shared") # HB, Arch
 
-          # config_options+=("--enable-loadable-sqlite-extensions")
+          config_options+=("--enable-optimizations") # HB, Arch
+
+          # config_options+=("--enable-ipv6") # HB, Arch
+
+          # config_options+=("--enable-loadable-sqlite-extensions") # HB, Arch
           config_options+=("--disable-loadable-sqlite-extensions")
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${python3_src_folder_name}/configure" \
@@ -4306,6 +4322,12 @@ function build_python3()
 
         run_verbose make altinstall
 
+        (
+          cd "${BINS_INSTALL_FOLDER_PATH}/bin"
+          run_verbose ln -svf "python${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}" \
+            "python${PYTHON3_VERSION_MAJOR}"
+        )
+
         # Hundreds of tests, take a lot of time.
         # Many failures.
         if false # [ "${WITH_TESTS}" == "y" ]
@@ -4317,7 +4339,7 @@ function build_python3()
     )
 
     (
-      test_python3
+      test_python3 "${BINS_INSTALL_FOLDER_PATH}/bin"
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${python3_folder_name}/test-output-$(ndate).txt"
 
     copy_license \
@@ -4329,31 +4351,29 @@ function build_python3()
   else
     echo "Component python3 already installed."
   fi
+
+  tests_add "test_python3" "${BINS_INSTALL_FOLDER_PATH}/bin"
 }
 
 function test_python3()
 {
+  local test_bin_folder_path="$1"
+
   (
     echo
     echo "Checking the python3 binary shared libraries..."
 
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}"
-    if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}m.${SHLIB_EXT}" ]
-    then
-      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}m.${SHLIB_EXT}"
-    elif [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}.${SHLIB_EXT}" ]
-    then
-      show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libpython${PYTHON3_VERSION_MAJOR}.${PYTHON3_VERSION_MINOR}.${SHLIB_EXT}"
-    fi
+    show_libs "${test_bin_folder_path}/../lib/libpython3"*."${SHLIB_EXT}"
 
     echo
     echo "Testing if the python3 binary starts properly..."
 
     export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" --version
 
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" -c 'import sys; print(sys.path)'
-    run_app "${LIBS_INSTALL_FOLDER_PATH}/bin/python3.${PYTHON3_VERSION_MINOR}" -c 'import sys; print(sys.prefix)'
+    run_app "${test_bin_folder_path}/python3" --version
+
+    run_app "${test_bin_folder_path}/python3" -c 'import sys; print(sys.path)'
+    run_app "${test_bin_folder_path}/python3" -c 'import sys; print(sys.prefix)'
   )
 }
 
