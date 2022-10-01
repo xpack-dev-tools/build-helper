@@ -3095,7 +3095,7 @@ function prepare_app_folder_libraries()
       # processed later, and add new $ORIGINs for the new locations.
       for bin_path in ${binaries}
       do
-        if is_elf_dynamic "${bin_path}"
+        if is_elf "${bin_path}"
         then
           echo
           echo "## Cleaning ${bin_path} rpath..."
@@ -4314,7 +4314,8 @@ function tests_run()
 
         IFS=' '
         read -a cmd_array <<< "${line}"
-        echo "Running ${cmd_array[@]}..."
+        echo
+        echo "## Running ${cmd_array[@]}..."
         "${cmd_array[@]}"
       fi
     done
