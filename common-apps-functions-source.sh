@@ -353,7 +353,6 @@ function test_automake()
 
 # -----------------------------------------------------------------------------
 
-
 function build_findutils()
 {
   # https://www.gnu.org/software/findutils/
