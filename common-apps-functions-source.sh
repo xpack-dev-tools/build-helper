@@ -199,13 +199,18 @@ function build_automake()
   # https://www.gnu.org/software/automake/
   # https://ftp.gnu.org/gnu/automake/
 
+  # https://github.com/archlinux/svntogit-packages/tree/packages/automake/trunk
   # https://archlinuxarm.org/packages/any/automake/files/PKGBUILD
   # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=automake-git
+
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/automake.rb
 
   # 2015-01-05, "1.15"
   # 2018-02-25, "1.16"
   # 2020-03-21, "1.16.2"
   # 2020-11-18, "1.16.3"
+  # 2021-07-26, "1.16.4"
+  # 2021-10-03, "1.16.5"
 
   local automake_version="$1"
 
@@ -216,21 +221,21 @@ function build_automake()
 
   local automake_folder_name="${automake_src_folder_name}"
 
-  mkdir -pv "${LOGS_FOLDER_PATH}/${automake_folder_name}"
-
   # help2man: can't get `--help' info from automake-1.16
   # Try `--no-discard-stderr' if option outputs to stderr
 
-  local automake_patch_file_path="${automake_folder_name}.patch"
+  mkdir -pv "${LOGS_FOLDER_PATH}/${automake_folder_name}"
+
+  local automake_patch_file_name="${automake_folder_name}.patch"
   local automake_stamp_file_path="${STAMPS_FOLDER_PATH}/stamp-${automake_folder_name}-installed"
-  if [ ! -f "${automake_stamp_file_path}" -o ! -d "${BUILD_FOLDER_PATH}/${automake_folder_name}" ]
+  if [ ! -f "${automake_stamp_file_path}" ]
   then
 
     cd "${SOURCES_FOLDER_PATH}"
 
     download_and_extract "${automake_url}" "${automake_archive}" \
       "${automake_src_folder_name}" \
-      "${automake_patch_file_path}"
+      "${automake_patch_file_name}"
 
     (
       mkdir -pv "${BUILD_FOLDER_PATH}/${automake_folder_name}"
@@ -238,11 +243,21 @@ function build_automake()
 
       xbb_activate_installed_dev
 
-      export CPPFLAGS="${XBB_CPPFLAGS}"
-      export CFLAGS="${XBB_CFLAGS_NO_W}"
-      export CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
+      CPPFLAGS="${XBB_CPPFLAGS}"
+      CFLAGS="${XBB_CFLAGS_NO_W}"
+      CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
-      export LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      # LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
+      LDFLAGS="${XBB_LDFLAGS_APP}"
+      if [ "${TARGET_PLATFORM}" == "linux" ]
+      then
+        LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
+      fi
+
+      export CPPFLAGS
+      export CFLAGS
+      export CXXFLAGS
+      export LDFLAGS
 
       if [ ! -f "config.status" ]
       then
@@ -260,10 +275,20 @@ function build_automake()
             run_verbose bash "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" --help
           fi
 
+          config_options=()
+
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
+
+          config_options+=("--build=${BUILD}")
+          config_options+=("--host=${HOST}")
+          config_options+=("--target=${TARGET}")
+
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}/configure" \
-            --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-            \
-            --build="${BUILD}" \
+            "${config_options[@]}"
 
           cp "config.log" "${LOGS_FOLDER_PATH}/${automake_folder_name}/config-log-$(ndate).txt"
         ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/configure-output-$(ndate).txt"
@@ -276,23 +301,31 @@ function build_automake()
         # Build.
         run_verbose make -j ${JOBS}
 
-        # make install-strip
-        run_verbose make install
+        if [ "${WITH_STRIP}" == "y" ]
+        then
+          run_verbose make install-strip
+        else
+          run_verbose make install
+        fi
 
         # Takes too long and some tests fail.
         # XFAIL: t/pm/Cond2.pl
         # XFAIL: t/pm/Cond3.pl
         # ...
-        if false
+        if false # [ "${RUN_LONG_TESTS}" == "y" ]
         then
           run_verbose make -j1 check
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/make-output-$(ndate).txt"
+
+      copy_license \
+        "${SOURCES_FOLDER_PATH}/${automake_src_folder_name}" \
+        "${automake_folder_name}"
     )
 
     (
-      test_automake
+      test_automake "${BINS_INSTALL_FOLDER_PATH}/bin"
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${automake_folder_name}/test-output-$(ndate).txt"
 
     hash -r
@@ -303,18 +336,18 @@ function build_automake()
     echo "Component automake already installed."
   fi
 
-  test_functions+=("test_automake")
+  tests_add "test_automake" "${BINS_INSTALL_FOLDER_PATH}/bin"
 }
 
 function test_automake()
 {
+  local test_bin_folder_path="$1"
+
   (
-    xbb_activate_installed_bin
-
     echo
-    echo "Testing if automake binaries start properly..."
+    echo "Testing if automake scripts start properly..."
 
-    run_verbose "${LIBS_INSTALL_FOLDER_PATH}/bin/automake" --version
+    run_app "${test_bin_folder_path}/automake" --version
   )
 }
 
