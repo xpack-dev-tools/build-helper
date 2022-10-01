@@ -4368,7 +4368,7 @@ function test_python3()
     echo
     echo "Testing if the python3 binary starts properly..."
 
-    export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
+    # export LD_LIBRARY_PATH="${LIBS_INSTALL_FOLDER_PATH}/lib"
 
     run_app "${test_bin_folder_path}/python3" --version
 
