@@ -61,6 +61,11 @@ then
   source "${scripts_folder_path}/common-apps-functions-source.sh"
 fi
 
+if [ -f "${scripts_folder_path}/common-libs-functions-source.sh" ]
+then
+  source "${scripts_folder_path}/common-libs-functions-source.sh"
+fi
+
 # Common native & docker functions (like run_tests()).
 source "${scripts_folder_path}/tests/common-functions-source.sh"
 
