@@ -111,7 +111,12 @@ function xbb_activate_installed_bin()
   echo "xbb_activate_installed_bin"
 
   # Add the XBB bin to the PATH.
-  PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
+  if [ ! -z ${LIBS_INSTALL_FOLDER_PATH+x} ]
+  then
+    # When invoked from tests, the libs are not available.
+    PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
+  fi
+  PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${PATH}"
 
   export PATH
 }
