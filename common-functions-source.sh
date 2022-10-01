@@ -2075,6 +2075,7 @@ function is_darwin_allowed_sys_dylib()
     \
     /usr/lib/libSystem.B.dylib \
     /usr/lib/libobjc.A.dylib \
+    /usr/lib/libicucore.A.dylib \
     \
     /usr/lib/libutil.dylib \
     /usr/lib/libcompression.dylib \
