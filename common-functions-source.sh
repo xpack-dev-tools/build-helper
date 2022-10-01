@@ -1291,7 +1291,7 @@ function show_libs()
       run_verbose ls -l "${app_path}"
       if [ "${IS_DEVELOP}" == "y" ]
       then
-        run_verbose file "${app_path}"
+        run_verbose file -L "${app_path}"
       fi
       echo
       echo "[otool -L ${app_path}]"
