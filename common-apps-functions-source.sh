@@ -22,19 +22,25 @@ function build_patchelf()
   # https://github.com/NixOS/patchelf/releases/download/0.12/patchelf-0.12.tar.bz2
   # https://github.com/NixOS/patchelf/archive/0.12.tar.gz
 
+  # https://github.com/archlinux/svntogit-community/blob/packages/patchelf/trunk/PKGBUILD
+  # https://github.com/Homebrew/homebrew-core/blob/master/Formula/patchelf.rb
+
+
   # 2016-02-29, "0.9"
   # 2019-03-28, "0.10"
   # 2020-06-09, "0.11"
   # 2020-08-27, "0.12"
+  # 05 Aug 2021, "0.13"
+  # 05 Dec 2021, "0.14.3"
 
   local patchelf_version="$1"
 
   local patchelf_src_folder_name="patchelf-${patchelf_version}"
 
-  # local patchelf_archive="${patchelf_src_folder_name}.tar.bz2"
+  local patchelf_archive="${patchelf_src_folder_name}.tar.bz2"
   # GitHub release archive.
   local patchelf_github_archive="${patchelf_version}.tar.gz"
-  local patchelf_github_url="https://github.com/NixOS/patchelf/archive/${patchelf_github_archive}"
+  local patchelf_url="https://github.com/NixOS/patchelf/archive/${patchelf_github_archive}"
 
   local patchelf_folder_name="${patchelf_src_folder_name}"
 
@@ -46,7 +52,7 @@ function build_patchelf()
 
     cd "${SOURCES_FOLDER_PATH}"
 
-    download_and_extract "${patchelf_github_url}" "${patchelf_github_archive}" \
+    download_and_extract "${patchelf_url}" "${patchelf_archive}" \
       "${patchelf_src_folder_name}"
 
     (
@@ -63,8 +69,8 @@ function build_patchelf()
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/autogen-output-$(ndate).txt"
 
     (
-      mkdir -pv "${LIBS_BUILD_FOLDER_PATH}/${patchelf_folder_name}"
-      cd "${LIBS_BUILD_FOLDER_PATH}/${patchelf_folder_name}"
+      mkdir -pv "${BUILD_FOLDER_PATH}/${patchelf_folder_name}"
+      cd "${BUILD_FOLDER_PATH}/${patchelf_folder_name}"
 
       xbb_activate_installed_dev
 
@@ -72,8 +78,9 @@ function build_patchelf()
       CFLAGS="${XBB_CFLAGS_NO_W}"
       CXXFLAGS="${XBB_CXXFLAGS_NO_W}"
 
+      # Wihtout -static-libstdc++, it fails with
+      # /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.29' not found
       LDFLAGS="${XBB_LDFLAGS_APP_STATIC_GCC}"
-
       if [ "${TARGET_PLATFORM}" == "linux" ]
       then
         LDFLAGS+=" -Wl,-rpath,${LD_LIBRARY_PATH}"
@@ -102,11 +109,22 @@ function build_patchelf()
 
           config_options=()
 
-          config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+          config_options+=("--prefix=${BINS_INSTALL_FOLDER_PATH}")
+          config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+          config_options+=("--includedir=${LIBS_INSTALL_FOLDER_PATH}/include")
+          # config_options+=("--datarootdir=${LIBS_INSTALL_FOLDER_PATH}/share")
+          config_options+=("--mandir=${LIBS_INSTALL_FOLDER_PATH}/share/man")
 
           config_options+=("--build=${BUILD}")
           config_options+=("--host=${HOST}")
           config_options+=("--target=${TARGET}")
+
+          config_options+=("--disable-debug") # HB
+          config_options+=("--disable-dependency-tracking") # HB
+          if [ "${IS_DEVELOP}" == "y" ]
+          then
+            config_options+=("--disable-silent-rules") # HB
+          fi
 
           run_verbose bash ${DEBUG} "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}/configure" \
             "${config_options[@]}"
@@ -129,41 +147,48 @@ function build_patchelf()
           run_verbose make install
         fi
 
-        show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf"
+        # Fails.
+        # x86_64: FAIL: set-rpath-library.sh (Segmentation fault (core dumped))
+        # x86_64: FAIL: set-interpreter-long.sh (Segmentation fault (core dumped))
+        # make -C tests -j1 check
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/make-output-$(ndate).txt"
 
       copy_license \
         "${SOURCES_FOLDER_PATH}/${patchelf_src_folder_name}" \
         "${patchelf_folder_name}"
-
     )
 
     (
-      test_patchelf
+      test_patchelf "${BINS_INSTALL_FOLDER_PATH}/bin"
     ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${patchelf_folder_name}/test-output-$(ndate).txt"
+
+    hash -r
 
     touch "${patchelf_stamp_file_path}"
 
   else
     echo "Component patchelf already installed."
   fi
+
+  tests_add "test_patchelf" "${BINS_INSTALL_FOLDER_PATH}/bin"
 }
 
 function test_patchelf()
 {
+  local test_bin_folder_path="$1"
+
   (
-    xbb_activate
+    echo
+    echo "Checking the patchelf binaries shared libraries..."
+
+    show_libs "${test_bin_folder_path}/patchelf"
 
     echo
-    echo "Checking the patchelf shared libraries..."
+    echo "Testing if patchelf binaries start properly..."
 
-    show_libs "${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf"
-
-    echo
-    echo "Checking if patchelf starts..."
-    "${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf" --version
-    "${LIBS_INSTALL_FOLDER_PATH}/bin/patchelf" --help
+    run_app "${test_bin_folder_path}/patchelf" --version
+    run_app "${test_bin_folder_path}/patchelf" --help
   )
 }
 
