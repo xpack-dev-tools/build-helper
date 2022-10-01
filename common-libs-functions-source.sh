@@ -3685,6 +3685,40 @@ function build_bzip2()
           run_verbose cp bzip2recover.exe "${LIBS_INSTALL_FOLDER_PATH}/bin"
 
         fi
+
+        if [ "${LIBS_INSTALL_FOLDER_PATH}" != "${BINS_INSTALL_FOLDER_PATH}" ]
+        then
+          (
+            cd "${BINS_INSTALL_FOLDER_PATH}/bin"
+
+            # For unknown reasons, the original links are absolute.
+            # Make them relative to the current folder.
+            if [ -L "bzcmp "]
+            then
+              rm bzcmp
+              ln -s bzdiff bzcmp
+            fi
+
+            if [ -L "bzegrep" ]
+            then
+              rm bzegrep
+              ln -s bzgrep bzegrep
+            fi
+
+            if [ -L "bzfgrep" ]
+            then
+              rm bzfgrep
+              ln -s bzgrep bzfgrep
+            fi
+
+            if [ -L "bzless" ]
+            then
+              rm bzless
+              ln -s bzmore bzless
+            fi
+          )
+        fi
+
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${bzip2_folder_name}/make-output-$(ndate).txt"
 
       copy_license \
