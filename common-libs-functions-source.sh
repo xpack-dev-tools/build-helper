@@ -2949,7 +2949,7 @@ function build_openssl()
               config_options+=("enable-tls1_1")
               config_options+=("no-ssl3")
               config_options+=("no-ssl3-method")
-              config_options+=("zlib")
+              config_options+=("no-zlib")
               config_options+=("${CPPFLAGS}")
               config_options+=("${CFLAGS}")
               config_options+=("${LDFLAGS}")
@@ -2977,7 +2977,7 @@ function build_openssl()
             config_options+=("enable-tls1_1")
             config_options+=("no-ssl3")
             config_options+=("no-ssl3-method")
-            config_options+=("zlib")
+            config_options+=("no-zlib")
 
             if [ "${TARGET_ARCH}" == "x64" ]
             then
