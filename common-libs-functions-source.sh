@@ -2910,7 +2910,7 @@ function build_openssl()
                 --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
                 --libdir="${LIBS_INSTALL_FOLDER_PATH}" \
                 \
-                --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
+                --openssldir="${BINS_INSTALL_FOLDER_PATH}/openssl" \
                 shared \
                 enable-md2 \
                 enable-rc5 \
@@ -2941,6 +2941,7 @@ function build_openssl()
               config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
               config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
 
+              config_options+=("--openssldir=${BINS_INSTALL_FOLDER_PATH}/openssl")
               config_options+=("shared")
               config_options+=("enable-md2")
               config_options+=("enable-rc5")
@@ -2969,7 +2970,7 @@ function build_openssl()
             config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
             config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
 
-            config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
+            config_options+=("--openssldir=${BINS_INSTALL_FOLDER_PATH}/openssl")
             config_options+=("shared")
             config_options+=("enable-md2")
             config_options+=("enable-rc5")
@@ -3035,7 +3036,7 @@ function build_openssl()
             # Not needed, the CC/CXX macros already define the target.
             # config_options+=("--cross-compile-prefix=${TARGET}")
 
-            config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
+            config_options+=("--openssldir=${BINS_INSTALL_FOLDER_PATH}/openssl")
 
             config_options+=("shared")
             config_options+=("zlib-dynamic")
