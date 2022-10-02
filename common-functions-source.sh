@@ -361,8 +361,9 @@ function set_xbb_env()
     fi
   fi
 
-  # Deprected, use DEPS_BUILD_FOLDER_PATH.
-  LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/libs"
+  # Deprected, use BUILD_FOLDER_PATH.
+  # LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/libs"
+  LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}"
   mkdir -pv "${LIBS_BUILD_FOLDER_PATH}"
 
   DEPS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/deps"
