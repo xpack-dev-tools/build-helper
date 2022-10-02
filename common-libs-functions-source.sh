@@ -2908,6 +2908,7 @@ function build_openssl()
 
               run_verbose "./Configure" "darwin64-x86_64-cc" \
                 --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
+                --libdir="${LIBS_INSTALL_FOLDER_PATH}" \
                 \
                 --openssldir="${LIBS_INSTALL_FOLDER_PATH}/openssl" \
                 shared \
@@ -2938,8 +2939,8 @@ function build_openssl()
               config_options=()
 
               config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-                  \
-              config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
+              config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+
               config_options+=("shared")
               config_options+=("enable-md2")
               config_options+=("enable-rc5")
@@ -2966,6 +2967,7 @@ function build_openssl()
             config_options=()
 
             config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
 
             config_options+=("--openssldir=${LIBS_INSTALL_FOLDER_PATH}/openssl")
             config_options+=("shared")
@@ -3028,6 +3030,7 @@ function build_openssl()
             fi
 
             config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
+            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
 
             # Not needed, the CC/CXX macros already define the target.
             # config_options+=("--cross-compile-prefix=${TARGET}")
