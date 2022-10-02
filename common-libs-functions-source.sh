@@ -3112,6 +3112,7 @@ function build_openssl()
 
       (
         test_openssl_libs
+        test_openssl "${BINS_INSTALL_FOLDER_PATH}/bin"
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/test-output-$(ndate).txt"
     )
 
@@ -3120,6 +3121,8 @@ function build_openssl()
   else
     echo "Component openssl already installed."
   fi
+
+  tests_add test_openssl "${BINS_INSTALL_FOLDER_PATH}/bin"
 }
 
 function test_openssl_libs()
@@ -3145,6 +3148,25 @@ function test_openssl_libs()
     fi
   )
 }
+
+function test_openssl()
+{
+  local test_bin_folder_path="$1"
+
+  (
+    echo
+    echo "Testing if the openssl binaries start properly..."
+
+    run_app "${test_bin_folder_path}/openssl" version
+
+    rm -rf "${TESTS_FOLDER_PATH}/openssl"
+    mkdir -pv "${TESTS_FOLDER_PATH}/openssl"; cd "${TESTS_FOLDER_PATH}/openssl"
+
+    echo "This is a test file" >testfile.txt
+    test_expect "SHA256(testfile.txt)= c87e2ca771bab6024c269b933389d2a92d4941c848c52f155b9b84e1f109fe35" "${test_bin_folder_path}/openssl" dgst -sha256 testfile.txt
+  )
+}
+
 
 # -----------------------------------------------------------------------------
 
