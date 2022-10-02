@@ -3126,11 +3126,6 @@ function test_openssl_libs()
 {
   (
     echo
-    echo "Testing if the openssl binaries start properly..."
-
-    run_app "${BINS_INSTALL_FOLDER_PATH}/bin/openssl" version
-
-    echo
     echo "Checking the openssl shared libraries..."
 
     show_libs "${BINS_INSTALL_FOLDER_PATH}/bin/openssl"
