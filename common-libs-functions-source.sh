@@ -2908,7 +2908,6 @@ function build_openssl()
 
               run_verbose "./Configure" "darwin64-x86_64-cc" \
                 --prefix="${LIBS_INSTALL_FOLDER_PATH}" \
-                --libdir="${LIBS_INSTALL_FOLDER_PATH}" \
                 \
                 --openssldir="${BINS_INSTALL_FOLDER_PATH}/openssl" \
                 shared \
@@ -2939,7 +2938,7 @@ function build_openssl()
               config_options=()
 
               config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-              config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+              # DO NOT USE --libdir
 
               config_options+=("--openssldir=${BINS_INSTALL_FOLDER_PATH}/openssl")
               config_options+=("shared")
@@ -2968,7 +2967,7 @@ function build_openssl()
             config_options=()
 
             config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            # DO NOT USE --libdir
 
             config_options+=("--openssldir=${BINS_INSTALL_FOLDER_PATH}/openssl")
             config_options+=("shared")
@@ -3031,7 +3030,7 @@ function build_openssl()
             fi
 
             config_options+=("--prefix=${LIBS_INSTALL_FOLDER_PATH}")
-            config_options+=("--libdir=${LIBS_INSTALL_FOLDER_PATH}/lib")
+            # DO NOT USE --libdir
 
             # Not needed, the CC/CXX macros already define the target.
             # config_options+=("--cross-compile-prefix=${TARGET}")
@@ -3103,7 +3102,7 @@ function build_openssl()
           curl --location http://curl.haxx.se/ca/cacert.pem -o cacert.pem
           install -v -c -m 644 cacert.pem "${LIBS_INSTALL_FOLDER_PATH}/openssl"
         fi
-        
+
         if [ "${WITH_TESTS}" == "y" ]
         then
           run_verbose make -j1 test
