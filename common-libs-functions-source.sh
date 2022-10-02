@@ -3087,30 +3087,26 @@ function build_openssl()
             "${BINS_INSTALL_FOLDER_PATH}/bin"
         fi
 
-        mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+        if false
+        then
+          mkdir -pv "${LIBS_INSTALL_FOLDER_PATH}/openssl"
 
-        if [ -f "${XBB_FOLDER_PATH}/openssl/cert.pem" ]
-        then
-          install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/ca-bundle.crt" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
-          install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
-        elif [ -f "/private/etc/ssl/cert.pem" ]
-        then
-          install -v -c -m 644 "/private/etc/ssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          if [ -f "${XBB_FOLDER_PATH}/openssl/cert.pem" ]
+          then
+            install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/ca-bundle.crt" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+            install -v -c -m 644 "${XBB_FOLDER_PATH}/openssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          elif [ -f "/private/etc/ssl/cert.pem" ]
+          then
+            install -v -c -m 644 "/private/etc/ssl/cert.pem" "${LIBS_INSTALL_FOLDER_PATH}/openssl"
+          fi
+
+          curl --location http://curl.haxx.se/ca/cacert.pem -o cacert.pem
+          install -v -c -m 644 cacert.pem "${LIBS_INSTALL_FOLDER_PATH}/openssl"
         fi
-
-        curl --location http://curl.haxx.se/ca/cacert.pem -o cacert.pem
-        install -v -c -m 644 cacert.pem "${LIBS_INSTALL_FOLDER_PATH}/openssl"
-
+        
         if [ "${WITH_TESTS}" == "y" ]
         then
           run_verbose make -j1 test
-        fi
-
-        if [ -f "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}" ]
-        then
-          show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib64/libcrypto.${SHLIB_EXT}"
-        else
-          show_libs "${LIBS_INSTALL_FOLDER_PATH}/lib/libcrypto.${SHLIB_EXT}"
         fi
 
       ) 2>&1 | tee "${LOGS_FOLDER_PATH}/${openssl_folder_name}/make-output-$(ndate).txt"
