@@ -691,15 +691,8 @@ function set_xbb_extras()
 
 function prepare_gcc_env()
 {
-  local prefix="$1"
-
-  local suffix
-  if [ $# -ge 2 ]
-  then
-    suffix="$2"
-  else
-    suffix=""
-  fi
+  local prefix="${1:-}"
+  local suffix="${2:-}"
 
   unset_compiler_env
 
