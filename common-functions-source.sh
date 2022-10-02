@@ -366,8 +366,8 @@ function set_xbb_env()
   LIBS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}"
   mkdir -pv "${LIBS_BUILD_FOLDER_PATH}"
 
-  DEPS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/deps"
-  mkdir -pv "${DEPS_BUILD_FOLDER_PATH}"
+  # DEPS_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/deps"
+  # mkdir -pv "${DEPS_BUILD_FOLDER_PATH}"
 
   APP_BUILD_FOLDER_PATH="${BUILD_FOLDER_PATH}/${APP_LC_NAME}"
   # Do it later, only if needed.
