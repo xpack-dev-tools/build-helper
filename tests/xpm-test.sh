@@ -53,12 +53,18 @@ source "${scripts_folder_path}/defs-source.sh"
 # Helper functions
 source "${helper_folder_path}/common-functions-source.sh"
 source "${helper_folder_path}/common-apps-functions-source.sh"
+source "${helper_folder_path}/common-libs-functions-source.sh"
 source "${helper_folder_path}/test-functions-source.sh"
 
 # Reuse the test functions defined in the build scripts.
 if [ -f "${scripts_folder_path}/common-apps-functions-source.sh" ]
 then
   source "${scripts_folder_path}/common-apps-functions-source.sh"
+fi
+
+if [ -f "${scripts_folder_path}/common-libs-functions-source.sh" ]
+then
+  source "${scripts_folder_path}/common-libs-functions-source.sh"
 fi
 
 # Common native & docker functions (like run_tests()).
