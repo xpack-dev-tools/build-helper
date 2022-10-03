@@ -115,9 +115,7 @@ then
   if [ -n "${image_name}" ]
   then
     # When running in a Docker container, update it.
-    export LANGUAGE="en_US:en"
-    unset LC_ALL
-    export LANG="en_US.UTF-8"
+    export LANG="C"
     update_image "${image_name}"
   else
     echo "No image defined, quit."
