@@ -270,16 +270,18 @@ tests_run
 if [ "${TEST_ONLY}" != "y" ]
 then
 
-  run_verbose ls -l "${APP_PREFIX}"
-  run_verbose ls -l "${APP_PREFIX}/bin"
-
   (
-    cd "${APP_PREFIX}/bin"
-    echo
-    echo "package.json xpack.bin definitions:"
-    ls -1 | sed -e 's|\.exe$||' | sed -e '/\.dll$/d' | sort | sed -e 's|\(.*\)|      "\1": "./.content/bin/\1",|'
-  )
+    run_verbose ls -l "${APP_PREFIX}"
+    run_verbose ls -l "${APP_PREFIX}/bin"
 
+    (
+      cd "${APP_PREFIX}/bin"
+
+      echo
+      echo "package.json xpack.bin definitions:"
+      ls -1 | sed -e 's|\.exe$||' | sed -e '/\.dll$/d' | sort | sed -e 's|\(.*\)|      "\1": "./.content/bin/\1",|'
+    )
+  ) 2>&1 | tee "${LOGS_FOLDER_PATH}/post-lists-output-$(ndate).txt"
 fi
 
 # -----------------------------------------------------------------------------
