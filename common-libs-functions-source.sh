@@ -4379,7 +4379,10 @@ function test_python3()
     echo
     echo "Checking the python3 binary shared libraries..."
 
-    show_libs "$(dirname ${test_bin_folder_path}/python3)/../lib/libpython3"*."${SHLIB_EXT}"
+    (
+      xbb_activate_installed_bin
+      show_libs "$(dirname $(realpath ${test_bin_folder_path}/python3))/../lib/libpython3"*."${SHLIB_EXT}"
+    )
 
     echo
     echo "Testing if the python3 binary starts properly..."
