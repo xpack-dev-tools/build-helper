@@ -151,6 +151,7 @@ else
   run_verbose xpm install ${NPM_PACKAGE}
 fi
 
+export TESTS_FOLDER_PATH="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests"
 export TEST_BIN_PATH="$(pwd)/xpacks/.bin"
 
 # -----------------------------------------------------------------------------
