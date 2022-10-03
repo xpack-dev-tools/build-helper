@@ -122,6 +122,11 @@ function xbb_activate_installed_bin()
     PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${PATH}"
   fi
 
+  if [ ! -z ${TEST_BIN_PATH+x} ]
+  then
+    PATH="${TEST_BIN_PATH}:${PATH}"
+  fi
+
   export PATH
 }
 
