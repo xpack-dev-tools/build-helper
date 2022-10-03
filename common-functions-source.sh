@@ -1982,11 +1982,11 @@ function is_linux_allowed_sys_so()
 
   # Shared libraries that are expected to be present on any Linux.
   # Note the X11 libraries.
+  # libnsl.so.1 - not available on RedHat
   local sys_lib_names=(\
     librt.so.1 \
     libm.so.6 \
     libc.so.6 \
-    libnsl.so.1 \
     libutil.so.1 \
     libpthread.so.0 \
     libdl.so.2 \
