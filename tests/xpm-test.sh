@@ -134,7 +134,7 @@ prepare_env "$(dirname ${scripts_folder_path})"
 
 # -----------------------------------------------------------------------------
 
-test_xpm_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests/${APP_LC_NAME}"
+test_xpm_folder_path="${WORK_FOLDER_PATH}/${TARGET_FOLDER_NAME}/tests/${APP_LC_NAME}-xpack"
 
 rm -rf "${test_xpm_folder_path}"
 mkdir -p "${test_xpm_folder_path}"
