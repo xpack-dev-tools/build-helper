@@ -116,7 +116,11 @@ function xbb_activate_installed_bin()
     # When invoked from tests, the libs are not available.
     PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
   fi
-  PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${PATH}"
+
+  if [ ! -z ${APP_PREFIX}+x ]
+  then
+    PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${PATH}"
+  fi
 
   export PATH
 }
