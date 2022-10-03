@@ -117,7 +117,7 @@ function xbb_activate_installed_bin()
     PATH="${LIBS_INSTALL_FOLDER_PATH}/bin:${PATH}"
   fi
 
-  if [ ! -z ${APP_PREFIX}+x ]
+  if [ ! -z ${APP_PREFIX}+x} ]
   then
     PATH="${APP_PREFIX}/bin:${APP_PREFIX}/usr/bin:${PATH}"
   fi
