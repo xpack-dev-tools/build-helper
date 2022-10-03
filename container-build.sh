@@ -250,7 +250,7 @@ then
     check_binaries
 
     create_archive
-  )
+  ) 2>&1 | tee "${LOGS_FOLDER_PATH}/post-actions-output-$(ndate).txt"
 fi
 
 # -----------------------------------------------------------------------------
